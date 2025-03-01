@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title></title>
+    <!-- 使用较旧版本的ECharts，确保兼容性 -->
+    <script src="echartTool.js"></script>
+    <script src="echarts.min@5.3.2.js"></script>
+</head>
+<body>
+<!-- 为ECharts准备容器，需要指定宽高 -->
+<div id="main" style="height: 400px;"></div>
+
+<script type="text/javascript">
+    // 基于准备好的dom，初始化echarts实例
+    echartTool.init(window, 'myChart', 'main');
+    option = {
+        // 提示框配置
+        tooltip: {
+            /**
+             * 触发方式：坐标轴触发，可选值：'item'|'axis'.
+             * 1. 如果是单系列的柱状图或折线图，两种方式都可以;
+             * 2. 如果是多系列的图表，建议使用 'axis'，便于数据对比
+             * 3. 对于饼图、散点图等非坐标轴类图表，通常使用 'item'
+             * 4. 如果需要同时对比不同维度的数据，使用 'axis' 更直观
+             */
+            trigger: 'axis',
+            axisPointer: {
+                /**
+                 * 选择建议：
+                 *
+                 * 1. line：
+                 *    - 显示效果：在鼠标所在位置显示一条垂直或水平的直线
+                 *    - 适合数据密集的图表
+                 *    - 需要精确定位但不想遮挡视图的场景
+                 *    - 折线图最常用
+                 * 2. shadow：
+                 *    - 显示效果：在鼠标所在位置显示一个半透明的阴影区域
+                 *    - 适合数据间隔较大的图表
+                 *    - 需要突出显示某个区域的场景
+                 *    - 柱状图最常用
+                 * 3. cross：
+                 *    - 显示效果：同时显示水平和垂直两条交叉的指示线
+                 *    - 适合需要同时关注x和y轴数值的场景
+                 *    - 散点图最常用
+                 *    - 数据分析场景使用
+                 */
+                type: 'shadow'  // 指示器类型：阴影指示器，可选值：'line'|'shadow'|'cross'
+            }
+        },
+
+        // 直角坐标系内绘图网格配置
+        grid: {
+            left: '3%',       // 网格左边距，支持绝对像素值或相对百分比
+            right: '4%',      // 网格右边距
+            bottom: '3%',     // 网格底边距
+            containLabel: true // true表示grid区域包含坐标轴标签，防止标签超出画布
+        },
+
+        // X轴配置
+        xAxis: [{
+            type: 'category',   // 坐标轴类型：类目轴，适用于离散数据
+            data: ['Mon', 'Tue', 'Wed'],  // X轴类目数据
+            axisTick: {
+                alignWithLabel: true  // 刻度线和标签对齐，true表示刻度线在标签中间
+            }
+        }],
+
+        // Y轴配置
+        yAxis: [{
+            type: 'value'  // 坐标轴类型：数值轴，适用于连续数据
+        }],
+
+        // 系列列表配置
+        series: [
+            {
+                name: '系列1',
+                type: 'bar',
+                data: [10, 20, 30]
+            },
+            {
+                name: '系列2',
+                type: 'bar',
+                data: [15, 25, 35]
+            }
+        ]
+    };
+    // 交换X轴和Y轴
+    option = echartTool.swapXYAxis(option);
+
+
+    // 使用配置项显示图表
+    myChart.setOption(option);
+</script>
+</body>
+</html>

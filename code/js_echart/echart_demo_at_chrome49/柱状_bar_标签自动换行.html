@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title></title>
+    <!-- 使用较旧版本的ECharts，确保兼容性 -->
+    <script src="echartTool.js"></script>
+    <script src="echarts.min@5.3.2.js"></script>
+</head>
+<body>
+    <!-- 为ECharts准备容器，需要指定宽高 -->
+    <div id="main" style="height: 400px;"></div>
+    
+    <script type="text/javascript">
+        // 基于准备好的dom，初始化echarts实例
+        echartTool.init(window, 'myChart', 'main');
+
+        // 指定图表的配置项和数据
+        var option = {
+            // title: {
+            //     text: 'ECharts 入门示例'
+            // },
+            // tooltip: {},
+            // legend: {
+            //     data:['销量']
+            // },
+
+
+            xAxis: {
+                data: ["衬衫","羊毛衫羊毛衫羊毛衫羊毛衫羊毛衫羊毛衫羊毛衫羊毛衫","雪纺衫","裤子","高跟鞋","袜子"],
+                // ECharts 5.x 版本中，我们可以使用 overflow: 'break' 和 width 属性来实现标签的自动换行，不需要手动计算字符数。
+                axisLabel: {
+                    interval: 0,  // 强制显示所有标签
+                    width: 100,   // 标签容器的宽度
+                    overflow: 'break',  // 文字超出宽度时自动换行
+                    // lineHeight: 20,     // 行高
+                    // padding: [0, 0, 0, 0]  // 内边距
+                }
+            },
+            yAxis: {},
+            series: [{
+                name: '销量',
+                type: 'bar',
+                data: [5, 20, 36, 10, 10, 20]
+            }]
+        };
+
+        option = echartTool.swapXYAxis(option);
+
+
+
+
+
+        // 使用配置项显示图表
+        myChart.setOption(option);
+    </script>
+</body>
+</html>

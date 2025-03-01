@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title></title>
+    <!-- 使用较旧版本的ECharts，确保兼容性 -->
+    <script src="echartTool.js"></script>
+    <script src="echarts.min@5.3.2.js"></script>
+</head>
+<body>
+    <!-- 为ECharts准备容器，需要指定宽高 -->
+    <div id="main" style="height: 400px;"></div>
+    
+    <script type="text/javascript">
+        // 基于准备好的dom，初始化echarts实例
+        echartTool.init(window, 'myChart', 'main');
+
+        // 生成最近7天的日期数据
+        function getLastSevenDays() {
+            var dates = [];
+            var temps = [];
+            for (var i = 6; i >= 0; i--) {
+                var date = new Date();
+                date.setDate(date.getDate() - i);
+                dates.push(date.toISOString().split('T')[0]); // 格式：'2024-02-25'
+                temps.push(Math.floor(Math.random() * 10 + 20)); // 生成20-30之间的随机温度
+            }
+            return {
+                dates: dates,
+                temps: temps
+            };
+        }
+
+        var dateData = getLastSevenDays();
+        var dates = dateData.dates;
+        var temps = dateData.temps;
+
+        // 将日期和温度组合成数据点
+        var seriesData = [];
+        for (var i = 0; i < dates.length; i++) {
+            seriesData.push([dates[i], temps[i]]);
+        }
+
+        var option = {
+            title: {
+                text: '最近7天温度变化',
+                left: 'center'
+            },
+            tooltip: {
+                trigger: 'axis',
+                formatter: function(params) {
+                    var date = new Date(params[0].value[0]);
+                    return date.toLocaleDateString() + '\n' +
+                        '温度: ' + params[0].value[1] + '°C';
+                }
+            },
+            xAxis: {
+                type: 'time',
+                axisLabel: {
+                    formatter: function(value) {
+                        var date = new Date(value);
+                        return (date.getMonth() + 1) + '/' + date.getDate();
+                    }
+                }
+            },
+            yAxis: {
+                type: 'value',
+                name: '温度(°C)',
+                axisLabel: {
+                    formatter: function(value) {
+                        return value + ' °C';
+                    }
+                }
+            },
+            series: [{
+                name: '温度',
+                type: 'line',
+                data: seriesData,
+                smooth: true,
+            }]
+        };
+
+        echartTool.setMarkPoint(option,{
+            maxName: '最高温',
+            minName: '最低温'
+        });
+
+
+        // 使用配置项显示图表
+        myChart.setOption(option);
+    </script>
+</body>
+</html>

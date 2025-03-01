@@ -137,6 +137,7 @@ echartTool.init = function (belongNode, nodeName, id) {
         throw error;
     }
 };
+<<<<<<< HEAD
 // 使用示例：
 /*
 try {
@@ -154,3 +155,292 @@ try {
     console.error('图表初始化失败:', error);
 }
 */
+=======
+
+/**
+ * 为echarts配置项设置标题文本
+ * @param {Object} option - echarts的配置项对象
+ * @param {string|null} title_text - 标题文本，如果为null则不设置标题
+ * @return {Object} - 返回更新后的配置项对象
+ *
+ * 使用示例:
+ * var option = {};
+ * echartTool.setTitle(option, '月度销售数据');
+ */
+echartTool.setTitle = function(option, title_text) {
+    // 参数验证：确保option是对象
+    if (!option || typeof option !== 'object') {
+        throw new Error('option必须是一个对象');
+    }
+
+    // 如果传入了标题文本
+    if (title_text) {
+        // 参数验证：确保title_text是字符串
+        if (typeof title_text !== 'string') {
+            throw new Error('title_text必须是字符串类型');
+        }
+
+        // 如果option中没有title配置，则初始化为空对象
+        if (!option.title) {
+            option.title = {};
+        }
+
+        // 设置标题文本
+        option.title.text = title_text;
+    }
+
+    // 返回更新后的配置项
+    return option;
+};
+
+/**
+ * 移除echarts配置项中的标题
+ * @param {Object} option - echarts的配置项对象
+ * @return {Object} - 返回更新后的配置项对象
+ *
+ * 使用示例:
+ * var option = {
+ *     title: { text: '月度销售数据' }
+ * };
+ * echartTool.unsetTitle(option);
+ */
+echartTool.unsetTitle = function(option) {
+    // 参数验证：确保option是对象
+    if (!option || typeof option !== 'object') {
+        throw new Error('option必须是一个对象');
+    }
+
+    // 如果存在title配置，则移除它
+    if (option.hasOwnProperty('title')) {
+        delete option.title;
+    }
+
+    // 返回更新后的配置项
+    return option;
+};
+/**
+ * 交换图表的X轴和Y轴
+ * @param {Object} option - echarts的配置项
+ * @returns {Object} 返回交换后的配置项
+ */
+echartTool.swapXYAxis = function(option) {
+    // 参数校验
+    if (!option || typeof option !== 'object') {
+        console.warn('swapXYAxis: option参数必须是一个对象');
+        return option;
+    }
+
+    try {
+        // 深拷贝配置项,避免修改原对象
+        var newOption = JSON.parse(JSON.stringify(option));
+        // 使用临时变量交换x轴和y轴配置
+        var tempAxis = newOption.xAxis;
+        newOption.xAxis = newOption.yAxis;
+        newOption.yAxis = tempAxis;
+
+        return newOption;
+    } catch (error) {
+        console.error('swapXYAxis执行出错:', error);
+        return option;
+    }
+};
+
+/**
+ * 为echarts配置项设置最大值和最小值的标记点
+ * @param {Object} option - echarts的配置项对象
+ * @param {Object} [customConfig] - 自定义配置项
+ * @param {string} [customConfig.maxName='最大值'] - 最大值标记的名称
+ * @param {string} [customConfig.minName='最小值'] - 最小值标记的名称
+ * @return {Object} - 返回更新后的配置项对象
+ *
+ * 使用示例:
+ * var option = {};
+ * echartTool.setMarkPoint(option, { maxName: '最高温', minName: '最低温' });
+ */
+echartTool.setMarkPoint = function(option, customConfig) {
+    // 参数验证
+    if (!option || typeof option !== 'object') {
+        throw new Error('option必须是一个对象');
+    }
+
+    // 支持markPoint的图表类型
+    var supportedTypes = ['line', 'bar', 'scatter', 'custom'];
+
+    // 检查是否有series配置
+    if (!option.series || !Array.isArray(option.series) || option.series.length === 0) {
+        console.warn('没有找到series配置');
+        return option;
+    }
+
+    // 默认配置
+    var defaultConfig = {
+        maxName: '最大值',
+        minName: '最小值'
+    };
+
+    // 合并自定义配置
+    var config = customConfig || {};
+    config.maxName = config.maxName || defaultConfig.maxName;
+    config.minName = config.minName || defaultConfig.minName;
+
+    // 遍历所有series
+    for (var i = 0; i < option.series.length; i++) {
+        var series = option.series[i];
+        debugger
+
+        // 检查图表类型是否支持markPoint
+        if (series.type && supportedTypes.indexOf(series.type) !== -1) {
+            // 初始化markPoint配置
+            if (!series.markPoint) {
+                series.markPoint = {
+                    data: []
+                };
+            }
+
+            // 确保markPoint.data是数组
+            if (!Array.isArray(series.markPoint.data)) {
+                series.markPoint.data = [];
+            }
+
+            // 设置最大值和最小值标记
+            var markPointData = [
+                { type: 'max', name: config.maxName },
+                { type: 'min', name: config.minName }
+            ];
+
+            // 更新或添加标记点数据
+            series.markPoint.data = markPointData;
+        } else {
+            console.warn('图表类型 ' + (series.type || '未知') + ' 不支持标记点');
+        }
+    }
+
+    return option;
+};
+
+// 添加新的addLegend方法
+echartTool.addLegend = function(option) {
+    // 深拷贝option以避免修改原对象
+    var newOption = JSON.parse(JSON.stringify(option));
+
+    // 确保series存在且是数组
+    if (!newOption.series || !Array.isArray(newOption.series)) {
+        return newOption;
+    }
+
+    // 从series中提取所有name
+    var legendData = [];
+    for (var i = 0; i < newOption.series.length; i++) {
+        if (newOption.series[i].name) {
+            legendData.push(newOption.series[i].name);
+        }
+    }
+
+    // 如果没有legend配置，则创建一个
+    if (!newOption.legend) {
+        newOption.legend = {};
+    }
+
+    // 设置legend的data
+    newOption.legend.data = legendData;
+
+    return newOption;
+}
+
+
+/**
+ * 生成瀑布图的占位数据
+ * @param {Array} realData - 实际数据数组
+ * @param {boolean} [isReverse=false] - 是否反向计算
+ * @returns {Array} - 返回占位数据数组
+ */
+echartTool.generateWaterfallPlaceholder = function(realData, isReverse) {
+    if (!Array.isArray(realData) || realData.length === 0) {
+        return [];
+    }
+
+    if (isReverse) {
+        var placeholder = [];
+        var sum = 0;
+        var temp = 0;
+
+        // 处理最后一个位置
+        placeholder[realData.length - 1] = 0;
+        // 处理中间的数据位置（从倒数第二个位置开始，到第二个位置）
+        for (var i = realData.length - 2; i > 0; i--) {
+            sum += realData[i + 1];
+            placeholder[i] = sum;
+        }
+
+        // 处理第一个位置（通常是总计）
+        placeholder[0] = 0;
+
+    }else{
+        var placeholder = [];
+        var sum = 0;
+        var temp = 0;
+
+        // 处理第一个位置（通常是总计）
+        placeholder.push(0);
+
+        // 处理中间的数据位置
+        for (var i = 1; i < realData.length - 1; i++) {
+            temp = sum;
+            placeholder.push(temp);
+            sum += realData[i];
+        }
+
+        // 处理最后一个位置
+        placeholder.push(sum);
+    }
+
+
+
+
+    return placeholder;
+}
+
+
+/**
+ * 生成完整的瀑布图配置
+ * @param {Object} option - 原始配置对象
+ * @returns {Object} - 返回处理后的配置对象
+ */
+echartTool.generateWaterfallOption = function (option,stackName) {
+    if (!option || !option.series || !option.series[0] || !option.series[0].data) {
+        return option;
+    }
+
+    if(option.series.length !=1){
+        console.warn('只支持单个series的情况');
+        return option;
+    }
+
+
+    var realData = option.series[0].data;
+    var placeholder = this.generateWaterfallPlaceholder(realData,false);
+    console.log(JSON.stringify(placeholder))
+
+    // 深拷贝option以避免修改原对象
+    var newSeries = {}
+    newSeries.type = 'bar';           // 图表类型：柱状图
+    newSeries.stack = stackName;         // 堆叠标识
+    newSeries.data = placeholder;
+    newSeries.name = '占位';
+    newSeries.itemStyle = {
+        borderColor: 'transparent',  // 边框颜色：透明
+            color: 'transparent'         // 填充颜色：透明
+    };
+    newSeries.emphasis = {            // 高亮状态样式
+        itemStyle: {
+            borderColor: 'transparent',
+                color: 'transparent'
+        }
+    };
+
+
+    option.series.unshift(newSeries);
+
+    return option;
+}
+>>>>>>> dev

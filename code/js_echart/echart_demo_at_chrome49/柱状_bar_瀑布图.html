@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title></title>
+    <!-- 使用较旧版本的ECharts，确保兼容性 -->
+    <script src="echartTool.js"></script>
+    <script src="echarts.min@5.3.2.js"></script>
+</head>
+<body>
+    <!-- 为ECharts准备容器，需要指定宽高 -->
+    <div id="main" style="height: 400px;"></div>
+    
+    <script type="text/javascript">
+        // 基于准备好的dom，初始化echarts实例
+        echartTool.init(window, 'myChart', 'main');
+
+        var option = {
+            // 图表标题配置
+            title: {
+                text: '瀑布图',            // 主标题
+                subtext: '深圳生活支出'    // 副标题
+            },
+
+            // 提示框配置
+            tooltip: {
+                trigger: 'axis',           // 触发方式：坐标轴触发
+                axisPointer: {
+                    type: 'shadow'         // 指示器类型：阴影
+                },
+                // 自定义提示框内容
+                formatter: function (params) {
+                    var tar = params[1];   // 获取第二个系列的数据（实际支出数据）
+                    return tar.name + '<br/>' + tar.marker + tar.seriesName + ' : ' + tar.value;
+                    // 返回格式：类目名 + 系列名 + 数值
+                }
+            },
+
+            // 网格配置
+            grid: {
+                left: '3%',               // 左边距
+                right: '4%',              // 右边距
+                bottom: '3%',             // 下边距
+                containLabel: true        // 包含坐标轴标签
+            },
+
+            // X轴配置
+            xAxis: {
+                type: 'category',         // 类型：类目轴
+                splitLine: { show: false },// 不显示分隔线
+                data: ['总计', '房租', '水电', '交通', '餐饮', '其他']  // X轴类目数据
+            },
+
+            // Y轴配置
+            yAxis: {
+                type: 'value'             // 类型：数值轴
+            },
+
+            // 系列配置
+            series: [
+                // {
+                //     name: '占位',          // 第一个系列：用于实现瀑布图的占位系列
+                //     type: 'bar',           // 图表类型：柱状图
+                //     stack: '总量',         // 堆叠标识
+                //     itemStyle: {
+                //         borderColor: 'transparent',  // 边框颜色：透明
+                //         color: 'transparent'         // 填充颜色：透明
+                //     },
+                //     emphasis: {            // 高亮状态样式
+                //         itemStyle: {
+                //             borderColor: 'transparent',
+                //             color: 'transparent'
+                //         }
+                //     },
+                //     data: [0, 1700, 1400, 1200, 300, 0]  // 占位数据，用于控制每个柱子的起始位置
+                // },
+                {
+                    name: '生活支出',      // 第二个系列：实际数据系列
+                    type: 'bar',          // 图表类型：柱状图
+                    stack: '总量',        // 堆叠标识（与第一个系列相同，实现堆叠效果）
+                    label: {              // 标签配置
+                        show: true,       // 显示标签
+                        position: 'inside'// 标签位置：柱子内部
+                    },
+                    data: [2900, 1200, 300, 200, 900, 300]  // 实际数据
+                }
+            ]
+        };
+        //
+        // option = echartTool.swapXYAxis(option);
+
+        // [0,0,1200,1500,1700,2600]. [0,1700,900,100,-700,0]
+        option = echartTool.generateWaterfallOption(option,"总量");//[0,0,1200,1500,1700,2600]
+
+
+
+        // 使用配置项显示图表
+        myChart.setOption(option);
+    </script>
+</body>
+</html>
