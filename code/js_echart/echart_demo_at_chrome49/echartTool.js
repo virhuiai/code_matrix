@@ -138,6 +138,7 @@ echartTool.init = function (belongNode, nodeName, id) {
     }
 };
 <<<<<<< HEAD
+<<<<<<< HEAD
 // 使用示例：
 /*
 try {
@@ -156,6 +157,8 @@ try {
 }
 */
 =======
+=======
+>>>>>>> dev
 
 /**
  * 为echarts配置项设置标题文本
@@ -443,4 +446,7 @@ echartTool.generateWaterfallOption = function (option,stackName) {
 
     return option;
 }
+<<<<<<< HEAD
+>>>>>>> dev
+=======
 >>>>>>> dev
