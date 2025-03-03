@@ -2,7 +2,15 @@ package com.virhuiai.Csh7z;
 
 import com.virhuiai.Cli.CshCliUtils;
 import com.virhuiai.CshLogUtils.CshLogUtils;
-import net.sf.sevenzipjbinding.*;
+import net.sf.sevenzipjbinding.ICryptoGetTextPassword;
+import net.sf.sevenzipjbinding.IOutCreateArchive7z;
+import net.sf.sevenzipjbinding.IOutCreateCallback;
+import net.sf.sevenzipjbinding.IOutFeatureSetEncryptHeader;
+import net.sf.sevenzipjbinding.IOutFeatureSetMultithreading;
+import net.sf.sevenzipjbinding.IOutItem7z;
+import net.sf.sevenzipjbinding.ISequentialInStream;
+import net.sf.sevenzipjbinding.SevenZip;
+import net.sf.sevenzipjbinding.SevenZipException;
 import net.sf.sevenzipjbinding.impl.OutItemFactory;
 import net.sf.sevenzipjbinding.impl.RandomAccessFileInStream;
 import net.sf.sevenzipjbinding.impl.RandomAccessFileOutStream;
@@ -13,7 +21,6 @@ import org.apache.commons.logging.Log;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -35,14 +42,10 @@ public class Csh7zUtils {
     public void compress(File inputDir, File outputFile, String password,int compressionLevel) throws Exception {
         this.password = password;
 
-        RandomAccessFile raf = null;
-        IOutCreateArchive7z outArchive = null;
+        try (RandomAccessFile raf = new RandomAccessFile(outputFile, "rw");
+             IOutCreateArchive7z outArchive = SevenZip.openOutArchive7z();){
 
-        try {
-            raf = new RandomAccessFile(outputFile, "rw");
-            outArchive = SevenZip.openOutArchive7z();
-
-            // 设置最高压缩级别
+            // 设置压缩级别
             outArchive.setLevel(compressionLevel);
 
             // 启用加密
@@ -72,21 +75,6 @@ public class Csh7zUtils {
                     new MyCreateCallback(inputDir)
             );
 
-        } finally {
-            if (outArchive != null) {
-                try {
-                    outArchive.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-            if (raf != null) {
-                try {
-                    raf.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
         }
     }
 
