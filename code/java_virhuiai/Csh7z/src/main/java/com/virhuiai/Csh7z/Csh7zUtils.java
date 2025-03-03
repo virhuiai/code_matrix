@@ -1,4 +1,4 @@
-package com.virhuiai;
+package com.virhuiai.Csh7z;
 
 import com.virhuiai.Cli.CshCliUtils;
 import com.virhuiai.CshLogUtils.CshLogUtils;
@@ -19,8 +19,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-public class CompressWithPassword {
-    private static final Log LOGGER = CshLogUtils.createLogExtended(CompressWithPassword.class); // 日志记录器
+public class Csh7zUtils {
+    private static final Log LOGGER = CshLogUtils.createLogExtended(Csh7zUtils.class); // 日志记录器
 
     private String password;
 
@@ -242,6 +242,11 @@ public class CompressWithPassword {
             LOGGER.error("无效的压缩等级，将使用默认值6");
             level = 6;
         }
+        CompressionLevel compressionLevel = CompressionLevel.fromLevel(level);
+        LOGGER.info("选择的压缩等级: " + compressionLevel);
+        if (!CompressionLevel.isValidLevel(level)) {
+            LOGGER.warn("输入的压缩等级 " + level + " 已调整为最接近的可用等级: " + compressionLevel);
+        }
 
 
         try {
@@ -249,8 +254,8 @@ public class CompressWithPassword {
             File outputFile = new File(output); // 输出的7z文件
 
 
-            CompressWithPassword compressor = new CompressWithPassword();
-            compressor.compress(inputDir, outputFile, password, level);
+            Csh7zUtils compressor = new Csh7zUtils();
+            compressor.compress(inputDir, outputFile, password, compressionLevel.getLevel());
 
             LOGGER.info("压缩完成！");
 
