@@ -25,20 +25,38 @@ public enum CompressionLevel {
         return description;
     }
 
+    /**
+     * 根据输入的数值获取最接近的压缩等级枚举值
+     *
+     * @param level 输入的压缩等级数值
+     * @return 最接近的 CompressionLevel 枚举值
+     */
     public static CompressionLevel fromLevel(int level) {
+        // 处理边界情况：如果输入值小于0，返回最低等级 COPY
         if (level < 0) return COPY;
+        // 处理边界情况：如果输入值大于9，返回最高等级 ULTRA
         if (level > 9) return ULTRA;
 
+        // 初始化：假设 NORMAL(5) 是最接近的值
+        // closest 用于存储最接近的压缩等级枚举值
         CompressionLevel closest = NORMAL;
+        // minDiff 用于存储最小差值
+        // 计算输入值与 NORMAL 等级的差的绝对值作为初始最小差值
         int minDiff = Math.abs(level - NORMAL.level);
 
+        // 遍历所有压缩等级枚举值
         for (CompressionLevel value : values()) {
+            // 计算当前枚举值与输入值的差的绝对值
             int diff = Math.abs(level - value.level);
+            // 如果找到更小的差值
             if (diff < minDiff) {
+                // 更新最小差值
                 minDiff = diff;
+                // 更新最接近的枚举值
                 closest = value;
             }
         }
+        // 返回找到的最接近的压缩等级
         return closest;
     }
 
