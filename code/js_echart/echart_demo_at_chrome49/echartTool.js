@@ -137,31 +137,7 @@ echartTool.init = function (belongNode, nodeName, id) {
         throw error;
     }
 };
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-// 使用示例：
-/*
-try {
-    // 创建一个对象来存储echarts实例
-    var myCharts = {};
 
-    // 初始化图表
-    echartTool.init(myCharts, 'lineChart', 'chartContainerId');
-
-    // 使用实例
-    myCharts.lineChart.setOption({
-        // echarts配置项
-    });
-} catch (error) {
-    console.error('图表初始化失败:', error);
-}
-*/
-=======
-=======
->>>>>>> dev
-=======
->>>>>>> dev
 
 /**
  * 为echarts配置项设置标题文本
@@ -449,10 +425,3 @@ echartTool.generateWaterfallOption = function (option,stackName) {
 
     return option;
 }
-<<<<<<< HEAD
-<<<<<<< HEAD
->>>>>>> dev
-=======
->>>>>>> dev
-=======
->>>>>>> dev

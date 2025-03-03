@@ -1,11 +1,15 @@
 package com.virhuiai;
 
+import com.virhuiai.Cli.CshCliUtils;
+import com.virhuiai.CshLogUtils.CshLogUtils;
 import net.sf.sevenzipjbinding.*;
 import net.sf.sevenzipjbinding.impl.OutItemFactory;
 import net.sf.sevenzipjbinding.impl.RandomAccessFileInStream;
 import net.sf.sevenzipjbinding.impl.RandomAccessFileOutStream;
+import org.apache.commons.cli.Option;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.TrueFileFilter;
+import org.apache.commons.logging.Log;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -16,17 +20,19 @@ import java.util.Collection;
 import java.util.List;
 
 public class CompressWithPassword {
+    private static final Log LOGGER = CshLogUtils.createLogExtended(CompressWithPassword.class); // 日志记录器
 
     private String password;
 
     /**
      * 压缩指定目录为7z文件并加密
-     * @param inputDir 输入目录
+     *
+     * @param inputDir   输入目录
      * @param outputFile 输出7z文件
-     * @param password 加密密码
+     * @param password   加密密码
      * @throws Exception 压缩过程中的异常
      */
-    public void compress(File inputDir, File outputFile, String password) throws Exception {
+    public void compress(File inputDir, File outputFile, String password,int compressionLevel) throws Exception {
         this.password = password;
 
         RandomAccessFile raf = null;
@@ -37,7 +43,7 @@ public class CompressWithPassword {
             outArchive = SevenZip.openOutArchive7z();
 
             // 设置最高压缩级别
-            outArchive.setLevel(9);
+            outArchive.setLevel(compressionLevel);
 
             // 启用加密
             if (outArchive instanceof IOutFeatureSetEncryptHeader) {
@@ -162,19 +168,94 @@ public class CompressWithPassword {
 
     // 使用示例
     public static void main(String[] args) {
+
+
+        CshCliUtils.s1InitializeArgs(args);
+        LOGGER.debug("调试信息：命令行参数 " + String.join(", ", args));
+
+
+        // 输入目录选项
+        CshCliUtils.s2AddOption(options -> options.addOption(Option.builder("i")
+                .longOpt("inDir")
+                .desc("要压缩的目录")
+                .hasArg()
+//                .required() // 设置为必需参数
+                .argName("目录路径")
+                .build()));
+
+        // 密码选项
+        CshCliUtils.s2AddOption(options -> options.addOption(Option.builder("p")
+                .longOpt("password")
+                .desc("设置压缩文件密码")
+                .hasArg()
+                .argName("密码")
+                .build()));
+
+        // 输出文件名选项
+        CshCliUtils.s2AddOption(options -> options.addOption(Option.builder("o")
+                .longOpt("output")
+                .desc("输出文件名(默认为: compressed.7z)")
+                .hasArg()
+                .argName("文件名")
+                .build()));
+
+        // 压缩等级选项
+        CshCliUtils.s2AddOption(options -> options.addOption(Option.builder("l")
+                .longOpt("level")
+                .desc("压缩等级(0-9, 0=不压缩, 9=最大压缩, 默认=6)")
+                .hasArg()
+                .argName("等级")
+                .type(Number.class) // 指定参数类型为数字
+                .build()));
+
+
+        // 添加帮助选项
+        //CshClioptionUtils.addOption(options -> options.addOption("h", "help", false, "显示帮助信息"));
+
+        // 获取输入目录（必需参数）
+        String inDir = CshCliUtils.s3GetOptionValue("i", "/Volumes/RamDisk/classes");
+        LOGGER.info("输入目录: " + inDir);
+
+        // 获取密码（可选参数）
+        String password = CshCliUtils.s3GetOptionValue("p", "123456");
+        if (password != null) {
+            LOGGER.info("已设置压缩密码");
+        } else {
+            LOGGER.info("未设置压缩密码");
+        }
+
+        // 获取输出文件名（可选参数，默认值为compressed.zip）
+        String output = CshCliUtils.s3GetOptionValue("o", "/Volumes/RamDisk/classes2.7z");
+        LOGGER.info("输出文件: " + output);
+
+        // 获取压缩等级（可选参数，默认值为6）
+        String levelStr = CshCliUtils.s3GetOptionValue("l", "6");
+        int level;
         try {
-            File inputDir = new File("/Volumes/RamDisk/classes"); // 要压缩的目录
-            File outputFile = new File("/Volumes/RamDisk/classes2.7z"); // 输出的7z文件
-            String password = "123456"; // 加密密码
+            level = Integer.parseInt(levelStr);
+            if (level < 0 || level > 9) {
+                LOGGER.error("压缩等级必须在0-9之间，将使用默认值6");
+                level = 6;
+            }
+            LOGGER.info("压缩等级: " + level);
+        } catch (NumberFormatException e) {
+            LOGGER.error("无效的压缩等级，将使用默认值6");
+            level = 6;
+        }
+
+
+        try {
+            File inputDir = new File(inDir); // 要压缩的目录
+            File outputFile = new File(output); // 输出的7z文件
+
 
             CompressWithPassword compressor = new CompressWithPassword();
-            compressor.compress(inputDir, outputFile, password);
+            compressor.compress(inputDir, outputFile, password, level);
 
-            System.out.println("压缩完成！");
+            LOGGER.info("压缩完成！");
 
         } catch (Exception e) {
-            System.err.println("压缩失败：" + e.getMessage());
-            e.printStackTrace();
+            LOGGER.error("压缩失败：" + e.getMessage(),e);
         }
     }
 }
