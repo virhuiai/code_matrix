@@ -139,6 +139,7 @@ echartTool.init = function (belongNode, nodeName, id) {
 };
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 // 使用示例：
 /*
 try {
@@ -157,6 +158,8 @@ try {
 }
 */
 =======
+=======
+>>>>>>> dev
 =======
 >>>>>>> dev
 
@@ -447,6 +450,9 @@ echartTool.generateWaterfallOption = function (option,stackName) {
     return option;
 }
 <<<<<<< HEAD
+<<<<<<< HEAD
+>>>>>>> dev
+=======
 >>>>>>> dev
 =======
 >>>>>>> dev
