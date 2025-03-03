@@ -2,17 +2,10 @@ package com.virhuiai.Csh7z;
 
 import com.virhuiai.Cli.CshCliUtils;
 import com.virhuiai.CshLogUtils.CshLogUtils;
-import net.sf.sevenzipjbinding.ICryptoGetTextPassword;
 import net.sf.sevenzipjbinding.IOutCreateArchive7z;
-import net.sf.sevenzipjbinding.IOutCreateCallback;
 import net.sf.sevenzipjbinding.IOutFeatureSetEncryptHeader;
 import net.sf.sevenzipjbinding.IOutFeatureSetMultithreading;
-import net.sf.sevenzipjbinding.IOutItem7z;
-import net.sf.sevenzipjbinding.ISequentialInStream;
 import net.sf.sevenzipjbinding.SevenZip;
-import net.sf.sevenzipjbinding.SevenZipException;
-import net.sf.sevenzipjbinding.impl.OutItemFactory;
-import net.sf.sevenzipjbinding.impl.RandomAccessFileInStream;
 import net.sf.sevenzipjbinding.impl.RandomAccessFileOutStream;
 import org.apache.commons.cli.Option;
 import org.apache.commons.io.FileUtils;
@@ -20,16 +13,13 @@ import org.apache.commons.io.filefilter.TrueFileFilter;
 import org.apache.commons.logging.Log;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.RandomAccessFile;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 public class Csh7zUtils {
     private static final Log LOGGER = CshLogUtils.createLogExtended(Csh7zUtils.class); // 日志记录器
 
-    private String password;
+
 
     /**
      * 压缩指定目录为7z文件并加密
@@ -40,7 +30,7 @@ public class Csh7zUtils {
      * @throws Exception 压缩过程中的异常
      */
     public void compress(File inputDir, File outputFile, String password,int compressionLevel) throws Exception {
-        this.password = password;
+
 
         try (RandomAccessFile raf = new RandomAccessFile(outputFile, "rw");
              IOutCreateArchive7z outArchive = SevenZip.openOutArchive7z();){
@@ -75,7 +65,10 @@ public class Csh7zUtils {
                     new My7zCezateCallback(inputDir, password)
             );
 
+        }catch (Exception e){
+            LOGGER.info("压缩失败！",e);
         }
+
     }
 
 
@@ -116,15 +109,14 @@ public class Csh7zUtils {
         // 压缩等级选项
         CshCliUtils.s2AddOption(options -> options.addOption(Option.builder("l")
                 .longOpt("level")
-                .desc("压缩等级(0-9, 0=不压缩, 9=最大压缩, 默认=6)")
+                .desc("压缩等级," + CompressionLevel.getAvailableLevels())
                 .hasArg()
                 .argName("等级")
                 .type(Number.class) // 指定参数类型为数字
                 .build()));
 
 
-        // 添加帮助选项
-        //CshClioptionUtils.addOption(options -> options.addOption("h", "help", false, "显示帮助信息"));
+
 
         // 获取输入目录（必需参数）
         String inDir = CshCliUtils.s3GetOptionValue("i", "/Volumes/RamDisk/classes");
