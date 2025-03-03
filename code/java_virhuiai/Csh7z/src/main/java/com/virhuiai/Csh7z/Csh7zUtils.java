@@ -72,87 +72,13 @@ public class Csh7zUtils {
             outArchive.createArchive(
                     new RandomAccessFileOutStream(raf),
                     itemCount,
-                    new MyCreateCallback(inputDir)
+                    new My7zCezateCallback(inputDir, password)
             );
 
         }
     }
 
-    private class MyCreateCallback implements IOutCreateCallback<IOutItem7z>, ICryptoGetTextPassword {
-        private final List<File> fileList;
-        private final File baseDir;
 
-        public MyCreateCallback(File baseDir) {
-            this.baseDir = baseDir;
-            Collection<File> files = FileUtils.listFilesAndDirs(
-                    baseDir,
-                    TrueFileFilter.INSTANCE,
-                    TrueFileFilter.INSTANCE
-            );
-            this.fileList = new ArrayList<>(files);
-            this.fileList.remove(baseDir); // 移除根目录
-        }
-
-        @Override
-        public void setTotal(long total) throws SevenZipException {
-        }
-
-        @Override
-        public void setCompleted(long complete) throws SevenZipException {
-        }
-
-        @Override
-        public void setOperationResult(boolean operationResultOk) throws SevenZipException {
-        }
-
-        @Override
-        public IOutItem7z getItemInformation(int index, OutItemFactory<IOutItem7z> outItemFactory)
-                throws SevenZipException {
-
-            File file = fileList.get(index);
-            String relativePath = getRelativePath(file, baseDir);
-
-            IOutItem7z item = outItemFactory.createOutItem();
-            item.setPropertyPath(relativePath);
-            item.setPropertyIsDir(file.isDirectory());
-
-            if (!file.isDirectory()) {
-                item.setDataSize(file.length());
-            }
-
-            return item;
-        }
-
-        @Override
-        public ISequentialInStream getStream(int index) throws SevenZipException {
-            File file = fileList.get(index);
-            if (file.isDirectory()) {
-                return null;
-            }
-            try {
-                return new RandomAccessFileInStream(new RandomAccessFile(file, "r"));
-            } catch (FileNotFoundException e) {
-                throw new SevenZipException("Error opening file: " + file.getAbsolutePath(), e);
-            }
-        }
-
-        @Override
-        public String cryptoGetTextPassword() throws SevenZipException {
-            return password;
-        }
-    }
-
-    private String getRelativePath(File file, File baseDir) {
-        String filePath = file.getAbsolutePath();
-        String basePath = baseDir.getAbsolutePath();
-
-        if (filePath.startsWith(basePath)) {
-            String relativePath = filePath.substring(basePath.length());
-            return relativePath.startsWith(File.separator) ?
-                    relativePath.substring(1) : relativePath;
-        }
-        return file.getName();
-    }
 
     // 使用示例
     public static void main(String[] args) {
