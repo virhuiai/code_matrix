@@ -117,7 +117,7 @@ public class MD5Utils {
     public static void main(String[] args) throws IOException {
         // 字符串MD5
         String str = "Hello World";
-        System.out.println("字符串MD5: " + getMD5(str));
+        System.out.println("字符串MD5: " + MD5Utils.getMD5(str));
 
         // 字节数组MD5
         byte[] bytes = str.getBytes(StandardCharsets.UTF_8);
