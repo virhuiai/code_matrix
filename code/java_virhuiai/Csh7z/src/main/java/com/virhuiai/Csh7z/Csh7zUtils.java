@@ -2,6 +2,8 @@ package com.virhuiai.Csh7z;
 
 import com.virhuiai.Cli.CshCliUtils;
 import com.virhuiai.CshLogUtils.CshLogUtils;
+import com.virhuiai.Md5.MD5FileNameUtils;
+import com.virhuiai.Md5.RandomMD5Utils;
 import net.sf.sevenzipjbinding.IOutCreateArchive7z;
 import net.sf.sevenzipjbinding.IOutFeatureSetEncryptHeader;
 import net.sf.sevenzipjbinding.IOutFeatureSetMultithreading;
@@ -114,19 +116,59 @@ public class Csh7zUtils {
                 .argName("等级")
                 .type(Number.class) // 指定参数类型为数字
                 .build()));
+        //是否插入额外字符
+        CshCliUtils.s2AddOption(options -> options.addOption(Option.builder("e")
+                .longOpt("extra")
+                .desc("是否插入额外字符")
+                .hasArg()
+                .argName("是否插入额外字符")
+//                .type(Number.class) // 指定参数类型为数字
+                .build()));
+
+        CshCliUtils.s2AddOption(options -> options.addOption(Option.builder()
+                .longOpt("extraCount")
+                .desc("插入额外字符的数量")
+                .hasArg()
+                .argName("插入额外字符的数量")
+                .type(Number.class) // 指定参数类型为数字
+                .build()));
+
+        // 是否插入额外字符
+        String extra = CshCliUtils.s3GetOptionValue("e", "0");
+        String extraCount = CshCliUtils.s3GetOptionValue("extraCount", "0");
 
 
         // 获取输入目录（必需参数）
         String inDir = CshCliUtils.s3GetOptionValue("i", "/Volumes/RamDisk/classes");
         LOGGER.info("输入目录: " + inDir);
 
+        String randomMD5 = RandomMD5Utils.getRandomMD5Simple();
+        String randomMD5Extra = randomMD5;
+        if("1".equals(extra)){
+            int extraCountNum = Integer.parseInt(extraCount);
+            if(extraCountNum > 0){
+                randomMD5Extra = MD5FileNameUtils.insertRandomChars(randomMD5, extraCountNum);
+                // 提取MD5
+                String extracted = MD5FileNameUtils.extractMD5(randomMD5Extra);
+                LOGGER.info("验证ExtraPass: " + (extracted.equals(randomMD5) ? "成功" : "失败"));
+                if(!extracted.equals(randomMD5)){
+                    randomMD5Extra = randomMD5;
+                    LOGGER.info("验证ExtraPass失败，还原");
+                }
+            }
+        }
+
         // 获取密码（可选参数）
-        String password = CshCliUtils.s3GetOptionValue("p", "123456");
-        if (password != null) {
+        String password = CshCliUtils.s3GetOptionValue("p", randomMD5);
+        if (password != randomMD5) {
             LOGGER.info("已设置压缩密码");
         } else {
-            LOGGER.info("未设置压缩密码");
+            LOGGER.info("未设置压缩密码，生成随机密码");
         }
+
+        LOGGER.info("randomMD5:" + randomMD5);
+        LOGGER.info("randomMD5Extra:" + randomMD5Extra);
+        System.exit(0);//todo del
 
         // 获取输出文件名（可选参数，默认值为compressed.zip）
         String output = CshCliUtils.s3GetOptionValue("o", "/Volumes/RamDisk/classes2.7z");

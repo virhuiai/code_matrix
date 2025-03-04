@@ -47,6 +47,11 @@
             <artifactId>Csh_Cli</artifactId>
             <version>1.1</version>
         </dependency>
+        <dependency>
+            <groupId>com.virhuiai</groupId>
+            <artifactId>Csh_Md5</artifactId>
+            <version>1.1</version>
+        </dependency>
 
 
 
