@@ -139,71 +139,23 @@ public class App {
         // 设置命令行选项
         setupCommandOptions();
 
+        // 创建并加载配置
+        CompressionConfig config = new CompressionConfig();
+        config.loadFromCommandLine();
 
 
+        String inDir = config.getConfigValue(CompressionConfig.Keys.INPUT_DIR, "");
+        String output = config.getConfigValue(CompressionConfig.Keys.OUTPUT_FILE, "");
+        String password = FileUtils7z.wrapStr(
+                config.getConfigValue(CompressionConfig.Keys.PASSWORD, ""),
+                config.getConfigValue(CompressionConfig.Keys.RANDOM_CHAR_B, ""),
+                config.getConfigValue(CompressionConfig.Keys.RANDOM_CHAR_A, "")
+        );
+        Integer compressionLevel = config.getIntConfigValue(CompressionConfig.Keys.COMPRESSION_LEVEL, 0);
 
-        // 是否插入额外字符
-        String extra = CshCliUtils.s3GetOptionValue("e", "0");
-        String extraCount = CshCliUtils.s3GetOptionValue("extraCount", "0");
-
-
-        // 获取输入目录（必需参数）
-        String inDir = CshCliUtils.s3GetOptionValue("i", "/Volumes/RamDisk/classes");
-        LOGGER.info("输入目录: " + inDir);
-
-        String randomMD5 = RandomMD5Utils.getRandomMD5Simple();
-        String randomMD5Extra = randomMD5;
-        if("1".equals(extra)){
-            int extraCountNum = Integer.parseInt(extraCount);
-            if(extraCountNum > 0){
-                randomMD5Extra = MD5FileNameUtils.insertRandomChars(randomMD5, extraCountNum);
-                // 提取MD5
-                String extracted = MD5FileNameUtils.extractMD5(randomMD5Extra);
-                LOGGER.info("验证ExtraPass: " + (extracted.equals(randomMD5) ? "成功" : "失败"));
-                if(!extracted.equals(randomMD5)){
-                    randomMD5Extra = randomMD5;
-                    LOGGER.info("验证ExtraPass失败，还原");
-                }
-            }
-        }
-        String b = FileUtils7z.getRandomChars(randomMD5Extra);
-        String a = FileUtils7z.getRandomChars(randomMD5Extra);
-
-        // 获取密码（可选参数）
-        String password = CshCliUtils.s3GetOptionValue("p", randomMD5);
-        if (password != randomMD5) {
-            LOGGER.info("已设置压缩密码");
-        } else {
-            LOGGER.info("未设置压缩密码，生成随机密码");
-        }
-
-        LOGGER.info("randomMD5:" + randomMD5);
-        LOGGER.info("randomMD5Extra:" + randomMD5Extra);
-
-
-        // 获取输出文件名（可选参数，默认值为compressed.zip）  "/Volumes/RamDisk/classes2.7z"
-        String output = CshCliUtils.s3GetOptionValue("o" ,FileUtils7z.generateParentPath(inDir,FileUtils7z.wrapStr(randomMD5Extra, b, a)));
         LOGGER.info("输出文件: " + output);
 
-        // 获取压缩等级（可选参数，默认值为6）
-        String levelStr = CshCliUtils.s3GetOptionValue("l", "6");
-        int level;
-        try {
-            level = Integer.parseInt(levelStr);
-            if (level < 0 || level > 9) {
-                LOGGER.error("压缩等级0 1 3 5 7 9，默认值0");
-                level = 0;
-            }
-            LOGGER.info("压缩等级: " + level);
-        } catch (NumberFormatException e) {
-            LOGGER.error("无效的压缩等级，将使用默认值0");
-            level = 0;
-        }
-        CompressionLevel compressionLevel = CompressionLevel.fromLevel(level);
-        LOGGER.info("选择的压缩等级: " + compressionLevel);
-        if (!CompressionLevel.isValidLevel(level)) {
-            LOGGER.warn("输入的压缩等级 " + level + " 已调整为最接近的可用等级: " + compressionLevel);
-        }
+
 
 
         try {
@@ -212,8 +164,8 @@ public class App {
 
 
             Csh7zUtils.compress(inputDir, outputFile
-                    , FileUtils7z.wrapStr(password, b, a)
-                    , compressionLevel.getLevel());
+                    , password
+                    , compressionLevel);
 
             LOGGER.info("压缩完成！");
 
