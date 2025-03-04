@@ -26,29 +26,24 @@ public class App {
     private static final Log LOGGER = CshLogUtils.createLogExtended(App.class);
 
 
-
-
-
-
-
     // 使用示例
     public static void main(String[] args) {
         // 初始化命令行工具并设置参数选项
         OptionUtils7z.setupCommandOptions(args);;
 
         // 创建并加载配置
-        CompressionConfig config = new CompressionConfig();
+        Config7z config = new Config7z();
         config.loadFromCommandLine();
 
 
-        String inDir = config.getConfigValue(CompressionConfig.Keys.INPUT_DIR, "");
-        String output = config.getConfigValue(CompressionConfig.Keys.OUTPUT_FILE, "");
+        String inDir = config.getConfigValue(Config7z.Keys.INPUT_DIR, "");
+        String output = config.getConfigValue(Config7z.Keys.OUTPUT_FILE, "");
         String password = FileUtils7z.wrapStr(
-                config.getConfigValue(CompressionConfig.Keys.PASSWORD, ""),
-                config.getConfigValue(CompressionConfig.Keys.RANDOM_CHAR_B, ""),
-                config.getConfigValue(CompressionConfig.Keys.RANDOM_CHAR_A, "")
+                config.getConfigValue(Config7z.Keys.PASSWORD, ""),
+                config.getConfigValue(Config7z.Keys.RANDOM_CHAR_B, ""),
+                config.getConfigValue(Config7z.Keys.RANDOM_CHAR_A, "")
         );
-        Integer compressionLevel = config.getIntConfigValue(CompressionConfig.Keys.COMPRESSION_LEVEL, 0);
+        Integer compressionLevel = config.getIntConfigValue(Config7z.Keys.COMPRESSION_LEVEL, 0);
 
         LOGGER.info("输出文件: " + output);
 

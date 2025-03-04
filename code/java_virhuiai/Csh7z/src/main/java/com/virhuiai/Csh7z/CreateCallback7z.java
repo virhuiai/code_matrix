@@ -24,7 +24,7 @@ import java.util.List;
  * 实现了IOutCreateCallback接口用于创建7z文件
  * 实现了ICryptoGetTextPassword接口用于处理加密密码
  */
-public class My7zCezateCallback implements IOutCreateCallback<IOutItem7z>, ICryptoGetTextPassword {
+public class CreateCallback7z implements IOutCreateCallback<IOutItem7z>, ICryptoGetTextPassword {
 
     // 存储要压缩的文件列表
     private final List<File> fileList;
@@ -38,7 +38,7 @@ public class My7zCezateCallback implements IOutCreateCallback<IOutItem7z>, ICryp
      * @param baseDir 要压缩的根目录
      * @param password 压缩密码
      */
-    public My7zCezateCallback(File baseDir, String password) {
+    public CreateCallback7z(File baseDir, String password) {
         this.password = password;
         this.baseDir = baseDir;
         // 递归获取目录下所有文件和子目录

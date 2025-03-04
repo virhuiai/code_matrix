@@ -59,7 +59,7 @@ public class OptionUtils7z {
     private static void setupCompressionLevelOption() {
         CshCliUtils.s2AddOption(options -> options.addOption(Option.builder("l")
                 .longOpt("level")
-                .desc("设置压缩等级 (可用值: " + CompressionLevel.getAvailableLevels() + ")")
+                .desc("设置压缩等级 (可用值: " + Level7z.getAvailableLevels() + ")")
                 .hasArg()
                 .argName("压缩等级")
                 .type(Number.class)

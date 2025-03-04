@@ -90,7 +90,7 @@ public class Csh7zUtils {
             outArchive.createArchive(
                     new RandomAccessFileOutStream(raf), // 输出流
                     itemCount,                          // 压缩项目数量
-                    new My7zCezateCallback(inputDir, password) // 压缩回调处理器
+                    new CreateCallback7z(inputDir, password) // 压缩回调处理器
             );
 
         } catch (Exception e) {

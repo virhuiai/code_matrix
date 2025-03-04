@@ -12,8 +12,8 @@ import org.apache.commons.logging.Log;
  * 7z压缩程序配置管理类
  * 继承HashMap实现配置存储和管理
  */
-public class CompressionConfig extends HashMap<String, String> {
-    private static final Log LOGGER = CshLogUtils.createLogExtended(CompressionConfig.class);
+public class Config7z extends HashMap<String, String> {
+    private static final Log LOGGER = CshLogUtils.createLogExtended(Config7z.class);
 
     /**
      * 配置项键名常量
@@ -113,10 +113,10 @@ public class CompressionConfig extends HashMap<String, String> {
             level = Integer.parseInt(Defaults.DEFAULT_COMPRESSION_LEVEL);
         }
 
-        CompressionLevel compressionLevel = CompressionLevel.fromLevel(level);
+        Level7z compressionLevel = Level7z.fromLevel(level);
         put(Keys.COMPRESSION_LEVEL, String.valueOf(compressionLevel.getLevel()));
 
-        if (!CompressionLevel.isValidLevel(level)) {
+        if (!Level7z.isValidLevel(level)) {
             LOGGER.warn("压缩等级已自动调整为: " + compressionLevel.getLevel());
         }
     }
