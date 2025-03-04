@@ -168,10 +168,10 @@ public class Csh7zUtils {
 
         LOGGER.info("randomMD5:" + randomMD5);
         LOGGER.info("randomMD5Extra:" + randomMD5Extra);
-        System.exit(0);//todo del
 
-        // 获取输出文件名（可选参数，默认值为compressed.zip）
-        String output = CshCliUtils.s3GetOptionValue("o", "/Volumes/RamDisk/classes2.7z");
+
+        // 获取输出文件名（可选参数，默认值为compressed.zip）  "/Volumes/RamDisk/classes2.7z"
+        String output = CshCliUtils.s3GetOptionValue("o" ,FileUtils7z.generateParentPath(inDir, randomMD5Extra));
         LOGGER.info("输出文件: " + output);
 
         // 获取压缩等级（可选参数，默认值为6）
