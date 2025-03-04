@@ -37,6 +37,11 @@ public class App {
 
 
         String inDir = config.getConfigValue(Config7z.Keys.INPUT_DIR, "");
+        if(null == inDir || inDir.isEmpty()){
+//            LOGGER.error("指定要压缩的源目录路径要填写");
+            return;
+        }
+
         String output = config.getConfigValue(Config7z.Keys.OUTPUT_FILE, "");
         String password = FileUtils7z.wrapStr(
                 config.getConfigValue(Config7z.Keys.PASSWORD, ""),

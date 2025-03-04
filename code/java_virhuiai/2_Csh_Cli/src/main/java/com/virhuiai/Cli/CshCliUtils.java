@@ -65,7 +65,16 @@ public final class CshCliUtils {
         return OptionsSingleton.INSTANCE.getCmd().getOptionValue(opt, defaultValue);
     }
 
-
+    /**
+     * 获取命令行选项值(无默认值)
+     *
+     * @param opt 命令行选项的名称
+     * @return 命令行选项的值,如果未设置则返回null
+     */
+    public static String s3GetOptionValue(String opt) {
+        ensureParsed();
+        return OptionsSingleton.INSTANCE.getCmd().getOptionValue(opt);
+    }
 
 
     /**
@@ -110,7 +119,7 @@ public final class CshCliUtils {
      */
     public static void printHelp() {
         OptionsSingleton.INSTANCE.printHelp(" "); // 可以 替换 "My程序" 为实际的程序名
-//        System.exit(0); // 正常退出
+        System.exit(0); // 正常退出
     }
 
 

@@ -25,7 +25,7 @@ public class OptionUtils7z {
                 .desc("指定要压缩的源目录路径")
                 .hasArg()
                 .argName("源目录路径")
-                .required() // 设置为必需参数
+//                .required() // 设置为必需参数
                 .build()));
     }
 

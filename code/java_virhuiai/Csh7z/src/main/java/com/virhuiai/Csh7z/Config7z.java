@@ -25,7 +25,7 @@ public class Config7z extends HashMap<String, String> {
 
         // MD5相关
         public static final String RANDOM_MD5 = "MD5_RANDOM";
-        public static final String RANDOM_MD5_EXTRA = "MD5_RANDOM_EXTRA";
+        public static final String RANDOM_OUT_NAME = "RANDOM_OUT_NAME";
 
         // 密码相关
         public static final String PASSWORD = "PASSWORD_VALUE";
@@ -56,18 +56,18 @@ public class Config7z extends HashMap<String, String> {
     private void processExtraCharacters(String randomMD5) {
         String extraEnabled = get(Keys.EXTRA_ENABLED);
         String extraCount = get(Keys.EXTRA_COUNT);
-        String randomMD5Extra = randomMD5;
+        String randomOutName = randomMD5;
 
         if ("1".equals(extraEnabled)) {
             try {
                 int extraCountNum = Integer.parseInt(extraCount);
                 if (extraCountNum > 0) {
-                    randomMD5Extra = MD5FileNameUtils.insertRandomChars(randomMD5, extraCountNum);
-                    String extracted = MD5FileNameUtils.extractMD5(randomMD5Extra);
+                    randomOutName = MD5FileNameUtils.insertRandomChars(randomMD5, extraCountNum);
+                    String extracted = MD5FileNameUtils.extractMD5(randomOutName);
 
                     if (!extracted.equals(randomMD5)) {
                         LOGGER.warn("额外字符验证失败，使用原始MD5");
-                        randomMD5Extra = randomMD5;
+                        randomOutName = randomMD5;
                     }
                 }
             } catch (NumberFormatException e) {
@@ -75,9 +75,9 @@ public class Config7z extends HashMap<String, String> {
             }
         }
 
-        put(Keys.RANDOM_MD5_EXTRA, randomMD5Extra);
-        put(Keys.RANDOM_CHAR_A, FileUtils7z.getRandomChars(randomMD5Extra));
-        put(Keys.RANDOM_CHAR_B, FileUtils7z.getRandomChars(randomMD5Extra));
+        put(Keys.RANDOM_OUT_NAME, randomOutName);
+        put(Keys.RANDOM_CHAR_A, FileUtils7z.getRandomChars(randomOutName));
+        put(Keys.RANDOM_CHAR_B, FileUtils7z.getRandomChars(randomOutName));
     }
 
     /**
@@ -141,13 +141,13 @@ public class Config7z extends HashMap<String, String> {
      */
     public void processOutputFile() {
         String inputDir = get(Keys.INPUT_DIR);
-        String randomMD5Extra = get(Keys.RANDOM_MD5_EXTRA);
+        String randomOutName = get(Keys.RANDOM_OUT_NAME);
         String charA = get(Keys.RANDOM_CHAR_A);
         String charB = get(Keys.RANDOM_CHAR_B);
 
         String defaultOutput = FileUtils7z.generateParentPath(
                 inputDir,
-                FileUtils7z.wrapStr(randomMD5Extra, charB, charA)
+                FileUtils7z.wrapStr(randomOutName, charB, charA)
         );
 
         String output = CshCliUtils.s3GetOptionValue("o", defaultOutput);
@@ -163,7 +163,7 @@ public class Config7z extends HashMap<String, String> {
         LOGGER.info("输入目录: " + get(Keys.INPUT_DIR));
         LOGGER.info("输出文件: " + get(Keys.OUTPUT_FILE));
         LOGGER.info("MD5值: " + get(Keys.RANDOM_MD5));
-        LOGGER.info("额外字符MD5: " + get(Keys.RANDOM_MD5_EXTRA));
+        LOGGER.info("RANDOM_OUT_NAME: " + get(Keys.RANDOM_OUT_NAME));
         LOGGER.info("压缩等级: " + get(Keys.COMPRESSION_LEVEL));
         LOGGER.info("额外字符启用: " + get(Keys.EXTRA_ENABLED));
         LOGGER.info("额外字符数量: " + get(Keys.EXTRA_COUNT));
