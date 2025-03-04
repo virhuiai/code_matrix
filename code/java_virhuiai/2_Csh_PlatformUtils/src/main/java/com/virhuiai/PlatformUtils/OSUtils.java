@@ -1,6 +1,6 @@
 package com.virhuiai.PlatformUtils;
 
-import com.virhuiai.CshLogUtils;
+import com.virhuiai.CshLogUtils.CshLogUtils;
 import org.apache.commons.logging.Log;
 
 /**
@@ -10,7 +10,7 @@ import org.apache.commons.logging.Log;
  */
 public class OSUtils {
     // 日志对象
-    private static final Log LOG = CshLogUtils.getLog();
+    private static final Log LOG = CshLogUtils.createLogExtended(OSUtils.class);
 
     private static final String OS_NAME = System.getProperty("os.name").toLowerCase();
     private static final String OS_ARCH = System.getProperty("os.arch").toLowerCase();

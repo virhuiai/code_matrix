@@ -1,5 +1,6 @@
 package com.virhuiai;
 
+import com.virhuiai.CshLogUtils.CshLogUtils;
 import com.virhuiai.PlatformUtils.EnumPlatform;
 import com.virhuiai.PlatformUtils.UnsupportedPlatformException;
 import org.apache.commons.logging.Log;
@@ -9,7 +10,7 @@ import org.apache.commons.logging.Log;
  */
 public class PlatformUtilsApp
 {
-    private static Log LOGGER = CshLogUtils.getLog(PlatformUtilsApp.class);
+    private static Log LOGGER = CshLogUtils.createLogExtended(PlatformUtilsApp.class);
     public static void main( String[] args )
     {
         LOGGER.info("支持的平台：" + EnumPlatform.getSupported());//macosx-amd64

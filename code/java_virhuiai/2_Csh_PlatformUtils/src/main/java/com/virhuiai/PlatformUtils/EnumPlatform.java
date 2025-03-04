@@ -1,6 +1,6 @@
 package com.virhuiai.PlatformUtils;
 
-import com.virhuiai.CshLogUtils;
+import com.virhuiai.CshLogUtils.CshLogUtils;
 import org.apache.commons.logging.Log;
 
 import java.util.Arrays;
@@ -23,7 +23,7 @@ public enum EnumPlatform {
     public static final String PROPERTY_OS_NAME = "os.name";
     public static final String PROPERTY_OS_ARCH = "os.arch";
 //    private static final Logger LOGGER = Logger.getLogger(EnumPlatform.class.getName());
-    private static Log LOGGER = CshLogUtils.getLog();
+    private static Log LOGGER = CshLogUtils.createLogExtended();
     private static EnumPlatform DETECTED_PLATFORM = null;
     private final String[] osMatch; // 操作系统匹配、操作系统的识别关键字
     private final String[] archMatch; // 架构匹配、架构的识别关键字
