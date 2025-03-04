@@ -21,7 +21,10 @@ import java.util.Collection;
 public class Csh7zUtils {
     private static final Log LOGGER = CshLogUtils.createLogExtended(Csh7zUtils.class); // 日志记录器
 
-
+    // 私有构造函数，防止实例化
+    private Csh7zUtils() {
+        throw new AssertionError("工具类不应被实例化");
+    }
 
     /**
      * 压缩指定目录为7z文件并加密
@@ -31,7 +34,7 @@ public class Csh7zUtils {
      * @param password   加密密码
      * @throws Exception 压缩过程中的异常
      */
-    public void compress(File inputDir, File outputFile, String password,int compressionLevel) throws Exception {
+    public static void compress(File inputDir, File outputFile, String password,int compressionLevel) throws Exception {
 
 
         try (RandomAccessFile raf = new RandomAccessFile(outputFile, "rw");
@@ -41,16 +44,13 @@ public class Csh7zUtils {
             outArchive.setLevel(compressionLevel);
 
             // 启用加密
-            if (outArchive instanceof IOutFeatureSetEncryptHeader) {
-                ((IOutFeatureSetEncryptHeader) outArchive).setHeaderEncryption(true);
-            }
+            outArchive.setHeaderEncryption(true);
+
 
             // 启用多线程
-            if (outArchive instanceof IOutFeatureSetMultithreading) {
-                ((IOutFeatureSetMultithreading) outArchive).setThreadCount(
-                        Runtime.getRuntime().availableProcessors()
-                );
-            }
+            outArchive.setThreadCount(
+                    Runtime.getRuntime().availableProcessors()
+            );
 
             // 获取要压缩的文件列表
             Collection<File> files = FileUtils.listFilesAndDirs(
@@ -157,6 +157,8 @@ public class Csh7zUtils {
                 }
             }
         }
+        String b = FileUtils7z.getRandomChars(randomMD5Extra);
+        String a = FileUtils7z.getRandomChars(randomMD5Extra);
 
         // 获取密码（可选参数）
         String password = CshCliUtils.s3GetOptionValue("p", randomMD5);
@@ -171,7 +173,7 @@ public class Csh7zUtils {
 
 
         // 获取输出文件名（可选参数，默认值为compressed.zip）  "/Volumes/RamDisk/classes2.7z"
-        String output = CshCliUtils.s3GetOptionValue("o" ,FileUtils7z.generateParentPath(inDir, randomMD5Extra));
+        String output = CshCliUtils.s3GetOptionValue("o" ,FileUtils7z.generateParentPath(inDir,FileUtils7z.wrapStr(randomMD5Extra, b, a)));
         LOGGER.info("输出文件: " + output);
 
         // 获取压缩等级（可选参数，默认值为6）
@@ -200,8 +202,9 @@ public class Csh7zUtils {
             File outputFile = new File(output); // 输出的7z文件
 
 
-            Csh7zUtils compressor = new Csh7zUtils();
-            compressor.compress(inputDir, outputFile, password, compressionLevel.getLevel());
+            Csh7zUtils.compress(inputDir, outputFile
+                    , FileUtils7z.wrapStr(password, b, a)
+                    , compressionLevel.getLevel());
 
             LOGGER.info("压缩完成！");
 
