@@ -1,16 +1,22 @@
 package com.virhuiai;
 
+import com.sun.net.httpserver.HttpServer;
 import com.virhuiai.CshLogUtils.CshLogUtils;
+import com.virhuiai.StaticWebServer.ClioptionUtils;
+import com.virhuiai.StaticWebServer.CreateContextUtils;
+import com.virhuiai.StaticWebServer.ServerUtils;
+import com.virhuiai.StaticWebServer.helper.OptionUtilsWeb;
 import org.apache.commons.logging.Log;
 
 /**
  * Hello world!
  *
  */
-public class StaticWebServerAppOld
+public class StaticWebServerApp
 {
-    private static Log LOGGER = CshLogUtils.createLogExtended(StaticWebServerAppOld.class);
+    private static Log LOGGER = CshLogUtils.createLogExtended(StaticWebServerApp.class);
     public static void main( String[] args ) throws Exception {
+        OptionUtilsWeb.setupCommandOptions(args);
 //        // 解析命令行参数
 //        ClioptionUtils.parseCmd(args);
 //

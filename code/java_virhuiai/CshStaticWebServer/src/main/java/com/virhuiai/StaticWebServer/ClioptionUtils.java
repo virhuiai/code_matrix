@@ -6,11 +6,11 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.logging.Log;
 
 public class ClioptionUtils {
-//    private static Log LOGGER = CshLogUtils.createLogExtended(ClioptionUtils.class);
-//
-//
+    private static Log LOGGER = CshLogUtils.createLogExtended(ClioptionUtils.class);
+
+
 //    public static  String getOptionValue(String opt, String defaultValue) throws Exception {
-//        return CshCliUtils.s3GetOptionValue(opt, defaultValue);
+//        return CshClioptionUtils.getOptionValue(opt, defaultValue);
 //    }
 //
 //    public static void parseCmd(String[] args){
@@ -108,7 +108,7 @@ public class ClioptionUtils {
 //
 ////        CshClioptionUtils.parseCmd(args);// getOptionValue 要先调用这个
 ////
-////        String cc = CshCliUtils.s3GetOptionValue("abc", "e");
+////        String cc = CshClioptionUtils.getOptionValue("abc", "e");
 ////        System.out.println(cc);
 //
 ////        return false; // 返回 false 表示没有显示帮助信息
