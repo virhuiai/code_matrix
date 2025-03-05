@@ -1,10 +1,12 @@
 package com.virhuiai;
 
 import com.sun.net.httpserver.HttpServer;
+import com.virhuiai.Csh7z.Config7z;
 import com.virhuiai.CshLogUtils.CshLogUtils;
 import com.virhuiai.StaticWebServer.ClioptionUtils;
 import com.virhuiai.StaticWebServer.CreateContextUtils;
 import com.virhuiai.StaticWebServer.ServerUtils;
+import com.virhuiai.StaticWebServer.helper.ConfigWeb;
 import com.virhuiai.StaticWebServer.helper.OptionUtilsWeb;
 import org.apache.commons.logging.Log;
 
@@ -16,14 +18,16 @@ public class StaticWebServerApp
 {
     private static Log LOGGER = CshLogUtils.createLogExtended(StaticWebServerApp.class);
     public static void main( String[] args ) throws Exception {
+        // 解析命令行参数
         OptionUtilsWeb.setupCommandOptions(args);
-//        // 解析命令行参数
-//        ClioptionUtils.parseCmd(args);
-//
-//        // 初始化服务器
-//        HttpServer staticServer = ServerUtils.initServer();
-//        // 获取服务器端口
-//        int portFrontend_ = ServerUtils.getPort(staticServer);
+        // 创建并加载配置
+        ConfigWeb config = new ConfigWeb();
+        config.loadFromCommandLine();
+
+        // 初始化服务器
+        HttpServer staticServer = ServerUtils.initServer();
+        // 获取服务器端口
+        int portFrontend_ = ServerUtils.getPort(staticServer);
 //
 //        // 如果存在 try 选项
 //        if (ClioptionUtils.getOptionValue__try()) {
@@ -64,14 +68,23 @@ public class StaticWebServerApp
 //        } else {
 //            // 获取 root_path 选项的值
 //            String root_path = ClioptionUtils.getOptionValue__root_path();
-//            // 创建 root 路径的上下文
-//            CreateContextUtils.createContextRootLast_Path(staticServer, root_path);
+
 //        }
+
+
+        // 命令行参数: --root_path_last=/Volumes/RamDisk/a
+        String ROOT_PATH_LAST = config.getConfigValue(ConfigWeb.Keys.ROOT_PATH_LAST, null);
+        if(null != ROOT_PATH_LAST){
+            LOGGER.info("ROOT_PATH_LAST:" + ROOT_PATH_LAST);
+            // 创建 root 路径的上下文
+            CreateContextUtils.createContextRootLast_Path(staticServer, ROOT_PATH_LAST);
+        }
+
 //
-//        // 启动服务器
-//        staticServer.start();
-//
-//        // 打印信息
-//        LOGGER.error("成功启动:\nhttp://localhost:" + portFrontend_);
+        // 启动服务器
+        staticServer.start();
+
+        // 打印信息
+        LOGGER.error("成功启动:\nhttp://localhost:" + portFrontend_);
     }
 }

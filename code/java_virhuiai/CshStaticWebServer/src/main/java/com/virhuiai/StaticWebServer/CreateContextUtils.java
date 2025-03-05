@@ -13,6 +13,40 @@ import java.nio.file.Paths;
 public class CreateContextUtils {
     private static Log LOGGER = CshLogUtils.createLogExtended(CreateContextUtils.class);
 
+    public static void createContextRootLast_Path(HttpServer server, String root_path_str) {
+        LOGGER.info("【调用】CreateContextUtils.createContextRootLast_Path");
+        server.createContext("/", exchange -> {
+            try {
+                // 获取请求的相对路径
+                String requestPath = exchange.getRequestURI().getPath();
+
+                // 将请求路径与根目录组合,得到完整的文件路径
+                Path rootPath = Paths.get(root_path_str);
+                Path fullPath = rootPath.resolve(requestPath.substring(1)); // 去掉路径开头的"/"
+
+                // 安全检查:确保请求的文件路径在根目录下
+                if (!fullPath.normalize().startsWith(rootPath.normalize())) {
+                    LOGGER.warn("检测到非法的路径访问尝试:" + requestPath);
+                    SendUtils.sendNotFound(exchange, "非法的路径访问");
+                    return;
+                }
+
+                // 检查文件是否存在且不是目录
+                if (Files.exists(fullPath) && !Files.isDirectory(fullPath)) {
+                    LOGGER.debug("找到文件:" + fullPath);
+                    SendUtils.sendFile(exchange, fullPath);
+                } else {
+                    LOGGER.debug("文件不存在:" + fullPath);
+                    SendUtils.sendNotFound(exchange, fullPath.toString());
+                }
+
+            } catch (IOException e) {
+                LOGGER.error("处理请求时发生错误:", e);
+                SendUtils.sendInternalError(exchange, e.getMessage());
+            }
+        });
+    }
+
 //    public static void createContextTry(HttpServer server, String try_path) {
 //        LOGGER.info("【调用】CreateContextUtils.createContextTry");
 //        server.createContext("/" + try_path, exchange -> {
@@ -47,21 +81,7 @@ public class CreateContextUtils {
 //        });
 //    }
 //
-//    public static void createContextRootLast_Path(HttpServer server, String root_path_str) {
-//        LOGGER.info("【调用】CreateContextUtils.createContextRootLast_Path");
-//        server.createContext("/", exchange -> {
-//            try {
-//                Path rootPath = Paths.get(root_path_str);
-//                if (Files.exists(rootPath) && !Files.isDirectory(rootPath)) {
-//                    SendUtils.sendFile(exchange, rootPath);
-//                } else {
-//                    SendUtils.sendNotFound(exchange, rootPath.toString());
-//                }
-//            } catch (IOException e) {
-//                SendUtils.sendInternalError(exchange, e.getMessage());
-//            }
-//        });
-//    }
+
 //
 //    /**
 //     *
