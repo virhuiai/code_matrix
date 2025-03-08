@@ -73,11 +73,18 @@ public class StaticWebServerApp
 
 
         // 命令行参数: --root_path_last=/Volumes/RamDisk/a
-        String ROOT_PATH_LAST = config.getConfigValue(ConfigWeb.Keys.ROOT_PATH_LAST, null);
+        String ROOT_PATH_LAST = config.getConfigValue(ConfigWeb.Keys.ROOT_PATH_LAST);
         if(null != ROOT_PATH_LAST){
             LOGGER.info("ROOT_PATH_LAST:" + ROOT_PATH_LAST);
             // 创建 root 路径的上下文
             CreateContextUtils.createContextRootLast_Path(staticServer, ROOT_PATH_LAST);
+        }else{
+            // 命令行参数: --root_path_last_resource=1
+            String ROOT_PATH_LAST_RESOURCE = config.getConfigValue(ConfigWeb.Keys.ROOT_PATH_LAST_RESOURCE);
+            if("1".equals(ROOT_PATH_LAST_RESOURCE)){
+                // 创建 root 路径的上下文
+                CreateContextUtils.createContextRootLast_Resource(staticServer);
+            }
         }
 
 //

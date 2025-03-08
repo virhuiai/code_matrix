@@ -16,6 +16,7 @@ public class ConfigWeb extends HashMap<String, String> {
 //        public static final String ROOT_RESOURCE_ENABLED = "ROOT_RESOURCE_ENABLED";
         //ConfigWeb.Keys.ROOT_PATH_LAST
         public static final String ROOT_PATH_LAST = "root_path_last";
+        public static final String ROOT_PATH_LAST_RESOURCE = "root_path_last_resource";
     }
 
 
@@ -25,7 +26,8 @@ public class ConfigWeb extends HashMap<String, String> {
      */
     private static class Defaults {
         //ConfigWeb.Defaults.ROOT_PATH_LAST
-        static final String ROOT_PATH_LAST = "/Volumes/RamDisk/";
+        static final String ROOT_PATH_LAST = null;
+        static final String ROOT_PATH_LAST_RESOURCE = "0";
 //        static final String DEFAULT_TRY_ENABLED = "0";
 //        static final String DEFAULT_ROOT_RESOURCE_ENABLED = "0";
     }
@@ -40,11 +42,19 @@ public class ConfigWeb extends HashMap<String, String> {
         put(ConfigWeb.Keys.ROOT_PATH_LAST, ROOT_PATH_LAST);
     }
 
+    private void processRootPathLastResourceConfig() {
+        String ROOT_PATH_LAST = CshCliUtils.s3GetOptionValue(Keys.ROOT_PATH_LAST_RESOURCE,
+                ConfigWeb.Defaults.ROOT_PATH_LAST_RESOURCE);
+
+        put(ConfigWeb.Keys.ROOT_PATH_LAST_RESOURCE, ROOT_PATH_LAST);
+    }
+
     /**
      * 从命令行参数加载配置
      */
     public void loadFromCommandLine() {
         processRootPathLastConfig();
+        processRootPathLastResourceConfig();
 
 //        processTryConfig();
 //        processBindPath();
@@ -57,6 +67,9 @@ public class ConfigWeb extends HashMap<String, String> {
      */
     public String getConfigValue(String key, String defaultValue) {
         return this.getOrDefault(key, defaultValue);
+    }
+    public String getConfigValue(String key) {
+        return this.get(key);
     }
     /**
      * 获取布尔类型配置值

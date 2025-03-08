@@ -13,6 +13,12 @@ import java.nio.file.Paths;
 public class CreateContextUtils {
     private static Log LOGGER = CshLogUtils.createLogExtended(CreateContextUtils.class);
 
+    /**
+     * 参数 --root_path_last=/Volumes/RamDisk/a
+     * 启动后 在 a目录下放置 .html 文件即可以访问
+     * @param server
+     * @param root_path_str
+     */
     public static void createContextRootLast_Path(HttpServer server, String root_path_str) {
         LOGGER.info("【调用】CreateContextUtils.createContextRootLast_Path");
         server.createContext("/", exchange -> {
@@ -47,6 +53,23 @@ public class CreateContextUtils {
         });
     }
 
+
+    public static void createContextRootLast_Resource(HttpServer server) {
+        LOGGER.info("【调用】CreateContextUtils.createContextRootLast_Resource");
+        server.createContext("/", exchange -> {
+            try {
+                Path resourcePath = ServerUtils.getResourcePath(exchange.getRequestURI().getPath());
+                if (Files.exists(resourcePath) && !Files.isDirectory(resourcePath)) {
+                    SendUtils.sendFile(exchange, resourcePath);
+                } else {
+                    SendUtils.sendNotFound(exchange, resourcePath.toString());
+                }
+            } catch (IOException e) {
+                SendUtils.sendInternalError(exchange, e.getMessage());
+            }
+        });
+    }
+
 //    public static void createContextTry(HttpServer server, String try_path) {
 //        LOGGER.info("【调用】CreateContextUtils.createContextTry");
 //        server.createContext("/" + try_path, exchange -> {
@@ -64,22 +87,7 @@ public class CreateContextUtils {
 //            }
 //        });
 //    }
-//
-//    public static void createContextRootLast_Resource(HttpServer server) {
-//        LOGGER.info("【调用】CreateContextUtils.createContextRootLast_Resource");
-//        server.createContext("/", exchange -> {
-//            try {
-//                Path resourcePath = ServerUtils.getResourcePath(exchange.getRequestURI().getPath());
-//                if (Files.exists(resourcePath) && !Files.isDirectory(resourcePath)) {
-//                    SendUtils.sendFile(exchange, resourcePath);
-//                } else {
-//                    SendUtils.sendNotFound(exchange, resourcePath.toString());
-//                }
-//            } catch (IOException e) {
-//                SendUtils.sendInternalError(exchange, e.getMessage());
-//            }
-//        });
-//    }
+
 //
 
 //

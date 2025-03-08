@@ -24,6 +24,15 @@ public class OptionUtilsWeb {
                 .build()));
     }
 
+    private static void setupRootPathLastResourceOptions() {
+        CshCliUtils.s2AddOption(options -> options.addOption(Option.builder()
+                .longOpt(ConfigWeb.Keys.ROOT_PATH_LAST_RESOURCE)
+                .desc("根目录使用jar包的resource")
+                .hasArg()
+                .argName("根目录使用jar包的resource")
+                .build()));
+    }
+
 //     CshCliUtils.s2AddOption(options -> options.addOption(Option.builder()
 //            .longOpt("root_resource")
 //                .desc("根目录使用resource")
@@ -40,6 +49,7 @@ public class OptionUtilsWeb {
         LOGGER.debug("接收到的命令行参数: " + String.join(", ", args));
         // 配置所有选项
         setupRootPathLastOptions();
+        setupRootPathLastResourceOptions();// 和上一条互斥
 
     }
 
