@@ -5,14 +5,14 @@ package com.virhuiai.File;
 import com.virhuiai.CshLogUtils.CshLogUtils;
 import org.apache.commons.logging.Log;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.RandomAccessFile;
-import java.io.Serializable;
+import java.io.*;
+import java.nio.ByteBuffer;
+import java.nio.channels.FileChannel;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.text.DecimalFormat;
 import java.util.function.Consumer;
@@ -349,11 +349,103 @@ public class CshFileUtils {
         }
     }
 
+    /**
+     * 检查目录是否存在并拼接文件名
+     *
+     * @param directoryPath 目录路径
+     * @param fileName 文件名
+     * @return 完整的文件路径，如果目录不存在则返回null
+     */
+    public static String getFullPath(String directoryPath, String fileName) {
+        // 创建目录的Path对象
+        Path directory = Paths.get(directoryPath);
+
+        // 检查目录是否存在
+        if (Files.exists(directory) && Files.isDirectory(directory)) {
+            // 目录存在，拼接文件名
+            Path fullPath = directory.resolve(fileName);
+            return fullPath.toString();
+        } else {
+            // 目录不存在
+            System.out.println("目录不存在：" + directoryPath);
+            return null;
+        }
+    }
+
+    /**
+     * 删除文件（如果存在）
+     *
+     * @param filePath 文件路径
+     */
+    public static void deleteFileIfExists(String filePath) {
+        Path path = Paths.get(filePath);
+        try {
+            boolean deleted = Files.deleteIfExists(path);
+            if (deleted) {
+                LOGGER.info("文件成功删除。");
+            } else {
+                LOGGER.info("文件不存在或无法删除。");
+            }
+        } catch (IOException e) {
+            LOGGER.error("删除文件时发生IO异常: " + e.getMessage());
+        }
+    }
+
+
+
+    /**
+     * 将内容写入文件
+     *
+     * @param filePath 文件路径
+     * @param content  要写入的内容
+     * @throws IOException 如果写入失败
+     */
+    public static void writeContentToFile(String filePath, String content) throws IOException {
+        Path path = Paths.get(filePath);
+
+        // 确保文件的父目录存在
+        Path parentDir = path.getParent();
+        if (parentDir != null && !Files.exists(parentDir)) {
+            Files.createDirectories(parentDir);
+        }
+
+        // 使用FileOutputStream和FileChannel写入文件
+        try (FileOutputStream outputStream = new FileOutputStream(filePath);
+             FileChannel fileChannel = outputStream.getChannel()) {
+            ByteBuffer buffer = ByteBuffer.wrap(content.getBytes(StandardCharsets.UTF_8));
+            while (buffer.hasRemaining()) {
+                fileChannel.write(buffer);
+            }
+            // 强制将所有更新写入存储设备
+            fileChannel.force(true);
+        }
+    }
+
+    /**
+     * 复制文件从源路径到目标路径
+     * 如果目标文件已存在，会被覆盖
+     *
+     * @param sourcePath      源文件路径
+     * @param destinationPath 目标文件路径
+     * @throws IOException 当文件操作失败时抛出异常
+     */
+    public static void copyFile(String sourcePath, String destinationPath) throws IOException {
+        // 将字符串路径转换为Path对象
+        // Path是Java NIO.2引入的表示文件路径的对象，提供了更多的文件操作功能
+        Path source = Paths.get(sourcePath);
+        Path destination = Paths.get(destinationPath);
+
+        // 使用Files工具类的copy方法复制文件
+        // StandardCopyOption.REPLACE_EXISTING 表示如果目标文件已存在则替换它
+        // 该方法会自动处理文件复制过程，包括创建必要的目录结构
+        // 复制过程是原子性的，要么完全成功，要么完全失败
+        Files.copy(source, destination, StandardCopyOption.REPLACE_EXISTING);
+    }
 
 
     public static void main(String[] args) throws IOException {
         int type;
-//        type = 0;//validateFileAndGetSize
+//        type = 0;//validateFileAndGetSize 
 //        type = 1;//formatFileSize
 //        type = 2;//formatFileSizeAuto
         type = 3;//
