@@ -7,6 +7,7 @@ import org.apache.commons.logging.Log;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -19,6 +20,11 @@ public class CshFileUtils {
     // 创建日志对象，用于记录操作日志
     // 使用CshLogUtils工具类创建日志实例，传入当前类作为参数
     private static final Log LOGGER = CshLogUtils.createLogExtended(CshFileUtils.class);
+
+    // 定义文件大小限制常量
+    private static final long SMALL_FILE_SIZE_LIMIT = 10 * 1024 * 1024; // 10MB
+    private static final long LARGE_FILE_SIZE_LIMIT = 1024 * 1024 * 1024; // 1GB
+    private static final int BUFFER_SIZE = 8192; // 8KB 缓冲区大小
 
     /**
      * 验证文件路径并返回文件大小
@@ -147,6 +153,80 @@ public class CshFileUtils {
 
         return fileInfo;
     }
+
+    /**
+     * 读取文件内容并返回字符串
+     * 此方法会将整个文件内容读入内存，适用于小型文件
+     *
+     * 读取小文件内容并返回字符串
+     * 适用于小于10MB的文件
+     *
+     * @param filePath 文件路径
+     * @return 文件内容字符串
+     * @throws IOException 如果文件读取失败
+     */
+    public static String readContentAsStr(String filePath) throws IOException {
+        // 首先检查文件是否存在，不存在会抛出异常
+        checkFileOrEx(filePath);
+
+        // 获取文件大小
+        long fileSize = Files.size(Paths.get(filePath));
+        // 检查文件大小是否超过限制
+        if (fileSize > SMALL_FILE_SIZE_LIMIT) {
+            String errorMsg = String.format(
+                    "文件大小(%s)超过限制(%s)，请使用readLargeFile方法",
+                    formatFileSizeAuto(fileSize),
+                    formatFileSizeAuto(SMALL_FILE_SIZE_LIMIT)
+            );
+            LOGGER.error(errorMsg);
+            throw new IOException(errorMsg);
+        }
+
+        // 使用Files.readAllBytes读取文件的所有字节
+        // 使用Paths.get将字符串路径转换为Path对象
+        // 使用UTF-8编码将字节数组转换为字符串
+        return new String(Files.readAllBytes(Paths.get(filePath)), StandardCharsets.UTF_8);
+    }
+
+    /**
+     * 检查文件是否存在，不存在则抛出异常
+     * 此方法用于在文件操作前进行文件存在性检查
+     *
+     * @param filePath 文件路径
+     * @return 文件名
+     * @throws IOException 如果文件不存在
+     */
+    public static String checkFileOrEx(String filePath) throws IOException {
+        // 将字符串路径转换为Path对象
+        Path path = Paths.get(filePath);
+
+        // 检查文件是否存在
+        // 如果文件不存在，记录错误日志并抛出IOException
+        if (!Files.exists(path)) {
+            LOGGER.error("文件不存在: " + filePath);
+            throw new IOException("文件不存在: " + filePath);
+        }
+
+        // 返回文件名（不包含路径）
+        return path.getFileName().toString();
+    }
+
+    /**
+     * 仅检查文件是否存在
+     * 此方法是一个简单的文件存在性检查，不抛出异常
+     *
+     * @param filePath 文件路径
+     * @return boolean 文件存在返回true，否则返回false
+     */
+    public static boolean checkFileOnly(String filePath) {
+        // 将字符串路径转换为Path对象
+        Path path = Paths.get(filePath);
+
+        // 返回文件是否存在的布尔值
+        return Files.exists(path);
+    }
+
+
 
     public static void main(String[] args) throws IOException {
         int type;
