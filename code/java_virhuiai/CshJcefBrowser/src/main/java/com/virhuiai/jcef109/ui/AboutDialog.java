@@ -21,7 +21,14 @@ public class AboutDialog extends JDialog {
     public AboutDialog(Frame owner) {
         super(owner, "关于", true);
         initContent(); // 初始化对话框内容
-        initKeyStroke(); // 初始化按键监听
+
+//        ShortcutKeyUtils.bindEscapeKey(this, null);
+        ShortcutKeyUtils.bindEscapeKey(this,e ->{
+                    dispose();
+                }
+        );
+
+//        initKeyStroke(); // 初始化按键监听
         setResizable(false); // 设置对话框不可调整大小
         pack(); // 调整对话框大小以适应内容
         setLocationRelativeTo(owner); // 设置对话框位置相对于父窗口居中
@@ -85,49 +92,49 @@ public class AboutDialog extends JDialog {
         // 将配置好的文本面板添加到当前容器的中央位置
         add(aboutText, BorderLayout.CENTER);
     }
-/**
- * 初始化按键监听
- * 设置ESC键关闭对话框的功能
- * 这个方法通过两种方式实现ESC键关闭窗口：
- * 1. 键盘事件监听器
- * 2. 全局按键绑定
- */
-private void initKeyStroke() {
-//    // 第一种方式：使用KeyAdapter添加键盘事件监听[传统的键盘事件监听方式]
-//    addKeyListener(new KeyAdapter() {
-//        @Override
-//        public void keyPressed(KeyEvent e) {
-//            // 当检测到按下的键是ESC键时
-//            if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
-//                dispose(); // 调用dispose()方法关闭当前对话框
+//    /**
+//     * 初始化按键监听
+//     * 设置ESC键关闭对话框的功能
+//     * 这个方法通过两种方式实现ESC键关闭窗口：
+//     * 1. 键盘事件监听器
+//     * 2. 全局按键绑定
+//     */
+//    private void initKeyStroke() {
+////    // 第一种方式：使用KeyAdapter添加键盘事件监听[传统的键盘事件监听方式]
+////    addKeyListener(new KeyAdapter() {
+////        @Override
+////        public void keyPressed(KeyEvent e) {
+////            // 当检测到按下的键是ESC键时
+////            if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+////                dispose(); // 调用dispose()方法关闭当前对话框
+////            }
+////        }
+////    });
+//
+//        // 第二种方式：使用按键绑定（Key Bindings）[更现代的按键绑定方式，可以避免焦点问题]
+//        // 获取对话框的根面板，用于设置按键绑定
+//        JRootPane rootPane = getRootPane();
+//
+//        // 创建ESC键的按键触发器
+//        // 参数说明：
+//        // - KeyEvent.VK_ESCAPE: 表示ESC键的虚拟键码
+//        // - 0: 表示没有组合键（如Ctrl、Alt等）
+//        // - false: 表示按键按下时触发，而不是释放时触发
+//        KeyStroke keyStroke = KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0, false);
+//
+//        // 将按键绑定添加到输入映射中
+//        // WHEN_IN_FOCUSED_WINDOW表示即使组件没有焦点也能响应按键
+//        rootPane.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(keyStroke, "ESCAPE");
+//
+//        // 创建并绑定按键触发后要执行的动作
+//        rootPane.getActionMap().put("ESCAPE", new AbstractAction() {
+//            // 为实现序列化接口定义的序列化版本ID
+//            private static final long serialVersionUID = 6693635607417495802L;
+//
+//            // 定义按键触发后的具体行为
+//            public void actionPerformed(ActionEvent e) {
+//                dispose(); // 关闭对话框
 //            }
-//        }
-//    });
-
-    // 第二种方式：使用按键绑定（Key Bindings）[更现代的按键绑定方式，可以避免焦点问题]
-    // 获取对话框的根面板，用于设置按键绑定
-    JRootPane rootPane = getRootPane();
-
-    // 创建ESC键的按键触发器
-    // 参数说明：
-    // - KeyEvent.VK_ESCAPE: 表示ESC键的虚拟键码
-    // - 0: 表示没有组合键（如Ctrl、Alt等）
-    // - false: 表示按键按下时触发，而不是释放时触发
-    KeyStroke keyStroke = KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0, false);
-
-    // 将按键绑定添加到输入映射中
-    // WHEN_IN_FOCUSED_WINDOW表示即使组件没有焦点也能响应按键
-    rootPane.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(keyStroke, "ESCAPE");
-
-    // 创建并绑定按键触发后要执行的动作
-    rootPane.getActionMap().put("ESCAPE", new AbstractAction() {
-        // 为实现序列化接口定义的序列化版本ID
-        private static final long serialVersionUID = 6693635607417495802L;
-
-        // 定义按键触发后的具体行为
-        public void actionPerformed(ActionEvent e) {
-            dispose(); // 关闭对话框
-        }
-    });
-}
+//        });
+//    }
 }
