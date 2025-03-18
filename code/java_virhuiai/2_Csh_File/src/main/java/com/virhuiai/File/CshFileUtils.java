@@ -7,6 +7,7 @@ import org.apache.commons.logging.Log;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.RandomAccessFile;
 import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -312,6 +313,40 @@ public class CshFileUtils {
             }
         }
 
+    }
+
+
+    /**
+     * 安全地读取文件的特定块，确保不超过文件的长度
+     *
+     * @param params 文件分块参数
+     * @return 读取的文件块内容
+     * @throws IOException 如果文件读取出错
+     */
+    public static byte[] chunkFile(FileChunkParams params) throws IOException {
+        // 使用try-with-resources确保文件正确关闭
+        try (RandomAccessFile file = new RandomAccessFile(params.getFilePath(), "r")) {
+            // 如果起始位置超出文件末尾，返回空字符串
+            if (params.getStart() >= params.getFileLength()) {
+                return "".getBytes();
+            }
+
+            // 计算安全的读取长度，确保不超过文件大小
+            long safeLength = Math.min(params.getChunkSize(), params.getFileLength() - params.getStart());
+
+            // 将文件指针移动到起始位置
+            file.seek(params.getStart());
+
+            // 初始化一个缓冲区以读取块
+            byte[] buffer = new byte[(int) safeLength];
+
+            // 读取指定长度的数据
+            file.readFully(buffer);
+
+            // 将读取的字节转换成字符串并返回
+//            return new String(buffer, StandardCharsets.UTF_8);
+            return buffer;
+        }
     }
 
 
