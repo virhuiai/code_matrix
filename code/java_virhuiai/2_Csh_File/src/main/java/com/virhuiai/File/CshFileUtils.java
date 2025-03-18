@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.DecimalFormat;
 
 // 定义文件工具类
 public class CshFileUtils {
@@ -65,8 +66,39 @@ public class CshFileUtils {
         return fileSize;
     }
 
+    /**
+     * 转换文件大小到指定单位
+     *
+     * @param size 文件大小（字节）
+     * @param unit 目标单位
+     * @return 转换后的大小，带单位的字符串，保留两位小数
+     */
+    public static double formatFileSize(long size, SizeUnit unit) {
+        if (size <= 0) {
+            return 0;
+        }
+
+        // 使用 DecimalFormat 格式化数字，保留两位小数
+        DecimalFormat df = new DecimalFormat("#.##");
+        double convertedSize = (double) size / unit.getFactor();
+//        return df.format(convertedSize) + " " + unit.getUnit();
+        return convertedSize;
+    }
+
     public static void main(String[] args) {
-        long rs = CshFileUtils.validateFileAndGetSize("/Volumes/RamDisk/example.xlsx");
-        LOGGER.info("validateFileAndGetSize,rs:" + rs);
+        int type;
+//        type = 0;//validateFileAndGetSize
+        type = 1;//
+
+        if(1 == type){
+            long rs = CshFileUtils.validateFileAndGetSize("/Volumes/RamDisk/example.xlsx");
+            double rs1 = formatFileSize(rs, SizeUnit.MB);
+            LOGGER.info("formatFileSize,rs1:" + rs1);
+
+        } else if(0 == type){
+            long rs = CshFileUtils.validateFileAndGetSize("/Volumes/RamDisk/example.xlsx");
+            LOGGER.info("validateFileAndGetSize,rs:" + rs);
+        }
+
     }
 }
