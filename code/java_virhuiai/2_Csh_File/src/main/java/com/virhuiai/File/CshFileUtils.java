@@ -6,6 +6,7 @@ import com.virhuiai.CshLogUtils.CshLogUtils;
 import org.apache.commons.logging.Log;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -73,26 +74,54 @@ public class CshFileUtils {
      * @param unit 目标单位
      * @return 转换后的大小，带单位的字符串，保留两位小数
      */
-    public static double formatFileSize(long size, SizeUnit unit) {
+    public static String formatFileSize(long size, SizeUnit unit) {
         if (size <= 0) {
-            return 0;
+            return "0 " + unit.getUnit();
         }
 
         // 使用 DecimalFormat 格式化数字，保留两位小数
         DecimalFormat df = new DecimalFormat("#.##");
         double convertedSize = (double) size / unit.getFactor();
-//        return df.format(convertedSize) + " " + unit.getUnit();
-        return convertedSize;
+        return df.format(convertedSize) + " " + unit.getUnit();
+//        return convertedSize;
+    }
+
+    /**
+     * 自动选择最适合的单位来显示文件大小
+     *
+     * @param size 文件大小（字节）
+     * @return 转换后的大小，带单位的字符串
+     */
+    public static String formatFileSizeAuto(long size) {
+        if (size <= 0) {
+            return "0 B";
+        }
+
+        // 从大到小遍历单位
+        SizeUnit[] units = SizeUnit.values();
+        for (int i = units.length - 1; i >= 0; i--) {
+            SizeUnit unit = units[i];
+            if (size >= unit.getFactor()) {
+                return formatFileSize(size, unit);
+            }
+        }
+
+        return formatFileSize(size, SizeUnit.BYTE);
     }
 
     public static void main(String[] args) {
         int type;
 //        type = 0;//validateFileAndGetSize
-        type = 1;//
+//        type = 1;//formatFileSize
+        type = 2;//
 
-        if(1 == type){
+        if(2 == type){
             long rs = CshFileUtils.validateFileAndGetSize("/Volumes/RamDisk/example.xlsx");
-            double rs1 = formatFileSize(rs, SizeUnit.MB);
+            String rs1 = formatFileSizeAuto(rs);
+            LOGGER.info("formatFileSize,rs1:" + rs1);
+        }else if(1 == type){
+            long rs = CshFileUtils.validateFileAndGetSize("/Volumes/RamDisk/example.xlsx");
+            String rs1 = formatFileSize(rs, SizeUnit.MB);
             LOGGER.info("formatFileSize,rs1:" + rs1);
 
         } else if(0 == type){
