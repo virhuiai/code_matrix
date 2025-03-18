@@ -425,6 +425,26 @@ public class CshFileUtils {
      * 复制文件从源路径到目标路径
      * 如果目标文件已存在，会被覆盖
      *
+     Path接口的优势：
+
+     - 提供了更丰富的文件操作方法
+     - 支持对路径进行标准化和解析
+     - 可以方便地获取父目录、文件名等信息
+
+     Files.copy方法的特点：
+
+     - 支持多种复制选项（通过StandardCopyOption枚举）
+     - 自动处理文件属性的复制
+     - 提供原子性操作保证
+     - 适用于各种操作系统
+
+     可能的异常情况：
+
+     - 源文件不存在
+     - 没有足够的权限
+     - 磁盘空间不足
+     - 目标路径的父目录不存在
+     *
      * @param sourcePath      源文件路径
      * @param destinationPath 目标文件路径
      * @throws IOException 当文件操作失败时抛出异常
@@ -442,10 +462,21 @@ public class CshFileUtils {
         Files.copy(source, destination, StandardCopyOption.REPLACE_EXISTING);
     }
 
+    /**
+     * 检查指定路径是否为有效目录
+     *
+     * @param directoryPath 目录路径
+     * @return 是否为有效目录
+     */
+    public static boolean checkDir(String directoryPath) {
+        Path directory = Paths.get(directoryPath);
+        return Files.exists(directory) && Files.isDirectory(directory);
+    }
+
 
     public static void main(String[] args) throws IOException {
         int type;
-//        type = 0;//validateFileAndGetSize 
+//        type = 0;//validateFileAndGetSize
 //        type = 1;//formatFileSize
 //        type = 2;//formatFileSizeAuto
         type = 3;//
