@@ -10,6 +10,7 @@ import java.io.Serializable;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.text.DecimalFormat;
 
 // 定义文件工具类
@@ -109,13 +110,54 @@ public class CshFileUtils {
         return formatFileSize(size, SizeUnit.BYTE);
     }
 
-    public static void main(String[] args) {
+    /**
+     * 获取文件信息
+     *
+     * @param filePath 文件路径
+     * @return FileInformation 包含文件详细信息的对象
+     * @throws IOException 如果读取文件属性失败
+     */
+    public static FileInformation getFileInfo(String filePath) throws IOException {
+        // 参数验证
+        if (filePath == null || filePath.trim().isEmpty()) {
+            throw new IllegalArgumentException("文件路径不能为空");
+        }
+
+        Path path = Paths.get(filePath);
+        if (!Files.exists(path)) {
+            throw new IOException("文件不存在: " + filePath);
+        }
+
+        // 读取文件属性
+        BasicFileAttributes attrs = Files.readAttributes(path, BasicFileAttributes.class);
+
+        // 创建并填充FileInformation对象
+        FileInformation fileInfo = new FileInformation();
+        fileInfo.setAbsolutePath(path.toAbsolutePath());
+        fileInfo.setFileName(path.getFileName().toString());
+        fileInfo.setDirectory(Files.isDirectory(path));
+        fileInfo.setRegularFile(Files.isRegularFile(path));
+        fileInfo.setSize(attrs.size());
+        fileInfo.setCreationTime(attrs.creationTime());
+        fileInfo.setLastModifiedTime(attrs.lastModifiedTime());
+        fileInfo.setLastAccessTime(attrs.lastAccessTime());
+
+        // 记录日志
+//        LOGGER.info(fileInfo.toString());
+
+        return fileInfo;
+    }
+
+    public static void main(String[] args) throws IOException {
         int type;
 //        type = 0;//validateFileAndGetSize
 //        type = 1;//formatFileSize
-        type = 2;//
+//        type = 2;//formatFileSizeAuto
+        type = 3;//
 
-        if(2 == type){
+        if(3 == type){
+            CshFileUtils.getFileInfo("/Volumes/RamDisk/example.xlsx");
+        }else if(2 == type){
             long rs = CshFileUtils.validateFileAndGetSize("/Volumes/RamDisk/example.xlsx");
             String rs1 = formatFileSizeAuto(rs);
             LOGGER.info("formatFileSize,rs1:" + rs1);

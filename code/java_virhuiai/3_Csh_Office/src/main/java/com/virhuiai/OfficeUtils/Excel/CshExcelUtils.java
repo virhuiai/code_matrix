@@ -22,7 +22,7 @@ public class CshExcelUtils {
      * @param excelPath Excel文件路径
      * @return Workbook 工作簿对象
      */
-    public static Workbook getExcelWb(String excelPath) {
+    public static Workbook get1Wb(String excelPath) {
         // 检查Excel文件路径是否为空
         if(null == excelPath){
             // 记录错误日志
@@ -75,7 +75,7 @@ public class CshExcelUtils {
         type = 1;
         if(1 == type){
             // 使用 try-with-resources 确保资源正确关闭
-            try(Workbook wb = CshExcelUtils.getExcelWb("/Volumes/RamDisk/example.xlsx");){
+            try(Workbook wb = CshExcelUtils.get1Wb("/Volumes/RamDisk/example.xlsx");){
                 System.out.printf("a");
                 // 在这里处理Excel文件
                 System.out.println("成功打开Excel文件");
