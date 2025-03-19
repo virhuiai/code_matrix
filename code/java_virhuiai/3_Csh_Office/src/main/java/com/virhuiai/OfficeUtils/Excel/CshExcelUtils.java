@@ -18,46 +18,65 @@ public class CshExcelUtils {
     // 日志对象
     private static Log LOG = CshLogUtils.createLogExtended(CshExcelUtils.class);
 
+
+
     /**
-     * 获取工作表的第一行数据
+     * 获取工作表指定索引的行数据
      * @param sheet Excel工作表对象
-     * @return 工作表的第一行
-     * @throws ExcelProcessingException 当工作表为空或第一行无效时抛出异常
+     * @param rowIndex 要获取的行索引（从0开始）
+     * @return 工作表中指定索引的行
+     * @throws ExcelProcessingException 当工作表为空或指定行不存在时抛出异常
      */
-    public static Row get3FirstRow(Sheet sheet) {
+    public static Row get3Row(Sheet sheet, int rowIndex) {
         // 检查工作表是否为空
         if (null == sheet) {
             LOG.error("工作表对象为空，无法获取数据");
             throw new ExcelProcessingException("INVALID_SHEET", "工作表对象为空，无法获取数据");
         }
 
-        // 检查工作表名称是否有效（优化建议1实现）
-        String sheetName = sheet.getSheetName();
-        if (sheetName == null || sheetName.trim().isEmpty()) {
-            LOG.warn("工作表名称为空或无效");
+        // 检查行索引是否有效
+        if (rowIndex < 0) {
+            LOG.error(String.format("行索引{}无效，行索引不能为负数", rowIndex));
+            throw new ExcelProcessingException("INVALID_ROW_INDEX", "行索引无效，行索引不能为负数");
         }
 
-        // 检查工作表保护状态（优化建议2实现）
-        if (sheet.getProtect()) {
-            LOG.warn("工作表处于保护状态，可能影响数据读取");
+        // 检查行索引是否超出范围
+        int lastRowNum = sheet.getLastRowNum();
+        if (rowIndex > lastRowNum) {
+            LOG.error(String.format("行索引{}超出工作表最大行数{}，无法获取数据", rowIndex, lastRowNum));
+            throw new ExcelProcessingException("ROW_INDEX_OUT_OF_RANGE",
+                    String.format("行索引%d超出工作表最大行数%d，无法获取数据", rowIndex, lastRowNum));
         }
 
-        // 获取第一行(索引从0开始)
-        Row firstRow = sheet.getRow(0);
-        if (null == firstRow) {
-            LOG.error("工作表首行数据不存在或已被删除");
-            throw new ExcelProcessingException("FIRST_ROW_MISSING",
-                    "工作表首行数据不存在或已被删除");
+        // 获取指定索引的行
+        Row row = sheet.getRow(rowIndex);
+        if (null == row) {
+            LOG.error(String.format("工作表中索引为{}的行不存在或已被删除", rowIndex));
+            throw new ExcelProcessingException("ROW_MISSING",
+                    String.format("工作表中索引为%d的行不存在或已被删除", rowIndex));
         }
 
-        // 检查首行有效单元格数量（优化建议3实现）
-        int cellCount = firstRow.getPhysicalNumberOfCells();
-        if (cellCount == 0) {
-            LOG.warn("工作表首行不包含任何数据");
+        // 检查行是否包含有效数据
+        int cellCount = row.getPhysicalNumberOfCells();
+        if (0 == cellCount) {
+            LOG.warn(String.format("工作表中索引为{}的行不包含任何数据", rowIndex));
             // 根据业务需求决定是否抛出异常
         }
 
-        return firstRow;
+        return row;
+    }
+
+    /**
+     * 获取工作表的第一行数据（索引为0的行）
+     * 这是对getRow方法的封装，简化了获取第一行的操作
+     *
+     * @param sheet Excel工作表对象
+     * @return 工作表的第一行
+     * @throws ExcelProcessingException 当工作表为空或第一行不存在时抛出异常
+     */
+    public static Row get3FirstRow(Sheet sheet) {
+        // 调用getRow方法获取索引为0的行（第一行）
+        return get3Row(sheet, 0);
     }
 
 
