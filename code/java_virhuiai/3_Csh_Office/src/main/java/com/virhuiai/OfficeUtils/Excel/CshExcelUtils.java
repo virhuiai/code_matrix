@@ -34,7 +34,7 @@ public class CshExcelUtils {
      * @param maxColumns 要处理的最大列数
      * @param processor 处理每个单元格的函数，接收列索引和单元格文本值作为参数
      */
-    private static void processRowCells(Row row, int maxColumns, BiConsumer<Integer, String> processor) {
+    public static void processRowCells(Row row, int maxColumns, BiConsumer<Integer, String> processor) {
         // 检查行是否为空
         if (row == null) {
             return; // 如果行为空，则不进行处理
@@ -60,7 +60,7 @@ public class CshExcelUtils {
      * @param cell Excel单元格对象
      * @return 单元格的文本内容，如果单元格为null则返回null
      */
-    private static String get4CellTextValue(Cell cell) {
+    public static String get4CellTextValue(Cell cell) {
         // 如果单元格为空，直接返回null
         if (cell == null) {
             return null;
