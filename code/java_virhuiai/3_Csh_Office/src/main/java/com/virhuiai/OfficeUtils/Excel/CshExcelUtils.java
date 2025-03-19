@@ -4,6 +4,7 @@ import com.virhuiai.CshLogUtils.CshLogUtils;
 import com.virhuiai.File.CshFileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
@@ -15,6 +16,44 @@ import java.nio.file.Files;
 public class CshExcelUtils {
     // 日志对象
     private static Log LOG = CshLogUtils.createLogExtended(CshExcelUtils.class);
+
+//    getFstSheet
+
+    /**
+     * 获取指定索引的工作表
+     * @param w Workbook对象，表示Excel工作簿
+     * @param sheetIndex 需要获取的工作表索引
+     * @return 返回找到的Sheet对象
+     * @throws ExcelProcessingException 当找不到有效工作表时抛出异常
+     */
+    public static Sheet get2Sheet(Workbook w, int sheetIndex) {
+        // 检查参数有效性：工作簿对象不为空且工作表索引在有效范围内
+        boolean needContinue = (null != w && sheetIndex >= 0 && sheetIndex < w.getNumberOfSheets());
+
+        // 如果参数无效，记录错误并抛出异常
+        if (!needContinue) {
+            LOG.error("无效的参数: 工作簿为空或工作表索引 " + sheetIndex + " 超出范围");
+            throw new ExcelProcessingException("INVALID_PARAMS", "获取工作表失败：工作簿为空或索引无效");
+        }
+
+        try {
+            // 根据索引获取工作表
+            Sheet s = w.getSheetAt(sheetIndex);
+
+            // 检查工作表是否有数据
+            // 问题：s.getLastRowNum() == 0 不一定表示工作表没有数据，可能只有一行数据
+            // 修复：检查物理行数而不是最后行的索引
+            if (null == s || s.getPhysicalNumberOfRows() == 0) {
+                LOG.error("Excel模板格式错误：工作表索引 " + sheetIndex + " 不包含数据");
+                throw new ExcelProcessingException("INVALID_TEMPLATE", "Excel模板格式错误：未找到包含数据的工作表");
+            }
+
+            return s; // 返回找到的Sheet对象
+        } catch (Exception e) {
+            LOG.error("获取工作表时发生异常: " + e.getMessage(), e);
+            throw new ExcelProcessingException("SHEET_ACCESS_ERROR", "获取工作表时发生错误: " + e.getMessage());
+        }
+    }
 
     /**
      * 获取Excel工作簿

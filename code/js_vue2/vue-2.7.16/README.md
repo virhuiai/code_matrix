@@ -57,29 +57,21 @@ Vue.js 支持所有[兼容 ES5](https://kangax.github.io/compat-table/es5/) 的�
 ## Ecosystem
 ## 生态系统
 
-| Project               | Status                                                       | Description                                             |
-| --------------------- | ------------------------------------------------------------ | ------------------------------------------------------- |
-| [vue-router]          | [![vue-router-status]][vue-router-package]                   | Single-page application routing                         |
-| [vuex]                | [![vuex-status]][vuex-package]                               | Large-scale state management                            |
-| [vue-cli]             | [![vue-cli-status]][vue-cli-package]                         | Project scaffolding                                     |
-| [vue-loader]          | [![vue-loader-status]][vue-loader-package]                   | Single File Component (`*.vue` file) loader for webpack |
-| [vue-server-renderer] | [![vue-server-renderer-status]][vue-server-renderer-package] | Server-side rendering support                           |
-| [vue-class-component] | [![vue-class-component-status]][vue-class-component-package] | TypeScript decorator for a class-based API              |
-| [vue-rx]              | [![vue-rx-status]][vue-rx-package]                           | RxJS integration                                        |
-| [vue-devtools]        | [![vue-devtools-status]][vue-devtools-package]               | Browser DevTools extension                              |
+| Project   项目            | Status  状态                                                     | Description 描述                                                          |
+| --------------------- | ------------------------------------------------------------ |-------------------------------------------------------------------------|
+| [vue-router]          | [![vue-router-status]][vue-router-package]                   | Single-page application routing 单页应用路由                                  |
+| [vuex]                | [![vuex-status]][vuex-package]                               | Large-scale state management 大规模状态管理                                    |
+| [vue-cli]             | [![vue-cli-status]][vue-cli-package]                         | Project scaffolding 项目脚手架                                               |
+| [vue-loader]          | [![vue-loader-status]][vue-loader-package]                   | Single File Component (`*.vue` file) loader for webpack 用于 webpack 的单文件组件（`*.vue` 文件）加载器                |
+| [vue-server-renderer] | [![vue-server-renderer-status]][vue-server-renderer-package] | Server-side rendering support 服务端渲染支持                                   |
+| [vue-class-component] | [![vue-class-component-status]][vue-class-component-package] | TypeScript decorator for a class-based API /用于基于类的 API 的 TypeScript 装饰器 |
+| [vue-rx]              | [![vue-rx-status]][vue-rx-package]                           | RxJS integration /RxJS 集成                                               |
+| [vue-devtools]        | [![vue-devtools-status]][vue-devtools-package]               | Browser DevTools extension 浏览器开发者工具扩展                                   |
 
 
-| Project | Status | Description |
-| 项目 | 状态 | 描述 |
-| --------------------- | ------------------------------------------------------------ | ------------------------------------------------------- |
-| [vue-router] | [![vue-router-status]][vue-router-package] | Single-page application routing 单页应用路由 |
-| [vuex] | [![vuex-status]][vuex-package] | Large-scale state management 大规模状态管理 |
-| [vue-cli] | [![vue-cli-status]][vue-cli-package] | Project scaffolding 项目脚手架 |
-| [vue-loader] | [![vue-loader-status]][vue-loader-package] | Single File Component (`*.vue` file) loader for webpack 用于 webpack 的单文件组件（`*.vue` 文件）加载器 |
-| [vue-server-renderer] | [![vue-server-renderer-status]][vue-server-renderer-package] | Server-side rendering support 服务端渲染支持 |
-| [vue-class-component] | [![vue-class-component-status]][vue-class-component-package] | TypeScript decorator for a class-based API 用于基于类的 API 的 TypeScript 装饰器 |
-| [vue-rx] | [![vue-rx-status]][vue-rx-package] | RxJS integration RxJS 集成 |
-| [vue-devtools] | [![vue-devtools-status]][vue-devtools-package] | Browser DevTools extension 浏览器开发者工具扩展 |
+
+
+
 
 
 
