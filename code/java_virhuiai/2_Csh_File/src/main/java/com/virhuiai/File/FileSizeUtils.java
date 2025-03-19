@@ -1,11 +1,16 @@
 package com.virhuiai.File;
 
+import com.virhuiai.CshLogUtils.CshLogUtils;
+import org.apache.commons.logging.Log;
+
 import java.text.DecimalFormat;
 
 /**
  * 文件大小相关
  */
 public class FileSizeUtils {
+
+    private static final Log LOGGER = CshLogUtils.createLogExtended(FileSizeUtils.class);
 
     /**
      * 转换文件大小到指定单位
