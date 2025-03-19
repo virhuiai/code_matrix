@@ -77,47 +77,6 @@ public class CshFileUtils {
         return fileSize;
     }
 
-    /**
-     * 转换文件大小到指定单位
-     *
-     * @param size 文件大小（字节）
-     * @param unit 目标单位
-     * @return 转换后的大小，带单位的字符串，保留两位小数
-     */
-    public static String formatFileSize(long size, SizeUnit unit) {
-        if (size <= 0) {
-            return "0 " + unit.getUnit();
-        }
-
-        // 使用 DecimalFormat 格式化数字，保留两位小数
-        DecimalFormat df = new DecimalFormat("#.##");
-        double convertedSize = (double) size / unit.getFactor();
-        return df.format(convertedSize) + " " + unit.getUnit();
-//        return convertedSize;
-    }
-
-    /**
-     * 自动选择最适合的单位来显示文件大小
-     *
-     * @param size 文件大小（字节）
-     * @return 转换后的大小，带单位的字符串
-     */
-    public static String formatFileSizeAuto(long size) {
-        if (size <= 0) {
-            return "0 B";
-        }
-
-        // 从大到小遍历单位
-        SizeUnit[] units = SizeUnit.values();
-        for (int i = units.length - 1; i >= 0; i--) {
-            SizeUnit unit = units[i];
-            if (size >= unit.getFactor()) {
-                return formatFileSize(size, unit);
-            }
-        }
-
-        return formatFileSize(size, SizeUnit.BYTE);
-    }
 
     /**
      * 获取文件信息
@@ -178,8 +137,8 @@ public class CshFileUtils {
         if (fileSize > SMALL_FILE_SIZE_LIMIT) {
             String errorMsg = String.format(
                     "文件大小(%s)超过限制(%s)，请使用readLargeFile方法",
-                    formatFileSizeAuto(fileSize),
-                    formatFileSizeAuto(SMALL_FILE_SIZE_LIMIT)
+                    FileSizeUtils.formatFileSizeAuto(fileSize),
+                    FileSizeUtils.formatFileSizeAuto(SMALL_FILE_SIZE_LIMIT)
             );
             LOGGER.error(errorMsg);
             throw new IOException(errorMsg);
@@ -254,8 +213,8 @@ public class CshFileUtils {
         if (fileSize > LARGE_FILE_SIZE_LIMIT) {
             String errorMsg = String.format(
                     "文件大小(%s)超过限制(%s)",
-                    formatFileSizeAuto(fileSize),
-                    formatFileSizeAuto(LARGE_FILE_SIZE_LIMIT)
+                    FileSizeUtils.formatFileSizeAuto(fileSize),
+                    FileSizeUtils.formatFileSizeAuto(LARGE_FILE_SIZE_LIMIT)
             );
             LOGGER.error(errorMsg);
             throw new IOException(errorMsg);
@@ -290,8 +249,8 @@ public class CshFileUtils {
         if (fileSize > LARGE_FILE_SIZE_LIMIT) {
             String errorMsg = String.format(
                     "文件大小(%s)超过限制(%s)",
-                    formatFileSizeAuto(fileSize),
-                    formatFileSizeAuto(LARGE_FILE_SIZE_LIMIT)
+                    FileSizeUtils.formatFileSizeAuto(fileSize),
+                    FileSizeUtils.formatFileSizeAuto(LARGE_FILE_SIZE_LIMIT)
             );
             LOGGER.error(errorMsg);
             throw new IOException(errorMsg);
@@ -485,11 +444,11 @@ public class CshFileUtils {
             CshFileUtils.getFileInfo("/Volumes/RamDisk/example.xlsx");
         }else if(2 == type){
             long rs = CshFileUtils.validateFileAndGetSize("/Volumes/RamDisk/example.xlsx");
-            String rs1 = formatFileSizeAuto(rs);
+            String rs1 = FileSizeUtils.formatFileSizeAuto(rs);
             LOGGER.info("formatFileSize,rs1:" + rs1);
         }else if(1 == type){
             long rs = CshFileUtils.validateFileAndGetSize("/Volumes/RamDisk/example.xlsx");
-            String rs1 = formatFileSize(rs, SizeUnit.MB);
+            String rs1 = FileSizeUtils.formatFileSize(rs, SizeUnit.MB);
             LOGGER.info("formatFileSize,rs1:" + rs1);
 
         } else if(0 == type){
