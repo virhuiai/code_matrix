@@ -18,6 +18,40 @@ public class CshExcelUtils {
     private static Log LOG = CshLogUtils.createLogExtended(CshExcelUtils.class);
 
 
+
+    /**
+     * 根据工作表名称获取Sheet对象
+     *
+     * @param workbook Excel工作簿对象
+     * @param sheetName 要获取的工作表名称
+     * @return 指定名称的Sheet对象
+     * @throws ExcelProcessingException 当未找到指定名称的工作表时抛出异常
+     */
+    public static Sheet get2SheetByName(Workbook workbook, String sheetName) {
+        // 参数校验
+        if (workbook == null) {
+            throw new ExcelProcessingException("INVALID_WORKBOOK", "工作簿对象不能为空");
+        }
+
+        if (sheetName == null || sheetName.trim().isEmpty()) {
+            throw new ExcelProcessingException("INVALID_SHEET_NAME", "工作表名称不能为空");
+        }
+
+        // 获取指定名称的工作表
+        Sheet sheet = workbook.getSheet(sheetName);
+
+        // 如果未找到指定工作表，抛出异常
+        if (null == sheet || sheet.getPhysicalNumberOfRows() == 0) {
+            LOG.error("Excel模板格式错误：未找到名称为 '{" + sheetName + "}' 的工作表,或不包含数据！");
+            throw new ExcelProcessingException(
+                    "SHEET_NOT_FOUND",
+                    String.format("Excel模板格式错误：未找到名称为 '%s' 的工作表", sheetName));
+        }
+
+        return sheet;
+    }
+
+
     /**
      * 获取工作簿中的第一个工作表（索引为0的工作表）
      * 该方法是对get2Sheet方法的封装，简化了获取第一个工作表的操作
