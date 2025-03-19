@@ -17,7 +17,23 @@ public class CshExcelUtils {
     // 日志对象
     private static Log LOG = CshLogUtils.createLogExtended(CshExcelUtils.class);
 
-//    getFstSheet
+
+    /**
+     * 获取工作簿中的第一个工作表（索引为0的工作表）
+     * 该方法是对get2Sheet方法的封装，简化了获取第一个工作表的操作
+     *
+     * @param w Workbook对象，表示Excel工作簿
+     * @return 返回工作簿中索引为0的工作表
+     * @throws ExcelProcessingException 当工作簿为空、不包含工作表或第一个工作表不包含数据时抛出异常
+     */
+    public static Sheet get2FstSheet(Workbook w) {
+        // 设置工作表索引为0，表示获取第一个工作表
+        int sheetIndex = 0;
+
+        // 调用get2Sheet方法获取指定索引的工作表
+        // 注意：这依赖于get2Sheet方法的实现，它会检查工作表是否有效并包含数据
+        return get2Sheet(w, sheetIndex);
+    }
 
     /**
      * 获取指定索引的工作表
