@@ -2,6 +2,8 @@ package com.virhuiai.OfficeUtils.Excel;
 
 import com.virhuiai.CshLogUtils.CshLogUtils;
 import com.virhuiai.File.CshFileUtils;
+import com.virhuiai.OfficeUtils.Excel.obj.DataBusConstants;
+import com.virhuiai.OfficeUtils.Excel.obj.ExcelProcessingException;
 import org.apache.commons.logging.Log;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Row;
@@ -18,6 +20,16 @@ public class CshExcelUtils {
     // 日志对象
     private static Log LOG = CshLogUtils.createLogExtended(CshExcelUtils.class);
 
+    /**
+     * 获取指定工作表的第一行
+     *
+     * @param sheet 需要获取行的工作表对象
+     * @return 返回工作表的第一行（索引为0的行）
+     */
+    public static Row get3FstRow(Sheet sheet) {
+        int rowIndex = 0;  // 初始化行索引为0，表示第一行
+        return get3Row(sheet, rowIndex);  // 调用get3Row方法获取指定索引的行
+    }
 
 
     /**
@@ -168,7 +180,7 @@ public class CshExcelUtils {
 
     /**
      * 获取Excel工作簿
-     * CshExcelUtils.getExcelWb
+     * CshExcelUtils.CshExcelUtils
      * @param excelPath Excel文件路径
      * @return Workbook 工作簿对象
      */
