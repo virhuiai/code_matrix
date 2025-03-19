@@ -2,23 +2,139 @@ package com.virhuiai.OfficeUtils.Excel;
 
 import com.virhuiai.CshLogUtils.CshLogUtils;
 import com.virhuiai.File.CshFileUtils;
+import com.virhuiai.OfficeUtils.Excel.obj.BiMap;
 import com.virhuiai.OfficeUtils.Excel.obj.DataBusConstants;
 import com.virhuiai.OfficeUtils.Excel.obj.ExcelProcessingException;
 import org.apache.commons.logging.Log;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.text.DecimalFormat;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.function.BiConsumer;
 
 public class CshExcelUtils {
     // 日志对象
     private static Log LOG = CshLogUtils.createLogExtended(CshExcelUtils.class);
+
+    /**
+     * 遍历Excel行中的单元格并进行处理
+     *
+     * 该方法会遍历指定行中从0到最大列数-1的所有单元格，
+     * 获取每个单元格的文本值，然后将列索引和单元格值传递给处理器进行处理。
+     *
+     * @param row Excel行对象
+     * @param maxColumns 要处理的最大列数
+     * @param processor 处理每个单元格的函数，接收列索引和单元格文本值作为参数
+     */
+    private static void processRowCells(Row row, int maxColumns, BiConsumer<Integer, String> processor) {
+        // 检查行是否为空
+        if (row == null) {
+            return; // 如果行为空，则不进行处理
+        }
+
+        // 遍历指定数量的列
+        for (int i = 0; i < maxColumns; i++) {
+            // 获取当前列的单元格
+            Cell cell = row.getCell(i);
+
+            // 获取单元格的文本值
+            String cellValue = get4CellTextValue(cell);
+
+            // 调用处理器处理当前单元格的列索引和值
+            processor.accept(i, cellValue);
+        }
+    }
+
+    /**
+     * 获取单元格的文本值
+     * 根据不同的单元格类型返回相应的文本表示
+     *
+     * @param cell Excel单元格对象
+     * @return 单元格的文本内容，如果单元格为null则返回null
+     */
+    private static String get4CellTextValue(Cell cell) {
+        // 如果单元格为空，直接返回null
+        if (cell == null) {
+            return null;
+        }
+
+        // 根据单元格类型获取对应的文本值
+        switch (cell.getCellType()) {
+            case STRING:
+                // 字符串类型：返回去除首尾空格后的字符串值
+                return cell.getStringCellValue().trim();
+            case NUMERIC:
+                // 判断是否为日期格式
+                if (DateUtil.isCellDateFormatted(cell)) {
+                    // 日期类型：返回日期的字符串表示
+                    return cell.getDateCellValue().toString();
+                }
+                // 数字类型：使用自定义格式化防止科学计数法
+                DecimalFormat decimalFormat = new DecimalFormat("0.######");
+                return decimalFormat.format(cell.getNumericCellValue());
+            case BOOLEAN:
+                // 布尔类型：转换为字符串"true"或"false"
+                return String.valueOf(cell.getBooleanCellValue());
+            case FORMULA:
+                // 公式类型：返回公式内容而非计算结果
+                return cell.getCellFormula();
+            case BLANK:
+                // 空白单元格：返回空字符串
+                return "";
+            case ERROR:
+                // 错误单元格：返回空字符串
+                return "";
+            default:
+                // 其他未知类型：返回空字符串
+                return "";
+        }
+    }
+    /**
+     * 从Excel行中提取双向映射关系
+     *
+     * 该方法遍历Excel首行，建立列索引与列名之间的双向映射关系。
+     * 只有非空的列名会被添加到映射中。
+     *
+     * @param row Excel的行对象，包含列标题
+     * @param maxColumnLimit 最大处理的列数
+     * @return 包含索引到列名和列名到索引两个映射的BiMap对象
+     * @throws IllegalArgumentException 如果首行参数为null
+     */
+    public static BiMap extractColumn2Mappings(Row row, int maxColumnLimit) {
+        // 验证输入参数
+        if (row == null) {
+            throw new IllegalArgumentException("Header row cannot be null");
+        }
+
+        // 创建两个映射：一个保持列索引到列名的映射（保持顺序），一个保持列名到列索引的映射
+        Map<Integer, String> index2NameMap = new LinkedHashMap<>();
+        Map<String, Integer> name2IndexMap = new HashMap<>();
+
+        // 获取实际的列数，并限制最大列数
+        // getLastCellNum()返回最后一个单元格的索引+1
+        int effectiveColumnCount = Math.min(maxColumnLimit, row.getLastCellNum());
+
+        // 遍历首行单元格并建立映射关系
+        processRowCells(row, effectiveColumnCount, (columnIndex, columnName) -> {
+            // 只处理非空列名
+            if (columnName != null && !columnName.isEmpty()) {
+                // 将列索引和列名添加到映射中
+                index2NameMap.put(columnIndex, columnName);
+                name2IndexMap.put(columnName, columnIndex);
+            }
+        });
+
+        // 返回包含双向映射的BiMap对象
+        return new BiMap(index2NameMap, name2IndexMap);
+    }
 
     /**
      * 获取指定工作表的第一行
