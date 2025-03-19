@@ -4,10 +4,11 @@ package com.virhuiai.File;
 // 导入所需的类
 
 import com.virhuiai.CshLogUtils.CshLogUtils;
+import com.virhuiai.File.obj.FileInformation;
+import com.virhuiai.File.obj.SizeUnit;
 import org.apache.commons.logging.Log;
 
 import java.io.IOException;
-import java.io.RandomAccessFile;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -124,9 +125,6 @@ public class CshFileUtils {
             return null;
         }
     }
-
-
-
 
 
     /**

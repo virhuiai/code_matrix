@@ -1,6 +1,7 @@
 package com.virhuiai.File;
 
 import com.virhuiai.CshLogUtils.CshLogUtils;
+import com.virhuiai.File.obj.SizeUnit;
 import org.apache.commons.logging.Log;
 
 import java.io.IOException;

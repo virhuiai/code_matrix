@@ -1,6 +1,7 @@
 package com.virhuiai.File;
 
 import com.virhuiai.CshLogUtils.CshLogUtils;
+import com.virhuiai.File.obj.FileChunkParams;
 import org.apache.commons.logging.Log;
 
 import java.io.BufferedReader;
