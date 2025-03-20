@@ -15,9 +15,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.text.DecimalFormat;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.function.BiConsumer;
 
 public class CshExcelUtils {
@@ -25,7 +23,106 @@ public class CshExcelUtils {
     private static Log LOG = CshLogUtils.createLogExtended(CshExcelUtils.class);
 
     /**
+     * 解析Excel数据行到键值对列表
+     * CshExcelUtils.parseExcelDataRowsToMapList
+     * 将Excel工作表中的数据行解析为键值对映射列表
+     * @param sheet Excel工作表对象
+     * @param biMap 列索引和列名之间的映射关系
+     * @param startRowNum 开始解析的行号(从0开始计数，而非文档注释中说的从1开始)
+     * @return 包含每行数据的键值对列表
+     */
+    public static List<Map<String, String>> parseExcelDataRowsToMapList(Sheet sheet, BiMap biMap, int startRowNum) {
+        // 创建一个列表用于存储每行的数据映射
+        List<Map<String, String>> dataRowList = new ArrayList<>();
+
+        // 参数校验，防止空指针异常
+        if (sheet == null || biMap == null) {
+            LOG.error("Sheet or BiMap is null");
+            return dataRowList;  // 返回空列表而不是抛出异常
+        }
+
+        // 从BiMap中获取列索引到列名称的映射关系
+        Map<Integer, String> indexToNameMap = biMap.getIndexToNameMap();
+
+        // 如果映射为空，记录警告并返回
+        if (indexToNameMap == null || indexToNameMap.isEmpty()) {
+            LOG.warn("Index to name mapping is empty, no data will be processed");
+            return dataRowList;
+        }
+
+        // 获取Excel表中的最大行号
+        int maxRowNum = sheet.getLastRowNum();
+
+        // 校正startRowNum，确保不小于0
+        if (startRowNum < 0) {
+            LOG.warn("Start row number is negative, setting to 0");
+            startRowNum = 0;
+        }
+
+        // 从指定的起始行开始遍历每一行
+        for (int rowIndex = startRowNum; rowIndex <= maxRowNum; rowIndex++) {
+            // 获取当前行
+            Row row = sheet.getRow(rowIndex);
+            // 如果行为空，则跳过此行
+            if (null == row) {
+                continue;
+            }
+
+            // 获取实际的列数，并限制最大列数为100（防止过大的数据集）
+            // getLastCellNum返回的是最后一个单元格的索引+1，所以这里判断是否为0
+            int lastCellNum = row.getLastCellNum();
+            if (lastCellNum <= 0) {
+                continue;  // 跳过没有单元格的行
+            }
+
+            int maxColumnNum = Math.min(100, lastCellNum);
+
+            // 创建一个映射来存储当前行的数据（列名->值）
+            Map<String, String> rowDataMap = new HashMap<>();
+            // 创建一个final变量以便在lambda表达式中使用
+            final int finalRowIndex = rowIndex;
+
+            // 是否找到了至少一个有效的单元格值
+            final boolean[] hasValidData = {false};
+
+            // 处理行中的每个单元格
+            processRowCells(row, maxColumnNum, (columnIndex, cellValue) -> {
+                // 只处理非空值
+                if (null != cellValue && !cellValue.isEmpty()) {
+                    // 检查该列索引是否在映射关系中定义
+                    if (indexToNameMap.containsKey(columnIndex)) {
+                        // 根据列索引获取列名
+                        String columnName = indexToNameMap.get(columnIndex);
+                        if (columnName != null && !columnName.isEmpty()) {
+                            // 将列名和单元格值作为键值对添加到行数据映射中
+                            rowDataMap.put(columnName, cellValue);
+                            hasValidData[0] = true;  // 标记找到了有效数据
+                        }
+                    } else {
+                        // 如果列索引未在映射中定义，记录错误
+                        LOG.debug("Column index:" + columnIndex + " is not defined in the header row!");
+                        // 这里使用debug级别而非error，因为这可能是预期行为
+                    }
+                } else {
+                    // 记录空值的信息
+                    LOG.debug("Row index:" + finalRowIndex + ", Column index:" + columnIndex + ", corresponding value is empty!");
+                    // 这里也改为debug级别，因为空值是常见情况
+                }
+            });
+
+            // 只有当行数据映射中有数据时，才将其添加到结果列表中
+            if (hasValidData[0]) {
+                dataRowList.add(rowDataMap);
+            }
+        }
+
+        // 返回包含所有行数据的列表
+        return dataRowList;
+    }
+
+    /**
      * 遍历Excel行中的单元格并进行处理
+     * CshExcelUtils.processRowCells
      *
      * 该方法会遍历指定行中从0到最大列数-1的所有单元格，
      * 获取每个单元格的文本值，然后将列索引和单元格值传递给处理器进行处理。
