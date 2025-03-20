@@ -86,7 +86,7 @@ public class CshExcelUtils {
             // 这里使用了一个只有一个元素的布尔数组，而不是普通的布尔变量，主要是因为：
             //    1。在 lambda 表达式中使用：Java 8 的 lambda 表达式要求使用的外部变量必须是 final 或实际上 final（effectively final）的。
             //    2。需要可变引用：在 lambda 表达式内部需要修改这个标志的值（将其设置为 true）。普通的 final 布尔变量一旦初始化就不能修改，但数组的元素可以修改，即使数组引用本身是 final 的。
-            final boolean[] hasValidData = {false};
+//            final boolean[] hasValidData = {false};
 
 
             // 处理行中的每个单元格
@@ -100,7 +100,7 @@ public class CshExcelUtils {
                         if (columnName != null && !columnName.isEmpty()) {
                             // 将列名和单元格值作为键值对添加到行数据映射中
                             rowDataMap.put(columnName, cellValue);
-                            hasValidData[0] = true;  // 标记找到了有效数据
+//                            hasValidData[0] = true;  // 标记找到了有效数据
                         }
                     } else {
                         // 如果列索引未在映射中定义，记录错误
@@ -115,9 +115,12 @@ public class CshExcelUtils {
             });
 
             // 只有当行数据映射中有数据时，才将其添加到结果列表中
-            if (hasValidData[0]) {
+//            if (hasValidData[0]) {
+            if(!rowDataMap.isEmpty()){
                 dataRowList.add(rowDataMap);
             }
+
+//            }
         }
 
         // 返回包含所有行数据的列表
