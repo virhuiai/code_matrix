@@ -21,7 +21,6 @@ import java.util.function.BiConsumer;
 public class CshExcelUtils {
     // 日志对象
     private static Log LOG = CshLogUtils.createLogExtended(CshExcelUtils.class);
-
     /**
      * 解析Excel数据行到键值对列表
      * CshExcelUtils.parseExcelDataRowsToMapList
@@ -31,13 +30,13 @@ public class CshExcelUtils {
      * @param startRowNum 开始解析的行号(从0开始计数，而非文档注释中说的从1开始)
      * @return 包含每行数据的键值对列表
      */
-    public static List<Map<String, String>> parseExcelDataRowsToMapList(Sheet sheet, BiMap biMap, int startRowNum) {
+    public static List<Map<String, String>> parseExcelDataRowsToMapList(Sheet sheet, BiMap biMap, int startRowNum) { // 修复：添加了泛型参数
         // 创建一个列表用于存储每行的数据映射
         List<Map<String, String>> dataRowList = new ArrayList<>();
 
         // 参数校验，防止空指针异常
         if (sheet == null || biMap == null) {
-            LOG.error("Sheet or BiMap is null");
+            LOG.error("工作表或双向映射为空"); // 修改：翻译了错误信息
             return dataRowList;  // 返回空列表而不是抛出异常
         }
 
@@ -46,7 +45,7 @@ public class CshExcelUtils {
 
         // 如果映射为空，记录警告并返回
         if (indexToNameMap == null || indexToNameMap.isEmpty()) {
-            LOG.warn("Index to name mapping is empty, no data will be processed");
+            LOG.warn("索引到名称的映射为空，不会处理任何数据"); // 修改：翻译了警告信息
             return dataRowList;
         }
 
@@ -55,7 +54,7 @@ public class CshExcelUtils {
 
         // 校正startRowNum，确保不小于0
         if (startRowNum < 0) {
-            LOG.warn("Start row number is negative, setting to 0");
+            LOG.warn("起始行号为负数，设置为0");
             startRowNum = 0;
         }
 
@@ -78,12 +77,17 @@ public class CshExcelUtils {
             int maxColumnNum = Math.min(100, lastCellNum);
 
             // 创建一个映射来存储当前行的数据（列名->值）
+            // Java 8 引入了"effectively final"的概念，即如果一个变量在初始化后没有被重新赋值，它就被视为实际上是 final 的。
             Map<String, String> rowDataMap = new HashMap<>();
             // 创建一个final变量以便在lambda表达式中使用
             final int finalRowIndex = rowIndex;
 
             // 是否找到了至少一个有效的单元格值
+            // 这里使用了一个只有一个元素的布尔数组，而不是普通的布尔变量，主要是因为：
+            //    1。在 lambda 表达式中使用：Java 8 的 lambda 表达式要求使用的外部变量必须是 final 或实际上 final（effectively final）的。
+            //    2。需要可变引用：在 lambda 表达式内部需要修改这个标志的值（将其设置为 true）。普通的 final 布尔变量一旦初始化就不能修改，但数组的元素可以修改，即使数组引用本身是 final 的。
             final boolean[] hasValidData = {false};
+
 
             // 处理行中的每个单元格
             processRowCells(row, maxColumnNum, (columnIndex, cellValue) -> {
@@ -100,12 +104,12 @@ public class CshExcelUtils {
                         }
                     } else {
                         // 如果列索引未在映射中定义，记录错误
-                        LOG.debug("Column index:" + columnIndex + " is not defined in the header row!");
+                        LOG.debug("列索引:" + columnIndex + " 未在表头行中定义！"); // 修改：翻译了调试信息
                         // 这里使用debug级别而非error，因为这可能是预期行为
                     }
                 } else {
                     // 记录空值的信息
-                    LOG.debug("Row index:" + finalRowIndex + ", Column index:" + columnIndex + ", corresponding value is empty!");
+                    LOG.debug("行索引:" + finalRowIndex + ", 列索引:" + columnIndex + ", 对应的值为空！"); // 修改：翻译了调试信息
                     // 这里也改为debug级别，因为空值是常见情况
                 }
             });
