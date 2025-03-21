@@ -21,6 +21,60 @@ import java.util.function.BiConsumer;
 public class CshExcelUtils {
     // 日志对象
     private static Log LOG = CshLogUtils.createLogExtended(CshExcelUtils.class);
+
+    /**
+     * 处理Excel文件并生成字符串列表映射
+     *
+     * @param excel文件路径 Excel文件的完整路径
+     * @param sheetName
+     * @return 包含所有行列数据的二维列表
+     * @throws ExcelProcessingException 当Excel处理出现异常时抛出
+     *
+     */
+    public static List<List<String>> parseExcelToStringMatrix(String excel文件路径, String sheetName, int maxCol) {
+        // 存储所有行的数据
+        List<List<String>> rs = new ArrayList<>();
+
+        try (Workbook wb = CshExcelUtils.get1Wb(excel文件路径)) {
+            // 获取指定名称的工作表
+            Sheet s = CshExcelUtils.get2SheetByName(wb, sheetName);
+
+            // 获取工作表的最后一行的索引
+            int rowIndexMax = s.getLastRowNum();
+
+            // 遍历每一行
+            for (int rowIndex = 0; rowIndex <= rowIndexMax; rowIndex++) {
+                // 获取当前行对象
+                Row cr = s.getRow(rowIndex);
+
+                // 跳过空行
+                if (null == cr) {
+                    continue;
+                }
+
+                // 创建当前行的数据列表
+                List<String> 行数据列表 = new ArrayList<>();
+                rs.add(行数据列表);
+
+                // 限制最大列数为，避免处理过多无用数据
+                int 最大列数 = Math.min(maxCol, cr.getLastCellNum());
+
+                // 处理行中的每个单元格
+                CshExcelUtils.processRowCells(cr, 最大列数, (列索引, 单元格值) -> {
+                    行数据列表.add(单元格值);
+                });
+            }
+            return rs;
+
+        } catch (IOException 输入输出异常) {
+            throw new ExcelProcessingException(
+                    "EXCEL_PROCESSING_ERROR",
+                    "处理Excel文件时发生错误",
+                    输入输出异常
+            );
+        }
+    }
+
     /**
      * 解析Excel数据行到键值对列表
      * CshExcelUtils.parseExcelDataRowsToMapList
