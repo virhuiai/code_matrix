@@ -23,7 +23,7 @@ public class CshExcelUtils {
     private static Log LOG = CshLogUtils.createLogExtended(CshExcelUtils.class);
 
     /**
-     * 处理Excel文件并生成字符串列表映射
+     * 处理Excel文件并生成字符串映射列表
      *
      * @param excel文件路径 Excel文件的完整路径
      * @param sheetName
