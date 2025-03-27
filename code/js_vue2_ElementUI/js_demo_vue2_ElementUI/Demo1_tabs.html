@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Element UI Demo</title>
+    <!-- 引入样式 -->
+    <link rel="stylesheet" href="./element-ui@2.15.14.css">
+    <!-- 引入Vue -->
+    <script src="./vue@2.7.16.js"></script>
+    <!-- 引入组件库 -->
+    <script src="./element-ui@2.15.14.js"></script>
+    <style>
+
+    </style>
+</head>
+<body>
+    <div id="app">
+        <el-tabs v-model="activeTab">
+            <el-tab-pane label="标签页一" name="first">标签页一的内容</el-tab-pane>
+            <el-tab-pane label="标签页二" name="second">标签页二的内容</el-tab-pane>
+            <el-tab-pane label="标签页三" name="third">标签页三的内容</el-tab-pane>
+        </el-tabs>
+    </div>
+
+    <script>
+        new Vue({
+            el: '#app',
+            data() {
+                return {
+                    activeTab: 'first'
+                }
+            },
+            methods: {
+            }
+        })
+    </script>
+</body>
+</html>
