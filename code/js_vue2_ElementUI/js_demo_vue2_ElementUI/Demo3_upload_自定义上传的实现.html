@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Element UI Demo</title>
+    <!-- 引入样式 -->
+    <link rel="stylesheet" href="./element-ui@2.15.14.css">
+    <!-- 引入Vue -->
+    <script src="./vue@2.7.16.js"></script>
+    <!-- 引入组件库 -->
+    <script src="./element-ui@2.15.14.js"></script>
+    <style>
+
+    </style>
+</head>
+<body>
+    <div id="app">
+        <el-upload
+                class="upload-demo"
+                action=""
+                :on-preview="handlePreview"
+                :on-remove="handleRemove"
+                :before-remove="beforeRemove"
+                multiple
+                :limit="3"
+                :on-exceed="handleExceed"
+                :file-list="fileList"
+                :http-request="customUpload"
+        >
+            <el-button size="small" type="primary">点击上传</el-button>
+            <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
+        </el-upload>
+    </div>
+
+    <script>
+        new Vue({
+            el: '#app',
+            data() {
+                return {
+                    fileList: []
+                };
+            },
+            methods: {
+                handleRemove(file, fileList) {
+                    console.log(file, fileList);
+                },
+                handlePreview(file) {
+                    console.log(file);
+                },
+                handleExceed(files, fileList) {
+                    this.$message.warning(`当前限制选择 3 个文件，本次选择了 ${files.length} 个文件，共选择了 ${files.length + fileList.length} 个文件`);
+                },
+                beforeRemove(file, fileList) {
+                    return this.$confirm(`确定移除 ${ file.name }？`);
+                },
+
+
+                // 文件上传相关方法
+                customUpload(options) {
+                    console.log('开始自定义上传', options.file);
+
+                    // 这里可以实现自定义的上传逻辑，例如调用API上传文件
+                    const formData = new FormData();
+                    formData.append('file', options.file);
+
+                    // 模拟上传请求
+                    setTimeout(() => {
+                        // 模拟上传成功
+                        this.$message.success(`${options.file.name} 上传成功!`);
+
+                        // 如果需要调用实际接口，可以使用以下代码:
+                        /*
+                        fetch('https://your-actual-api-endpoint.com/upload', {
+                            method: 'POST',
+                            body: formData
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            options.onSuccess(data);
+                            this.$message.success(`${options.file.name} 上传成功!`);
+                        })
+                        .catch(error => {
+                            options.onError(error);
+                            this.$message.error(`${options.file.name} 上传失败!`);
+                        });
+                        */
+
+                        options.onSuccess();
+                    }, 1000);
+                },
+            }
+        })
+    </script>
+</body>
+</html>
