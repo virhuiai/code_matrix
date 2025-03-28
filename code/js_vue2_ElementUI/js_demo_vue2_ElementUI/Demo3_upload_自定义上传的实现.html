@@ -11,7 +11,13 @@
     <!-- 引入组件库 -->
     <script src="./element-ui@2.15.14.js"></script>
     <style>
-
+        .custom-file-info {
+            margin-top: 10px;
+            padding: 8px;
+            border: 1px dashed #ccc;
+            border-radius: 4px;
+            background-color: #f9f9f9;
+        }
     </style>
 </head>
 <body>
@@ -32,6 +38,13 @@
             <el-button size="small" type="primary">点击上传</el-button>
             <div slot="tip" class="el-upload__tip">只能上传PDF和DOCX文件</div>
         </el-upload>
+
+        <div v-if="uploadInfo" class="custom-file-info">
+            <p><strong>最近上传信息：</strong></p>
+            <p>文件名: {{ uploadInfo.filename }}</p>
+            <p>文件大小: {{ uploadInfo.filesize }}</p>
+            <p>文件类型: {{ uploadInfo.filetype }}</p>
+        </div>
     </div>
 
     <script>
@@ -39,7 +52,8 @@
             el: '#app',
             data() {
                 return {
-                    fileList: []
+                    fileList: [],
+                    uploadInfo: null
                 };
             },
             methods: {
@@ -70,14 +84,30 @@
                 customUpload(options) {
                     console.log('开始自定义上传', options.file);
 
+                    // 获取文件名和文件对象
+                    const filename = options.file.name;
+                    const file = options.file;
+
+                    // 保存上传信息到数据中
+                    this.uploadInfo = {
+                        filename: filename,
+                        filesize: this.formatFileSize(file.size),
+                        filetype: file.type
+                    };
+
                     // 这里可以实现自定义的上传逻辑，例如调用API上传文件
                     const formData = new FormData();
-                    formData.append('file', options.file);
+                    formData.append('filename', filename); // 指定文件名
+                    formData.append('file', file); // 指定文件对象
 
                     // 模拟上传请求
                     setTimeout(() => {
                         // 模拟上传成功
-                        this.$message.success(`${options.file.name} 上传成功!`);
+                        this.$message.success(`${filename} 上传成功!`);
+                        console.log('上传参数：', {
+                            filename: filename,
+                            file: file
+                        });
 
                         // 如果需要调用实际接口，可以使用以下代码:
                         /*
@@ -88,17 +118,26 @@
                         .then(response => response.json())
                         .then(data => {
                             options.onSuccess(data);
-                            this.$message.success(`${options.file.name} 上传成功!`);
+                            this.$message.success(`${filename} 上传成功!`);
                         })
                         .catch(error => {
                             options.onError(error);
-                            this.$message.error(`${options.file.name} 上传失败!`);
+                            this.$message.error(`${filename} 上传失败!`);
                         });
                         */
 
                         options.onSuccess();
                     }, 1000);
                 },
+
+                // 格式化文件大小的辅助方法
+                formatFileSize(bytes) {
+                    if (bytes === 0) return '0 Bytes';
+                    const k = 1024;
+                    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+                    const i = Math.floor(Math.log(bytes) / Math.log(k));
+                    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+                }
             }
         })
     </script>
