@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Element UI Table Demo</title>
+    <!-- 引入样式 -->
+    <link rel="stylesheet" href="./element-ui@2.15.14.css">
+    <!-- 引入Vue -->
+    <script src="./vue@2.7.16.js"></script>
+    <!-- 引入组件库 -->
+    <script src="./element-ui@2.15.14.js"></script>
+    <style>
+        .selected-info {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #f5f7fa;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+<div id="app">
+    <el-table
+            ref="multipleTable"
+            :data="tableData"
+            @selection-change="handleSelectionChange"
+            style="width: 100%">
+        <el-table-column
+                type="selection"
+                width="55">
+        </el-table-column>
+        <el-table-column
+                prop="date"
+                label="日期"
+                width="180">
+        </el-table-column>
+        <el-table-column
+                prop="name"
+                label="姓名"
+                width="180">
+        </el-table-column>
+        <el-table-column
+                prop="address"
+                label="地址">
+        </el-table-column>
+    </el-table>
+
+    <div v-if="selectedRow" class="selected-info">
+        <h3>已选中的数据：</h3>
+        <p>日期：{{ selectedRow.date }}</p>
+        <p>姓名：{{ selectedRow.name }}</p>
+        <p>地址：{{ selectedRow.address }}</p>
+    </div>
+</div>
+
+<script>
+    new Vue({
+        el: '#app',
+        data() {
+            return {
+                tableData: [{
+                    date: '2016-05-02',
+                    name: '王小虎',
+                    address: '上海市普陀区金沙江路 1518 弄'
+                }, {
+                    date: '2016-05-04',
+                    name: '王小虎',
+                    address: '上海市普陀区金沙江路 1517 弄'
+                }, {
+                    date: '2016-05-01',
+                    name: '王小虎',
+                    address: '上海市普陀区金沙江路 1519 弄'
+                }, {
+                    date: '2016-05-03',
+                    name: '王小虎',
+                    address: '上海市普陀区金沙江路 1516 弄'
+                }],
+                selectedRow: null,
+                lastSelectedRow: null
+            }
+        },
+        methods: {
+            handleSelectionChange(selection) {
+                // 没有任何选中，说明用户取消了所有选择
+                if (selection.length === 0) {
+                    this.selectedRow = null;
+                    this.lastSelectedRow = null;
+                    return;
+                }
+
+
+
+                // 获取当前用户点击的行（最后一个被改变状态的行）
+                const currentSelection = selection[selection.length - 1];
+                this.selectedRow = currentSelection;
+                this.lastSelectedRow = currentSelection;
+                if(selection.length == 1){
+                    return;
+                }
+
+                // 清除所有选择
+                this.$refs.multipleTable.clearSelection();
+                // 如果点击的是新行，选中该行
+                this.$refs.multipleTable.toggleRowSelection(currentSelection, true);
+            }
+        }
+    })
+</script>
+</body>
+</html>
