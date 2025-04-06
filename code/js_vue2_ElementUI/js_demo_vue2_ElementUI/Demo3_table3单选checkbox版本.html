@@ -17,6 +17,11 @@
             background-color: #f5f7fa;
             border-radius: 4px;
         }
+
+        /* 隐藏表头中的checkbox */
+        .hide-header-checkbox .el-table__header-wrapper .el-checkbox {
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -25,10 +30,15 @@
             ref="multipleTable"
             :data="tableData"
             @selection-change="handleSelectionChange"
+            class="hide-header-checkbox"
             style="width: 100%">
         <el-table-column
                 type="selection"
                 width="55">
+<!--             自定义表头，不使用默认的checkbox-->
+            <template slot="header">
+                <span></span>
+            </template>
         </el-table-column>
         <el-table-column
                 prop="date"

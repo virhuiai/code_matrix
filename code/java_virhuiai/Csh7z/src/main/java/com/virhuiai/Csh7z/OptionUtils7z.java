@@ -42,6 +42,30 @@ public class OptionUtils7z {
     }
 
     /**
+     * 配置密码前缀选项
+     */
+    private static void setupPasswordPrefixOption() {
+        CshCliUtils.s2AddOption(options -> options.addOption(Option.builder()
+                .longOpt("passwordPrefix")
+                .desc("指定密码的前缀（若不指定则为空）")
+                .hasArg()
+                .argName("密码前缀")
+                .build()));
+    }
+
+    /**
+     * 配置密码后缀选项
+     */
+    private static void setupPasswordSuffixOption() {
+        CshCliUtils.s2AddOption(options -> options.addOption(Option.builder()
+                .longOpt("passwordSuffix")
+                .desc("指定密码的后缀（若不指定则为空）")
+                .hasArg()
+                .argName("密码后缀")
+                .build()));
+    }
+
+    /**
      * 配置输出文件选项
      */
     private static void setupOutputOption() {
@@ -59,7 +83,7 @@ public class OptionUtils7z {
     private static void setupCompressionLevelOption() {
         CshCliUtils.s2AddOption(options -> options.addOption(Option.builder("l")
                 .longOpt("level")
-                .desc("设置压缩等级 (可用值: " + Level7z.getAvailableLevels() + ")")
+                .desc("设置压缩等级，" + Level7z.getAvailableLevels())
                 .hasArg()
                 .argName("压缩等级")
                 .type(Number.class)
@@ -103,6 +127,11 @@ public class OptionUtils7z {
         setupInputDirOption();
         // 配置密码选项
         setupPasswordOption();
+        // 配置密码前缀选项// passwordPrefix
+        setupPasswordPrefixOption();
+        //配置密码后缀选项//passwordSuffix
+        setupPasswordSuffixOption();
+
         // 配置输出文件选项
         setupOutputOption();
         // 配置压缩等级选项

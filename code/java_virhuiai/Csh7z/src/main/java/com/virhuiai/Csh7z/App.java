@@ -44,7 +44,7 @@ public class App {
 
         String output = config.getConfigValue(Config7z.Keys.OUTPUT_FILE, "");
         String password = FileUtils7z.wrapStr(
-                config.getConfigValue(Config7z.Keys.PASSWORD, ""),
+                config.getConfigValue(Config7z.Keys.PASSWORD_VALUE, ""),
                 config.getConfigValue(Config7z.Keys.RANDOM_CHAR_B, ""),
                 config.getConfigValue(Config7z.Keys.RANDOM_CHAR_A, "")
         );

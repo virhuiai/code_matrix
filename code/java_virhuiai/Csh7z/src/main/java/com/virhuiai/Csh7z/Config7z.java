@@ -28,7 +28,17 @@ public class Config7z extends HashMap<String, String> {
         public static final String RANDOM_OUT_NAME = "RANDOM_OUT_NAME";
 
         // 密码相关
-        public static final String PASSWORD = "PASSWORD_VALUE";
+        public static final String PASSWORD_VALUE = "PASSWORD_VALUE";
+        /**
+         * 密码前缀常量
+         */
+        public static final String PASSWORD_PREFIX = "";
+
+        /**
+         * 密码后缀常量
+         */
+        public static final String PASSWORD_SUFFIX = "";
+
         public static final String RANDOM_CHAR_A = "RANDOM_CHAR_A";
         public static final String RANDOM_CHAR_B = "RANDOM_CHAR_B";
 
@@ -94,7 +104,41 @@ public class Config7z extends HashMap<String, String> {
             LOGGER.info("使用随机生成的密码");
         }
 
-        put(Keys.PASSWORD, password);
+        put(Keys.PASSWORD_VALUE, password);
+    }
+
+    /**
+     * 处理密码前缀设置
+     * 如果用户指定了前缀则使用用户指定的，否则使用默认值（空字符串）
+     */
+    private void processPasswordPrefix() {
+        String defaultValue = get(Keys.PASSWORD_PREFIX);
+        String prefix = CshCliUtils.s3GetOptionValue("passwordPrefix", defaultValue);
+
+        if (!prefix.equals(defaultValue)) {
+            LOGGER.info("使用用户指定的密码前缀");
+        } else {
+            LOGGER.info("使用默认密码前缀");
+        }
+
+        put(Keys.PASSWORD_PREFIX, prefix);
+    }
+
+    /**
+     * 处理密码后缀设置
+     * 如果用户指定了后缀则使用用户指定的，否则使用默认值（空字符串）
+     */
+    private void processPasswordSuffix() {
+        String defaultValue = get(Keys.PASSWORD_SUFFIX);
+        String suffix = CshCliUtils.s3GetOptionValue("passwordSuffix", defaultValue);
+
+        if (!suffix.equals(defaultValue)) {
+            LOGGER.info("使用用户指定的密码后缀");
+        } else {
+            LOGGER.info("使用默认密码后缀");
+        }
+
+        put(Keys.PASSWORD_SUFFIX, suffix);
     }
 
     /**
@@ -214,6 +258,11 @@ public class Config7z extends HashMap<String, String> {
 
         // 处理密码
         processPassword();
+        // 处理密码前缀设置
+        processPasswordPrefix();
+        //处理密码后缀设置
+        processPasswordSuffix();
+
 
         // 处理压缩等级
         processCompressionLevel();
