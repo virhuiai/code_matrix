@@ -113,16 +113,31 @@ public class OptionUtils7z {
                 .build()));
     }
 
+
     /**
      * 配置模式选项
      */
     private static void setupModeOption() {
         CshCliUtils.s2AddOption(options -> options.addOption(Option.builder("m")
                 .longOpt("mode")
-                .desc("指定操作模式：1=生成密码，2=解开密码，3=压缩文件，4=解压文件")
+                .desc("指定操作模式：genMd5=去除非MD5字符，compress=压缩文件")
                 .hasArg()
                 .argName("操作模式")
-//                .required(true)
+                .required(true)
+                .build()));
+        // ，extract=解压文件
+    }
+
+
+    /**
+     * 配置输入字符串选项
+     */
+    private static void setupInputStringOption() {
+        CshCliUtils.s2AddOption(options -> options.addOption(Option.builder()
+                .longOpt("inputStr")
+                .desc("指定输入的字符串，用于处理操作")
+                .hasArg()
+                .argName("输入字符串")
                 .build()));
     }
 
@@ -137,6 +152,8 @@ public class OptionUtils7z {
         LOGGER.debug("接收到的命令行参数: " + String.join(", ", args));
         // 配置模式选项
         setupModeOption();
+        // 配置输入字符串选项
+        setupInputStringOption();
 
         // 配置输入目录选项
         setupInputDirOption();

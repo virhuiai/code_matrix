@@ -20,10 +20,10 @@ public class Config7z extends HashMap<String, String> {
      */
     public static class Keys {
 
-        public static final String MODE = "MODE";
 
         // 输入输出相关
         public static final String INPUT_DIR = "INPUT_DIR";
+
         public static final String OUTPUT_FILE = "OUTPUT_FILE";
 
         // MD5相关
@@ -258,6 +258,8 @@ public class Config7z extends HashMap<String, String> {
         // 加载基本配置
         // 设置输入目录，从命令行参数 -i 获取，这是一个必填项
         put(Keys.INPUT_DIR, CshCliUtils.s3GetOptionValue("i", "设置的是必填，此调用方法传优化"));
+
+
 
         // 设置是否启用额外功能，从命令行参数 -e 获取，如未指定则使用默认值
         put(Keys.EXTRA_ENABLED, CshCliUtils.s3GetOptionValue("e", Defaults.DEFAULT_EXTRA_ENABLED));

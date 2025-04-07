@@ -2,7 +2,9 @@ package com.virhuiai.Csh7z;
 
 // 工具类导入
 
+import com.virhuiai.Cli.CshCliUtils;
 import com.virhuiai.CshLogUtils.CshLogUtils;
+import com.virhuiai.Md5.MD5FileNameUtils;
 import org.apache.commons.logging.Log;
 
 import java.io.File;
@@ -36,10 +38,17 @@ public class App {
         //从命令行加载配置参数
         config.loadFromCommandLine();
 
-        String mode = config.getConfigValue(Config7z.Keys.MODE, "");
+        String mode = CshCliUtils.s3GetOptionValue("mode", null);
         if(null == mode){
             LOGGER.info("未指定模式！");
         }
+        if("genMd5".equalsIgnoreCase(mode)){
+             String inputStr =  CshCliUtils.s3GetOptionValue("inputStr", "");
+            String extracted = MD5FileNameUtils.extractMD5(inputStr);
+            LOGGER.info("extracted:" + extracted);
+            return;
+        }
+
         // todo 以后实现mode
 
 
