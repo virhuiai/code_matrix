@@ -19,6 +19,9 @@ public class Config7z extends HashMap<String, String> {
      * 配置项键名常量
      */
     public static class Keys {
+
+        public static final String MODE = "MODE";
+
         // 输入输出相关
         public static final String INPUT_DIR = "INPUT_DIR";
         public static final String OUTPUT_FILE = "OUTPUT_FILE";
@@ -112,7 +115,8 @@ public class Config7z extends HashMap<String, String> {
      * 如果用户指定了前缀则使用用户指定的，否则使用默认值（空字符串）
      */
     private void processPasswordPrefix() {
-        String defaultValue = get(Keys.PASSWORD_PREFIX);
+//        String defaultValue = get(Keys.PASSWORD_PREFIX);
+        String defaultValue = "";
         String prefix = CshCliUtils.s3GetOptionValue("passwordPrefix", defaultValue);
 
         if (!prefix.equals(defaultValue)) {
@@ -120,6 +124,7 @@ public class Config7z extends HashMap<String, String> {
         } else {
             LOGGER.info("使用默认密码前缀");
         }
+
 
         put(Keys.PASSWORD_PREFIX, prefix);
     }
@@ -129,7 +134,8 @@ public class Config7z extends HashMap<String, String> {
      * 如果用户指定了后缀则使用用户指定的，否则使用默认值（空字符串）
      */
     private void processPasswordSuffix() {
-        String defaultValue = get(Keys.PASSWORD_SUFFIX);
+//        String defaultValue = get(Keys.PASSWORD_SUFFIX);
+        String defaultValue = "";
         String suffix = CshCliUtils.s3GetOptionValue("passwordSuffix", defaultValue);
 
         if (!suffix.equals(defaultValue)) {

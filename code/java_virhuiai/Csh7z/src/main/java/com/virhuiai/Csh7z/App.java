@@ -36,6 +36,14 @@ public class App {
         //从命令行加载配置参数
         config.loadFromCommandLine();
 
+        String mode = config.getConfigValue(Config7z.Keys.MODE, "");
+        if(null == mode){
+            LOGGER.info("未指定模式！");
+        }
+        // todo 以后实现mode
+
+
+
 
         String inDir = config.getConfigValue(Config7z.Keys.INPUT_DIR, "");
         if(null == inDir || inDir.isEmpty()){
@@ -48,8 +56,8 @@ public class App {
         // 该方法可能是对原始密码进行包装或加密处理
         // 从配置中获取以下参数：
         //   - PASSWORD_VALUE: 原始密码值（如果未配置则使用空字符串）
-        //   - RANDOM_CHAR_B: 可能用于密码加密或混淆的随机字符B（如果未配置则使用空字符串）
-        //   - RANDOM_CHAR_A: 可能用于密码加密或混淆的随机字符A（如果未配置则使用空字符串）
+        //   - RANDOM_CHAR_B: 可能用于 混淆的随机字符B（如果未配置则使用空字符串）
+        //   - RANDOM_CHAR_A: 可能用于 混淆的随机字符A（如果未配置则使用空字符串）
         String password = FileUtils7z.wrapStr(
                 config.getConfigValue(Config7z.Keys.PASSWORD_VALUE, ""),
                 config.getConfigValue(Config7z.Keys.RANDOM_CHAR_B, ""),
@@ -61,6 +69,15 @@ public class App {
         password = config.getConfigValue(Config7z.Keys.PASSWORD_PREFIX, "")
                 +  password
                 + config.getConfigValue(Config7z.Keys.PASSWORD_SUFFIX, "");
+
+        LOGGER.info("PASSWORD_VALUE: " + config.getConfigValue(Config7z.Keys.PASSWORD_VALUE, ""));
+        LOGGER.info("RANDOM_CHAR_B: " + config.getConfigValue(Config7z.Keys.RANDOM_CHAR_B, ""));
+        LOGGER.info("RANDOM_CHAR_A: " + config.getConfigValue(Config7z.Keys.RANDOM_CHAR_A, ""));
+        LOGGER.info("PASSWORD_PREFIX: " + config.getConfigValue(Config7z.Keys.PASSWORD_PREFIX, ""));
+        LOGGER.info("PASSWORD_SUFFIX: " + config.getConfigValue(Config7z.Keys.PASSWORD_SUFFIX, ""));
+        LOGGER.info("password: " + password);
+
+
 
         Integer compressionLevel = config.getIntConfigValue(Config7z.Keys.COMPRESSION_LEVEL, 0);
 
