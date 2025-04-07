@@ -43,11 +43,20 @@ public class App {
         }
 
         String output = config.getConfigValue(Config7z.Keys.OUTPUT_FILE, "");
+        // 第一步：使用FileUtils7z工具类的wrapStr方法处理密码
+        // 该方法可能是对原始密码进行包装或加密处理
+        // 从配置中获取以下参数：
+        //   - PASSWORD_VALUE: 原始密码值（如果未配置则使用空字符串）
+        //   - RANDOM_CHAR_B: 可能用于密码加密或混淆的随机字符B（如果未配置则使用空字符串）
+        //   - RANDOM_CHAR_A: 可能用于密码加密或混淆的随机字符A（如果未配置则使用空字符串）
         String password = FileUtils7z.wrapStr(
                 config.getConfigValue(Config7z.Keys.PASSWORD_VALUE, ""),
                 config.getConfigValue(Config7z.Keys.RANDOM_CHAR_B, ""),
                 config.getConfigValue(Config7z.Keys.RANDOM_CHAR_A, "")
         );
+        // 第二步：为处理后的密码添加前缀和后缀
+        // 从配置中获取密码前缀和后缀，如果未配置则使用空字符串
+        // 最终密码格式为：前缀 + 处理后的密码 + 后缀
         password = config.getConfigValue(Config7z.Keys.PASSWORD_PREFIX, "")
                 +  password
                 + config.getConfigValue(Config7z.Keys.PASSWORD_SUFFIX, "");

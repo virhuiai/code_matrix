@@ -32,12 +32,12 @@ public class Config7z extends HashMap<String, String> {
         /**
          * 密码前缀常量
          */
-        public static final String PASSWORD_PREFIX = "";
+        public static final String PASSWORD_PREFIX = "PASSWORD_PREFIX";
 
         /**
          * 密码后缀常量
          */
-        public static final String PASSWORD_SUFFIX = "";
+        public static final String PASSWORD_SUFFIX = "PASSWORD_SUFFIX";
 
         public static final String RANDOM_CHAR_A = "RANDOM_CHAR_A";
         public static final String RANDOM_CHAR_B = "RANDOM_CHAR_B";
