@@ -33,6 +33,7 @@ public class App {
 
         // 创建并加载配置
         Config7z config = new Config7z();
+        //从命令行加载配置参数
         config.loadFromCommandLine();
 
 

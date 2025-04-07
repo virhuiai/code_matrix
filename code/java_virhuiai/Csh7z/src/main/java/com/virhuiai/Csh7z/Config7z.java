@@ -167,6 +167,7 @@ public class Config7z extends HashMap<String, String> {
 
     /**
      * 验证压缩等级值
+     *
      * @param levelStr 压缩等级字符串
      * @return 有效的压缩等级值
      */
@@ -216,7 +217,8 @@ public class Config7z extends HashMap<String, String> {
 
     /**
      * 获取配置值，如果不存在返回默认值
-     * @param key 配置键
+     *
+     * @param key          配置键
      * @param defaultValue 默认值
      * @return 配置值
      */
@@ -226,7 +228,8 @@ public class Config7z extends HashMap<String, String> {
 
     /**
      * 获取整数类型的配置值
-     * @param key 配置键
+     *
+     * @param key          配置键
      * @param defaultValue 默认值
      * @return 整数配置值
      */
@@ -240,36 +243,54 @@ public class Config7z extends HashMap<String, String> {
     }
 
 
+
     /**
-     * 从命令行参数加载配置
+     * 从命令行加载配置参数
+     * 此方法负责解析命令行参数并设置相应的配置值
      */
     public void loadFromCommandLine() {
         // 加载基本配置
+        // 设置输入目录，从命令行参数 -i 获取，这是一个必填项
         put(Keys.INPUT_DIR, CshCliUtils.s3GetOptionValue("i", "设置的是必填，此调用方法传优化"));
+
+        // 设置是否启用额外功能，从命令行参数 -e 获取，如未指定则使用默认值
         put(Keys.EXTRA_ENABLED, CshCliUtils.s3GetOptionValue("e", Defaults.DEFAULT_EXTRA_ENABLED));
+
+        // 设置额外计数值，从命令行参数 extraCount 获取，如未指定则使用默认值
         put(Keys.EXTRA_COUNT, CshCliUtils.s3GetOptionValue("extraCount", Defaults.DEFAULT_EXTRA_COUNT));
 
         // 生成并处理MD5
+        // 生成一个随机的简化MD5值
         String randomMD5 = RandomMD5Utils.getRandomMD5Simple();
+        // 将生成的MD5值存储到配置中
         put(Keys.RANDOM_MD5, randomMD5);
 
         // 处理额外字符
+        // 基于生成的MD5值处理额外字符的配置
         processExtraCharacters(randomMD5);
 
         // 处理密码
+        // 解析和设置密码相关的配置项
         processPassword();
+
         // 处理密码前缀设置
+        // 解析和设置密码前缀的配置项
         processPasswordPrefix();
-        //处理密码后缀设置
+
+        // 处理密码后缀设置
+        // 解析和设置密码后缀的配置项
         processPasswordSuffix();
 
-
         // 处理压缩等级
+        // 解析和设置压缩等级的配置项
         processCompressionLevel();
 
+        // 处理输出文件
+        // 解析和设置输出文件的配置项
         processOutputFile();
 
         // 记录配置日志
+        // 将当前的配置项记录到日志中，便于调试和跟踪
         logConfiguration();
     }
 
