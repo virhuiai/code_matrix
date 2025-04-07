@@ -48,6 +48,10 @@ public class App {
                 config.getConfigValue(Config7z.Keys.RANDOM_CHAR_B, ""),
                 config.getConfigValue(Config7z.Keys.RANDOM_CHAR_A, "")
         );
+        password = config.getConfigValue(Config7z.Keys.PASSWORD_PREFIX, "")
+                +  password
+                + config.getConfigValue(Config7z.Keys.PASSWORD_SUFFIX, "");
+
         Integer compressionLevel = config.getIntConfigValue(Config7z.Keys.COMPRESSION_LEVEL, 0);
 
         LOGGER.info("输出文件: " + output);
