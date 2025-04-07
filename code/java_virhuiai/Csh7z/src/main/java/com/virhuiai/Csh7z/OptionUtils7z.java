@@ -113,6 +113,19 @@ public class OptionUtils7z {
                 .build()));
     }
 
+    /**
+     * 配置模式选项
+     */
+    private static void setupModeOption() {
+        CshCliUtils.s2AddOption(options -> options.addOption(Option.builder("m")
+                .longOpt("mode")
+                .desc("指定操作模式：1=生成密码，2=解开密码，3=压缩文件，4=解压文件")
+                .hasArg()
+                .argName("操作模式")
+//                .required(true)
+                .build()));
+    }
+
 
     /**
      * OptionUtils7z.setupCommandOptions
@@ -122,6 +135,8 @@ public class OptionUtils7z {
     public static void setupCommandOptions(String[] args) {
         CshCliUtils.s1InitializeArgs(args);
         LOGGER.debug("接收到的命令行参数: " + String.join(", ", args));
+        // 配置模式选项
+        setupModeOption();
 
         // 配置输入目录选项
         setupInputDirOption();
