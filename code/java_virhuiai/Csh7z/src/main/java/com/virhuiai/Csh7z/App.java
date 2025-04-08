@@ -49,7 +49,7 @@ public class App {
             return;
         }
 
-        // todo 以后实现mode
+
 
 
 
@@ -79,13 +79,15 @@ public class App {
                 +  password
                 + config.getConfigValue(Config7z.Keys.PASSWORD_SUFFIX, "");
 
-        LOGGER.info("PASSWORD_VALUE: " + config.getConfigValue(Config7z.Keys.PASSWORD_VALUE, ""));
-        LOGGER.info("RANDOM_CHAR_B: " + config.getConfigValue(Config7z.Keys.RANDOM_CHAR_B, ""));
-        LOGGER.info("RANDOM_CHAR_A: " + config.getConfigValue(Config7z.Keys.RANDOM_CHAR_A, ""));
-        LOGGER.info("PASSWORD_PREFIX: " + config.getConfigValue(Config7z.Keys.PASSWORD_PREFIX, ""));
-        LOGGER.info("PASSWORD_SUFFIX: " + config.getConfigValue(Config7z.Keys.PASSWORD_SUFFIX, ""));
-        LOGGER.info("password: " + password);
-
+        String showPassword = config.getConfigValue("showPassword", "0");
+        if("1".equalsIgnoreCase(showPassword)){
+            LOGGER.info("PASSWORD_VALUE: " + config.getConfigValue(Config7z.Keys.PASSWORD_VALUE, ""));
+            LOGGER.info("RANDOM_CHAR_B: " + config.getConfigValue(Config7z.Keys.RANDOM_CHAR_B, ""));
+            LOGGER.info("RANDOM_CHAR_A: " + config.getConfigValue(Config7z.Keys.RANDOM_CHAR_A, ""));
+            LOGGER.info("PASSWORD_PREFIX: " + config.getConfigValue(Config7z.Keys.PASSWORD_PREFIX, ""));
+            LOGGER.info("PASSWORD_SUFFIX: " + config.getConfigValue(Config7z.Keys.PASSWORD_SUFFIX, ""));
+            LOGGER.info("password: " + password);
+        }
 
 
         Integer compressionLevel = config.getIntConfigValue(Config7z.Keys.COMPRESSION_LEVEL, 0);

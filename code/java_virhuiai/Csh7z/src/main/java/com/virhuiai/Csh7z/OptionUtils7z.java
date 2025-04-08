@@ -123,7 +123,7 @@ public class OptionUtils7z {
                 .desc("指定操作模式：genMd5=去除非MD5字符，compress=压缩文件")
                 .hasArg()
                 .argName("操作模式")
-                .required(true)
+//                .required(true)
                 .build()));
         // ，extract=解压文件
     }
@@ -138,6 +138,18 @@ public class OptionUtils7z {
                 .desc("指定输入的字符串，用于处理操作")
                 .hasArg()
                 .argName("输入字符串")
+                .build()));
+    }
+
+    /**
+     * 配置显示真实密码选项
+     */
+    private static void setupShowRealPasswordOption() {
+        CshCliUtils.s2AddOption(options -> options.addOption(Option.builder("p")
+                .longOpt("showPassword")
+                .desc("指定程序工作时是否显示真实密码：1=显示，0=不显示（默认）")
+                .hasArg()
+                .argName("是否显示密码")
                 .build()));
     }
 
@@ -157,12 +169,15 @@ public class OptionUtils7z {
 
         // 配置输入目录选项
         setupInputDirOption();
+
         // 配置密码选项
         setupPasswordOption();
         // 配置密码前缀选项// passwordPrefix
         setupPasswordPrefixOption();
         //配置密码后缀选项//passwordSuffix
         setupPasswordSuffixOption();
+        //配置显示真实密码选项
+        setupShowRealPasswordOption();
 
         // 配置输出文件选项
         setupOutputOption();
