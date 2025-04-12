@@ -3,9 +3,11 @@ package com.virhuiai.StaticWebServer;
 import com.sun.net.httpserver.HttpServer;
 
 import java.io.ByteArrayOutputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetSocketAddress;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -38,10 +40,20 @@ public class ServerUtils {
         if ("/".equals(requestPath)) {
             path = "index.html"; // 默认文件
         }else{
-            path = ServerUtils.class.getResource(requestPath).getPath();// /Volumes/THAWSPACE/CshProject/Csh_2_StaticWebServer/target/classes/
+            // 常用于访问与应用打包在一起的资源文件，特别是在 Java 应用被打包成 JAR 或 WAR 时依然能正确找到资源文件。
+            // 这个方法是获取打包后Jar/War文件中资源的一种方式，在开发时和部署后都能正常工作。
+            URL resourceUrl = ServerUtils.class.getResource(requestPath);
+            if (null ==  resourceUrl) {
+//                throw new FileNotFoundException("Resource not found: " + requestPath);
+                 return null;
+            }
+            path = resourceUrl.getPath();
+            
         }
 
         // return Paths.get("src/main/resources", requestPath);
+
+        //需要跨平台兼容，建议使用 Paths.get() 或 new File() 来处理路径。
         return Paths.get(path);///Volumes/THAWSPACE/CshProject/Csh_2_StaticWebServer/target/classes/index.html
     }
 
