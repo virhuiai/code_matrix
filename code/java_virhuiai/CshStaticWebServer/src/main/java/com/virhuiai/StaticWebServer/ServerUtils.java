@@ -36,23 +36,53 @@ public class ServerUtils {
      * @return
      */
     public static Path getResourcePath(String requestPath) {
+        System.out.println("requestPath:" + requestPath);
         String path;
         if ("/".equals(requestPath)) {
             path = "index.html"; // 默认文件
         }else{
+            // getResource 是 Java 中 Class 类的方法，用于加载类路径下的资源。
+            //  资源路径规则:
+            //            如果 name 以 / 开头：则从类路径的根目录查找资源。
+            //            如果 name 不以 / 开头：则从调用该方法的类的包路径开始查找资源。
+            // 示例
+            //            1. 从类路径的根目录查找资源
+            //            假设项目结构如下：
+            //            src/main/resources
+            //            ├── config.properties
+            //                        XXX.class.getResource("/config.properties");
+            //
+            //            2.从类的包路径查找资源
+            //            假设项目结构如下：
+            //            src/main/java/com/example
+            //            ├── Main.java
+            //            ├── resources
+            //            │   ├── data.txt
+            //                        XXX.class.getResource("resources/data.txt");
+
+            //  注意点:
+            //    name 表示的资源文件需要在类路径中（即 src/main/resources 或编译后的 target/classes 等目录中）。
+            //    返回的 URL 是可以进一步用来读取资源内容的。
+
             // 常用于访问与应用打包在一起的资源文件，特别是在 Java 应用被打包成 JAR 或 WAR 时依然能正确找到资源文件。
             // 这个方法是获取打包后Jar/War文件中资源的一种方式，在开发时和部署后都能正常工作。
+            // 注意：资源如果不存在，getResource(requestPath) 会返回 null
             URL resourceUrl = ServerUtils.class.getResource(requestPath);
+            System.out.println("resourceUrl:" + resourceUrl);
             if (null ==  resourceUrl) {
 //                throw new FileNotFoundException("Resource not found: " + requestPath);
                  return null;
             }
+            // getPath() 是 URL 对象的一个方法，用于返回 URL 的路径部分（即资源的绝对路径）。
             path = resourceUrl.getPath();
             
         }
 
         // return Paths.get("src/main/resources", requestPath);
 
+        System.out.println("path:" + path);
+        System.out.println("Paths.get(path):" + Paths.get(path));
+        //getPath() 返回的路径可能包含操作系统特定的格式，比如在 Windows 上可能会包含反斜杠（\）。
         //需要跨平台兼容，建议使用 Paths.get() 或 new File() 来处理路径。
         return Paths.get(path);///Volumes/THAWSPACE/CshProject/Csh_2_StaticWebServer/target/classes/index.html
     }
