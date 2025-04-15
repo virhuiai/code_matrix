@@ -1,14 +1,19 @@
 package com.virhuiai.CshProxy;
 
 
+import com.virhuiai.CshLogUtils.CshLogUtils;
 import net.lightbody.bmp.BrowserMobProxy;
 import net.lightbody.bmp.BrowserMobProxyServer;
+import org.apache.commons.logging.Log;
 
 /**
  * 主应用类，用于创建和配置HTTP代理服务器
  * 该应用程序基于BrowserMob Proxy实现了一个能够拦截和修改HTTP/HTTPS流量的代理服务器
  */
 public class App {
+    private static final Log LOGGER = CshLogUtils.createLogExtended(App.class); // 日志记录器
+
+
     public static void main(String[] args) {
         // 创建BrowserMobProxy实例，这是一个功能强大的代理服务器
         BrowserMobProxy proxy = new BrowserMobProxyServer();
@@ -24,7 +29,11 @@ public class App {
         setUpFilters(proxy);
 
         // 输出代理服务器启动的端口号
-        System.out.println("Proxy started on port: " + proxy.getPort());
+        LOGGER.info("代理服务器：\n" +
+                "http://127.0.0.1:" + proxy.getPort());
+
+//        builder.getJcefArgs().add("--proxy-server=http://127.0.0.1:49408");// 按代理来
+//        builder.getJcefArgs().add("--ignore-certificate-errors");// 禁用证书验证
     }
 
     /**
@@ -37,13 +46,13 @@ public class App {
         // 添加响应过滤器，用于处理HTTP响应
         proxy.addResponseFilter((response, contents, messageInfo) -> {
             // 输出响应内容类型
-            System.out.println("contents.getContentType()" + contents.getContentType());
+            LOGGER.info("响应内容类型:\n" + contents.getContentType());
 
             // 输出原始请求URL
-            System.out.println("messageInfo.getOriginalUrl():" + messageInfo.getOriginalUrl());
+            LOGGER.info("原始请求URL:\n" + messageInfo.getOriginalUrl());
 
             // 输出响应头中的Referrer-Policy
-            System.out.println("response.headers().get(\"Referrer-Policy\"):" + response.headers().get("Referrer-Policy"));
+            LOGGER.info("响应头中的Referrer-Policy :" + response.headers().get("Referrer-Policy"));
             // 注释掉的代码：添加CORS头，允许所有来源访问资源
 //            response.headers().add("Access-Control-Allow-Origin", "*");
 
@@ -91,7 +100,7 @@ public class App {
                 String content = contents.getTextContents();
 
                 // 如果内容包含特定字符串'xxxx'
-                if (content.contains("'xxxx'")) {
+                if (content.contains("'xxxxabc'")) {
                     // 输出找到目标JavaScript文件的URL
                     System.out.println("messageInfo.getOriginalUrl():" + messageInfo.getOriginalUrl());
 
