@@ -106,11 +106,14 @@ public class BrowserApp extends JFrame {
     }
 
     /**
+     *
+     * --jcefInstallDir=/Volumes/THAWSPACE/CshProject/JCEF109 --defaultUrl=baidu.com
      * 主方法
      */
     public static void main(String[] args) throws UnsupportedPlatformException, CefInitializationException, IOException, InterruptedException {
         // 解析命令行参数
         CshCliUtils.s1InitializeArgs(args);
+
         CshCliUtils.s2AddOption(options -> options.addOption(Option.builder()
                 .longOpt("jcefInstallDir")
                 .desc("设置JCEF安装目录")
@@ -119,6 +122,13 @@ public class BrowserApp extends JFrame {
                 .build()));
         // CshCliUtils.s3GetOptionValue("jcefInstallDir");
 
+        // 添加默认URL选项
+        CshCliUtils.s2AddOption(options -> options.addOption(Option.builder()
+                .longOpt("defaultUrl")
+                .desc("设置浏览器默认打开的URL")
+                .hasArg()
+                .argName("默认URL")
+                .build()));
 
         new BrowserApp(args);
     }
@@ -129,9 +139,15 @@ public class BrowserApp extends JFrame {
     private void initAndDisplayUI() {
         // 创建标签页面板
         tabbedPane = new TabbedPane();
-        // 创建初始标签页并打开默认网页
-//        Tab tab = TabFactory.createTab("http://www.baidu.com/", cefApp);
-//        insertTab(tab);
+
+        String defaultUrl = CshCliUtils.s3GetOptionValue("defaultUrl");
+        if(null !=defaultUrl && !defaultUrl.isEmpty()){
+            // 创建初始标签页并打开默认网页
+            Tab tab = TabFactory.createTab(defaultUrl, cefApp);
+            insertTab(tab);
+        }
+
+
         // 插入新建标签页按钮
         insertNewTabButton();
 
