@@ -114,7 +114,7 @@ public class BrowserApp extends JFrame {
         CshCliUtils.s2AddOption(options -> options.addOption(Option.builder()
                 .longOpt("jcefInstallDir")
                 .desc("设置JCEF安装目录")
-                // .hasArg()
+                .hasArg()
                 .argName("JCEF安装目录")
                 .build()));
         // CshCliUtils.s3GetOptionValue("jcefInstallDir");
