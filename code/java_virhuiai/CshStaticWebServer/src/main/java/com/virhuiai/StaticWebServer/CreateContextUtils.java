@@ -54,21 +54,42 @@ public class CreateContextUtils {
     }
 
 
-    public static void createContextRootLast_Resource(HttpServer server) {
-        LOGGER.info("【调用】CreateContextUtils.createContextRootLast_Resource");
-        server.createContext("/", exchange -> {
-            try {
-                Path resourcePath = ServerUtils.getResourcePath(exchange.getRequestURI().getPath());
-                if (Files.exists(resourcePath) && !Files.isDirectory(resourcePath)) {
-                    SendUtils.sendFile(exchange, resourcePath);
-                } else {
-                    SendUtils.sendNotFound(exchange, resourcePath.toString());
-                }
-            } catch (IOException e) {
-                SendUtils.sendInternalError(exchange, e.getMessage());
+    /**
+ * 创建一个处理根路径请求的HTTP上下文，用于提供静态资源文件服务
+ *
+ * @param server HTTP服务器实例，用于注册上下文处理器
+ */
+public static void createContextRootLast_Resource(HttpServer server) {
+    // 记录方法调用的日志信息
+    LOGGER.info("【调用】CreateContextUtils.createContextRootLast_Resource");
+
+    // 为根路径"/"创建HTTP请求处理上下文
+    server.createContext("/", exchange -> {
+        try {
+            // 获取请求URI路径，并转换为服务器上对应的资源文件路径
+            Path resourcePath = ServerUtils.getResourcePath(exchange.getRequestURI().getPath());
+
+            // 使用assert断言确保resourcePath不为null
+            // assert关键字用于调试目的的断言，它验证一个条件是否为true
+            // 如果条件为false，会抛出AssertionError异常
+            // 注意：assert仅在启用断言的情况下生效（使用-ea或-enableassertions JVM参数）
+            // 在生产环境中通常禁用断言，因此不应依赖它进行业务逻辑验证
+            assert resourcePath != null;
+
+            // 检查资源路径是否存在且不是目录
+            if (Files.exists(resourcePath) && !Files.isDirectory(resourcePath)) {
+                // 如果资源文件存在，发送文件内容给客户端
+                SendUtils.sendFile(exchange, resourcePath);
+            } else {
+                // 如果资源不存在或是目录，发送404 Not Found响应
+                SendUtils.sendNotFound(exchange, resourcePath.toString());
             }
-        });
-    }
+        } catch (IOException e) {
+            // 处理IO异常，发送500 Internal Server Error响应
+            SendUtils.sendInternalError(exchange, e.getMessage());
+        }
+    });
+}
 
 //    public static void createContextTry(HttpServer server, String try_path) {
 //        LOGGER.info("【调用】CreateContextUtils.createContextTry");
