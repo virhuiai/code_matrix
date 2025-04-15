@@ -107,6 +107,8 @@ public class BrowserApp extends JFrame {
 
     /**
      *
+     * jcefInstallDir:设置JCEF安装目录
+     * defaultUrl:设置浏览器默认打开的URL
      * --jcefInstallDir=/Volumes/THAWSPACE/CshProject/JCEF109 --defaultUrl=baidu.com
      * 主方法
      */
