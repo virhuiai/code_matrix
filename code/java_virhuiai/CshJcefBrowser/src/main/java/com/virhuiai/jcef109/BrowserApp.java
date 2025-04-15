@@ -1,5 +1,7 @@
 package com.virhuiai.jcef109;
 
+import com.virhuiai.Cli.CshCliUtils;
+import com.virhuiai.CshLogUtils.CshLogUtils;
 import com.virhuiai.jcef109.jcef.CefAppBuilderV;
 import com.virhuiai.jcef109.ui.Tab;
 import com.virhuiai.jcef109.ui.TabButton;
@@ -7,6 +9,8 @@ import com.virhuiai.jcef109.ui.TabFactory;
 import com.virhuiai.jcef109.ui.TabbedPane;
 import com.virhuiai.jcef109.ui.Resources;
 import me.friwi.jcefmaven.*;
+import org.apache.commons.cli.Option;
+import org.apache.commons.logging.Log;
 import org.cef.CefApp;
 
 import javax.swing.*;
@@ -17,12 +21,15 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Arrays;
 
 /**
  * 应用启动类
  */
 public class BrowserApp extends JFrame {
+    private static final Log LOGGER = CshLogUtils.createLogExtended(BrowserApp.class); // 日志记录器
     // 序列化ID
     private static final long serialVersionUID = -5570653778104813836L;
 
@@ -45,8 +52,30 @@ public class BrowserApp extends JFrame {
         //设置华为镜像，加载比较快
         builder.setMirrors(Arrays.asList("http://mirrors.huaweicloud.com/repository/maven/me/friwi/jcef-natives-{platform}/{tag}/jcef-natives-{platform}-{tag}.jar"));
 
-        // 设置JCEF安装目录
-        builder.setInstallDir(new File("/Volumes/THAWSPACE/CshProject/JCEF109/jcef-bundle-macosx-amd64"));
+        // --jcefInstallDir=/Volumes/THAWSPACE/CshProject/JCEF109/
+        // 设置JCEF安装目录 jcefInstallDir
+        String jcefInstallDir = CshCliUtils.s3GetOptionValue("jcefInstallDir");
+        /**
+         * 配置JCEF安装目录，并根据当前运行平台确定具体的bundle路径
+         */
+        if (null == jcefInstallDir || jcefInstallDir.isEmpty()) {
+            // 如果未指定JCEF安装目录，记录错误并中断操作
+            LOGGER.error("未指定JCEF安装目录【jcefInstallDir】，无法继续初始化JCEF");
+            cefApp = null;
+            return;
+        }
+        // 通过Paths工具类创建基础路径对象
+        Path basePath = Paths.get(jcefInstallDir);
+        // 根据当前操作系统平台动态拼接JCEF bundle目录
+        // 例如：在Mac OS X上，EnumPlatform.getCurrentPlatform().getIdentifier()返回"macosx-amd64"
+        // 最终会构建类似"jcef-bundle-macosx-amd64"的目录名
+        Path jcefBundlePath = basePath.resolve("jcef-bundle-" + EnumPlatform.getCurrentPlatform().getIdentifier());
+        // 记录JCEF配置信息，便于调试和问题排查
+        LOGGER.info("JCEF安装父级目录【jcefInstallDir】：" + jcefInstallDir);
+        LOGGER.info("JCEF安装实际目录【jcefBundlePath】: " +  jcefBundlePath);
+        // 将解析好的JCEF安装目录设置到builder中
+        // 注意：这里将Path对象转换为File对象，以兼容builder的API设计
+        builder.setInstallDir(jcefBundlePath.toFile()); //"/Volumes/THAWSPACE/CshProject/JCEF109/jcef-bundle-macosx-amd64"
         // 关闭离屏渲染模式
         builder.getCefSettings().windowless_rendering_enabled = false;
 
@@ -80,6 +109,17 @@ public class BrowserApp extends JFrame {
      * 主方法
      */
     public static void main(String[] args) throws UnsupportedPlatformException, CefInitializationException, IOException, InterruptedException {
+        // 解析命令行参数
+        CshCliUtils.s1InitializeArgs(args);
+        CshCliUtils.s2AddOption(options -> options.addOption(Option.builder()
+                .longOpt("jcefInstallDir")
+                .desc("设置JCEF安装目录")
+                // .hasArg()
+                .argName("JCEF安装目录")
+                .build()));
+        // CshCliUtils.s3GetOptionValue("jcefInstallDir");
+
+
         new BrowserApp(args);
     }
 
