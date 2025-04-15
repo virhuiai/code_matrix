@@ -49,6 +49,22 @@ public class BrowserApp extends JFrame {
     private BrowserApp(String[] args) throws UnsupportedPlatformException, CefInitializationException, IOException, InterruptedException {
         // 创建CEF应用构建器
         CefAppBuilderV builder = new CefAppBuilderV();
+
+        String passAllArgsToCef = CshCliUtils.s3GetOptionValue("passAllArgsToCef");
+        if(null !=passAllArgsToCef && "1".equalsIgnoreCase(passAllArgsToCef)){
+            // Pass all args to cef
+            LOGGER.info("将全部参数传递给CEF");
+            builder.getJcefArgs().addAll(Arrays.asList(args));
+        }
+
+        String proxyServer = CshCliUtils.s3GetOptionValue("proxyServer");
+        if(null != proxyServer && !proxyServer.isEmpty()){
+//            builder.getJcefArgs().add("--proxy-server=http://127.0.0.1:49408");// 按代理来
+            LOGGER.info("使用代理:" + proxyServer);
+            builder.getJcefArgs().add("--proxy-server=" + proxyServer);// 按代理来
+            builder.getJcefArgs().add("--ignore-certificate-errors");// 禁用证书验证
+        }
+
         //设置华为镜像，加载比较快
         builder.setMirrors(Arrays.asList("http://mirrors.huaweicloud.com/repository/maven/me/friwi/jcef-natives-{platform}/{tag}/jcef-natives-{platform}-{tag}.jar"));
 
@@ -109,7 +125,9 @@ public class BrowserApp extends JFrame {
      *
      * jcefInstallDir:设置JCEF安装目录
      * defaultUrl:设置浏览器默认打开的URL
-     * --jcefInstallDir=/Volumes/THAWSPACE/CshProject/JCEF109 --defaultUrl=baidu.com
+     * proxyServer:代理
+     * passAllArgsToCef:
+     * --jcefInstallDir=/Volumes/THAWSPACE/CshProject/JCEF109 --defaultUrl=baidu.com --proxyServer=http://127.0.0.1:65201 --passAllArgsToCef=1
      * 主方法
      */
     public static void main(String[] args) throws UnsupportedPlatformException, CefInitializationException, IOException, InterruptedException {
@@ -131,6 +149,24 @@ public class BrowserApp extends JFrame {
                 .hasArg()
                 .argName("默认URL")
                 .build()));
+
+        // 添加是否传递全部参数到CEF的选项
+        CshCliUtils.s2AddOption(options -> options.addOption(Option.builder()
+                .longOpt("passAllArgsToCef")
+                .desc("是否将全部参数传递给CEF")
+                .hasArg()
+                .argName("true/false")
+                .build()));
+                // 获取该选项值: CshCliUtils.s3GetOptionValue("passAllArgsToCef");
+
+        // 添加代理地址选项
+        CshCliUtils.s2AddOption(options -> options.addOption(Option.builder()
+                .longOpt("proxyServer")
+                .desc("设置浏览器代理服务器地址")
+                .hasArg()
+                .argName("代理地址")
+                .build()));
+        // 获取该选项值: CshCliUtils.s3GetOptionValue("proxyServer");
 
         new BrowserApp(args);
     }
