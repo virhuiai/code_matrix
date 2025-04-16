@@ -8,6 +8,9 @@ import net.lightbody.bmp.BrowserMobProxyServer;
 import net.lightbody.bmp.proxy.CaptureType;
 import org.apache.commons.logging.Log;
 
+import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -19,22 +22,32 @@ import java.util.concurrent.TimeUnit;
 public class App {
     private static final Log LOGGER = CshLogUtils.createLogExtended(App.class); // 日志记录器
 
-
+   // https://github.com/lightbody/browsermob-proxy/blob/master/browsermob-core/src/main/resources/sslSupport/ca-certificate-rsa.cer
     public static void main(String[] args) {
         // 创建BrowserMobProxy实例，这是一个功能强大的代理服务器
         BrowserMobProxy proxy = new BrowserMobProxyServer();
+//        File certificateFile = new File("bmp-ca-cert.pem");
+//
+
         // 启用HTTPS支持，信任所有服务器证书
         // 注意：在生产环境中，应该谨慎使用setTrustAllServers(true)，因为这会降低安全性
         proxy.setTrustAllServers(true);
 
         List<String> BYPASS_URLS = Arrays.asList(
-                "192.168.8.1",       // 例如：本地路由器地址
-                "qq.com"       // 例如：特定网站 // 例如：CDN地址
-                ,"myqcloud.com"
+                "192.168.8.1"       // 例如：本地路由器地址
+//                "qq.com"       // 例如：特定网站 // 例如：CDN地址
+//                ,"myqcloud.com"
         );
         // 设置不走代理的地址
         proxy.addRequestFilter((request, contents, messageInfo) -> {
             String url = messageInfo.getOriginalUrl();
+            // 设置HTTP转HTTPS的规则（可选）
+            // 将所有HTTP请求重定向到HTTPS
+            if (url.startsWith("http://")) {
+                String newUrl = messageInfo.getOriginalUrl().replace("http://", "https://");
+                request.setUri(newUrl);
+                LOGGER.info("HTTP请求重定向到HTTPS: " + url);
+            }
 
             // 检查URL是否在绕过列表中
             boolean shouldBypass = BYPASS_URLS.stream()
@@ -63,6 +76,14 @@ public class App {
         proxy.setIdleConnectionTimeout(45, TimeUnit.SECONDS);
         proxy.setRequestTimeout(60, TimeUnit.SECONDS);
 
+
+
+
+        // 启用HTTPS代理支持
+//        proxy.enableHarCaptureTypes(CaptureType.REQUEST_CONTENT, CaptureType.RESPONSE_CONTENT);
+        // 设置MITM（中间人）模式，生成证书以处理HTTPS请求
+        proxy.setMitmDisabled(false);
+        proxy.setTrustAllServers(true);
 
         // 启动代理服务器
         // 注意：这里没有指定端口，代理会自动选择一个可用端口
