@@ -27,11 +27,14 @@ public class App {
         Playwright playwright = Playwright.create();
         Browser browser = playwright.chromium().launch(new BrowserType.LaunchOptions().setHeadless(false));
 
-
-
-
         Page page = browser.newPage();
-        page.navigate("https://weread.qq.com/web/reader/eeb327a0813ab79bcg0177de");
+
+        // 添加一个会在每个页面加载前执行的脚本
+        page.addInitScript("var abcdef='文字改变自addInitScript！';");
+        // 或者从文件加载脚本
+        // page.addInitScript(Paths.get("path/to/script.js"));
+
+        page.navigate("file:///Volumes/RamDisk/simple.html");
         System.out.println(page.title());
 //        browser.close();
 //        playwright.close();
