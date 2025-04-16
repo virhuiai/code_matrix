@@ -21,6 +21,9 @@ public class App {
      Playwright build of firefox v1313 downloaded to /Users/virhuiai/Library/Caches/ms-playwright/firefox-1313
      Playwright build of webkit v1596 downloaded to /Users/virhuiai/Library/Caches/ms-playwright/webkit-1596
 
+     移动后：
+     ln -s /Volumes/THAWSPACE/Soft.Freezed/ms-playwright  /Users/virhuiai/Library/Caches/ms-playwright
+
      * @param args
      */
     public static void main(String[] args) {
@@ -30,13 +33,25 @@ public class App {
         Page page = browser.newPage();
 
         // 添加一个会在每个页面加载前执行的脚本
-        page.addInitScript("var abcdef='文字改变自addInitScript！';");
+//        page.addInitScript("var abcdef='文字改变自addInitScript！';");
         // 或者从文件加载脚本
         // page.addInitScript(Paths.get("path/to/script.js"));
 
-        page.navigate("file:///Volumes/RamDisk/simple.html");
+//        page.navigate("file:///Volumes/RamDisk/simple.html");
+        // Go to https://weread.qq.com/web/reader/eeb327a0813ab79bcg0177de
+        page.navigate("https://weread.qq.com/web/reader/eeb327a0813ab79bcg0177dekecc32f3013eccbc87e4b62e");
+        // Press ArrowRight
+//        page.press("body:has-text('')", "ArrowRight");
+//        page.press("body:has-text('')", "ArrowRight");
+//        page.press("body:has-text('')", "ArrowRight");
+        page.click("div:nth-child(0)");
+
+
+
         System.out.println(page.title());
 //        browser.close();
 //        playwright.close();
     }
+    // 生成代码
+    // mvn exec:java -e -D exec.mainClass=com.microsoft.playwright.CLI -D exec.args="codegen https://weread.qq.com/web/reader/eeb327a0813ab79bcg0177de"
 }

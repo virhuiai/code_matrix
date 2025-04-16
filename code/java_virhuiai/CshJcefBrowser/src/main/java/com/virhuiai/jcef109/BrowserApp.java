@@ -65,6 +65,25 @@ public class BrowserApp extends JFrame {
             builder.getJcefArgs().add("--ignore-certificate-errors");// 禁用证书验证
         }
 
+        String remoteDebuggingPort = CshCliUtils.s3GetOptionValue("remoteDebuggingPort");
+        if(null != remoteDebuggingPort && !remoteDebuggingPort.isEmpty()){
+            // 添加正则表达式检查，确保输入是纯数字
+            if (remoteDebuggingPort.matches("^\\d+$")) {
+                int port = Integer.parseInt(remoteDebuggingPort);
+                // 检查端口范围是否有效（通常有效端口范围是1024-65535，但允许所有可能的端口）
+                if (port > 0 && port < 65536) {
+                    builder.getCefSettings().remote_debugging_port = port;
+                    LOGGER.info("启用Chrome远程调试，端口: " + port);//9222 --remoteDebuggingPort=9222
+                }else {
+                    LOGGER.warn("指定的远程调试端口超出有效范围(1-65535): " + port + "，远程调试将不会启用");
+                }
+
+            }else{
+                LOGGER.error("启用Chrome远程调试失败，端口无效: " + remoteDebuggingPort);
+            }
+
+        }
+
         //设置华为镜像，加载比较快
         builder.setMirrors(Arrays.asList("http://mirrors.huaweicloud.com/repository/maven/me/friwi/jcef-natives-{platform}/{tag}/jcef-natives-{platform}-{tag}.jar"));
 
@@ -127,7 +146,11 @@ public class BrowserApp extends JFrame {
      * defaultUrl:设置浏览器默认打开的URL
      * proxyServer:代理
      * passAllArgsToCef:
-     * --jcefInstallDir=/Volumes/THAWSPACE/CshProject/JCEF109 --defaultUrl=baidu.com --proxyServer=http://127.0.0.1:65201 --passAllArgsToCef=1
+     * remoteDebuggingPort:启用Chrome远程调试并指定端口
+     *
+     * --jcefInstallDir=/Volumes/THAWSPACE/CshProject/JCEF109 --remoteDebuggingPort=9222
+     *
+     * --jcefInstallDir=/Volumes/THAWSPACE/CshProject/JCEF109 --defaultUrl=baidu.com --proxyServer=http://127.0.0.1:65201 --passAllArgsToCef=1 --remoteDebuggingPort=9222
      * 主方法
      */
     public static void main(String[] args) throws UnsupportedPlatformException, CefInitializationException, IOException, InterruptedException {
@@ -167,6 +190,22 @@ public class BrowserApp extends JFrame {
                 .argName("代理地址")
                 .build()));
         // 获取该选项值: CshCliUtils.s3GetOptionValue("proxyServer");
+
+        // 添加是否打开Chrome调试端口的选项
+//        CshCliUtils.s2AddOption(options -> options.addOption(Option.builder()
+//                .longOpt("enableRemoteDebugging")
+//                .desc("是否启用Chrome远程调试功能")
+//                .hasArg()
+//                .argName("0/1")
+//                .build()));
+
+//// 添加Chrome调试端口设置选项
+        CshCliUtils.s2AddOption(options -> options.addOption(Option.builder()
+                .longOpt("remoteDebuggingPort")
+                .desc("设置Chrome远程调试端口号")
+                .hasArg()
+                .argName("端口号")
+                .build()));
 
         new BrowserApp(args);
     }
