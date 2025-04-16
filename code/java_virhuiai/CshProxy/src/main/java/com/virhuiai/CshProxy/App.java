@@ -2,9 +2,13 @@ package com.virhuiai.CshProxy;
 
 
 import com.virhuiai.CshLogUtils.CshLogUtils;
+import io.netty.handler.codec.http.HttpResponse;
 import net.lightbody.bmp.BrowserMobProxy;
 import net.lightbody.bmp.BrowserMobProxyServer;
 import org.apache.commons.logging.Log;
+
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * 主应用类，用于创建和配置HTTP代理服务器
@@ -21,9 +25,32 @@ public class App {
         // 注意：在生产环境中，应该谨慎使用setTrustAllServers(true)，因为这会降低安全性
         proxy.setTrustAllServers(true);
 
+        List<String> BYPASS_URLS = Arrays.asList(
+                "192.168.8.1",       // 例如：本地路由器地址
+                "qq.com"       // 例如：特定网站 // 例如：CDN地址
+        );
+        // 设置不走代理的地址
+        proxy.addRequestFilter((request, contents, messageInfo) -> {
+            String url = messageInfo.getOriginalUrl();
+
+            // 检查URL是否在绕过列表中
+            boolean shouldBypass = BYPASS_URLS.stream()
+                    .anyMatch(bypassUrl -> url.contains(bypassUrl));
+
+            if (shouldBypass) {
+                LOGGER.info("绕过代理: " + url);
+                // 返回null表示请求不通过代理
+                return null;
+            }
+
+            // 返回请求对象表示继续通过代理处理
+            return (HttpResponse) request;
+        });
+
         // 启动代理服务器
         // 注意：这里没有指定端口，代理会自动选择一个可用端口
-        proxy.start(0);
+//        proxy.start(0);
+        proxy.start(65201);
 
         // 设置请求和响应过滤器，用于拦截和修改HTTP流量
         setUpFilters(proxy);
@@ -47,6 +74,15 @@ public class App {
         proxy.addResponseFilter((response, contents, messageInfo) -> {
             // 输出响应内容类型
             LOGGER.info("响应内容类型:\n" + contents.getContentType());
+            // 响应内容类型:
+            //application/javascript
+            //application/octet-stream
+            //text/plain; charset=utf-8
+            //text/html; charset=utf-8  在一个网页的主要HTTP响应中，text/html 内容类型通常只出现一次。
+            //text/css
+            //image/jpeg
+            //image/png
+            //image/svg+xml
 
             // 输出原始请求URL
             LOGGER.info("原始请求URL:\n" + messageInfo.getOriginalUrl());
