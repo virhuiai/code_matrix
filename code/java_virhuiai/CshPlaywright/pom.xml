@@ -43,11 +43,15 @@
             <version>1.1</version>
         </dependency>
 
+        <!-- https://mvnrepository.com/artifact/com.microsoft.playwright/playwright -->
         <dependency>
             <groupId>com.microsoft.playwright</groupId>
             <artifactId>playwright</artifactId>
-            <version>1.18.0</version>
+            <version>1.29.0</version>
         </dependency>
+<!--   1.18.0  chrome 版本是   99.0.4812.0  -->
+<!--   1.29.0  Chromium 109.0.5414.46 -->
+
 
 
     </dependencies>

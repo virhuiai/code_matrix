@@ -72,7 +72,13 @@ public class BrowserApp extends JFrame {
                 int port = Integer.parseInt(remoteDebuggingPort);
                 // 检查端口范围是否有效（通常有效端口范围是1024-65535，但允许所有可能的端口）
                 if (port > 0 && port < 65536) {
-                    builder.getCefSettings().remote_debugging_port = port;
+//                    builder.getCefSettings().remote_debugging_port = port;
+                    builder.getJcefArgs().add("--remote-debugging-port="+port);
+//                    builder.getJcefArgs().add("--remote-allow-origins=http://localhost:"+port);
+//                    builder.getJcefArgs().add("--remote-allow-origins=http://127.0.0.1:"+port);
+                    builder.getJcefArgs().add("--remote-allow-origins=*");
+
+//                    builder.getCefSettings().remote_debugging_port = port;
                     LOGGER.info("启用Chrome远程调试，端口: " + port);//9222 --remoteDebuggingPort=9222
                 }else {
                     LOGGER.warn("指定的远程调试端口超出有效范围(1-65535): " + port + "，远程调试将不会启用");
