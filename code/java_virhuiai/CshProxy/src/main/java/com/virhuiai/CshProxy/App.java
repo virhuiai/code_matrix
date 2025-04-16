@@ -5,10 +5,12 @@ import com.virhuiai.CshLogUtils.CshLogUtils;
 import io.netty.handler.codec.http.HttpResponse;
 import net.lightbody.bmp.BrowserMobProxy;
 import net.lightbody.bmp.BrowserMobProxyServer;
+import net.lightbody.bmp.proxy.CaptureType;
 import org.apache.commons.logging.Log;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * 主应用类，用于创建和配置HTTP代理服务器
@@ -28,6 +30,7 @@ public class App {
         List<String> BYPASS_URLS = Arrays.asList(
                 "192.168.8.1",       // 例如：本地路由器地址
                 "qq.com"       // 例如：特定网站 // 例如：CDN地址
+                ,"myqcloud.com"
         );
         // 设置不走代理的地址
         proxy.addRequestFilter((request, contents, messageInfo) -> {
@@ -47,13 +50,24 @@ public class App {
             return (HttpResponse) request;
         });
 
+
+
+        // 设置请求和响应过滤器，用于拦截和修改HTTP流量
+        setUpFilters(proxy);
+
+        // 捕获所有类型的数据
+        proxy.enableHarCaptureTypes(CaptureType.getAllContentCaptureTypes());
+
+        // 配置请求超时
+        proxy.setConnectTimeout(30, TimeUnit.SECONDS);
+        proxy.setIdleConnectionTimeout(45, TimeUnit.SECONDS);
+        proxy.setRequestTimeout(60, TimeUnit.SECONDS);
+
+
         // 启动代理服务器
         // 注意：这里没有指定端口，代理会自动选择一个可用端口
 //        proxy.start(0);
         proxy.start(65201);
-
-        // 设置请求和响应过滤器，用于拦截和修改HTTP流量
-        setUpFilters(proxy);
 
         // 输出代理服务器启动的端口号
         LOGGER.info("代理服务器：\n" +
@@ -72,6 +86,12 @@ public class App {
     private static void setUpFilters(BrowserMobProxy proxy) {
         // 添加响应过滤器，用于处理HTTP响应
         proxy.addResponseFilter((response, contents, messageInfo) -> {
+            if (response.getStatus().code() >= 400) {
+                // 增加更详细的日志记录，找出具体哪些请求出了问题
+                LOGGER.error("请求错误: " + messageInfo.getOriginalUrl() +
+                        " 状态码: " + response.getStatus().code());
+            }
+
             // 输出响应内容类型
             LOGGER.info("响应内容类型:\n" + contents.getContentType());
             // 响应内容类型:
@@ -104,7 +124,7 @@ public class App {
             // 添加Referrer-Policy头，设置为unsafe-url
             // unsafe-url会在所有请求中发送完整的URL，包括跨域请求
             // 注意：这可能会带来隐私风险，因为它会泄露用户的浏览历史
-            response.headers().add("Referrer-Policy", "unsafe-url");
+//            response.headers().add("Referrer-Policy", "unsafe-url");
 //            }
 
 //            contents.getContentType()application/octet-stream
@@ -131,23 +151,23 @@ public class App {
 //            } else {
 
            // 检查请求URL是否为JavaScript文件
-            if (messageInfo.getOriginalUrl().endsWith(".js")) {
-                // 获取JavaScript内容
-                String content = contents.getTextContents();
-
-                // 如果内容包含特定字符串'xxxx'
-                if (content.contains("'xxxxabc'")) {
-                    // 输出找到目标JavaScript文件的URL
-                    System.out.println("messageInfo.getOriginalUrl():" + messageInfo.getOriginalUrl());
-
-                    // 在JavaScript内容前添加自定义代码
-                    String modifiedContent = "window.aaaaaa=3333;" + content;
-
-                    // 用修改后的内容替换原始内容
-                    contents.setTextContents(modifiedContent);
-                }
-            }
+//            if (messageInfo.getOriginalUrl().endsWith(".js")) {
+//                // 获取JavaScript内容
+//                String content = contents.getTextContents();
+//
+//                // 如果内容包含特定字符串'xxxx'
+//                if (content.contains("'xxxxabc'")) {
+//                    // 输出找到目标JavaScript文件的URL
+//                    System.out.println("messageInfo.getOriginalUrl():" + messageInfo.getOriginalUrl());
+//
+//                    // 在JavaScript内容前添加自定义代码
+//                    String modifiedContent = "window.aaaaaa=3333;" + content;
+//
+//                    // 用修改后的内容替换原始内容
+//                    contents.setTextContents(modifiedContent);
+//                }
 //            }
+
         });
     }
 }
