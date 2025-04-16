@@ -40,6 +40,28 @@ public class App {
         );
         // 设置不走代理的地址
         proxy.addRequestFilter((request, contents, messageInfo) -> {
+            // 移除可能暴露代理存在的头信息
+            request.headers().remove("Via");
+            request.headers().remove("X-Forwarded-For");
+            request.headers().remove("Proxy-Connection");
+            request.headers().remove("Proxy-Authenticate");
+
+
+
+            // 添加常见浏览器会发送的头信息
+            request.headers().add("Accept-Language", "en-US,en;q=0.9");
+            request.headers().add("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8");
+            request.headers().add("DNT", "1");
+
+            // 添加随机延迟模拟真实网络行为
+            try {
+                long delay = (long) (Math.random() * 100);
+                Thread.sleep(delay);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+
             String url = messageInfo.getOriginalUrl();
             // 设置HTTP转HTTPS的规则（可选）
             // 将所有HTTP请求重定向到HTTPS
@@ -170,6 +192,8 @@ public class App {
 //                String modifiedContent = content.replace("oldFunction()", "newFunction()");
 //                contents.setTextContents(modifiedContent);
 //            } else {
+
+//            System.out.println("contents.getTextContents():\n" + contents.getTextContents());
 
            // 检查请求URL是否为JavaScript文件
 //            if (messageInfo.getOriginalUrl().endsWith(".js")) {
