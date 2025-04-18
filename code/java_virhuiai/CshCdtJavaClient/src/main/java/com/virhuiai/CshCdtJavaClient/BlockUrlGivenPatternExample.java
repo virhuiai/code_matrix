@@ -29,51 +29,54 @@ import com.github.kklisura.cdt.services.types.ChromeTab;
 import java.util.Arrays;
 
 /**
+ * Could not find chrome binary! Try setting CHROME_PATH env to chrome binary path.
+ *
+ * 根据给定模式阻止URL。
  * Blocks an URLs given a patterns.
  *
  * @author Kenan Klisura
  */
 public class BlockUrlGivenPatternExample {
   public static void main(String[] args) {
-    // Create chrome launcher.
+    // 创建Chrome启动器
     final ChromeLauncher launcher = new ChromeLauncher();
 
-    // Launch chrome either as headless (true) or regular (false).
+    // 启动Chrome浏览器，参数false表示非无头模式（可见界面），true表示无头模式（不可见界面）
     final ChromeService chromeService = launcher.launch(false);
 
-    // Create empty tab ie about:blank.
+    // 创建一个空白标签页（即about:blank）
     final ChromeTab tab = chromeService.createTab();
 
-    // Get DevTools service to this tab
+    // 获取此标签页的DevTools服务
     final ChromeDevToolsService devToolsService = chromeService.createDevToolsService(tab);
 
-    // Get individual commands
-    final Page page = devToolsService.getPage();
-    final Network network = devToolsService.getNetwork();
+    // 获取单独的命令对象
+    final Page page = devToolsService.getPage();   // 页面操作命令
+    final Network network = devToolsService.getNetwork();  // 网络操作命令
 
-    // Block some urls.
+    // 设置要阻止的URL模式列表（阻止所有CSS、PNG和SVG文件）
     network.setBlockedURLs(Arrays.asList("**/*.css", "**/*.png", "**/*.svg"));
 
-    // Enable network events
+    // 启用网络事件监听
     network.enable();
 
-    // Wait for on load event
+    // 等待页面加载完成事件
     page.onLoadEventFired(
         event -> {
-          // Close devtools.
+          // 页面加载完成后关闭DevTools服务
           devToolsService.close();
         });
 
-    // Enable page events.
+    // 启用页面事件监听
     page.enable();
 
-    // Navigate to github.com.
+    // 导航到github.com网站
     page.navigate("http://github.com");
 
-    // Wait until devtools is closed.
+    // 等待直到DevTools服务关闭
     devToolsService.waitUntilClosed();
 
-    // Close tab.
+    // 关闭标签页
     chromeService.closeTab(tab);
   }
 }
