@@ -29,42 +29,60 @@ import com.github.kklisura.cdt.services.types.ChromeTab;
 import java.util.Arrays;
 
 /**
+ * 阻止特定URL的获取。在本例中阻止png和css文件。
  * Blocks specific urls from fetching. In this case png and css.
  *
  * @author Kenan Klisura
  */
 public class BlockUrlsExample {
   public static void main(String[] args) {
+    // 创建Chrome启动器
     // Create chrome launcher.
     final ChromeLauncher launcher = new ChromeLauncher();
 
+    // 以无头模式(true)或常规模式(false)启动Chrome浏览器
     // Launch chrome either as headless (true) or regular (false).
     final ChromeService chromeService = launcher.launch(false);
 
+    // 创建空白标签页，即about:blank
     // Create empty tab ie about:blank.
     final ChromeTab tab = chromeService.createTab();
 
+    // 获取此标签页的DevTools服务
     // Get DevTools service to this tab
     final ChromeDevToolsService devToolsService = chromeService.createDevToolsService(tab);
 
+    // 获取单独的命令对象
     // Get individual commands
     final Page page = devToolsService.getPage();
     final Network network = devToolsService.getNetwork();
 
+    // 设置要阻止的URL模式列表，这里阻止所有PNG和CSS文件
     network.setBlockedURLs(Arrays.asList("*.png", "*.css"));
+
+    // 当页面加载完成事件触发时，关闭DevTools服务
     page.onLoadEventFired(event -> devToolsService.close());
 
+    // 启用网络功能
     network.enable();
 
+    // 启用页面事件
     // Enable page events.
     page.enable();
 
+    // 导航到github.com
     // Navigate to github.com.
     page.navigate("http://github.com");
 
+    // 等待直到DevTools服务关闭
     devToolsService.waitUntilClosed();
   }
 
+  /**
+   * 判断给定URL是否应被阻止
+   * @param url 要检查的URL
+   * @return 如果URL以.png或.css结尾则返回true，表示应该阻止
+   */
   public static boolean isBlocked(String url) {
     return url.endsWith(".png") || url.endsWith(".css");
   }
