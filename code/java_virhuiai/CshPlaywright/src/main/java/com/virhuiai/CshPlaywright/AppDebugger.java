@@ -8,6 +8,9 @@ import com.microsoft.playwright.Playwright;
 import com.virhuiai.CshLogUtils.CshLogUtils;
 import org.apache.commons.logging.Log;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * 主应用类，用于创建和配置HTTP代理服务器
  * 该应用程序基于BrowserMob Proxy实现了一个能够拦截和修改HTTP/HTTPS流量的代理服务器
@@ -28,8 +31,17 @@ public class AppDebugger {
      */
     public static void main(String[] args) {
         Playwright playwright = Playwright.create();
+        // 创建连接选项
+        BrowserType.ConnectOverCDPOptions options = new BrowserType.ConnectOverCDPOptions()
+                .setSlowMo(100);
+        // 禁用自动下载行为设置
+        // 注意：在较新版本的 Playwright 中，可能需要使用不同的选项名称
+        Map<String, Object> launchOptions = new HashMap<>();
+        options.headers.put("handleDownloads", null);  // 关键设置
+
+
 //        Browser browser = playwright.chromium().connectOverCDP("http://localhost:9222");
-        Browser browser = playwright.chromium().connectOverCDP("http://127.0.0.1:9222");
+        Browser browser = playwright.chromium().connectOverCDP("http://127.0.0.1:9222",options);
         // 获取默认上下文和页面，不尝试创建新的浏览器上下文
         Page page = browser.contexts().size() > 0 && browser.contexts().get(0).pages().size() > 0
                 ? browser.contexts().get(0).pages().get(0)
