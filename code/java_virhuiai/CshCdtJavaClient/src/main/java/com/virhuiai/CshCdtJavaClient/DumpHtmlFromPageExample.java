@@ -31,6 +31,8 @@ import com.github.kklisura.cdt.services.types.ChromeTab;    // 导入Chrome标�
 /**
  * 以下示例从github.com网站获取并输出HTML内容。
  *
+ * 这个代码是一个使用Chrome DevTools Protocol (CDP)的Java示例，主要功能是启动Chrome浏览器，打开GitHub网站，等待页面加载完成后获取网页的HTML内容并输出，然后关闭浏览器。
+ *
  * @author Kenan Klisura
  */
 public class DumpHtmlFromPageExample {
