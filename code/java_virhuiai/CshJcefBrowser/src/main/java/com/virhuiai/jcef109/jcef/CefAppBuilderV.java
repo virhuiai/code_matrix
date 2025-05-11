@@ -341,12 +341,24 @@ public class CefAppBuilderV extends CefAppBuilder {
             String identifier = platform.getIdentifier();
             String mirror =  "http://mirrors.huaweicloud.com/repository/maven/me/friwi/jcef-natives-{platform}/{tag}/jcef-natives-{platform}-{tag}.jar";
             String url = builder.fetchInstallationUrl(platform);
-            System.out.println(url);
+//            System.out.println(url);
+
+
             // 替换镜像URL中的变量
 //                String m = mirror
 //                        .replace("{platform}", platform.getIdentifier())
 //                        .replace("{tag}", info.getReleaseTag())
 //                        .replace("{mvn_version}", mvn_version);
+
+//            System.out.println(identifier);
+//            macosx-amd64
+//            macosx-arm64
+//            linux-amd64
+//            linux-arm64
+//            linux-arm
+//            windows-amd64
+//            windows-i386
+//            windows-arm64
 
         }
     }
