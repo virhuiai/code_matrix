@@ -3,12 +3,11 @@ package com.virhuiai.jcef109;
 import com.virhuiai.Cli.CshCliUtils;
 import com.virhuiai.CshLogUtils.CshLogUtils;
 import com.virhuiai.jcef109.jcef.CefAppBuilderV;
-import com.virhuiai.jcef109.ui.Tab;
-import com.virhuiai.jcef109.ui.TabButton;
-import com.virhuiai.jcef109.ui.TabFactory;
-import com.virhuiai.jcef109.ui.TabbedPane;
-import com.virhuiai.jcef109.ui.Resources;
-import me.friwi.jcefmaven.*;
+import com.virhuiai.jcef109.ui.*;
+import me.friwi.jcefmaven.CefInitializationException;
+import me.friwi.jcefmaven.EnumPlatform;
+import me.friwi.jcefmaven.MavenCefAppHandlerAdapter;
+import me.friwi.jcefmaven.UnsupportedPlatformException;
 import org.apache.commons.cli.Option;
 import org.apache.commons.logging.Log;
 import org.cef.CefApp;
@@ -19,7 +18,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -51,7 +49,7 @@ public class BrowserApp extends JFrame {
         CefAppBuilderV builder = new CefAppBuilderV();
 
         String passAllArgsToCef = CshCliUtils.s3GetOptionValue("passAllArgsToCef");
-        if(null !=passAllArgsToCef && "1".equalsIgnoreCase(passAllArgsToCef)){
+        if("1".equalsIgnoreCase(passAllArgsToCef)){
             // Pass all args to cef
             LOGGER.info("将全部参数传递给CEF");
             builder.getJcefArgs().addAll(Arrays.asList(args));
@@ -91,7 +89,7 @@ public class BrowserApp extends JFrame {
         }
 
         //设置华为镜像，加载比较快
-        builder.setMirrors(Arrays.asList("http://mirrors.huaweicloud.com/repository/maven/me/friwi/jcef-natives-{platform}/{tag}/jcef-natives-{platform}-{tag}.jar"));
+//        builder.setMirrors(Arrays.asList("http://mirrors.huaweicloud.com/repository/maven/me/friwi/jcef-natives-{platform}/{tag}/jcef-natives-{platform}-{tag}.jar"));
 
         // --jcefInstallDir=/Volumes/THAWSPACE/CshProject/JCEF109/
         // 设置JCEF安装目录 jcefInstallDir

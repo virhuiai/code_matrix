@@ -25,6 +25,7 @@ public class App {
 
      移动后：
      ln -s /Volumes/THAWSPACE/Soft.Freezed/ms-playwright  /Users/virhuiai/Library/Caches/ms-playwright
+     ln -s /Volumes/THAWSPACE/Soft.Freezed/ms-playwright-1.18.0  /Users/virhuiai/Library/Caches/ms-playwright
      ln -s /Volumes/THAWSPACE/Soft.Freezed/ms-playwright-1.29.0  /Users/virhuiai/Library/Caches/ms-playwright
 
      * @param args

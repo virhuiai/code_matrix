@@ -63,8 +63,10 @@ public class CefAppBuilderV extends CefAppBuilder {
         cefSettings = DEFAULT_CEF_SETTINGS.clone();
         mirrors = new HashSet<>();
         // 添加默认的下载镜像源
-        mirrors.add("https://github.com/jcefmaven/jcefmaven/releases/download/{mvn_version}/jcef-natives-{platform}-{tag}.jar");
-        mirrors.add("https://repo.maven.apache.org/maven2/me/friwi/jcef-natives-{platform}/{tag}/jcef-natives-{platform}-{tag}.jar");
+//        mirrors.add("https://github.com/jcefmaven/jcefmaven/releases/download/{mvn_version}/jcef-natives-{platform}-{tag}.jar");
+//        mirrors.add("https://repo.maven.apache.org/maven2/me/friwi/jcef-natives-{platform}/{tag}/jcef-natives-{platform}-{tag}.jar");
+        mirrors.add("http://mirrors.huaweicloud.com/repository/maven/me/friwi/jcef-natives-{platform}/{tag}/jcef-natives-{platform}-{tag}.jar");
+
     }
 
     /**
