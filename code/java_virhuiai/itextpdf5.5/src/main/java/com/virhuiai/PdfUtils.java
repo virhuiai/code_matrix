@@ -4,6 +4,7 @@ import com.itextpdf.text.pdf.parser.LocationTextExtractionStrategy;
 import com.itextpdf.text.pdf.parser.PdfReaderContentParser;
 import com.itextpdf.text.pdf.parser.Vector;
 import java.awt.geom.Line2D;
+import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -243,6 +244,7 @@ public class PdfUtils {
 
             List<Line2D> lineList = strategy.getCurrentLineList();
 
+            List<Point2D.Float> points = new ArrayList<>();
             // 方法5：详细信息输出（包含线段长度）
             System.out.println("\n=== 详细线段信息 ===");
             for (int i = 0; i < lineList.size(); i++) {
@@ -261,7 +263,14 @@ public class PdfUtils {
                 System.out.printf("  终点: (%.2f, %.2f)%n", x2, y2);
                 System.out.printf("  长度: %.2f%n", length);
                 System.out.println();
+
+                points.add(new Point2D.Float((float)x1, (float)y1));
+                points.add(new Point2D.Float((float)x2, (float)y2));
             }
+
+
+            PdfCircleDrawer.drawCirclesOnPdf("/Volumes/RamDisk/tzs书.pdf", "/Volumes/RamDisk/tzs书222.pdf", points, 1);
+
             // 将相连的线段分组
 //            List<List<Line2D>> groupConnectedLines = strategy.groupConnectedLines(lineList);
 
