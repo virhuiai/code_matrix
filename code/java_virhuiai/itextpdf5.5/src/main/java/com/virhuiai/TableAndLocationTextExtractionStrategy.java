@@ -32,24 +32,32 @@ public class TableAndLocationTextExtractionStrategy extends LocationTextExtracti
     private List<Line2D> currentLineList = new ArrayList<>();
 
     /**
-     * 多个的线记录
+     * getCurrentLineList
+     * @return
      */
-    private List<List<Line2D>> allLineListList = new ArrayList<>();
+    public List<Line2D> getCurrentLineList() {
+        return currentLineList;
+    }
 
     /**
-     * 处理之前的旧数据（最后一次信息存在current里，最终使用时需要处理 todo）
+     * 多个的线记录
      */
-    public void dealLastCurrentInfo(){
-        if(null != currentLineList && !currentLineList.isEmpty()){
-            allLineListList.add(currentLineList);
-            currentLineList = new ArrayList<>();
-        }
+//    private List<List<Line2D>> allLineListList = new ArrayList<>();
 
-        if(null != currentPoint){
-            currentPoint = null;
-        }
-
-    }
+//    /**
+//     * 处理之前的旧数据（最后一次信息存在current里，最终使用时需要处理 todo）
+//     */
+//    public void dealLastCurrentInfo(){
+//        if(null != currentLineList && !currentLineList.isEmpty()){
+//            allLineListList.add(currentLineList);
+//            currentLineList = new ArrayList<>();
+//        }
+//
+//        if(null != currentPoint){
+//            currentPoint = null;
+//        }
+//
+//    }
 
     /**
      * fromLineListToPointSet
@@ -70,13 +78,7 @@ public class TableAndLocationTextExtractionStrategy extends LocationTextExtracti
         return rs;
     }
 
-    /**
-     * 取得所有行列表的列表
-     * @return
-     */
-    public List<List<Line2D>> getAllLineListList() {
-        return allLineListList;
-    }
+
 
     /**
      * Called when the current path is being modified. E.g. new segment is being added,
@@ -105,25 +107,22 @@ public class TableAndLocationTextExtractionStrategy extends LocationTextExtracti
             // 点来源记录
             pointSrcList.add(renderInfo);
             if(operation == PathConstructionRenderInfo.MOVETO){
-                // 处理之前的旧数据（最后一次信息存在current里，最终使用时需要处理 todo）
-                if(null != currentPoint || (null != currentLineList || !currentLineList.isEmpty())){
-                    dealLastCurrentInfo();
-                }
-
                 this.currentPoint = point;
-                System.out.print("路径起点");
+//                System.out.print("路径起点");
             }else{
                 if(null != currentPoint){
                     Line2D line = new Line2D.Double(currentPoint, point);
                     currentLineList.add(line);
                     this.currentPoint = point;
 
-                }else{
-                    System.out.println("没有起点，跳过");// todo LOG
                 }
-                System.out.print("线段终点");
+//                else{
+////                    System.out.println("没有起点，跳过");// todo LOG
+//
+//                }
+//                System.out.print("线段终点");
             }
-            System.out.printf(" - 线段端点: (%.2f, %.2f)%n", vec.get(0), vec.get(1));
+//            System.out.printf(" - 线段端点: (%.2f, %.2f)%n", vec.get(0), vec.get(1));
 
 
 //                - `MOVETO` (`1`): 路径起点
@@ -131,13 +130,15 @@ public class TableAndLocationTextExtractionStrategy extends LocationTextExtracti
 
 //            pcRenderInfoList.add(renderInfo);
 
-            System.out.println("modifyPath,renderInfo.getOperation():" + renderInfo.getOperation());
-            System.out.println("modifyPath,renderInfo.getSegmentData().size():" + renderInfo.getSegmentData().size());
-            System.out.println("modifyPath,renderInfo.getSegmentData():" + renderInfo.getSegmentData());
-            System.out.println("modifyPath,renderInfo.getCtm():" + renderInfo.getCtm());
+//            System.out.println("modifyPath,renderInfo.getOperation():" + renderInfo.getOperation());
+//            System.out.println("modifyPath,renderInfo.getSegmentData().size():" + renderInfo.getSegmentData().size());
+//            System.out.println("modifyPath,renderInfo.getSegmentData():" + renderInfo.getSegmentData());
+//            System.out.println("modifyPath,renderInfo.getCtm():" + renderInfo.getCtm());
 
         }
     }
+
+
 
     /**
      * Called when the current path should be rendered.

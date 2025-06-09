@@ -239,63 +239,64 @@ public class PdfUtils {
             TableAndLocationTextExtractionStrategy strategy = parser.processContent(pageNumber, new TableAndLocationTextExtractionStrategy());
 
 
-            //处理之前的旧数据,最终使用时需要处理
-            strategy.dealLastCurrentInfo();
-            List<List<Line2D>> lineListList = strategy.getAllLineListList();
+
+            List<Line2D> lineListList = strategy.getCurrentLineList();
+
+            int a = 3;
 
             // 生成位置map
-            Map<Integer,  Set<String>> setMap = new HashMap<>();
-            for (int i = 0; i < lineListList.size(); i++) {
-                Set<String> map = strategy.fromLineListToPointSet(lineListList.get(i));
-                setMap.put(i, map);
-            }
-
-
-            for (int i = 0; (i+1) < lineListList.size(); i++) {
-                List<Line2D> listI = lineListList.get(i);
-                if(null == listI || listI.isEmpty()){
-                    continue;// 可能是上一次的合并到前一次了
-                }
-
-
-                for (int j = i+1; j < lineListList.size(); j++) {
-                    List<Line2D> listJ = lineListList.get(j);
-
-                    Set<String> setI = setMap.get(i);
-                    Set<String> setJ =  setMap.get(j);
-
-//                    setI.retainAll(setJ) // todo
-                    setI.add("A");
-                    setJ.add("A");
-
-                    // Calculate intersection
-                    List<String> intersection = setI.stream()
-                            .filter(setJ::contains)
-                            .collect(Collectors.toList());
-                    if(null != intersection && !intersection.isEmpty()){
-                        // 有共同点，说明是同一个表格
-                        while (listJ.iterator().hasNext()){
-                            listI.add(listJ.iterator().next());
-                            listJ.iterator().remove();
-                            System.out.println("是同一个表格i:" + i);
-                            System.out.println("是同一个表格j:" + j);
-                        }
-                    }else{
-                        continue;
-                    }
-                }
-
-
-
-            }
-
-            // 去除空的行列表表
-            while (lineListList.iterator().hasNext()){
-                List<Line2D> cList = lineListList.iterator().next();
-                if(null == cList || cList.isEmpty()){
-                    lineListList.iterator().remove();
-                }
-            }
+//            Map<Integer,  Set<String>> setMap = new HashMap<>();
+//            for (int i = 0; i < lineListList.size(); i++) {
+//                Set<String> map = strategy.fromLineListToPointSet(lineListList.get(i));
+//                setMap.put(i, map);
+//            }
+//
+//
+//            for (int i = 0; (i+1) < lineListList.size(); i++) {
+//                List<Line2D> listI = lineListList.get(i);
+//                if(null == listI || listI.isEmpty()){
+//                    continue;// 可能是上一次的合并到前一次了
+//                }
+//
+//
+//                for (int j = i+1; j < lineListList.size(); j++) {
+//                    List<Line2D> listJ = lineListList.get(j);
+//
+//                    Set<String> setI = setMap.get(i);
+//                    Set<String> setJ =  setMap.get(j);
+//
+////                    setI.retainAll(setJ) // todo
+//                    setI.add("A");
+//                    setJ.add("A");
+//
+//                    // Calculate intersection
+//                    List<String> intersection = setI.stream()
+//                            .filter(setJ::contains)
+//                            .collect(Collectors.toList());
+//                    if(null != intersection && !intersection.isEmpty()){
+//                        // 有共同点，说明是同一个表格
+//                        while (listJ.iterator().hasNext()){
+//                            listI.add(listJ.iterator().next());
+//                            listJ.iterator().remove();
+//                            System.out.println("是同一个表格i:" + i);
+//                            System.out.println("是同一个表格j:" + j);
+//                        }
+//                    }else{
+//                        continue;
+//                    }
+//                }
+//
+//
+//
+//            }
+//
+//            // 去除空的行列表表
+//            while (lineListList.iterator().hasNext()){
+//                List<Line2D> cList = lineListList.iterator().next();
+//                if(null == cList || cList.isEmpty()){
+//                    lineListList.iterator().remove();
+//                }
+//            }
 
 
 //            List<LocationTextExtractionStrategy.TextChunk> locationalResult = fetchLocationalResult(strategy);
