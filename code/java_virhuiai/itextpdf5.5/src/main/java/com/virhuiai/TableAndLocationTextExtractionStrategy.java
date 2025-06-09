@@ -21,6 +21,11 @@ public class TableAndLocationTextExtractionStrategy extends LocationTextExtracti
      */
     private Point2D.Float currentPoint = null;
 
+    /**
+     * 记录路径起始点，用于闭合路径
+     */
+    private Point2D.Float pathStartPoint = null;
+
 //    /**
 //     * 点来源记录
 //     */
@@ -181,7 +186,8 @@ public class TableAndLocationTextExtractionStrategy extends LocationTextExtracti
     @Override
     public void modifyPath(PathConstructionRenderInfo renderInfo) {
         int operation = renderInfo.getOperation();
-        // 检查是否为线段操作（MOVETO 或 LINETO）
+
+        // 处理线段操作
         if (operation == PathConstructionRenderInfo.MOVETO ||
                 operation == PathConstructionRenderInfo.LINETO) {
 
@@ -196,37 +202,133 @@ public class TableAndLocationTextExtractionStrategy extends LocationTextExtracti
             Point2D.Float point = new Point2D.Float(vec.get(Vector.I1),
                     vec.get(Vector.I2));
 
-            // 点来源记录
-//            pointSrcList.add(renderInfo);
             if(operation == PathConstructionRenderInfo.MOVETO){
+                // MOVETO操作：设置新的路径起点
                 this.currentPoint = point;
-//                System.out.print("路径起点");
+                this.pathStartPoint = point; // 记录路径起始点，用于闭合路径
             }else{
+                // LINETO操作：创建线段
                 if(null != currentPoint){
                     Line2D line = new Line2D.Double(currentPoint, point);
                     currentLineList.add(line);
                     this.currentPoint = point;
-
                 }
-//                else{
-////                    System.out.println("没有起点，跳过");// todo LOG
-//
-//                }
-//                System.out.print("线段终点");
             }
-//            System.out.printf(" - 线段端点: (%.2f, %.2f)%n", vec.get(0), vec.get(1));
+        }
+        // 处理闭合路径操作
+        else if (operation == PathConstructionRenderInfo.CLOSE) {
+            // 如果有当前点和路径起始点，创建闭合线段
+            if (currentPoint != null && pathStartPoint != null &&
+                    !isPointsEqual(currentPoint, pathStartPoint, 1e-6)) {
+                Line2D line = new Line2D.Double(currentPoint, pathStartPoint);
+                currentLineList.add(line);
+                currentPoint = pathStartPoint;
+            }
+        }
+        // 处理矩形操作（PDF中表格经常使用矩形绘制）
+        else if (operation == PathConstructionRenderInfo.RECT) {
+            List<Float> segments = renderInfo.getSegmentData();
+            if (segments.size() >= 4) {
+                float x = segments.get(0);
+                float y = segments.get(1);
+                float width = segments.get(2);
+                float height = segments.get(3);
 
+                // 转换矩形的四个顶点坐标
+                Matrix ctm = renderInfo.getCtm();
+                Vector bottomLeft = new Vector(x, y, 1).cross(ctm);
+                Vector bottomRight = new Vector(x + width, y, 1).cross(ctm);
+                Vector topRight = new Vector(x + width, y + height, 1).cross(ctm);
+                Vector topLeft = new Vector(x, y + height, 1).cross(ctm);
 
-//                - `MOVETO` (`1`): 路径起点
-//                        - `LINETO` (`2`): 线段终点
+                // 创建矩形的四条边
+                Point2D.Float p1 = new Point2D.Float(bottomLeft.get(Vector.I1), bottomLeft.get(Vector.I2));
+                Point2D.Float p2 = new Point2D.Float(bottomRight.get(Vector.I1), bottomRight.get(Vector.I2));
+                Point2D.Float p3 = new Point2D.Float(topRight.get(Vector.I1), topRight.get(Vector.I2));
+                Point2D.Float p4 = new Point2D.Float(topLeft.get(Vector.I1), topLeft.get(Vector.I2));
 
-//            pcRenderInfoList.add(renderInfo);
+                currentLineList.add(new Line2D.Double(p1, p2)); // 底边
+                currentLineList.add(new Line2D.Double(p2, p3)); // 右边
+                currentLineList.add(new Line2D.Double(p3, p4)); // 顶边
+                currentLineList.add(new Line2D.Double(p4, p1)); // 左边
+            }
+        }// 处理贝塞尔曲线操作 - 简化处理：只连接起点和终点
+        else if (operation == PathConstructionRenderInfo.CURVE_123 ||
+                operation == PathConstructionRenderInfo.CURVE_23 ||
+                operation == PathConstructionRenderInfo.CURVE_13) {
 
-//            System.out.println("modifyPath,renderInfo.getOperation():" + renderInfo.getOperation());
-//            System.out.println("modifyPath,renderInfo.getSegmentData().size():" + renderInfo.getSegmentData().size());
-//            System.out.println("modifyPath,renderInfo.getSegmentData():" + renderInfo.getSegmentData());
-//            System.out.println("modifyPath,renderInfo.getCtm():" + renderInfo.getCtm());
+            if (currentPoint != null) {
+                List<Float> segments = renderInfo.getSegmentData();
+                Matrix ctm = renderInfo.getCtm();
 
+                // 获取曲线的终点坐标
+                float endX, endY;
+
+                switch (operation) {
+                    case PathConstructionRenderInfo.CURVE_123:
+                        // 完整的贝塞尔曲线：6个参数 (x1, y1, x2, y2, x3, y3)
+                        // 终点是 (x3, y3)
+                        if (segments.size() >= 6) {
+                            endX = segments.get(4);
+                            endY = segments.get(5);
+                        } else {
+                            return;
+                        }
+                        break;
+
+                    case PathConstructionRenderInfo.CURVE_23:
+                        // 省略第一个控制点的贝塞尔曲线：4个参数 (x2, y2, x3, y3)
+                        // 终点是 (x3, y3)
+                        if (segments.size() >= 4) {
+                            endX = segments.get(2);
+                            endY = segments.get(3);
+                        } else {
+                            return;
+                        }
+                        break;
+
+                    case PathConstructionRenderInfo.CURVE_13:
+                        // 省略第二个控制点的贝塞尔曲线：4个参数 (x1, y1, x3, y3)
+                        // 终点是 (x3, y3)
+                        if (segments.size() >= 4) {
+                            endX = segments.get(2);
+                            endY = segments.get(3);
+                        } else {
+                            return;
+                        }
+                        break;
+
+                    default:
+                        return;
+                }
+
+                // 转换终点坐标为绝对坐标
+                Vector endVec = new Vector(endX, endY, 1).cross(ctm);
+                Point2D.Float endPoint = new Point2D.Float(endVec.get(Vector.I1),
+                        endVec.get(Vector.I2));
+
+                // 简化处理：将曲线近似为直线（从当前点到终点）
+                Line2D line = new Line2D.Double(currentPoint, endPoint);
+                currentLineList.add(line);
+
+                // 更新当前点为曲线终点
+                currentPoint = endPoint;
+
+                // 如果需要更精确的曲线表示，可以将曲线分段为多条直线
+                // 这里提供一个可选的更精确的实现（注释掉）
+            /*
+            // 将贝塞尔曲线分段为多条直线
+            int segments = 10; // 分段数
+            List<Point2D.Float> curvePoints = calculateBezierPoints(
+                currentPoint, controlPoints, endPoint, segments);
+
+            for (int i = 0; i < curvePoints.size() - 1; i++) {
+                Line2D segment = new Line2D.Double(
+                    curvePoints.get(i), curvePoints.get(i + 1));
+                currentLineList.add(segment);
+            }
+            */
+            }
         }
     }
 
@@ -240,6 +342,11 @@ public class TableAndLocationTextExtractionStrategy extends LocationTextExtracti
      */
     @Override
     public Path renderPath(PathPaintingRenderInfo renderInfo) {
+        // 路径渲染完成后，重置当前点和路径起始点
+        this.currentPoint = null;
+        this.pathStartPoint = null;
+
+
         return null;
     }
 
