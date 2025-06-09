@@ -4,6 +4,7 @@ import com.itextpdf.text.pdf.parser.LocationTextExtractionStrategy;
 import com.itextpdf.text.pdf.parser.PdfReaderContentParser;
 import com.itextpdf.text.pdf.parser.Vector;
 import java.awt.geom.Line2D;
+import java.awt.geom.Rectangle2D;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -262,7 +263,25 @@ public class PdfUtils {
                 System.out.println();
             }
             // 将相连的线段分组
-            List<List<Line2D>> groupConnectedLines = strategy.groupConnectedLines(lineList);
+//            List<List<Line2D>> groupConnectedLines = strategy.groupConnectedLines(lineList);
+
+            // 分析表格单元格
+            List<List<Rectangle2D>> cellGroups = new TableCellAnalyzer().analyzeTableCells(lineList);
+
+            // 输出结果
+            for (int i = 0; i < cellGroups.size(); i++) {
+                System.out.println("表格组 " + (i + 1) + ":");
+                List<Rectangle2D> cells = cellGroups.get(i);
+
+                for (int j = 0; j < cells.size(); j++) {
+                    Rectangle2D cell = cells.get(j);
+                    System.out.println("  单元格 " + (j + 1) + " 的四个坐标点:");
+                    System.out.println("    左上角: (" + cell.getX() + ", " + cell.getY() + ")");
+                    System.out.println("    右上角: (" + (cell.getX() + cell.getWidth()) + ", " + cell.getY() + ")");
+                    System.out.println("    左下角: (" + cell.getX() + ", " + (cell.getY() + cell.getHeight()) + ")");
+                    System.out.println("    右下角: (" + (cell.getX() + cell.getWidth()) + ", " + (cell.getY() + cell.getHeight()) + ")");
+                }
+            }
 
             int a = 3;
 
