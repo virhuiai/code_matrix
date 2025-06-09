@@ -241,6 +241,8 @@ public class PdfUtils {
 
 
             List<Line2D> lineListList = strategy.getCurrentLineList();
+            // 将相连的线段分组
+            List<List<Line2D>> groupConnectedLines = strategy.groupConnectedLines(lineListList);
 
             int a = 3;
 
