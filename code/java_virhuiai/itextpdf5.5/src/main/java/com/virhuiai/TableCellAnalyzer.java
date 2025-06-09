@@ -1,7 +1,6 @@
 package com.virhuiai;
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
 import java.util.*;
 
 /**
@@ -12,14 +11,14 @@ public class TableCellAnalyzer {
     private static final double TOLERANCE = 1e-6;
 
     // 主方法：分析线段并提取表格单元格
-    public static List<List<Rectangle2D>> analyzeTableCells(List<Line2D> lineList) {
+    public static List<List<PdfCellPos>> analyzeTableCells(List<Line2D> lineList) {
         // 1. 将相连或相交的线段分组 ok
         List<List<Line2D>> groupedLines = groupConnectedLines(lineList);
 
         // 2. 对每个分组分析表格单元格
-        List<List<Rectangle2D>> allCells = new ArrayList<>();
+        List<List<PdfCellPos>> allCells = new ArrayList<>();
         for (List<Line2D> group : groupedLines) {
-            List<Rectangle2D> cells = extractCellsFromLineGroup(group);
+            List<PdfCellPos> cells = extractCellsFromLineGroup(group);
             if (!cells.isEmpty()) {
                 allCells.add(cells);
             }
@@ -78,7 +77,7 @@ public class TableCellAnalyzer {
     }
 
     // 从一组线段中提取表格单元格
-    private static List<Rectangle2D> extractCellsFromLineGroup(List<Line2D> lines) {
+    private static List<PdfCellPos> extractCellsFromLineGroup(List<Line2D> lines) {
         // 分离水平线和垂直线
         List<Line2D> horizontalLines = new ArrayList<>();
         List<Line2D> verticalLines = new ArrayList<>();
@@ -107,7 +106,7 @@ public class TableCellAnalyzer {
 
 
         // 查找所有可能的矩形单元格
-        List<Rectangle2D> cells = new ArrayList<>();
+        List<PdfCellPos> cells = new ArrayList<>();
 
         for (int i = 0; i < horizontalLines.size() - 1; i++) {
             Line2D line1 = horizontalLines.get(i);
@@ -141,15 +140,14 @@ public class TableCellAnalyzer {
 //                PDF坐标系：左下角为原点(0,0)，y轴向上为正
 //                Java AWT坐标系：左上角为原点(0,0)，y轴向下为正
 
-                // PDF坐标系修正：y值较大的是上边，y值较小的是下边
-                double x = Math.min(xLeft, xRight);          // 矩形左边界
-                double y = Math.min(yTop, yBtm);             // 矩形下边界（PDF中较小的y值）
-                double width = Math.abs(xRight - xLeft);     // 矩形宽度
-                double height = Math.abs(yTop - yBtm);       // 矩形高度
-
-                Rectangle2D rect = new Rectangle2D.Double(x, y, width, height);
-                cells.add(rect);
-
+                // 使用Builder模式创建对象
+                PdfCellPos pos = PdfCellPos.builder()
+                        .yTop(yTop)
+                        .yBtm(yBtm)
+                        .xLeft(xLeft)
+                        .xRight(xRight)
+                        .build();
+                cells.add(pos);
             }
 
         }

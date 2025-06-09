@@ -275,30 +275,112 @@ public class PdfUtils {
 //            List<List<Line2D>> groupConnectedLines = strategy.groupConnectedLines(lineList);
 
             // 分析表格单元格
-            List<List<Rectangle2D>> cellGroups = new TableCellAnalyzer().analyzeTableCells(lineList);
+            List<List<PdfCellPos>> cellGroups = new TableCellAnalyzer().analyzeTableCells(lineList);
+
+            List<LocationTextExtractionStrategy.TextChunk> locationalResult = fetchObjResultFromSuperClass(strategy, "locationalResult");
 
             // 输出结果
             for (int i = 0; i < cellGroups.size(); i++) {
                 System.out.println("表格组 " + (i + 1) + ":");
-                List<Rectangle2D> cells = cellGroups.get(i);
+                List<PdfCellPos> cells = cellGroups.get(i);
 
                 for (int j = 0; j < cells.size(); j++) {
-                    Rectangle2D cell = cells.get(j);
+                    PdfCellPos cell = cells.get(j);
                     System.out.println("  单元格 " + (j + 1) + " 的四个坐标点:");
-                    System.out.println("    左上角: (" + cell.getX() + ", " + cell.getY() + ")");
-                    System.out.println("    右上角: (" + (cell.getX() + cell.getWidth()) + ", " + cell.getY() + ")");
-                    System.out.println("    左下角: (" + cell.getX() + ", " + (cell.getY() + cell.getHeight()) + ")");
-                    System.out.println("    右下角: (" + (cell.getX() + cell.getWidth()) + ", " + (cell.getY() + cell.getHeight()) + ")");
 
-                    if(0==i && 0==j){
-                        List<Point2D.Float> points = new ArrayList<>();
-                        points.add(new Point2D.Float((float)cell.getX(), (float)cell.getY()));
-                        points.add(new Point2D.Float((float)(cell.getX() + cell.getWidth()), (float)cell.getY()));
-                        points.add(new Point2D.Float((float)cell.getX(), (float)(cell.getY() + cell.getHeight())));
-                        points.add(new Point2D.Float((float)(cell.getX() + cell.getWidth()), (float)(cell.getY())));
 
-                        PdfCircleDrawer.drawCirclesOnPdf("/Volumes/RamDisk/tzs书.pdf", "/Volumes/RamDisk/tzs书222.pdf", points, 1);
+
+
+                    //List<LocationTextExtractionStrategy.TextChunk> locationalResult = strategy.getLocationalResult();
+                    for (LocationTextExtractionStrategy.TextChunk textChunk : locationalResult) {
+                        try{
+                            Vector sl = textChunk.getStartLocation();
+
+
+                            Vector el = textChunk.getEndLocation();
+
+                            if(textChunk.getText().equals("债务融资工具名称")){
+                                int a = 3;
+                            }
+
+
+                            // 块的起始位置x
+                            if(sl.get(Vector.I1) > cell.getxLeft()
+                            &&
+                              //块的起始位置y
+                                    sl.get(Vector.I2) < cell.getyTop() //
+
+                                    && el.get(Vector.I1) < cell.getxRight()
+                                    && el.get(Vector.I2) > cell.getyBtm()
+                            ){
+                                System.out.println("Text:" + textChunk.getText());
+                                System.out.println("块的起始位置x:" + sl.get(Vector.I1));
+                                System.out.println("块的起始位置y:" + sl.get(Vector.I2));
+                                System.out.println("块的结束位置x:" + el.get(Vector.I1));
+                                System.out.println("块的结束位置y:" + el.get(Vector.I2));
+                            }
+
+
+
+
+
+
+
+//                            Vector orientationVector = fetchObjResult(textChunk.getLocation(), "orientationVector");
+//                            System.out.println("块的方向上的单位向量orientationVector:" + orientationVector);
+//
+//                            int orientationMagnitude = fetchObjResult(textChunk.getLocation(), "orientationMagnitude");
+//                            System.out.println("方向的标量值，用于快速排序orientationMagnitude:" + orientationMagnitude);
+//
+//                            int distPerpendicular = fetchObjResult(textChunk.getLocation(), "distPerpendicular");
+//                            System.out.println("到方向单位向量的垂直距离（即在未旋转坐标系统中的Y位置）我们将其四舍五入到最接近的整数:" + distPerpendicular);
+//
+//
+//                            float distParallelStart = fetchObjResult(textChunk.getLocation(), "distParallelStart");
+//                            System.out.println("块起点沿方向单位向量的距离（即在未旋转坐标系统中的X位置）distParallelStart:" + distParallelStart);
+//
+//
+//                            float distParallelEnd = fetchObjResult(textChunk.getLocation(), "distParallelEnd");
+//                            System.out.println("块终点沿方向单位向量的距离（即在未旋转坐标系统中的X位置）distParallelEnd:" + distParallelEnd);
+//
+//                            float charSpaceWidth = fetchObjResult(textChunk.getLocation(), "charSpaceWidth");
+//                            System.out.println("字块中单个空格字符在字体中的宽度charSpaceWidth:" + charSpaceWidth);
+//
+//                            System.out.println("");
+//                            System.out.println("");
+                        }catch (Exception e){
+                            System.out.println("出错:" + textChunk);
+                        }
+
+
+
+
+
+                        ///** 块起点沿方向单位向量的距离（即在未旋转坐标系统中的X位置） */
+                        //private final float distParallelStart;
+                        ///** 块终点沿方向单位向量的距离（即在未旋转坐标系统中的X位置） */
+                        //private final float distParallelEnd;
+                        ///** 字块中单个空格字符在字体中的宽度 */
+                        //private final float charSpaceWidth;
+
+
+//                4. **orientationMagnitude**: 这个值表示文本方向向量的长度。在这个例子中，长度为 785。
+//                5. **distPerpendicular**: 这个值表示文本相对于某个参考线的垂直距离。在这个例子中，距离为 -87。
+//                6. **distParallelStart**: 这个值表示文本开始位置相对于某个参考点的平行距离。在这个例子中，距离为 223.04976。
+//                7. **distParallelEnd**: 这个值表示文本结束位置相对于某个参考点的平行距离。在这个例子中，距离为 793.05237。
+//                8. **charSpaceWidth**: 这个值表示字符之间的间距。在这个例子中，间距为 30.000141。
+
                     }
+
+//                    if(0==i && 0==j){
+//                        List<Point2D.Float> points = new ArrayList<>();
+//                        points.add(new Point2D.Float((float)cell.getX(), (float)cell.getY()));
+//                        points.add(new Point2D.Float((float)(cell.getX() + cell.getWidth()), (float)cell.getY()));
+//                        points.add(new Point2D.Float((float)cell.getX(), (float)(cell.getY() + cell.getHeight())));
+//                        points.add(new Point2D.Float((float)(cell.getX() + cell.getWidth()), (float)(cell.getY())));
+//
+//                        PdfCircleDrawer.drawCirclesOnPdf("/Volumes/RamDisk/tzs书.pdf", "/Volumes/RamDisk/tzs书222.pdf", points, 1);
+//                    }
 
 
                 }
@@ -361,72 +443,8 @@ public class PdfUtils {
 //            }
 
 
-//            List<LocationTextExtractionStrategy.TextChunk> locationalResult = fetchLocationalResult(strategy);
-//            List<LocationTextExtractionStrategy.TextChunk> locationalResult = fetchObjResult(strategy, "locationalResult");
-            List<LocationTextExtractionStrategy.TextChunk> locationalResult = fetchObjResultFromSuperClass(strategy, "locationalResult");
 
 
-
-            //List<LocationTextExtractionStrategy.TextChunk> locationalResult = strategy.getLocationalResult();
-            for (LocationTextExtractionStrategy.TextChunk textChunk : locationalResult) {
-                try{
-                Vector sl = textChunk.getStartLocation();
-                System.out.println("Text:" + textChunk.getText());
-                System.out.println("块的起始位置x:" + sl.get(Vector.I1));
-                System.out.println("块的起始位置y:" + sl.get(Vector.I2));
-
-                Vector el = textChunk.getEndLocation();
-                System.out.println("块的结束位置x:" + el.get(Vector.I1));
-                System.out.println("块的结束位置y:" + el.get(Vector.I2));
-
-
-
-
-                Vector orientationVector = fetchObjResult(textChunk.getLocation(), "orientationVector");
-                System.out.println("块的方向上的单位向量orientationVector:" + orientationVector);
-
-                int orientationMagnitude = fetchObjResult(textChunk.getLocation(), "orientationMagnitude");
-                System.out.println("方向的标量值，用于快速排序orientationMagnitude:" + orientationMagnitude);
-
-                int distPerpendicular = fetchObjResult(textChunk.getLocation(), "distPerpendicular");
-                System.out.println("到方向单位向量的垂直距离（即在未旋转坐标系统中的Y位置）我们将其四舍五入到最接近的整数:" + distPerpendicular);
-
-
-                float distParallelStart = fetchObjResult(textChunk.getLocation(), "distParallelStart");
-                System.out.println("块起点沿方向单位向量的距离（即在未旋转坐标系统中的X位置）distParallelStart:" + distParallelStart);
-
-
-                float distParallelEnd = fetchObjResult(textChunk.getLocation(), "distParallelEnd");
-                System.out.println("块终点沿方向单位向量的距离（即在未旋转坐标系统中的X位置）distParallelEnd:" + distParallelEnd);
-
-                float charSpaceWidth = fetchObjResult(textChunk.getLocation(), "charSpaceWidth");
-                System.out.println("字块中单个空格字符在字体中的宽度charSpaceWidth:" + charSpaceWidth);
-
-                System.out.println("");
-                System.out.println("");
-                }catch (Exception e){
-                    System.out.println("出错:" + textChunk);
-                }
-
-
-
-
-
-                    ///** 块起点沿方向单位向量的距离（即在未旋转坐标系统中的X位置） */
-                    //private final float distParallelStart;
-                    ///** 块终点沿方向单位向量的距离（即在未旋转坐标系统中的X位置） */
-                    //private final float distParallelEnd;
-                    ///** 字块中单个空格字符在字体中的宽度 */
-                    //private final float charSpaceWidth;
-
-
-//                4. **orientationMagnitude**: 这个值表示文本方向向量的长度。在这个例子中，长度为 785。
-//                5. **distPerpendicular**: 这个值表示文本相对于某个参考线的垂直距离。在这个例子中，距离为 -87。
-//                6. **distParallelStart**: 这个值表示文本开始位置相对于某个参考点的平行距离。在这个例子中，距离为 223.04976。
-//                7. **distParallelEnd**: 这个值表示文本结束位置相对于某个参考点的平行距离。在这个例子中，距离为 793.05237。
-//                8. **charSpaceWidth**: 这个值表示字符之间的间距。在这个例子中，间距为 30.000141。
-
-            }
 
 //            Vector beforeVec = getFstContainTextVec(locationalResult, "划至簿记管理人指定的以下银行账户内");
 //            Vector afterVec = getFstContainTextVec(locationalResult, "在办理付款时，请注意资金在途时间");
