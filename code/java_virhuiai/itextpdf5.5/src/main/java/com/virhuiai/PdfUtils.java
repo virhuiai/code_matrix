@@ -244,7 +244,7 @@ public class PdfUtils {
 
             List<Line2D> lineList = strategy.getCurrentLineList();
 
-            List<Point2D.Float> points = new ArrayList<>();
+//            List<Point2D.Float> points = new ArrayList<>();
             // 方法5：详细信息输出（包含线段长度）
             System.out.println("\n=== 详细线段信息 ===");
             for (int i = 0; i < lineList.size(); i++) {
@@ -264,12 +264,12 @@ public class PdfUtils {
                 System.out.printf("  长度: %.2f%n", length);
                 System.out.println();
 
-                points.add(new Point2D.Float((float)x1, (float)y1));
-                points.add(new Point2D.Float((float)x2, (float)y2));
+//                points.add(new Point2D.Float((float)x1, (float)y1));
+//                points.add(new Point2D.Float((float)x2, (float)y2));
             }
 
 
-            PdfCircleDrawer.drawCirclesOnPdf("/Volumes/RamDisk/tzs书.pdf", "/Volumes/RamDisk/tzs书222.pdf", points, 1);
+//            PdfCircleDrawer.drawCirclesOnPdf("/Volumes/RamDisk/tzs书.pdf", "/Volumes/RamDisk/tzs书222.pdf", points, 1);
 
             // 将相连的线段分组
 //            List<List<Line2D>> groupConnectedLines = strategy.groupConnectedLines(lineList);
@@ -289,6 +289,18 @@ public class PdfUtils {
                     System.out.println("    右上角: (" + (cell.getX() + cell.getWidth()) + ", " + cell.getY() + ")");
                     System.out.println("    左下角: (" + cell.getX() + ", " + (cell.getY() + cell.getHeight()) + ")");
                     System.out.println("    右下角: (" + (cell.getX() + cell.getWidth()) + ", " + (cell.getY() + cell.getHeight()) + ")");
+
+                    if(0==i && 0==j){
+                        List<Point2D.Float> points = new ArrayList<>();
+                        points.add(new Point2D.Float((float)cell.getX(), (float)cell.getY()));
+                        points.add(new Point2D.Float((float)(cell.getX() + cell.getWidth()), (float)cell.getY()));
+                        points.add(new Point2D.Float((float)cell.getX(), (float)(cell.getY() + cell.getHeight())));
+                        points.add(new Point2D.Float((float)(cell.getX() + cell.getWidth()), (float)(cell.getY())));
+
+                        PdfCircleDrawer.drawCirclesOnPdf("/Volumes/RamDisk/tzs书.pdf", "/Volumes/RamDisk/tzs书222.pdf", points, 1);
+                    }
+
+
                 }
             }
 
