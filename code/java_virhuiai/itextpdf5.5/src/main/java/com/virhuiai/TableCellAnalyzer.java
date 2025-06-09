@@ -2,10 +2,7 @@ package com.virhuiai;
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 遍历线段、分组相连或相交的线段，并分析表格单元格的
@@ -95,23 +92,66 @@ public class TableCellAnalyzer {
         }
 
         // 按坐标排序
-        horizontalLines.sort((a, b) -> Double.compare(a.getY1(), b.getY1()));
+        // 水平线按y坐标分组 由于左下角为原点，故排序有所不同
+        horizontalLines.sort((a, b) -> Double.compare(b.getY1(), a.getY1()));
         verticalLines.sort((a, b) -> Double.compare(a.getX1(), b.getX1()));
+
+//        Map<Double, List<Line2D>> horizontalGroups = new LinkedHashMap<>();
+//        horizontalLines.stream()
+//                .sorted((a, b) -> Double.compare(b.getY1(), a.getY1())) // 按y坐标降序排序
+//                .forEach(line -> {
+//                    double y = line.getY1();
+//                    horizontalGroups.computeIfAbsent(y, k -> new ArrayList<>()).add(line);
+//                });
+        // todo 后面的解析同一行多个的情况
+
 
         // 查找所有可能的矩形单元格
         List<Rectangle2D> cells = new ArrayList<>();
 
         for (int i = 0; i < horizontalLines.size() - 1; i++) {
-            for (int j = 0; j < verticalLines.size() - 1; j++) {
-                Rectangle2D cell = findRectangle(
-                        horizontalLines.get(i), horizontalLines.get(i + 1),
-                        verticalLines.get(j), verticalLines.get(j + 1)
-                );
+            Line2D line1 = horizontalLines.get(i);
+            Line2D line2 = horizontalLines.get(i + 1);
 
-                if (cell != null) {
-                    cells.add(cell);
+            if(line1.getY1() == line2.getY1()){
+                continue;//  todo 后面的解析同一行多个的情况
+            }
+
+            // 两个线同时和另一条相交才算。
+
+
+            List<Line2D> line3List = new ArrayList<>();
+            // 检查是否相交
+
+            for (int j = 0; j < verticalLines.size() - 1; j++) {
+                Line2D line3 = verticalLines.get(j);
+                if (line1.intersectsLine(line3)&&
+                        line2.intersectsLine(line3)) {
+                    line3List.add(line3);
                 }
             }
+
+            //
+            double yTop = line1.getY1();
+            double yBtm = line2.getY1();
+            for (int k3 = 0; k3 < line3List.size() - 1; k3++) {
+                double xLeft = line3List.get(k3).getX1();
+                double xRight = line3List.get(k3 + 1).getX1();
+//                PDF坐标系与常规的屏幕坐标系不同：
+//                PDF坐标系：左下角为原点(0,0)，y轴向上为正
+//                Java AWT坐标系：左上角为原点(0,0)，y轴向下为正
+
+                // PDF坐标系修正：y值较大的是上边，y值较小的是下边
+                double x = Math.min(xLeft, xRight);          // 矩形左边界
+                double y = Math.min(yTop, yBtm);             // 矩形下边界（PDF中较小的y值）
+                double width = Math.abs(xRight - xLeft);     // 矩形宽度
+                double height = Math.abs(yTop - yBtm);       // 矩形高度
+
+                Rectangle2D rect = new Rectangle2D.Double(x, y, width, height);
+                cells.add(rect);
+
+            }
+
         }
 
         return cells;
@@ -127,59 +167,7 @@ public class TableCellAnalyzer {
         return Math.abs(line.getX1() - line.getX2()) < TOLERANCE;
     }
 
-    // 根据四条边查找矩形
-    private static Rectangle2D findRectangle(Line2D top, Line2D bottom,
-                                             Line2D left, Line2D right) {
-        // 获取交点
-        Point2D topLeft = getIntersection(top, left);
-        Point2D topRight = getIntersection(top, right);
-        Point2D bottomLeft = getIntersection(bottom, left);
-        Point2D bottomRight = getIntersection(bottom, right);
 
-        // 验证所有交点都存在
-        if (topLeft == null || topRight == null ||
-                bottomLeft == null || bottomRight == null) {
-            return null;
-        }
-
-        // 创建矩形
-        double x = Math.min(topLeft.getX(), bottomLeft.getX());
-        double y = Math.min(topLeft.getY(), topRight.getY());
-        double width = Math.abs(topRight.getX() - topLeft.getX());
-        double height = Math.abs(bottomLeft.getY() - topLeft.getY());
-
-        if (width > TOLERANCE && height > TOLERANCE) {
-            return new Rectangle2D.Double(x, y, width, height);
-        }
-
-        return null;
-    }
-
-    // 获取两条线段的交点
-    private static Point2D getIntersection(Line2D line1, Line2D line2) {
-        // 使用线段参数方程计算交点
-        double x1 = line1.getX1(), y1 = line1.getY1();
-        double x2 = line1.getX2(), y2 = line1.getY2();
-        double x3 = line2.getX1(), y3 = line2.getY1();
-        double x4 = line2.getX2(), y4 = line2.getY2();
-
-        double denom = (x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4);
-
-        if (Math.abs(denom) < TOLERANCE) {
-            return null; // 平行线
-        }
-
-        double t = ((x1 - x3) * (y3 - y4) - (y1 - y3) * (x3 - x4)) / denom;
-        double u = -((x1 - x2) * (y1 - y3) - (y1 - y2) * (x1 - x3)) / denom;
-
-        if (t >= 0 && t <= 1 && u >= 0 && u <= 1) {
-            double x = x1 + t * (x2 - x1);
-            double y = y1 + t * (y2 - y1);
-            return new Point2D.Double(x, y);
-        }
-
-        return null;
-    }
 
     // 并查集实现
     static class UnionFind {
