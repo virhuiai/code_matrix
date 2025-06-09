@@ -16,7 +16,7 @@ public class TableCellAnalyzer {
 
     // 主方法：分析线段并提取表格单元格
     public static List<List<Rectangle2D>> analyzeTableCells(List<Line2D> lineList) {
-        // 1. 将相连或相交的线段分组
+        // 1. 将相连或相交的线段分组 ok
         List<List<Line2D>> groupedLines = groupConnectedLines(lineList);
 
         // 2. 对每个分组分析表格单元格
@@ -49,6 +49,9 @@ public class TableCellAnalyzer {
         Map<Integer, List<Line2D>> groups = new HashMap<>();
         for (int i = 0; i < n; i++) {
             int root = uf.find(i);
+            //如果groups中已存在键root，直接返回对应的List
+            //如果不存在键root，则创建一个新的ArrayList并放入map中，然后返回这个新列表
+            //k -> new ArrayList<>()是Lambda表达式，等价于创建新的空列表
             groups.computeIfAbsent(root, k -> new ArrayList<>()).add(lineList.get(i));
         }
 
