@@ -336,10 +336,13 @@ public class PdfTableParseUtils {
 
     /**
      * 分析复杂表格结构
+     *
      * @param filePath
      * @param pageNumber
+     * @return
      */
-    public static void analyzeComplexTable(String filePath, int pageNumber) {
+    public static List<Map<String, String>> analyzeComplexTable(String filePath, int pageNumber) {
+        List<Map<String, String> > rs = new ArrayList<>();
         // todo ValidationUtils.checkFileSize3(filePath)
         //在try-with-resources语句中使用
         try (CloseablePdfReader reader = new CloseablePdfReader(filePath);) {
@@ -362,6 +365,7 @@ public class PdfTableParseUtils {
 
             // 输出结果
             for (int i = 0; i < cellGroups.size(); i++) {
+                Map<String, String> rsItem = new HashMap<>();
                 List<PdfCellTextPos> cellTextList = new ArrayList<>();
 
                 List<PdfCellPos> cells = cellGroups.get(i);
@@ -428,9 +432,9 @@ public class PdfTableParseUtils {
 
                     }
                     textPos.text(textSb.toString());
-                    System.out.println("  Text:" + textSb.toString());
-                    System.out.println("  存最后位置x:" + sx);
-                    System.out.println("  存最后位置y:" + sy);
+//                    System.out.println("  Text:" + textSb.toString());
+//                    System.out.println("  存最后位置x:" + sx);
+//                    System.out.println("  存最后位置y:" + sy);
                     cellTextList.add(textPos.build());
 
 
@@ -443,6 +447,25 @@ public class PdfTableParseUtils {
 //                for (PdfCellTextPos pdfCellTextPos : cellTextList2) {
 //                    System.out.printf(String.valueOf(pdfCellTextPos));
 //                }
+
+                boolean isEven = cellTextList.size() % 2 == 0;
+                if (!isEven) {
+                    throw new CommonRuntimeException("XXXX","位置信息列表数量需要为偶数");
+                }else{
+                    for(int rsi = 0; rsi < cellTextList.size(); rsi = rsi + 2){
+                        PdfCellTextPos loc1 = cellTextList.get(rsi);
+                        PdfCellTextPos loc2 = cellTextList.get(rsi + 1);
+                        // x的比较
+                        if(loc1.getxLeft() < loc2.getxLeft()){
+                            rsItem.put(loc1.getText(), loc2.getText());
+                        }else{
+                            rsItem.put(loc2.getText(), loc1.getText());
+                        }
+                    }
+                    rs.add(rsItem);
+                }
+
+
             }
 
 
@@ -452,6 +475,8 @@ public class PdfTableParseUtils {
 //            LOG.error("失败：" + filePath, e);
             throw new CommonRuntimeException("XXXX", "解析失败");
         }
+
+        return rs;
 
     }
 
