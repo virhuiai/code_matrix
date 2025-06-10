@@ -9,6 +9,9 @@ import java.awt.geom.Point2D;
 import java.lang.reflect.Field;
 import java.util.*;
 
+/**
+ * 这个类用于从PDF中提取表格和文本位置信息
+ */
 public class TableAndLocationTextExtractionStrategy extends LocationTextExtractionStrategy implements ExtRenderListener {
 
     /**
@@ -40,19 +43,7 @@ public class TableAndLocationTextExtractionStrategy extends LocationTextExtracti
     }
 
 
-    /**
-     * 判断两个点是否相等（在给定的精度范围内）
-     * @param p1 第一个点
-     * @param p2 第二个点
-     * @param epsilon 允许的误差范围
-     * @return 如果两个点在误差范围内相等，返回true；否则返回false
-     */
-    private boolean isPointsEqual(Point2D p1, Point2D p2, double epsilon) {
-        // 分别比较x坐标和y坐标的差值是否都小于误差范围
-        // 使用Math.abs获取绝对值，确保差值为正数
-        return Math.abs(p1.getX() - p2.getX()) < epsilon &&
-                Math.abs(p1.getY() - p2.getY()) < epsilon;
-    }
+
 
     /**
      * 判断两条线段是否相连（即是否共享端点）
@@ -79,10 +70,10 @@ public class TableAndLocationTextExtractionStrategy extends LocationTextExtracti
         // 2. 线段1的起点 = 线段2的终点
         // 3. 线段1的终点 = 线段2的起点
         // 4. 线段1的终点 = 线段2的终点
-        return isPointsEqual(p1Start, p2Start, epsilon) ||
-                isPointsEqual(p1Start, p2End, epsilon) ||
-                isPointsEqual(p1End, p2Start, epsilon) ||
-                isPointsEqual(p1End, p2End, epsilon);
+        return GeometryUtils.isPointsEqual(p1Start, p2Start, epsilon) ||
+                GeometryUtils.isPointsEqual(p1Start, p2End, epsilon) ||
+                GeometryUtils.isPointsEqual(p1End, p2Start, epsilon) ||
+                GeometryUtils.isPointsEqual(p1End, p2End, epsilon);
     }
 
 
@@ -216,7 +207,7 @@ public class TableAndLocationTextExtractionStrategy extends LocationTextExtracti
         else if (operation == PathConstructionRenderInfo.CLOSE) {
             // 如果有当前点和路径起始点，创建闭合线段
             if (point != null && pathStartPoint != null &&
-                    !isPointsEqual(point, pathStartPoint, 1e-6)) {
+                    !GeometryUtils.isPointsEqual(point, pathStartPoint, 1e-6)) {
                 Line2D line = new Line2D.Double(point, pathStartPoint);
                 currentLineList.add(line);
                 currentPoint = point;

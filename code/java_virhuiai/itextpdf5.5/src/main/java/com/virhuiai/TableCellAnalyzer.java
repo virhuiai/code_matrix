@@ -166,12 +166,12 @@ public class TableCellAnalyzer {
                         .build();
                 cells.add(cell);
 
-                System.out.printf("\n行：" + i);
-                System.out.printf("格：" + j);
-                System.out.printf("topLine.getY1()：" + topLine.getY1());
-                System.out.printf("bottomLine.getY1()：" + bottomLine.getY1());
-                System.out.printf("leftLine.getX1()：" + leftLine.getX1());
-                System.out.printf("rightLine.getX1()：" + rightLine.getX1());
+//                System.out.printf("\n行：" + i);
+//                System.out.printf("格：" + j);
+//                System.out.printf("topLine.getY1()：" + topLine.getY1());
+//                System.out.printf("bottomLine.getY1()：" + bottomLine.getY1());
+//                System.out.printf("leftLine.getX1()：" + leftLine.getX1());
+//                System.out.printf("rightLine.getX1()：" + rightLine.getX1());
             }
         }
 
