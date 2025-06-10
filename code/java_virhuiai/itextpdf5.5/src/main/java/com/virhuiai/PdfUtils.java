@@ -226,6 +226,7 @@ public class PdfUtils {
     }
 
 
+
     ////////////////////
 
 
@@ -278,9 +279,12 @@ public class PdfUtils {
             List<List<PdfCellPos>> cellGroups = new TableCellAnalyzer().analyzeTableCells(lineList);
 
             List<LocationTextExtractionStrategy.TextChunk> locationalResult = fetchObjResultFromSuperClass(strategy, "locationalResult");
+//             过滤掉非黑色的文字 todo  TextRenderInfo 的需要单独保存
+//            locationalResult = strategy.filterNonBlackText(locationalResult);
             // 过滤掉倾斜的文字
             locationalResult = strategy.filterSkewedText(locationalResult);
-
+            // 按起始位置的Y坐标从大到小排序（从上到下）
+            locationalResult = strategy.sortByYDescending(locationalResult);
 
             // 输出结果
             for (int i = 0; i < cellGroups.size(); i++) {
@@ -291,7 +295,7 @@ public class PdfUtils {
                     PdfCellPos cell = cells.get(j);
                     System.out.println("  单元格 " + (j + 1) + " 的四个坐标点:");
 
-
+                    StringBuilder textSb = new StringBuilder();
 
 
                     //List<LocationTextExtractionStrategy.TextChunk> locationalResult = strategy.getLocationalResult();
@@ -302,9 +306,9 @@ public class PdfUtils {
 
                             Vector el = textChunk.getEndLocation();
 
-                            if(textChunk.getText().equals("债务融资工具名称")){
-                                int a = 3;
-                            }
+//                            if(textChunk.getText().equals("债务融资工具名称")){
+//                                int a = 3;
+//                            }
 
 
                             // 块的起始位置x
@@ -316,11 +320,8 @@ public class PdfUtils {
                                     && el.get(Vector.I1) < cell.getxRight()
                                     && el.get(Vector.I2) > cell.getyBtm()
                             ){
-                                System.out.println("Text:" + textChunk.getText());
-                                System.out.println("块的起始位置x:" + sl.get(Vector.I1));
-                                System.out.println("块的起始位置y:" + sl.get(Vector.I2));
-                                System.out.println("块的结束位置x:" + el.get(Vector.I1));
-                                System.out.println("块的结束位置y:" + el.get(Vector.I2));
+                                textSb.append(textChunk.getText());
+
                             }
 
 
@@ -374,6 +375,12 @@ public class PdfUtils {
 //                8. **charSpaceWidth**: 这个值表示字符之间的间距。在这个例子中，间距为 30.000141。
 
                     }
+
+                    System.out.println("Text:" + textSb.toString());
+//                    System.out.println("块的起始位置x:" + sl.get(Vector.I1));
+//                    System.out.println("块的起始位置y:" + sl.get(Vector.I2));
+//                    System.out.println("块的结束位置x:" + el.get(Vector.I1));
+//                    System.out.println("块的结束位置y:" + el.get(Vector.I2));
 
 //                    if(0==i && 0==j){
 //                        List<Point2D.Float> points = new ArrayList<>();

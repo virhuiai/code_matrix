@@ -1,19 +1,13 @@
 package com.virhuiai;
 
-import com.itextpdf.text.pdf.parser.ExtRenderListener;
-import com.itextpdf.text.pdf.parser.LocationTextExtractionStrategy;
-import com.itextpdf.text.pdf.parser.Matrix;
-import com.itextpdf.text.pdf.parser.Path;
-import com.itextpdf.text.pdf.parser.PathConstructionRenderInfo;
-import com.itextpdf.text.pdf.parser.PathPaintingRenderInfo;
+import com.itextpdf.text.BaseColor;
+import com.itextpdf.text.pdf.parser.*;
 import com.itextpdf.text.pdf.parser.Vector;
+
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class TableAndLocationTextExtractionStrategy extends LocationTextExtractionStrategy implements ExtRenderListener {
 
@@ -373,9 +367,10 @@ public class TableAndLocationTextExtractionStrategy extends LocationTextExtracti
                     if (Math.abs(angleDegrees) < tolerance ||
                             Math.abs(Math.abs(angleDegrees) - 180) < tolerance) {
                         filteredChunks.add(chunk);
-                    }else{
-                        System.out.println(chunk.getText());
                     }
+//                    else{
+//                        System.out.println(chunk.getText());
+//                    }
                 }
             } catch (Exception e) {
                 // 如果无法获取方向信息，保留该文本块
@@ -385,6 +380,83 @@ public class TableAndLocationTextExtractionStrategy extends LocationTextExtracti
 
         return filteredChunks;
     }
+
+
+//    /**
+//     * 在类层次结构中查找字段
+//     */
+//    private static Field findFieldInHierarchy(Class<?> clazz, String fieldName) {
+//        Class<?> current = clazz;
+//        while (current != null) {
+//            try {
+//                return current.getDeclaredField(fieldName);
+//            } catch (NoSuchFieldException e) {
+//                current = current.getSuperclass();
+//            }
+//        }
+//        return null;
+//    }
+
+
+//    /**
+//     * 通过反射获取TextChunk的填充颜色
+//     */
+//    private static BaseColor getFillColor(LocationTextExtractionStrategy.TextChunk chunk)
+//            throws Exception {
+//
+//        // 首先获取TextRenderInfo
+//        Field textRenderInfoField = findFieldInHierarchy(chunk.getClass(), "renderInfo");
+//        if (textRenderInfoField == null) {
+//            return null;
+//        }
+//        textRenderInfoField.setAccessible(true);
+//        TextRenderInfo renderInfo = (TextRenderInfo) textRenderInfoField.get(chunk);
+//
+//        if (renderInfo != null) {
+//            // 获取填充颜色
+//            return renderInfo.getFillColor();
+//        }
+//
+//        return null;
+//    }
+
+//    /**
+//     * 过滤掉非黑色的文字
+//     * @param textChunks 原始文本块列表
+//     * @return 只包含黑色文字的列表
+//     */
+//    public static List<LocationTextExtractionStrategy.TextChunk> filterNonBlackText(
+//            List<LocationTextExtractionStrategy.TextChunk> textChunks) {
+//
+//        List<LocationTextExtractionStrategy.TextChunk> filteredChunks = new ArrayList<>();
+//
+//        for (LocationTextExtractionStrategy.TextChunk chunk : textChunks) {
+//            try {
+//                BaseColor fillColor = getFillColor(chunk);
+//
+//                if (fillColor != null) {
+//                    // 检查是否为黑色（RGB都接近0）
+//                    int tolerance = 10; // 容差值
+//                    if (fillColor.getRed() <= tolerance &&
+//                            fillColor.getGreen() <= tolerance &&
+//                            fillColor.getBlue() <= tolerance) {
+//                        filteredChunks.add(chunk);
+//                    }
+//                    else{
+//                        System.out.println(chunk.getText());
+//                    }
+//                } else {
+//                    // 如果无法获取颜色信息，默认为黑色
+//                    filteredChunks.add(chunk);
+//                }
+//            } catch (Exception e) {
+//                // 错误处理：保留该文本块
+//                filteredChunks.add(chunk);
+//            }
+//        }
+//
+//        return filteredChunks;
+//    }
 
 
 
@@ -413,6 +485,57 @@ public class TableAndLocationTextExtractionStrategy extends LocationTextExtracti
     public void clipPath(int rule) {
 
     }
+
+
+
+    /**
+     * 获取TextChunk的起始Y坐标
+     */
+    private static float getStartY(LocationTextExtractionStrategy.TextChunk chunk){
+        try{
+            return chunk.getStartLocation().get(Vector.I2); // Y坐标
+        }catch (Exception e){
+            // todo Log
+            return 0f;
+        }
+    }
+
+    //@@@@@@@@@
+
+    /**
+     * 按起始位置的Y坐标从大到小排序（从上到下）
+     * 在PDF坐标系中，y轴是向上的，所以y值越大表示位置越高。如果要从大到小排序，就是从上到下排序。
+     * @param locationalResult 需要排序的文本块列表
+     * @return 排序后的新列表
+     */
+    public static List<LocationTextExtractionStrategy.TextChunk> sortByYDescending(
+            List<LocationTextExtractionStrategy.TextChunk> locationalResult) {
+
+        // 创建新列表以避免修改原列表
+        List<LocationTextExtractionStrategy.TextChunk> sortedList =
+                new ArrayList<>(locationalResult);
+
+        // 使用自定义比较器排序
+        Collections.sort(sortedList, new Comparator<LocationTextExtractionStrategy.TextChunk>() {
+            @Override
+            public int compare(LocationTextExtractionStrategy.TextChunk chunk1,
+                               LocationTextExtractionStrategy.TextChunk chunk2) {
+                try {
+                    float y1 = getStartY(chunk1);
+                    float y2 = getStartY(chunk2);
+
+                    // 从大到小排序（降序）
+                    return Float.compare(y2, y1);
+                } catch (Exception e) {
+                    // 如果无法获取Y坐标，保持原顺序
+                    return 0;
+                }
+            }
+        });
+
+        return sortedList;
+    }
+
 
 
 }
