@@ -2,10 +2,7 @@ package com.virhuiai;
 
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * 几何运算工具类
@@ -150,6 +147,71 @@ public class GeometryUtils {
     public static List<Point2D> fromLineListToPointSet(List<Line2D> lineList) {
         return fromLineListToPointSet(lineList, 1.0);
     }
+
+    ///////// todo 以下代码待。。。
+
+    /**
+     * 使用网格索引高效添加点
+     */
+    private static void addPointWithGrid(List<Point2D> points, Map<String, List<Point2D>> grid,
+                                         Point2D newPoint, double tolerance, double gridSize) {
+        int gridX = (int) (newPoint.getX() / gridSize);
+        int gridY = (int) (newPoint.getY() / gridSize);
+
+        // 检查当前网格和相邻网格中的点
+        boolean foundSimilar = false;
+        for (int dx = -1; dx <= 1 && !foundSimilar; dx++) {
+            for (int dy = -1; dy <= 1 && !foundSimilar; dy++) {
+                String gridKey = (gridX + dx) + "," + (gridY + dy);
+                List<Point2D> cellPoints = grid.get(gridKey);
+
+                if (cellPoints != null) {
+                    for (Point2D existingPoint : cellPoints) {
+                        if (existingPoint.distance(newPoint) <= tolerance) {
+                            foundSimilar = true;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        if (!foundSimilar) {
+            points.add(newPoint);
+            String gridKey = gridX + "," + gridY;
+            grid.computeIfAbsent(gridKey, k -> new ArrayList<>()).add(newPoint);
+        }
+    }
+
+    /**
+     * 高效版本：使用网格索引优化查找性能
+     * 使用示例：
+     *
+     * Set<Point2D> points3 = fromLineListToPointSetOptimized(lineList, 1.0);
+     */
+    public static Set<Point2D> fromLineListToPointSetOptimized(List<Line2D> lineList, double tolerance) {
+        if (lineList == null || lineList.isEmpty()) {
+            return new HashSet<>();
+        }
+
+        List<Point2D> uniquePoints = new ArrayList<>();
+        double gridSize = tolerance * 2; // 网格大小设为容差的2倍
+        Map<String, List<Point2D>> grid = new HashMap<>();
+
+        for (Line2D line : lineList) {
+            if (line == null) continue;
+
+            Point2D p1 = new Point2D.Double(line.getX1(), line.getY1());
+            Point2D p2 = new Point2D.Double(line.getX2(), line.getY2());
+
+            addPointWithGrid(uniquePoints, grid, p1, tolerance, gridSize);
+            addPointWithGrid(uniquePoints, grid, p2, tolerance, gridSize);
+        }
+
+        return new HashSet<>(uniquePoints);
+    }
+
+
 
 
 
