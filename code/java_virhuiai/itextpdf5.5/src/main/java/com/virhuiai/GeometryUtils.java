@@ -87,6 +87,9 @@ public class GeometryUtils {
         return isConnected(line1, line2, DEFAULT_EPSILON);
     }
 
+    //////////
+
+
 
 
 
