@@ -352,6 +352,129 @@ public class PdfTableParseUtils {
         return locationalResult;
     }
 
+
+
+
+    /**
+     * 判断文本块是否在单元格内
+     */
+    private static boolean isTextInCell(LocationTextExtractionStrategy.TextChunk textChunk,
+                                        PdfCellPos cell) {
+        com.itextpdf.text.pdf.parser.Vector sl = textChunk.getStartLocation();
+        com.itextpdf.text.pdf.parser.Vector el = textChunk.getEndLocation();
+
+        return sl.get(com.itextpdf.text.pdf.parser.Vector.I1) > cell.getxLeft()
+                && sl.get(com.itextpdf.text.pdf.parser.Vector.I2) < cell.getyTop()
+                && el.get(com.itextpdf.text.pdf.parser.Vector.I1) < cell.getxRight()
+                && el.get(com.itextpdf.text.pdf.parser.Vector.I2) > cell.getyBtm();
+    }
+
+    /**
+     * 从单个单元格中提取文本
+     */
+    private static PdfCellTextPos extractTextFromCell(
+            PdfCellPos cell,
+            List<LocationTextExtractionStrategy.TextChunk> locationalResult) {
+
+        PdfCellTextPos.Builder textPos = new PdfCellTextPos.Builder();
+        StringBuilder textSb = new StringBuilder();
+
+        // 设置单元格边界
+        textPos.xLeft(cell.getxLeft())
+                .xRight(cell.getxRight())
+                .yTop(cell.getyTop())
+                .yBtm(cell.getyBtm());
+
+        // 遍历所有文本块，找出在单元格内的文本
+        for (LocationTextExtractionStrategy.TextChunk textChunk : locationalResult) {
+            try {
+                if (isTextInCell(textChunk, cell)) {
+                    textSb.append(textChunk.getText());
+                }
+            } catch (Exception e) {
+                System.out.println("出错:" + textChunk);
+            }
+        }
+
+        textPos.text(textSb.toString());
+        return textPos.build();
+    }
+
+    /**
+     * 从单元格中提取文本
+     */
+    private static List<PdfCellTextPos> extractCellTexts(
+            List<PdfCellPos> cells,
+            List<LocationTextExtractionStrategy.TextChunk> locationalResult) {
+
+        List<PdfCellTextPos> cellTextList = new ArrayList<>();
+
+        for (PdfCellPos cell : cells) {
+            PdfCellTextPos cellText = extractTextFromCell(cell, locationalResult);
+            cellTextList.add(cellText);
+        }
+
+        return cellTextList;
+    }
+
+    /**
+     * 构建结果映射（两列表格，或者两个两个是对应的键和值的情况）
+     */
+    private static Map<String, String> buildResultMap(List<PdfCellTextPos> cellTextList) {
+        Map<String, String> rsItem = new HashMap<>();
+
+        for (int i = 0; i < cellTextList.size(); i += 2) {
+            PdfCellTextPos loc1 = cellTextList.get(i);
+            PdfCellTextPos loc2 = cellTextList.get(i + 1);
+
+            // x的比较，左边的作为key，右边的作为value
+            if (loc1.getxLeft() < loc2.getxLeft()) {
+                rsItem.put(loc1.getText(), loc2.getText());
+            } else {
+                rsItem.put(loc2.getText(), loc1.getText());
+            }
+        }
+
+        return rsItem;
+    }
+
+    /**
+     * 处理单个单元格组
+     */
+    private static Map<String, String> processSingleCellGroup(
+            List<PdfCellPos> cells,
+            List<LocationTextExtractionStrategy.TextChunk> locationalResult) {
+
+        List<PdfCellTextPos> cellTextList = extractCellTexts(cells, locationalResult);
+
+        // 检查是否为偶数
+        if (cellTextList.size() % 2 != 0) {
+            throw new CommonRuntimeException("XXXX", "位置信息列表数量需要为偶数");
+        }
+
+        return buildResultMap(cellTextList);
+    }
+
+
+    /**
+     * 处理所有单元格组
+     */
+    private static List<Map<String, String>> processCellGroups(
+            List<List<PdfCellPos>> cellGroups,
+            List<LocationTextExtractionStrategy.TextChunk> locationalResult) {
+
+        List<Map<String, String>> rs = new ArrayList<>();
+
+        for (List<PdfCellPos> cells : cellGroups) {
+            Map<String, String> rsItem = processSingleCellGroup(cells, locationalResult);
+            if (rsItem != null && !rsItem.isEmpty()) {
+                rs.add(rsItem);
+            }
+        }
+
+        return rs;
+    }
+
     /**
      * 分析复杂表格结构
      *
@@ -373,97 +496,100 @@ public class PdfTableParseUtils {
             // 提取和处理文本块 过滤 排序
             List<LocationTextExtractionStrategy.TextChunk> locationalResult = extractAndProcessTextChunks(strategy);
 
+            // 处理所有单元格组
+            return processCellGroups(cellGroups, locationalResult);
+
             // 输出结果
-            for (int i = 0; i < cellGroups.size(); i++) {
-                Map<String, String> rsItem = new HashMap<>();
-                List<PdfCellTextPos> cellTextList = new ArrayList<>();
-
-                List<PdfCellPos> cells = cellGroups.get(i);
-
-
-                for (int j = 0; j < cells.size(); j++) {
-                    PdfCellPos cell = cells.get(j);
-
-                    PdfCellTextPos.Builder textPos = new PdfCellTextPos.Builder();
-
-                    StringBuilder textSb = new StringBuilder();
-
-                    float sx = 0f;// 存最后
-                    float sy = 0f;
-
-                    //List<LocationTextExtractionStrategy.TextChunk> locationalResult = strategy.getLocationalResult();
-                    for (LocationTextExtractionStrategy.TextChunk textChunk : locationalResult) {
-                        try{
-                            com.itextpdf.text.pdf.parser.Vector sl = textChunk.getStartLocation();
-
-
-                            com.itextpdf.text.pdf.parser.Vector el = textChunk.getEndLocation();
-
-//                            if(textChunk.getText().equals("债务融资工具名称")){
-//                                int a = 3;
+//            for (int i = 0; i < cellGroups.size(); i++) {
+//                Map<String, String> rsItem = new HashMap<>();
+//                List<PdfCellTextPos> cellTextList = new ArrayList<>();
+//
+//                List<PdfCellPos> cells = cellGroups.get(i);
+//
+//
+//                for (int j = 0; j < cells.size(); j++) {
+//                    PdfCellPos cell = cells.get(j);
+//
+//                    PdfCellTextPos.Builder textPos = new PdfCellTextPos.Builder();
+//
+//                    StringBuilder textSb = new StringBuilder();
+//
+//                    float sx = 0f;// 存最后
+//                    float sy = 0f;
+//
+//                    //List<LocationTextExtractionStrategy.TextChunk> locationalResult = strategy.getLocationalResult();
+//                    for (LocationTextExtractionStrategy.TextChunk textChunk : locationalResult) {
+//                        try{
+//                            com.itextpdf.text.pdf.parser.Vector sl = textChunk.getStartLocation();
+//
+//
+//                            com.itextpdf.text.pdf.parser.Vector el = textChunk.getEndLocation();
+//
+////                            if(textChunk.getText().equals("债务融资工具名称")){
+////                                int a = 3;
+////                            }
+//
+//
+//
+//
+//                            // 块的起始位置x
+//                            if(sl.get(com.itextpdf.text.pdf.parser.Vector.I1) > cell.getxLeft()
+//                                    &&
+//                                    //块的起始位置y
+//                                    sl.get(com.itextpdf.text.pdf.parser.Vector.I2) < cell.getyTop() //
+//
+//                                    && el.get(com.itextpdf.text.pdf.parser.Vector.I1) < cell.getxRight()
+//                                    && el.get(com.itextpdf.text.pdf.parser.Vector.I2) > cell.getyBtm()
+//                            ){
+//                                textSb.append(textChunk.getText());
+//                                sx = sl.get(com.itextpdf.text.pdf.parser.Vector.I1);
+//                                sy = sl.get(Vector.I2);
+//
+//
+//                                textPos.xLeft(cell.getxLeft());// 使用最后一个即可
+//                                textPos.xRight(cell.getxRight());
+//                                textPos.yTop(cell.getyTop());
+//                                textPos.yBtm(cell.getyBtm());
+//
 //                            }
-
-
-
-
-                            // 块的起始位置x
-                            if(sl.get(com.itextpdf.text.pdf.parser.Vector.I1) > cell.getxLeft()
-                                    &&
-                                    //块的起始位置y
-                                    sl.get(com.itextpdf.text.pdf.parser.Vector.I2) < cell.getyTop() //
-
-                                    && el.get(com.itextpdf.text.pdf.parser.Vector.I1) < cell.getxRight()
-                                    && el.get(com.itextpdf.text.pdf.parser.Vector.I2) > cell.getyBtm()
-                            ){
-                                textSb.append(textChunk.getText());
-                                sx = sl.get(com.itextpdf.text.pdf.parser.Vector.I1);
-                                sy = sl.get(Vector.I2);
-
-
-                                textPos.xLeft(cell.getxLeft());// 使用最后一个即可
-                                textPos.xRight(cell.getxRight());
-                                textPos.yTop(cell.getyTop());
-                                textPos.yBtm(cell.getyBtm());
-
-                            }
-
-                        }catch (Exception e){
-                            System.out.println("出错:" + textChunk);
-                        }
-
-
-
-                    }
-                    textPos.text(textSb.toString());
-                    cellTextList.add(textPos.build());
-
-
-
-
-                }
-
-
-
-
-                boolean isEven = cellTextList.size() % 2 == 0;
-                if (!isEven) {
-                    throw new CommonRuntimeException("XXXX","位置信息列表数量需要为偶数");
-                }else{
-                    for(int rsi = 0; rsi < cellTextList.size(); rsi = rsi + 2){
-                        PdfCellTextPos loc1 = cellTextList.get(rsi);
-                        PdfCellTextPos loc2 = cellTextList.get(rsi + 1);
-                        // x的比较
-                        if(loc1.getxLeft() < loc2.getxLeft()){
-                            rsItem.put(loc1.getText(), loc2.getText());
-                        }else{
-                            rsItem.put(loc2.getText(), loc1.getText());
-                        }
-                    }
-                    rs.add(rsItem);
-                }
-
-
-            }
+//
+//                        }catch (Exception e){
+//                            System.out.println("出错:" + textChunk);
+//                        }
+//
+//
+//
+//                    }
+//                    textPos.text(textSb.toString());
+//                    cellTextList.add(textPos.build());
+//
+//
+//
+//
+//                }
+//
+//
+//
+//
+//                boolean isEven = cellTextList.size() % 2 == 0;
+//                if (!isEven) {
+//                    throw new CommonRuntimeException("XXXX","位置信息列表数量需要为偶数");
+//                }else{
+//                    for(int rsi = 0; rsi < cellTextList.size(); rsi = rsi + 2){
+//                        PdfCellTextPos loc1 = cellTextList.get(rsi);
+//                        PdfCellTextPos loc2 = cellTextList.get(rsi + 1);
+//                        // x的比较
+//                        if(loc1.getxLeft() < loc2.getxLeft()){
+//                            rsItem.put(loc1.getText(), loc2.getText());
+//                        }else{
+//                            rsItem.put(loc2.getText(), loc1.getText());
+//                        }
+//                    }
+//                    rs.add(rsItem);
+//                }
+//
+//
+//            }
 
 
 
@@ -472,8 +598,6 @@ public class PdfTableParseUtils {
 //            LOG.error("失败：" + filePath, e);
             throw new CommonRuntimeException("XXXX", "解析失败");
         }
-
-        return rs;
 
     }
 
