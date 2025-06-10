@@ -249,7 +249,7 @@ public class GeometryUtils {
      * @param tolerance 点去重的容差值，两点距离小于此值时被认为是同一个点
      * @return 去重后的点集合
      */
-    public static List<Point2D> fromLineListToPointSetOptimized(List<Line2D> lineList, double tolerance) {
+    public static List<Point2D> fromLineListToPointListOptimized(List<Line2D> lineList, double tolerance) {
         // 处理空输入
         if (lineList == null || lineList.isEmpty()) {
             return new ArrayList<>();
