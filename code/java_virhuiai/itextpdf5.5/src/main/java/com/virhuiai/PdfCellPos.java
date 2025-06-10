@@ -87,6 +87,22 @@ public class PdfCellPos {
         public PdfCellPos build() {
             return new PdfCellPos(this);
         }
+
+        public double getyTop() {
+            return yTop;
+        }
+
+        public double getyBtm() {
+            return yBtm;
+        }
+
+        public double getxLeft() {
+            return xLeft;
+        }
+
+        public double getxRight() {
+            return xRight;
+        }
     }
 
     @Override

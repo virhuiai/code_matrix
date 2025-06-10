@@ -25,7 +25,7 @@ public class PdfCellSorter {
      * @param cells 待排序的单元格列表
      * @return 排序后的单元格列表
      */
-    public static List<PdfCellPos> sortCells(List<PdfCellPos> cells) {
+    public static <T extends PdfCellPos> List<T> sortCells(List<T> cells) {
         if (cells == null || cells.isEmpty()) {
             return cells;
         }
@@ -55,7 +55,7 @@ public class PdfCellSorter {
             }
         });
 
-        return sortedCells;
+        return (List<T>) sortedCells;
     }
 
 

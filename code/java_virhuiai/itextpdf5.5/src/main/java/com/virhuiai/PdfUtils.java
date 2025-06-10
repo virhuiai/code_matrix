@@ -288,9 +288,14 @@ public class PdfUtils {
 
 
 
+
+
+
             // 输出结果
             for (int i = 0; i < cellGroups.size(); i++) {
                 System.out.println("表格组 " + (i + 1) + ":");
+                List<PdfCellTextPos> cellTextList = new ArrayList<>();
+
                 List<PdfCellPos> cells = cellGroups.get(i);
 //                cells = PdfCellSorter.sortCells(cells);
 //                cells = PdfCellSorter.sortCellsAdvanced(cells);
@@ -303,8 +308,13 @@ public class PdfUtils {
                     System.out.println("  单元格 " + (j + 1) + " getyTop:" + cell.getyTop());
                     System.out.println("  单元格 " + (j + 1) + " getyBtm:" + cell.getyBtm());
 
+
+                    PdfCellTextPos.Builder textPos = new PdfCellTextPos.Builder();
+
                     StringBuilder textSb = new StringBuilder();
 
+                    float sx = 0f;// 存最后
+                    float sy = 0f;
 
                     //List<LocationTextExtractionStrategy.TextChunk> locationalResult = strategy.getLocationalResult();
                     for (LocationTextExtractionStrategy.TextChunk textChunk : locationalResult) {
@@ -319,6 +329,8 @@ public class PdfUtils {
 //                            }
 
 
+
+
                             // 块的起始位置x
                             if(sl.get(Vector.I1) > cell.getxLeft()
                             &&
@@ -329,6 +341,14 @@ public class PdfUtils {
                                     && el.get(Vector.I2) > cell.getyBtm()
                             ){
                                 textSb.append(textChunk.getText());
+                                sx = sl.get(Vector.I1);
+                                sy = sl.get(Vector.I2);
+
+
+                                textPos.xLeft(sl.get(Vector.I1));// 使用最后一个即可
+                                textPos.xRight(el.get(Vector.I1));
+                                textPos.yTop(sl.get(Vector.I2));
+                                textPos.yBtm(el.get(Vector.I2));
 
                             }
 
@@ -383,8 +403,14 @@ public class PdfUtils {
 //                8. **charSpaceWidth**: 这个值表示字符之间的间距。在这个例子中，间距为 30.000141。
 
                     }
-
+                    textPos.text(textSb.toString());
                     System.out.println("  Text:" + textSb.toString());
+                    System.out.println("  存最后位置x:" + sx);
+                    System.out.println("  存最后位置y:" + sy);
+                    cellTextList.add(textPos.build());
+
+
+
 //                    System.out.println("块的起始位置x:" + sl.get(Vector.I1));
 //                    System.out.println("块的起始位置y:" + sl.get(Vector.I2));
 //                    System.out.println("块的结束位置x:" + el.get(Vector.I1));
@@ -402,7 +428,15 @@ public class PdfUtils {
 
 
                 }
+
+                List<PdfCellTextPos>  cellTextList2 = PdfCellSorter.sortCells(cellTextList);
+                System.out.println("最终输出：");
+                for (PdfCellTextPos pdfCellTextPos : cellTextList2) {
+                    System.out.printf(String.valueOf(pdfCellTextPos));
+                }
             }
+
+
 
             int a = 3;
 
