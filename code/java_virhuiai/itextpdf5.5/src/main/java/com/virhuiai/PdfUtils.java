@@ -246,27 +246,27 @@ public class PdfUtils {
 
 //            List<Point2D.Float> points = new ArrayList<>();
             // 方法5：详细信息输出（包含线段长度）
-            System.out.println("\n=== 详细线段信息 ===");
-            for (int i = 0; i < lineList.size(); i++) {
-                Line2D line = lineList.get(i);
-
-                double x1 = line.getX1();
-                double y1 = line.getY1();
-                double x2 = line.getX2();
-                double y2 = line.getY2();
-
-                // 计算线段长度
-                double length = Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
-
-                System.out.println("线段 " + i + ":");
-                System.out.printf("  起点: (%.2f, %.2f)%n", x1, y1);
-                System.out.printf("  终点: (%.2f, %.2f)%n", x2, y2);
-                System.out.printf("  长度: %.2f%n", length);
-                System.out.println();
-
-//                points.add(new Point2D.Float((float)x1, (float)y1));
-//                points.add(new Point2D.Float((float)x2, (float)y2));
-            }
+//            System.out.println("\n=== 详细线段信息 ===");
+//            for (int i = 0; i < lineList.size(); i++) {
+//                Line2D line = lineList.get(i);
+//
+//                double x1 = line.getX1();
+//                double y1 = line.getY1();
+//                double x2 = line.getX2();
+//                double y2 = line.getY2();
+//
+//                // 计算线段长度
+//                double length = Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
+//
+//                System.out.println("线段 " + i + ":");
+//                System.out.printf("  起点: (%.2f, %.2f)%n", x1, y1);
+//                System.out.printf("  终点: (%.2f, %.2f)%n", x2, y2);
+//                System.out.printf("  长度: %.2f%n", length);
+//                System.out.println();
+//
+////                points.add(new Point2D.Float((float)x1, (float)y1));
+////                points.add(new Point2D.Float((float)x2, (float)y2));
+//            }
 
 
 //            PdfCircleDrawer.drawCirclesOnPdf("/Volumes/RamDisk/tzs书.pdf", "/Volumes/RamDisk/tzs书222.pdf", points, 1);
@@ -278,6 +278,9 @@ public class PdfUtils {
             List<List<PdfCellPos>> cellGroups = new TableCellAnalyzer().analyzeTableCells(lineList);
 
             List<LocationTextExtractionStrategy.TextChunk> locationalResult = fetchObjResultFromSuperClass(strategy, "locationalResult");
+            // 过滤掉倾斜的文字
+            locationalResult = strategy.filterSkewedText(locationalResult);
+
 
             // 输出结果
             for (int i = 0; i < cellGroups.size(); i++) {
@@ -326,7 +329,7 @@ public class PdfUtils {
 
 
 
-//                            Vector orientationVector = fetchObjResult(textChunk.getLocation(), "orientationVector");
+
 //                            System.out.println("块的方向上的单位向量orientationVector:" + orientationVector);
 //
 //                            int orientationMagnitude = fetchObjResult(textChunk.getLocation(), "orientationMagnitude");
