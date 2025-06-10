@@ -233,7 +233,7 @@ public class PdfUtils {
 //             过滤掉非黑色的文字 todo  TextRenderInfo 的需要单独保存
 //            locationalResult = strategy.filterNonBlackText(locationalResult);
             // 过滤掉倾斜的文字
-            locationalResult = strategy.filterSkewedText(locationalResult);
+            locationalResult = PDFTextUtils.filterSkewedText(locationalResult);
             // 按起始位置的Y坐标从大到小排序（从上到下）  用于换行
             locationalResult = strategy.sortByYDescending(locationalResult);
 
