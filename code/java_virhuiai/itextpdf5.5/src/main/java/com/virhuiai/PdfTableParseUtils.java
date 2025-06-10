@@ -421,7 +421,8 @@ public class PdfTableParseUtils {
      * 构建结果映射（两列表格，或者两个两个是对应的键和值的情况）
      */
     private static Map<String, String> buildResultMap(List<PdfCellTextPos> cellTextList) {
-        Map<String, String> rsItem = new HashMap<>();
+        // 使用LinkedHashMap保持插入顺序
+        Map<String, String> rsItem = new LinkedHashMap<>();
 
         for (int i = 0; i < cellTextList.size(); i += 2) {
             PdfCellTextPos loc1 = cellTextList.get(i);
@@ -477,7 +478,23 @@ public class PdfTableParseUtils {
 
     /**
      * 分析复杂表格结构
+     它做了很多事情：
+     > 1. 读取PDF文件
+     > 2. 提取线段
+     > 3. 分析表格单元格
+     > 4. 获取文本位置信息
+     > 5. 过滤文本
+     > 6. 匹配文本到单元格
+     > 7. 构建结果
      *
+     将其拆分成多个更小的方法，每个方法负责一个特定的任务。这样会让代码更容易理解和维护。
+     >
+     > 主要可以拆分为：
+     > 1. 主方法 - analyzeComplexTable
+     > 2. 提取和处理文本块 - extractAndProcessTextChunks
+     > 3. 处理单元格组 - processCellGroups
+     > 4. 匹配文本到单元格 - matchTextToCell
+     > 5. 构建结果映射 - buildResultMap
      * @param filePath
      * @param pageNumber
      * @return
@@ -499,97 +516,6 @@ public class PdfTableParseUtils {
             // 处理所有单元格组
             return processCellGroups(cellGroups, locationalResult);
 
-            // 输出结果
-//            for (int i = 0; i < cellGroups.size(); i++) {
-//                Map<String, String> rsItem = new HashMap<>();
-//                List<PdfCellTextPos> cellTextList = new ArrayList<>();
-//
-//                List<PdfCellPos> cells = cellGroups.get(i);
-//
-//
-//                for (int j = 0; j < cells.size(); j++) {
-//                    PdfCellPos cell = cells.get(j);
-//
-//                    PdfCellTextPos.Builder textPos = new PdfCellTextPos.Builder();
-//
-//                    StringBuilder textSb = new StringBuilder();
-//
-//                    float sx = 0f;// 存最后
-//                    float sy = 0f;
-//
-//                    //List<LocationTextExtractionStrategy.TextChunk> locationalResult = strategy.getLocationalResult();
-//                    for (LocationTextExtractionStrategy.TextChunk textChunk : locationalResult) {
-//                        try{
-//                            com.itextpdf.text.pdf.parser.Vector sl = textChunk.getStartLocation();
-//
-//
-//                            com.itextpdf.text.pdf.parser.Vector el = textChunk.getEndLocation();
-//
-////                            if(textChunk.getText().equals("债务融资工具名称")){
-////                                int a = 3;
-////                            }
-//
-//
-//
-//
-//                            // 块的起始位置x
-//                            if(sl.get(com.itextpdf.text.pdf.parser.Vector.I1) > cell.getxLeft()
-//                                    &&
-//                                    //块的起始位置y
-//                                    sl.get(com.itextpdf.text.pdf.parser.Vector.I2) < cell.getyTop() //
-//
-//                                    && el.get(com.itextpdf.text.pdf.parser.Vector.I1) < cell.getxRight()
-//                                    && el.get(com.itextpdf.text.pdf.parser.Vector.I2) > cell.getyBtm()
-//                            ){
-//                                textSb.append(textChunk.getText());
-//                                sx = sl.get(com.itextpdf.text.pdf.parser.Vector.I1);
-//                                sy = sl.get(Vector.I2);
-//
-//
-//                                textPos.xLeft(cell.getxLeft());// 使用最后一个即可
-//                                textPos.xRight(cell.getxRight());
-//                                textPos.yTop(cell.getyTop());
-//                                textPos.yBtm(cell.getyBtm());
-//
-//                            }
-//
-//                        }catch (Exception e){
-//                            System.out.println("出错:" + textChunk);
-//                        }
-//
-//
-//
-//                    }
-//                    textPos.text(textSb.toString());
-//                    cellTextList.add(textPos.build());
-//
-//
-//
-//
-//                }
-//
-//
-//
-//
-//                boolean isEven = cellTextList.size() % 2 == 0;
-//                if (!isEven) {
-//                    throw new CommonRuntimeException("XXXX","位置信息列表数量需要为偶数");
-//                }else{
-//                    for(int rsi = 0; rsi < cellTextList.size(); rsi = rsi + 2){
-//                        PdfCellTextPos loc1 = cellTextList.get(rsi);
-//                        PdfCellTextPos loc2 = cellTextList.get(rsi + 1);
-//                        // x的比较
-//                        if(loc1.getxLeft() < loc2.getxLeft()){
-//                            rsItem.put(loc1.getText(), loc2.getText());
-//                        }else{
-//                            rsItem.put(loc2.getText(), loc1.getText());
-//                        }
-//                    }
-//                    rs.add(rsItem);
-//                }
-//
-//
-//            }
 
 
 
