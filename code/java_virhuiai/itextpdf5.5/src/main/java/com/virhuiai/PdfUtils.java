@@ -283,17 +283,25 @@ public class PdfUtils {
 //            locationalResult = strategy.filterNonBlackText(locationalResult);
             // 过滤掉倾斜的文字
             locationalResult = strategy.filterSkewedText(locationalResult);
-            // 按起始位置的Y坐标从大到小排序（从上到下）
+            // 按起始位置的Y坐标从大到小排序（从上到下）  用于换行
             locationalResult = strategy.sortByYDescending(locationalResult);
+
+
 
             // 输出结果
             for (int i = 0; i < cellGroups.size(); i++) {
                 System.out.println("表格组 " + (i + 1) + ":");
                 List<PdfCellPos> cells = cellGroups.get(i);
+//                cells = PdfCellSorter.sortCells(cells);
+//                cells = PdfCellSorter.sortCellsAdvanced(cells);
 
                 for (int j = 0; j < cells.size(); j++) {
                     PdfCellPos cell = cells.get(j);
                     System.out.println("  单元格 " + (j + 1) + " 的四个坐标点:");
+                    System.out.println("  单元格 " + (j + 1) + " getxLeft:" + cell.getxLeft());
+                    System.out.println("  单元格 " + (j + 1) + " getxRight:" + cell.getxRight());
+                    System.out.println("  单元格 " + (j + 1) + " getyTop:" + cell.getyTop());
+                    System.out.println("  单元格 " + (j + 1) + " getyBtm:" + cell.getyBtm());
 
                     StringBuilder textSb = new StringBuilder();
 
@@ -376,7 +384,7 @@ public class PdfUtils {
 
                     }
 
-                    System.out.println("Text:" + textSb.toString());
+                    System.out.println("  Text:" + textSb.toString());
 //                    System.out.println("块的起始位置x:" + sl.get(Vector.I1));
 //                    System.out.println("块的起始位置y:" + sl.get(Vector.I2));
 //                    System.out.println("块的结束位置x:" + el.get(Vector.I1));
