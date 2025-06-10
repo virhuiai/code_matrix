@@ -418,6 +418,22 @@ public class PdfTableParseUtils {
     }
 
     /**
+     * 清理文本，去除前后空格和不可见字符
+     */
+    private static String cleanText(String text) {
+        if (text == null) {
+            return "";
+        }
+
+        // 方案1：简单的trim（只去除前后空格）
+//         return text.trim();
+
+
+        // 方案2：更全面的清理，去除所有不可见字符
+        return text.replaceAll("^[\\s\\p{C}]+|[\\s\\p{C}]+$", "");
+    }
+
+    /**
      * 构建结果映射（两列表格，或者两个两个是对应的键和值的情况）
      */
     private static Map<String, String> buildResultMap(List<PdfCellTextPos> cellTextList) {
@@ -428,11 +444,15 @@ public class PdfTableParseUtils {
             PdfCellTextPos loc1 = cellTextList.get(i);
             PdfCellTextPos loc2 = cellTextList.get(i + 1);
 
+            // 获取并清理文本
+            String text1 = cleanText(loc1.getText());
+            String text2 = cleanText(loc2.getText());
+
             // x的比较，左边的作为key，右边的作为value
             if (loc1.getxLeft() < loc2.getxLeft()) {
-                rsItem.put(loc1.getText(), loc2.getText());
+                rsItem.put(text1, text2);
             } else {
-                rsItem.put(loc2.getText(), loc1.getText());
+                rsItem.put(text2, text1);
             }
         }
 
