@@ -345,10 +345,14 @@ public class PdfUtils {
                                 sy = sl.get(Vector.I2);
 
 
-                                textPos.xLeft(sl.get(Vector.I1));// 使用最后一个即可
-                                textPos.xRight(el.get(Vector.I1));
-                                textPos.yTop(sl.get(Vector.I2));
-                                textPos.yBtm(el.get(Vector.I2));
+//                                textPos.xLeft(sl.get(Vector.I1));// 使用最后一个即可
+//                                textPos.xRight(el.get(Vector.I1));
+//                                textPos.yTop(sl.get(Vector.I2));
+//                                textPos.yBtm(el.get(Vector.I2));
+                                textPos.xLeft(cell.getxLeft());// 使用最后一个即可
+                                textPos.xRight(cell.getxRight());
+                                textPos.yTop(cell.getyTop());
+                                textPos.yBtm(cell.getyBtm());
 
                             }
 
@@ -437,80 +441,6 @@ public class PdfUtils {
             }
 
 
-
-            int a = 3;
-
-            // 生成位置map
-//            Map<Integer,  Set<String>> setMap = new HashMap<>();
-//            for (int i = 0; i < lineListList.size(); i++) {
-//                Set<String> map = strategy.fromLineListToPointSet(lineListList.get(i));
-//                setMap.put(i, map);
-//            }
-//
-//
-//            for (int i = 0; (i+1) < lineListList.size(); i++) {
-//                List<Line2D> listI = lineListList.get(i);
-//                if(null == listI || listI.isEmpty()){
-//                    continue;// 可能是上一次的合并到前一次了
-//                }
-//
-//
-//                for (int j = i+1; j < lineListList.size(); j++) {
-//                    List<Line2D> listJ = lineListList.get(j);
-//
-//                    Set<String> setI = setMap.get(i);
-//                    Set<String> setJ =  setMap.get(j);
-//
-////                    setI.retainAll(setJ) // todo
-//                    setI.add("A");
-//                    setJ.add("A");
-//
-//                    // Calculate intersection
-//                    List<String> intersection = setI.stream()
-//                            .filter(setJ::contains)
-//                            .collect(Collectors.toList());
-//                    if(null != intersection && !intersection.isEmpty()){
-//                        // 有共同点，说明是同一个表格
-//                        while (listJ.iterator().hasNext()){
-//                            listI.add(listJ.iterator().next());
-//                            listJ.iterator().remove();
-//                            System.out.println("是同一个表格i:" + i);
-//                            System.out.println("是同一个表格j:" + j);
-//                        }
-//                    }else{
-//                        continue;
-//                    }
-//                }
-//
-//
-//
-//            }
-//
-//            // 去除空的行列表表
-//            while (lineListList.iterator().hasNext()){
-//                List<Line2D> cList = lineListList.iterator().next();
-//                if(null == cList || cList.isEmpty()){
-//                    lineListList.iterator().remove();
-//                }
-//            }
-
-
-
-
-
-//            Vector beforeVec = getFstContainTextVec(locationalResult, "划至簿记管理人指定的以下银行账户内");
-//            Vector afterVec = getFstContainTextVec(locationalResult, "在办理付款时，请注意资金在途时间");
-//            if (null == beforeVec || null == afterVec) {
-//                throw new CommonRuntimeException("XXXX", "未找到边界文字");
-//            }
-//
-//            List<LocationTextExtractionStrategy.TextChunk> locationalResultBetween = getLocationalResultBetween(locationalResult, beforeVec, afterVec);
-//            if (null == locationalResultBetween || locationalResultBetween.isEmpty()) {
-//                throw new CommonRuntimeException("XXXX", "未找到边界内的文字");
-//            }
-////
-////
-//            Map<String, String> mapOfTwoColumnTable = parseMapOfTwoColumnTableByLocationalResult(locationalResultBetween);
 
 
         } catch (Exception e) {

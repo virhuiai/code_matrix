@@ -76,7 +76,42 @@ public class TableCellAnalyzer {
         return p1.distance(p2) < TOLERANCE;
     }
 
-    // 从一组线段中提取表格单元格
+    /**
+     * 这段代码的目的是从一组线段中识别并提取出表格的单元格位置。
+     *
+     * 具体步骤
+     *
+     * 线段分类
+     *
+     * 遍历所有输入的线段
+     * 将水平线和垂直线分别存储到不同的列表中
+     * 线段排序
+     *
+     * 水平线按Y坐标从大到小排序（因为PDF坐标系左下角为原点）
+     * 垂直线按X坐标从小到大排序（从左到右）
+     * 查找单元格
+     *
+     * 遍历所有相邻的水平线对（从上到下）
+     * 对于每一对水平线：
+     * 如果两条线的Y坐标相同，跳过（避免重复处理）
+     * 找出所有同时与这两条水平线相交的垂直线
+     * 将找到的垂直线按顺序存储
+     * 生成单元格
+     *
+     * 对于每对相邻的垂直线：
+     * 使用上下两条水平线的Y坐标作为单元格的上下边界
+     * 使用左右两条垂直线的X坐标作为单元格的左右边界
+     * 创建一个矩形单元格对象
+     * 核心原理
+     *
+     * 通过寻找由两条水平线和两条垂直线围成的矩形区域来识别表格单元格。每个单元格必须满足：
+     *
+     * 有上下两条水平边界线
+     * 有左右两条垂直边界线
+     * 这四条线相互相交形成封闭矩形
+     * @param lines
+     * @return
+     */
     private static List<PdfCellPos> extractCellsFromLineGroup(List<Line2D> lines) {
         // 分离水平线和垂直线
         List<Line2D> horizontalLines = new ArrayList<>();
@@ -91,65 +126,44 @@ public class TableCellAnalyzer {
         }
 
         // 按坐标排序
-        // 水平线按y坐标分组 由于左下角为原点，故排序有所不同
         horizontalLines.sort((a, b) -> Double.compare(b.getY1(), a.getY1()));
         verticalLines.sort((a, b) -> Double.compare(a.getX1(), b.getX1()));
 
-//        Map<Double, List<Line2D>> horizontalGroups = new LinkedHashMap<>();
-//        horizontalLines.stream()
-//                .sorted((a, b) -> Double.compare(b.getY1(), a.getY1())) // 按y坐标降序排序
-//                .forEach(line -> {
-//                    double y = line.getY1();
-//                    horizontalGroups.computeIfAbsent(y, k -> new ArrayList<>()).add(line);
-//                });
-        // todo 后面的解析同一行多个的情况
-
-
-        // 查找所有可能的矩形单元格
         List<PdfCellPos> cells = new ArrayList<>();
 
+        // 遍历相邻的水平线对
         for (int i = 0; i < horizontalLines.size() - 1; i++) {
-            Line2D line1 = horizontalLines.get(i);
-            Line2D line2 = horizontalLines.get(i + 1);
+            Line2D topLine = horizontalLines.get(i);
+            Line2D bottomLine = horizontalLines.get(i + 1);
 
-            if(line1.getY1() == line2.getY1()){
-                continue;//  todo 后面的解析同一行多个的情况
+            if (Math.abs(topLine.getY1() - bottomLine.getY1()) < 0.001) {
+                continue;  // 跳过y坐标相同的线
             }
 
-            // 两个线同时和另一条相交才算。
+            // 找出所有与这两条水平线都相交的垂直线
+            List<Line2D> intersectingVerticals = new ArrayList<>();
 
-
-            List<Line2D> line3List = new ArrayList<>();
-            // 检查是否相交
-
-            for (int j = 0; j < verticalLines.size() - 1; j++) {
-                Line2D line3 = verticalLines.get(j);
-                if (line1.intersectsLine(line3)&&
-                        line2.intersectsLine(line3)) {
-                    line3List.add(line3);
+            // 修正：遍历所有垂直线
+            for (Line2D vertical : verticalLines) {
+                if (topLine.intersectsLine(vertical) &&
+                        bottomLine.intersectsLine(vertical)) {
+                    intersectingVerticals.add(vertical);
                 }
             }
 
-            //
-            double yTop = line1.getY1();
-            double yBtm = line2.getY1();
-            for (int k3 = 0; k3 < line3List.size() - 1; k3++) {
-                double xLeft = line3List.get(k3).getX1();
-                double xRight = line3List.get(k3 + 1).getX1();
-//                PDF坐标系与常规的屏幕坐标系不同：
-//                PDF坐标系：左下角为原点(0,0)，y轴向上为正
-//                Java AWT坐标系：左上角为原点(0,0)，y轴向下为正
+            // 根据相邻的垂直线创建单元格
+            for (int j = 0; j < intersectingVerticals.size() - 1; j++) {
+                Line2D leftLine = intersectingVerticals.get(j);
+                Line2D rightLine = intersectingVerticals.get(j + 1);
 
-                // 使用Builder模式创建对象
-                PdfCellPos pos = PdfCellPos.builder()
-                        .yTop(yTop)
-                        .yBtm(yBtm)
-                        .xLeft(xLeft)
-                        .xRight(xRight)
+                PdfCellPos cell = PdfCellPos.builder()
+                        .yTop(topLine.getY1())
+                        .yBtm(bottomLine.getY1())
+                        .xLeft(leftLine.getX1())
+                        .xRight(rightLine.getX1())
                         .build();
-                cells.add(pos);
+                cells.add(cell);
             }
-
         }
 
         return cells;

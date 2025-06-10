@@ -50,7 +50,7 @@ public class PdfCellTextPos extends PdfCellPos {
 
     @Override
     public String toString() {
-        return "PdfCellTextPos{" +
+        return "\nPdfCellTextPos{" +
                 "yTop=" + getyTop() +
                 ", yBtm=" + getyBtm() +
                 ", xLeft=" + getxLeft() +
