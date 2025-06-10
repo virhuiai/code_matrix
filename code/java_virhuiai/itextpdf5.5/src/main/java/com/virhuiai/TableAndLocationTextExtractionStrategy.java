@@ -334,7 +334,7 @@ public class TableAndLocationTextExtractionStrategy extends LocationTextExtracti
      */
     private static Vector getOrientationVector(LocationTextExtractionStrategy.TextChunk textChunk)
             throws Exception {
-        return PdfUtils.fetchObjResult(textChunk.getLocation(), "orientationVector");
+        return ReflectionUtils.fetchObjResult(textChunk.getLocation(), "orientationVector");
     }
 
     /**

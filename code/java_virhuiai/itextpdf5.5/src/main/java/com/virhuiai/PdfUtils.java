@@ -177,55 +177,6 @@ public class PdfUtils {
 
     }
 
-    /**
-     * fetchObjResult 获取对象中的值
-     * @param o
-     * @param fieldName
-     * @param <T>
-     * @return
-     */
-    public static <T> T fetchObjResult(Object o, String fieldName) {
-        try {
-            Class<?> clazz = o.getClass();
-            // 获取私有字段
-            Field privateField = clazz.getDeclaredField(fieldName);
-            // 设置可访问性为true，以绕过访问控制检查
-            privateField.setAccessible(true);
-            // 通过反射读取父类的私有字段值
-            @SuppressWarnings("unchecked")
-            T value = (T) privateField.get(o);
-            return value;
-        } catch (Exception e) {
-            // todo LOG
-            throw new CommonRuntimeException("XXXX", "获取信息失败");
-        }
-    }
-
-    /**
-     * 获取对象中的值
-     * @param o
-     * @param fieldName
-     * @param <T>
-     * @return
-     */
-    public static <T> T fetchObjResultFromSuperClass(Object o, String fieldName) {
-        try {
-            Class<?> clazz = o.getClass().getSuperclass();
-            // 获取私有字段
-            Field privateField = clazz.getDeclaredField(fieldName);
-            // 设置可访问性为true，以绕过访问控制检查
-            privateField.setAccessible(true);
-            // 通过反射读取父类的私有字段值
-            @SuppressWarnings("unchecked")
-            T value = (T) privateField.get(o);
-            return value;
-        } catch (Exception e) {
-            // todo LOG
-            throw new CommonRuntimeException("XXXX", "获取信息失败");
-        }
-    }
-
-
 
     ////////////////////
 
@@ -278,7 +229,7 @@ public class PdfUtils {
             // 分析表格单元格
             List<List<PdfCellPos>> cellGroups = new TableCellAnalyzer().analyzeTableCells(lineList);
 
-            List<LocationTextExtractionStrategy.TextChunk> locationalResult = fetchObjResultFromSuperClass(strategy, "locationalResult");
+            List<LocationTextExtractionStrategy.TextChunk> locationalResult = ReflectionUtils.fetchObjResultFromSuperClass(strategy, "locationalResult");
 //             过滤掉非黑色的文字 todo  TextRenderInfo 的需要单独保存
 //            locationalResult = strategy.filterNonBlackText(locationalResult);
             // 过滤掉倾斜的文字
