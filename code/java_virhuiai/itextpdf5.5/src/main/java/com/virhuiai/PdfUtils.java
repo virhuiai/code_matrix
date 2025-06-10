@@ -434,10 +434,10 @@ public class PdfUtils {
                 }
 
                 List<PdfCellTextPos>  cellTextList2 = PdfCellSorter.sortCells(cellTextList);
-                System.out.println("最终输出：");
-                for (PdfCellTextPos pdfCellTextPos : cellTextList2) {
-                    System.out.printf(String.valueOf(pdfCellTextPos));
-                }
+//                System.out.println("最终输出：");
+//                for (PdfCellTextPos pdfCellTextPos : cellTextList2) {
+//                    System.out.printf(String.valueOf(pdfCellTextPos));
+//                }
             }
 
 

@@ -26,6 +26,11 @@
       <scope>test</scope>
     </dependency>
 
+    <dependency>
+      <groupId>com.virhuiai</groupId>
+      <artifactId>Csh_Log</artifactId>
+      <version>1.1</version>
+    </dependency>
    
     <dependency>
       <groupId>com.itextpdf</groupId>
