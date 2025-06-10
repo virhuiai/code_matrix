@@ -495,7 +495,7 @@ public class PdfTableParseUtils {
 
         return rs;
     }
-
+    //////////////
     /**
      * 分析复杂表格结构
      它做了很多事情：
@@ -535,11 +535,6 @@ public class PdfTableParseUtils {
 
             // 处理所有单元格组
             return processCellGroups(cellGroups, locationalResult);
-
-
-
-
-
         } catch (Exception e) {
 //            LOG.error("失败：" + filePath, e);
             throw new CommonRuntimeException("XXXX", "解析失败");
@@ -547,4 +542,85 @@ public class PdfTableParseUtils {
 
     }
 
+    /**
+     * 分析复杂表格并返回指定下标的Map
+     *
+     * @param filePath 文件路径
+     * @param pageNumber 页码
+     * @param index 指定的下标
+     * @return 指定下标的表格数据
+     */
+    public static Map<String, String> analyzeComplexTableByIndex(String filePath, int pageNumber, int index) {
+        List<Map<String, String>> allTables = analyzeComplexTable(filePath, pageNumber);
+
+        if (allTables == null || allTables.isEmpty()) {
+            throw new CommonRuntimeException("XXXX", "未找到任何表格数据");
+        }
+
+        if (index < 0 || index >= allTables.size()) {
+            throw new CommonRuntimeException("XXXX",
+                    String.format("指定的下标 %d 超出范围，有效范围为 0-%d", index, allTables.size() - 1));
+        }
+
+        return allTables.get(index);
+    }
+
+//    /**
+//     * 分析复杂表格并返回指定下标的Map，如果不存在则返回空Map
+//     *
+//     * @param filePath 文件路径
+//     * @param pageNumber 页码
+//     * @param index 指定的下标
+//     * @return 指定下标的表格数据，如果不存在则返回空Map
+//     */
+//    public static Map<String, String> analyzeComplexTableByIndexOrEmpty(String filePath, int pageNumber, int index) {
+//        try {
+//            List<Map<String, String>> allTables = analyzeComplexTable(filePath, pageNumber);
+//
+//            if (allTables != null && index >= 0 && index < allTables.size()) {
+//                return allTables.get(index);
+//            }
+//        } catch (Exception e) {
+//            // 记录日志但不抛出异常
+//            // LOG.warn("获取指定下标的表格数据失败", e);
+//        }
+//
+//        return new LinkedHashMap<>(); // 返回空的有序Map
+//    }
+
+    /**
+     * 分析复杂表格并返回最后一个Map
+     *
+     * @param filePath 文件路径
+     * @param pageNumber 页码
+     * @return 最后一个表格数据
+     */
+    public static Map<String, String> analyzeComplexTableLast(String filePath, int pageNumber) {
+        List<Map<String, String>> allTables = analyzeComplexTable(filePath, pageNumber);
+
+        if (allTables == null || allTables.isEmpty()) {
+            throw new CommonRuntimeException("XXXX", "未找到任何表格数据");
+        }
+
+        return allTables.get(allTables.size() - 1);
+    }
+
+    /**
+     * 分析复杂表格并返回第一个Map
+     *
+     * @param filePath 文件路径
+     * @param pageNumber 页码
+     * @return 第一个表格数据
+     */
+    public static Map<String, String> analyzeComplexTableFirst(String filePath, int pageNumber) {
+        List<Map<String, String>> allTables = analyzeComplexTable(filePath, pageNumber);
+
+        if (allTables == null || allTables.isEmpty()) {
+            throw new CommonRuntimeException("XXXX", "未找到任何表格数据");
+        }
+
+        return allTables.get(0);
+    }
+
 }
+
