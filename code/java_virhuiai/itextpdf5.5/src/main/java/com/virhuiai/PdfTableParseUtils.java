@@ -334,6 +334,24 @@ public class PdfTableParseUtils {
 
     ////////
 
+
+    /**
+     * 提取和处理文本块 过滤 排序
+     */
+    private static List<LocationTextExtractionStrategy.TextChunk> extractAndProcessTextChunks(
+            TableAndLocationTextExtractionStrategy strategy) {
+        List<LocationTextExtractionStrategy.TextChunk> locationalResult =
+                ReflectionUtils.fetchObjResultFromSuperClass(strategy, "locationalResult");
+
+        // 过滤掉倾斜的文字
+        locationalResult = PdfTextUtils.filterSkewedText(locationalResult);
+
+        // 按起始位置的Y坐标从大到小排序（从上到下）
+        locationalResult = PdfTextUtils.sortByYDescending(locationalResult);
+
+        return locationalResult;
+    }
+
     /**
      * 分析复杂表格结构
      *
@@ -350,18 +368,10 @@ public class PdfTableParseUtils {
             TableAndLocationTextExtractionStrategy strategy = parser.processContent(pageNumber, new TableAndLocationTextExtractionStrategy());
             // 取得所有线段
             List<Line2D> lineList = strategy.getCurrentLineList();
-
-
             // 分析表格单元格
             List<List<PdfCellPos>> cellGroups = PdfTableParseUtils.analyzeTableCells(lineList);
-
-            List<LocationTextExtractionStrategy.TextChunk> locationalResult = ReflectionUtils.fetchObjResultFromSuperClass(strategy, "locationalResult");
-//             过滤掉非黑色的文字 todo  TextRenderInfo 的需要单独保存
-//            locationalResult = strategy.filterNonBlackText(locationalResult);
-            // 过滤掉倾斜的文字
-            locationalResult = PdfTextUtils.filterSkewedText(locationalResult);
-            // 按起始位置的Y坐标从大到小排序（从上到下）  用于换行
-            locationalResult = PdfTextUtils.sortByYDescending(locationalResult);
+            // 提取和处理文本块 过滤 排序
+            List<LocationTextExtractionStrategy.TextChunk> locationalResult = extractAndProcessTextChunks(strategy);
 
             // 输出结果
             for (int i = 0; i < cellGroups.size(); i++) {
@@ -369,17 +379,10 @@ public class PdfTableParseUtils {
                 List<PdfCellTextPos> cellTextList = new ArrayList<>();
 
                 List<PdfCellPos> cells = cellGroups.get(i);
-//                cells = PdfCellSorter.sortCells(cells);
-//                cells = PdfCellSorter.sortCellsAdvanced(cells);
+
 
                 for (int j = 0; j < cells.size(); j++) {
                     PdfCellPos cell = cells.get(j);
-//                    System.out.println("  单元格 " + (j + 1) + " 的四个坐标点:");
-//                    System.out.println("  单元格 " + (j + 1) + " getxLeft:" + cell.getxLeft());
-//                    System.out.println("  单元格 " + (j + 1) + " getxRight:" + cell.getxRight());
-//                    System.out.println("  单元格 " + (j + 1) + " getyTop:" + cell.getyTop());
-//                    System.out.println("  单元格 " + (j + 1) + " getyBtm:" + cell.getyBtm());
-
 
                     PdfCellTextPos.Builder textPos = new PdfCellTextPos.Builder();
 
@@ -432,9 +435,6 @@ public class PdfTableParseUtils {
 
                     }
                     textPos.text(textSb.toString());
-//                    System.out.println("  Text:" + textSb.toString());
-//                    System.out.println("  存最后位置x:" + sx);
-//                    System.out.println("  存最后位置y:" + sy);
                     cellTextList.add(textPos.build());
 
 
@@ -443,10 +443,7 @@ public class PdfTableParseUtils {
                 }
 
 
-//                System.out.println("最终输出：");
-//                for (PdfCellTextPos pdfCellTextPos : cellTextList2) {
-//                    System.out.printf(String.valueOf(pdfCellTextPos));
-//                }
+
 
                 boolean isEven = cellTextList.size() % 2 == 0;
                 if (!isEven) {

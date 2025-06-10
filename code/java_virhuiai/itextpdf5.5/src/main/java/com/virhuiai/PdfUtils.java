@@ -107,7 +107,7 @@ public class PdfUtils {
 
 
     public static void main(String[] args) {
-        Object a = PdfTableParseUtils.analyzeComplexTable("/Volumes/RamDisk/tzs书.pdf", 1);
+        List<Map<String, String>> a = PdfTableParseUtils.analyzeComplexTable("/Volumes/RamDisk/tzs书.pdf", 1);
         System.out.println("abc");
     }
 }
