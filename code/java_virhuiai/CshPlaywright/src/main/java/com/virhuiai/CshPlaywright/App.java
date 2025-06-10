@@ -4,7 +4,9 @@ package com.virhuiai.CshPlaywright;
 import com.microsoft.playwright.Browser;
 import com.microsoft.playwright.BrowserType;
 import com.microsoft.playwright.Page;
+
 import com.microsoft.playwright.Playwright;
+import com.microsoft.playwright.impl.Playwright2;
 import com.virhuiai.CshLogUtils.CshLogUtils;
 import org.apache.commons.logging.Log;
 
@@ -31,7 +33,7 @@ public class App {
      * @param args
      */
     public static void main(String[] args) {
-        Playwright playwright = Playwright.create();//接口中的静态方法（Java 8特性）
+        Playwright playwright = Playwright2.create();//接口中的静态方法（Java 8特性） 用户只需要知道 Playwright 接口，不需要知道 PlaywrightImpl
         Browser browser = playwright.chromium().launch(new BrowserType.LaunchOptions().setHeadless(false));
 
         Page page = browser.newPage();
