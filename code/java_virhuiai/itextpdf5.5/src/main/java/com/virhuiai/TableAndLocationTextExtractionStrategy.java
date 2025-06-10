@@ -1,12 +1,9 @@
 package com.virhuiai;
 
-import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.pdf.parser.*;
-import com.itextpdf.text.pdf.parser.Vector;
 
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
-import java.lang.reflect.Field;
 import java.util.*;
 
 /**
@@ -53,11 +50,11 @@ public class TableAndLocationTextExtractionStrategy extends LocationTextExtracti
     public void modifyPath(PathConstructionRenderInfo renderInfo) {
         int operation = renderInfo.getOperation();
         // 转换为点坐标
-        Point2D.Float point = PDFPathUtils.convertToPoint(renderInfo);
+        Point2D.Float point = PdfPathUtils.convertToPoint(renderInfo);
 
         // 处理线段操作
-        if (PDFPathUtils.isMoveTo(operation) || PDFPathUtils.isLineTo(operation)) {
-            if (PDFPathUtils.isMoveTo(operation)) {
+        if (PdfPathUtils.isMoveTo(operation) || PdfPathUtils.isLineTo(operation)) {
+            if (PdfPathUtils.isMoveTo(operation)) {
                 // MOVETO操作：设置新的路径起点
                 this.currentPoint = point;
                 this.pathStartPoint = point; // 记录路径起始点，用于闭合路径
@@ -71,7 +68,7 @@ public class TableAndLocationTextExtractionStrategy extends LocationTextExtracti
             }
         }
         // 处理闭合路径操作
-        else if (PDFPathUtils.isClosePath(operation)) {
+        else if (PdfPathUtils.isClosePath(operation)) {
             // 如果有当前点和路径起始点，创建闭合线段
             if (currentPoint != null && pathStartPoint != null && !GeometryUtils.isPointsEqual(currentPoint, pathStartPoint)) {
                 Line2D line = new Line2D.Double(currentPoint, pathStartPoint);
@@ -79,8 +76,8 @@ public class TableAndLocationTextExtractionStrategy extends LocationTextExtracti
             }
         }
         // 处理矩形操作（PDF中表格经常使用矩形绘制）
-        else if (PDFPathUtils.isRectangle(operation)) {
-            Line2D[] rectangleLines = PDFPathUtils.createRectangleLines(renderInfo);
+        else if (PdfPathUtils.isRectangle(operation)) {
+            Line2D[] rectangleLines = PdfPathUtils.createRectangleLines(renderInfo);
             if (rectangleLines != null) {
                 currentLineList.addAll(Arrays.asList(rectangleLines));
             }

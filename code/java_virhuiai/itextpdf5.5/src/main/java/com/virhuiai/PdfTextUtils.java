@@ -16,8 +16,8 @@ import java.util.List;
  * PDF文本处理工具类
  * 提供文本过滤、排序等功能
  */
-public class PDFTextUtils {
-    private static final Log logger = CshLogUtils.createLogExtended(PDFTextUtils.class);
+public class PdfTextUtils {
+    private static final Log logger = CshLogUtils.createLogExtended(PdfTextUtils.class);
 
     /**
      * 通过反射获取TextChunk的方向向量

@@ -4,16 +4,29 @@ import java.awt.geom.Point2D;
 import java.util.*;
 
 /**
- * 遍历线段、分组相连或相交的线段，并分析表格单元格的
+ * PDF表格单元格分析工具类
+ * 用于遍历线段、分组相连或相交的线段，并分析表格单元格
  */
 public class TableCellAnalyzer {
     // 容差值，用于判断点是否相近
     private static final double TOLERANCE = 1e-6;
     private static final double TOLERANCE_INTERSECTS = 2;
 
-    // 主方法：分析线段并提取表格单元格
+    /**
+     * 私有构造函数，防止实例化
+     */
+    private TableCellAnalyzer() {
+        throw new UnsupportedOperationException("This is a utility class and cannot be instantiated");
+    }
+
+    /**
+     * 主方法：分析线段并提取表格单元格
+     *
+     * @param lineList 线段列表
+     * @return 表格单元格分组列表
+     */
     public static List<List<PdfCellPos>> analyzeTableCells(List<Line2D> lineList) {
-        // 1. 将相连或相交的线段分组 ok
+        // 1. 将相连或相交的线段分组
         List<List<Line2D>> groupedLines = groupConnectedLines(lineList);
 
         // 2. 对每个分组分析表格单元格
@@ -28,7 +41,12 @@ public class TableCellAnalyzer {
         return allCells;
     }
 
-    // 将相连或相交的线段分组
+    /**
+     * 将相连或相交的线段分组
+     *
+     * @param lineList 线段列表
+     * @return 分组后的线段列表
+     */
     private static List<List<Line2D>> groupConnectedLines(List<Line2D> lineList) {
         int n = lineList.size();
         UnionFind uf = new UnionFind(n);
@@ -55,7 +73,13 @@ public class TableCellAnalyzer {
         return new ArrayList<>(groups.values());
     }
 
-    // 判断两条线段是否相连或相交
+    /**
+     * 判断两条线段是否相连或相交
+     *
+     * @param line1 第一条线段
+     * @param line2 第二条线段
+     * @return 是否相连或相交
+     */
     private static boolean isConnectedOrIntersecting(Line2D line1, Line2D line2) {
         // 检查是否相交
         if (line1.intersectsLine(line2)) {
@@ -72,7 +96,13 @@ public class TableCellAnalyzer {
                 isPointsClose(p1End, p2Start) || isPointsClose(p1End, p2End);
     }
 
-    // 判断两个点是否足够接近
+    /**
+     * 判断两个点是否足够接近
+     *
+     * @param p1 第一个点
+     * @param p2 第二个点
+     * @return 是否接近
+     */
     private static boolean isPointsClose(Point2D p1, Point2D p2) {
         return p1.distance(p2) < TOLERANCE;
     }
@@ -137,7 +167,7 @@ public class TableCellAnalyzer {
             Line2D topLine = horizontalLines.get(i);
             Line2D bottomLine = horizontalLines.get(i + 1);
 
-            if (Math.abs(topLine.getY1() - bottomLine.getY1()) < 0.001) {
+            if (Math.abs(topLine.getY1() - bottomLine.getY1()) < TOLERANCE) {
                 continue;  // 跳过y坐标相同的线
             }
 
@@ -180,6 +210,10 @@ public class TableCellAnalyzer {
 
     /**
      * 判断垂直线是否与水平线相交（带误差容许）
+     *
+     * @param horizontal 水平线
+     * @param vertical 垂直线
+     * @return 是否相交
      */
     private static boolean intersectsWithTolerance(Line2D horizontal, Line2D vertical) {
         // 获取垂直线的X坐标
@@ -205,20 +239,30 @@ public class TableCellAnalyzer {
         return xInRange && yInRange;
     }
 
-    // 判断线段是否水平
+    /**
+     * 判断线段是否水平
+     *
+     * @param line 线段
+     * @return 是否水平
+     */
     private static boolean isHorizontal(Line2D line) {
         return Math.abs(line.getY1() - line.getY2()) < TOLERANCE;
     }
 
-    // 判断线段是否垂直
+    /**
+     * 判断线段是否垂直
+     *
+     * @param line 线段
+     * @return 是否垂直
+     */
     private static boolean isVertical(Line2D line) {
         return Math.abs(line.getX1() - line.getX2()) < TOLERANCE;
     }
 
-
-
-    // 并查集实现
-    static class UnionFind {
+    /**
+     * 并查集实现，用于分组相连的线段
+     */
+    private static class UnionFind {
         private int[] parent;  // 存储每个节点的父节点
         // parent[i]：节点i的父节点索引，如果parent[i] == i则i是根节点
         private int[] rank;    // 存储以该节点为根的树的高度（秩）
@@ -284,27 +328,4 @@ public class TableCellAnalyzer {
         }
     }
 
-    // 使用示例
-    public static void main(String[] args) {
-        // 获取线段列表
-//        List<Line2D> lineListList = strategy.getCurrentLineList();
-
-//        // 分析表格单元格
-//        List<List<Rectangle2D>> cellGroups = analyzeTableCells(lineListList);
-//
-//        // 输出结果
-//        for (int i = 0; i < cellGroups.size(); i++) {
-//            System.out.println("表格组 " + (i + 1) + ":");
-//            List<Rectangle2D> cells = cellGroups.get(i);
-//
-//            for (int j = 0; j < cells.size(); j++) {
-//                Rectangle2D cell = cells.get(j);
-//                System.out.println("  单元格 " + (j + 1) + " 的四个坐标点:");
-//                System.out.println("    左上角: (" + cell.getX() + ", " + cell.getY() + ")");
-//                System.out.println("    右上角: (" + (cell.getX() + cell.getWidth()) + ", " + cell.getY() + ")");
-//                System.out.println("    左下角: (" + cell.getX() + ", " + (cell.getY() + cell.getHeight()) + ")");
-//                System.out.println("    右下角: (" + (cell.getX() + cell.getWidth()) + ", " + (cell.getY() + cell.getHeight()) + ")");
-//            }
-//        }
-    }
 }

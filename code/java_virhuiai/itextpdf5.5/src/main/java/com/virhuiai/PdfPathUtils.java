@@ -11,7 +11,7 @@ import java.util.List;
  * PDF路径处理工具类
  * 提供路径转换相关的功能
  */
-public class PDFPathUtils {
+public class PdfPathUtils {
 
 
     /**
