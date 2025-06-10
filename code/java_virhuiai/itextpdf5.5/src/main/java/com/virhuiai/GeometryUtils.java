@@ -1,5 +1,6 @@
 package com.virhuiai;
 
+import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 
 /**
@@ -39,4 +40,54 @@ public class GeometryUtils {
     public static boolean isPointsEqual(Point2D p1, Point2D p2) {
         return isPointsEqual(p1, p2, DEFAULT_EPSILON);
     }
+
+    /////////////
+
+    /**
+     * 判断两条线段是否相连（即是否共享端点）
+     * @param line1 第一条线段
+     * @param line2 第二条线段
+     * @param epsilon 允许的误差范围
+     * @return 如果两条线段共享至少一个端点，返回true；否则返回false
+     */
+    public static boolean isConnected(Line2D line1, Line2D line2, double epsilon) {
+        if (line1 == null || line2 == null) {
+            return false;
+        }
+
+        // 获取第一条线的起点和终点
+        Point2D p1Start = line1.getP1();  // 线段1的起点
+        Point2D p1End = line1.getP2();    // 线段1的终点
+
+        // 获取第二条线的起点和终点
+        Point2D p2Start = line2.getP1();  // 线段2的起点
+        Point2D p2End = line2.getP2();    // 线段2的终点
+
+        // 检查两条线段是否有任意一个端点重合
+        // 四种可能的情况：
+        // 1. 线段1的起点 = 线段2的起点
+        // 2. 线段1的起点 = 线段2的终点
+        // 3. 线段1的终点 = 线段2的起点
+        // 4. 线段1的终点 = 线段2的终点
+        return isPointsEqual(p1Start, p2Start, epsilon) ||
+                isPointsEqual(p1Start, p2End, epsilon) ||
+                isPointsEqual(p1End, p2Start, epsilon) ||
+                isPointsEqual(p1End, p2End, epsilon);
+    }
+
+
+    /**
+     * 判断两条线段是否相连（即是否共享端点）
+     * GeometryUtils.isConnected
+     * @param line1 第一条线段
+     * @param line2 第二条线段
+     * @return 如果两条线段共享至少一个端点，返回true；否则返回false
+     */
+    public static boolean isConnected(Line2D line1, Line2D line2) {
+        return isConnected(line1, line2, DEFAULT_EPSILON);
+    }
+
+
+
+
 }

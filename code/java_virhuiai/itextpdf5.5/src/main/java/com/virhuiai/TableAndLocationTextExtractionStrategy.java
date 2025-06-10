@@ -45,38 +45,6 @@ public class TableAndLocationTextExtractionStrategy extends LocationTextExtracti
 
 
 
-    /**
-     * 判断两条线段是否相连（即是否共享端点）
-     * @param line1 第一条线段
-     * @param line2 第二条线段
-     * @return 如果两条线段共享至少一个端点，返回true；否则返回false
-     */
-    private boolean isConnected(Line2D line1, Line2D line2) {
-        // 获取第一条线的起点和终点
-        Point2D p1Start = line1.getP1();  // 线段1的起点
-        Point2D p1End = line1.getP2();    // 线段1的终点
-
-        // 获取第二条线的起点和终点
-        Point2D p2Start = line2.getP1();  // 线段2的起点
-        Point2D p2End = line2.getP2();    // 线段2的终点
-
-        // 定义误差范围，用于处理浮点数比较时的精度问题
-        // 当两个浮点数的差值小于epsilon时，认为它们相等
-        double epsilon = 1e-6;
-
-        // 检查两条线段是否有任意一个端点重合
-        // 四种可能的情况：
-        // 1. 线段1的起点 = 线段2的起点
-        // 2. 线段1的起点 = 线段2的终点
-        // 3. 线段1的终点 = 线段2的起点
-        // 4. 线段1的终点 = 线段2的终点
-        return GeometryUtils.isPointsEqual(p1Start, p2Start, epsilon) ||
-                GeometryUtils.isPointsEqual(p1Start, p2End, epsilon) ||
-                GeometryUtils.isPointsEqual(p1End, p2Start, epsilon) ||
-                GeometryUtils.isPointsEqual(p1End, p2End, epsilon);
-    }
-
-
 
     /**
      * 深度优先搜索算法，递归查找所有相连的线段
@@ -98,7 +66,7 @@ public class TableAndLocationTextExtractionStrategy extends LocationTextExtracti
         // 遍历所有其他线段
         for (int i = 0; i < lineList.size(); i++) {
             // 如果线段i未被访问过，且与当前线段相连
-            if (!visited[i] && isConnected(currentLine, lineList.get(i))) {
+            if (!visited[i] && GeometryUtils.isConnected(currentLine, lineList.get(i))) {
                 // 递归访问相连的线段，继续查找与它相连的其他线段
                 dfs(lineList, i, visited, group);
             }
