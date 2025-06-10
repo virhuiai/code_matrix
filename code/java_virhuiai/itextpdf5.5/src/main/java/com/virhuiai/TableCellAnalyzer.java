@@ -9,6 +9,7 @@ import java.util.*;
 public class TableCellAnalyzer {
     // 容差值，用于判断点是否相近
     private static final double TOLERANCE = 1e-6;
+    private static final double TOLERANCE_INTERSECTS = 2;
 
     // 主方法：分析线段并提取表格单元格
     public static List<List<PdfCellPos>> analyzeTableCells(List<Line2D> lineList) {
@@ -144,9 +145,10 @@ public class TableCellAnalyzer {
             List<Line2D> intersectingVerticals = new ArrayList<>();
 
             // 修正：遍历所有垂直线
-            for (Line2D vertical : verticalLines) {
-                if (topLine.intersectsLine(vertical) &&
-                        bottomLine.intersectsLine(vertical)) {
+            for (int i1 = 0; i1 < verticalLines.size(); i1++) {
+                Line2D vertical = verticalLines.get(i1);
+                if (intersectsWithTolerance(topLine,vertical) &&
+                        intersectsWithTolerance(bottomLine, vertical)) {
                     intersectingVerticals.add(vertical);
                 }
             }
@@ -163,10 +165,44 @@ public class TableCellAnalyzer {
                         .xRight(rightLine.getX1())
                         .build();
                 cells.add(cell);
+
+                System.out.printf("\n行：" + i);
+                System.out.printf("格：" + j);
+                System.out.printf("topLine.getY1()：" + topLine.getY1());
+                System.out.printf("bottomLine.getY1()：" + bottomLine.getY1());
+                System.out.printf("leftLine.getX1()：" + leftLine.getX1());
+                System.out.printf("rightLine.getX1()：" + rightLine.getX1());
             }
         }
 
         return cells;
+    }
+
+    /**
+     * 判断垂直线是否与水平线相交（带误差容许）
+     */
+    private static boolean intersectsWithTolerance(Line2D horizontal, Line2D vertical) {
+        // 获取垂直线的X坐标
+        double verticalX = vertical.getX1();
+
+        // 获取垂直线的Y范围
+        double verticalMinY = Math.min(vertical.getY1(), vertical.getY2());
+        double verticalMaxY = Math.max(vertical.getY1(), vertical.getY2());
+
+        // 获取水平线的X范围
+        double horizontalMinX = Math.min(horizontal.getX1(), horizontal.getX2());
+        double horizontalMaxX = Math.max(horizontal.getX1(), horizontal.getX2());
+
+        // 获取水平线的Y坐标
+        double horizontalY = horizontal.getY1();
+
+        // 判断是否相交（带误差容许）
+        boolean xInRange = verticalX >= horizontalMinX - TOLERANCE_INTERSECTS &&
+                verticalX <= horizontalMaxX + TOLERANCE_INTERSECTS;
+        boolean yInRange = horizontalY >= verticalMinY - TOLERANCE_INTERSECTS &&
+                horizontalY <= verticalMaxY + TOLERANCE_INTERSECTS;
+
+        return xInRange && yInRange;
     }
 
     // 判断线段是否水平
