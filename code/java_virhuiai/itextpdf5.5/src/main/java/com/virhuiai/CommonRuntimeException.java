@@ -1,21 +1,24 @@
 package com.virhuiai;
 
 
-import java.util.List;
-import java.util.Locale;
+/**
+ * 通用运行时异常类
+ * 注：实际项目中应该使用项目中已定义的异常类
+ */
+class CommonRuntimeException extends RuntimeException {
+    private final String errorCode;
 
-public class CommonRuntimeException extends RuntimeException  {
-
-    public CommonRuntimeException(String code, Throwable e, List<Locale> locales, Object... params) {
-        super(e);
+    public CommonRuntimeException(String errorCode, String message) {
+        super(message);
+        this.errorCode = errorCode;
     }
 
-    public CommonRuntimeException(String code, Throwable e, Object... params) {
-        this(code, e, (List)null, params);
+    public CommonRuntimeException(String errorCode, String message, Throwable cause) {
+        super(message, cause);
+        this.errorCode = errorCode;
     }
 
-    public CommonRuntimeException(String code, Object... params) {
-        this(code, (Throwable)null, params);
+    public String getErrorCode() {
+        return errorCode;
     }
-
 }
