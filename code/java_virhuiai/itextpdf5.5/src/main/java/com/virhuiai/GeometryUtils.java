@@ -2,6 +2,10 @@ package com.virhuiai;
 
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * 几何运算工具类
@@ -90,6 +94,62 @@ public class GeometryUtils {
     //////////
 
 
+    /**
+     * 在容差范围内添加点，如果已存在相近的点则不添加
+     * @param points 现有点集合
+     * @param newPoint 要添加的新点
+     * @param tolerance 容差范围
+     */
+    private static void addPointWithTolerance(List<Point2D> points, Point2D newPoint, double tolerance) {
+        boolean foundSimilar = false;
+
+        for (Point2D existingPoint : points) {
+            if (existingPoint.distance(newPoint) <= tolerance) {
+                foundSimilar = true;
+                break;
+            }
+        }
+
+        if (!foundSimilar) {
+            points.add(newPoint);
+        }
+    }
+
+
+    /**
+     * 从线段列表生成点的集合，支持容差范围内的点合并
+     * @param lineList 线段列表
+     * @param tolerance 容差范围，默认1.0
+     * @return 包含所有端点的Point2D集合
+     */
+    public static List<Point2D> fromLineListToPointSet(List<Line2D> lineList, double tolerance) {
+        if (lineList == null || lineList.isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        List<Point2D> uniquePoints = new ArrayList<>();
+
+        for (Line2D line : lineList) {
+            if (line == null) continue;
+
+            Point2D p1 = new Point2D.Double(line.getX1(), line.getY1());
+            Point2D p2 = new Point2D.Double(line.getX2(), line.getY2());
+
+            addPointWithTolerance(uniquePoints, p1, tolerance);
+            addPointWithTolerance(uniquePoints, p2, tolerance);
+        }
+
+        return uniquePoints;
+    }
+
+
+    /**
+     * 从线段列表生成点的集合，支持容差范围内的点合并
+     * 重载方法，使用默认容差1.0
+     */
+    public static List<Point2D> fromLineListToPointSet(List<Line2D> lineList) {
+        return fromLineListToPointSet(lineList, 1.0);
+    }
 
 
 
