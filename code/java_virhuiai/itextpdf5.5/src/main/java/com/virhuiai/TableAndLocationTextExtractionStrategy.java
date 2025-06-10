@@ -166,7 +166,6 @@ public class TableAndLocationTextExtractionStrategy extends LocationTextExtracti
         this.currentPoint = null;
         this.pathStartPoint = null;
 
-
         return null;
     }
 

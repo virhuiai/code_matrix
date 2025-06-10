@@ -19,27 +19,7 @@ import java.util.stream.Collectors;
 public class PdfUtils {
 
 
-    /**
-     * 取所有位置结果
-     *
-     * @return
-     */
-    public static List<LocationTextExtractionStrategy.TextChunk> fetchLocationalResult(LocationTextExtractionStrategy strategy) {
-        try {
-            Class clazz = strategy.getClass();
-            // 获取私有字段
-            Field privateField = clazz.getDeclaredField("locationalResult");
-            // 设置可访问性为true，以绕过访问控制检查
-            privateField.setAccessible(true);
-            // 通过反射读取父类的私有字段值
-            @SuppressWarnings("unchecked")
-            List<LocationTextExtractionStrategy.TextChunk> value = (List<LocationTextExtractionStrategy.TextChunk>) privateField.get(strategy);
-            return value;
-        } catch (Exception e) {
-            // todo LOG
-            throw new CommonRuntimeException("XXXX", "获取位置信息列表失败");
-        }
-    }
+
 
 
     /**
@@ -153,7 +133,7 @@ public class PdfUtils {
             PdfReaderContentParser parser = new PdfReaderContentParser(reader);
             LocationTextExtractionStrategy strategy = parser.processContent(pageNumber, new LocationTextExtractionStrategy());
 
-            List<LocationTextExtractionStrategy.TextChunk> locationalResult = fetchLocationalResult(strategy);
+            List<LocationTextExtractionStrategy.TextChunk> locationalResult = PDFTextUtils.fetchLocationalResult(strategy);
 
             Vector beforeVec = getFstContainTextVec(locationalResult, "xxxx");
             Vector afterVec = getFstContainTextVec(locationalResult, "xxxx");
@@ -178,7 +158,7 @@ public class PdfUtils {
     }
 
 
-    ////////////////////
+
 
 
 
@@ -186,45 +166,13 @@ public class PdfUtils {
     public static void try2(String filePath, int pageNumber) {
         // todo ValidationUtils.checkFileSize3(filePath)
 
-//        CloseablePdfReader reader = null;
         //在try-with-resources语句中使用
         try (CloseablePdfReader reader = new CloseablePdfReader(filePath);) {
             PdfReaderContentParser parser = new PdfReaderContentParser(reader);
             TableAndLocationTextExtractionStrategy strategy = parser.processContent(pageNumber, new TableAndLocationTextExtractionStrategy());
 
-
-
             List<Line2D> lineList = strategy.getCurrentLineList();
 
-//            List<Point2D.Float> points = new ArrayList<>();
-            // 方法5：详细信息输出（包含线段长度）
-//            System.out.println("\n=== 详细线段信息 ===");
-//            for (int i = 0; i < lineList.size(); i++) {
-//                Line2D line = lineList.get(i);
-//
-//                double x1 = line.getX1();
-//                double y1 = line.getY1();
-//                double x2 = line.getX2();
-//                double y2 = line.getY2();
-//
-//                // 计算线段长度
-//                double length = Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
-//
-//                System.out.println("线段 " + i + ":");
-//                System.out.printf("  起点: (%.2f, %.2f)%n", x1, y1);
-//                System.out.printf("  终点: (%.2f, %.2f)%n", x2, y2);
-//                System.out.printf("  长度: %.2f%n", length);
-//                System.out.println();
-//
-////                points.add(new Point2D.Float((float)x1, (float)y1));
-////                points.add(new Point2D.Float((float)x2, (float)y2));
-//            }
-
-
-//            PdfCircleDrawer.drawCirclesOnPdf("/Volumes/RamDisk/tzs书.pdf", "/Volumes/RamDisk/tzs书222.pdf", points, 1);
-
-            // 将相连的线段分组
-//            List<List<Line2D>> groupConnectedLines = strategy.groupConnectedLines(lineList);
 
             // 分析表格单元格
             List<List<PdfCellPos>> cellGroups = new TableCellAnalyzer().analyzeTableCells(lineList);

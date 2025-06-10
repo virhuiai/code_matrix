@@ -5,6 +5,7 @@ import com.itextpdf.text.pdf.parser.Vector;
 import com.virhuiai.CshLogUtils.CshLogUtils;
 import org.apache.commons.logging.Log;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -180,5 +181,27 @@ public class PDFTextUtils {
         });
 
         return sortedList;
+    }
+
+    /**
+     * 取所有位置结果
+     *
+     * @return
+     */
+    public static List<LocationTextExtractionStrategy.TextChunk> fetchLocationalResult(LocationTextExtractionStrategy strategy) {
+        try {
+            Class clazz = strategy.getClass();
+            // 获取私有字段
+            Field privateField = clazz.getDeclaredField("locationalResult");
+            // 设置可访问性为true，以绕过访问控制检查
+            privateField.setAccessible(true);
+            // 通过反射读取父类的私有字段值
+            @SuppressWarnings("unchecked")
+            List<LocationTextExtractionStrategy.TextChunk> value = (List<LocationTextExtractionStrategy.TextChunk>) privateField.get(strategy);
+            return value;
+        } catch (Exception e) {
+            // todo LOG
+            throw new CommonRuntimeException("XXXX", "获取位置信息列表失败");
+        }
     }
 }
