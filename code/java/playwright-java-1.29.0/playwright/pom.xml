@@ -5,12 +5,12 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <groupId>com.microsoft.playwright</groupId>
+    <groupId>com.microsoft.playwrightAtWin7</groupId>
     <artifactId>parent-pom</artifactId>
     <version>1.29.0</version>
   </parent>
 
-  <artifactId>playwrightWin7OfCsh</artifactId>
+  <artifactId>playwright</artifactId>
   <name>Playwright - Main Library</name>
   <description>Java library to automate Chromium, Firefox and WebKit with a single API.
     Playwright is built to enable cross-browser web automation that is ever-green, capable,
@@ -78,11 +78,11 @@
       <artifactId>opentest4j</artifactId>
     </dependency>
     <dependency>
-      <groupId>com.microsoft.playwright</groupId>
+      <groupId>com.microsoft.playwrightAtWin7</groupId>
       <artifactId>driver</artifactId>
     </dependency>
     <dependency>
-      <groupId>com.microsoft.playwright</groupId>
+      <groupId>com.microsoft.playwrightAtWin7</groupId>
       <artifactId>driver-bundle</artifactId>
     </dependency>
   </dependencies>

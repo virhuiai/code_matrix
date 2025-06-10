@@ -13,7 +13,7 @@
   </properties>
   <dependencies>
     <dependency>
-      <groupId>com.microsoft.playwright</groupId>
+      <groupId>com.microsoft.playwrightAtWin7</groupId>
       <artifactId>playwright</artifactId>
       <version>1.22.0</version>
     </dependency>

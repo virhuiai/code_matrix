@@ -46,7 +46,7 @@
         <!-- https://mvnrepository.com/artifact/com.microsoft.playwright/playwright -->
         <dependency>
             <groupId>com.microsoft.playwright</groupId>
-            <artifactId>playwrightWin7OfCsh</artifactId>
+            <artifactId>playwright</artifactId>
             <version>1.29.0</version>
         </dependency>
 <!--   1.18.0  chrome 版本是   99.0.4812.0  -->

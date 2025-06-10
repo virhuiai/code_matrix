@@ -24,14 +24,14 @@ public class App {
      Playwright build of webkit v1596 downloaded to /Users/virhuiai/Library/Caches/ms-playwright/webkit-1596
 
      移动后：
-     ln -s /Volumes/THAWSPACE/Soft.Freezed/ms-playwright  /Users/virhuiai/Library/Caches/ms-playwright
+
      ln -s /Volumes/THAWSPACE/Soft.Freezed/ms-playwright-1.18.0  /Users/virhuiai/Library/Caches/ms-playwright
      ln -s /Volumes/THAWSPACE/Soft.Freezed/ms-playwright-1.29.0  /Users/virhuiai/Library/Caches/ms-playwright
 
      * @param args
      */
     public static void main(String[] args) {
-        Playwright playwright = Playwright.create();
+        Playwright playwright = Playwright.create();//接口中的静态方法（Java 8特性）
         Browser browser = playwright.chromium().launch(new BrowserType.LaunchOptions().setHeadless(false));
 
         Page page = browser.newPage();
