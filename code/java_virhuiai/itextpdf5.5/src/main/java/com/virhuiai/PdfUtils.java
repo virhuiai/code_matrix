@@ -235,7 +235,7 @@ public class PdfUtils {
             // 过滤掉倾斜的文字
             locationalResult = PDFTextUtils.filterSkewedText(locationalResult);
             // 按起始位置的Y坐标从大到小排序（从上到下）  用于换行
-            locationalResult = strategy.sortByYDescending(locationalResult);
+            locationalResult = PDFTextUtils.sortByYDescending(locationalResult);
 
 
 

@@ -211,13 +211,7 @@ public class TableAndLocationTextExtractionStrategy extends LocationTextExtracti
 //        }
     }
 
-    /**
-     * 通过反射获取TextChunk的方向向量
-     */
-    private static Vector getOrientationVector(LocationTextExtractionStrategy.TextChunk textChunk)
-            throws Exception {
-        return ReflectionUtils.fetchObjResult(textChunk.getLocation(), "orientationVector");
-    }
+
 
 
 
@@ -328,53 +322,10 @@ public class TableAndLocationTextExtractionStrategy extends LocationTextExtracti
 
 
 
-    /**
-     * 获取TextChunk的起始Y坐标
-     */
-    private static float getStartY(LocationTextExtractionStrategy.TextChunk chunk){
-        try{
-            return chunk.getStartLocation().get(Vector.I2); // Y坐标
-        }catch (Exception e){
-            // todo Log
-            return 0f;
-        }
-    }
 
     //@@@@@@@@@
 
-    /**
-     * 按起始位置的Y坐标从大到小排序（从上到下）
-     * 在PDF坐标系中，y轴是向上的，所以y值越大表示位置越高。如果要从大到小排序，就是从上到下排序。
-     * @param locationalResult 需要排序的文本块列表
-     * @return 排序后的新列表
-     */
-    public static List<LocationTextExtractionStrategy.TextChunk> sortByYDescending(
-            List<LocationTextExtractionStrategy.TextChunk> locationalResult) {
 
-        // 创建新列表以避免修改原列表
-        List<LocationTextExtractionStrategy.TextChunk> sortedList =
-                new ArrayList<>(locationalResult);
-
-        // 使用自定义比较器排序
-        Collections.sort(sortedList, new Comparator<LocationTextExtractionStrategy.TextChunk>() {
-            @Override
-            public int compare(LocationTextExtractionStrategy.TextChunk chunk1,
-                               LocationTextExtractionStrategy.TextChunk chunk2) {
-                try {
-                    float y1 = getStartY(chunk1);
-                    float y2 = getStartY(chunk2);
-
-                    // 从大到小排序（降序）
-                    return Float.compare(y2, y1);
-                } catch (Exception e) {
-                    // 如果无法获取Y坐标，保持原顺序
-                    return 0;
-                }
-            }
-        });
-
-        return sortedList;
-    }
 
 
 
