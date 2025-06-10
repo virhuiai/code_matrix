@@ -3,7 +3,7 @@ package com.virhuiai;
 import com.itextpdf.text.pdf.parser.LocationTextExtractionStrategy;
 import com.itextpdf.text.pdf.parser.PdfReaderContentParser;
 import com.itextpdf.text.pdf.parser.Vector;
-import java.awt.geom.Line2D;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
