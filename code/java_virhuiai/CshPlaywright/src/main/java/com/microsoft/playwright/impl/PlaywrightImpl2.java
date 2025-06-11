@@ -4,6 +4,7 @@ import com.google.gson.JsonObject;
 import com.microsoft.playwright.Playwright;
 import com.microsoft.playwright.PlaywrightException;
 import com.microsoft.playwright.impl.driver.Driver;
+import com.virhuiai.ReflectionUtils;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -23,7 +24,6 @@ public class PlaywrightImpl2 extends PlaywrightImpl{
         Driver driver = forceNewDriverInstanceForTests ? Driver.createAndInstall(env, true) : Driver.ensureDriverInstalled(env, true);
 
 
-
         try {
             ProcessBuilder pb = driver.createProcessBuilder();
             pb.command().add("run-driver");
@@ -31,7 +31,7 @@ public class PlaywrightImpl2 extends PlaywrightImpl{
             Process p = pb.start();
             Connection connection = new Connection(new PipeTransport(p.getInputStream(), p.getOutputStream()), env);
             PlaywrightImpl result = connection.initializePlaywright();
-            result.driverProcess = p;// 字段是私有的
+            ReflectionUtils.setObjField(result,"driverProcess", p);//result.driverProcess = p;// 字段是私有的
             result.initSharedSelectors((PlaywrightImpl)null);
             return result;
         } catch (IOException var8) {

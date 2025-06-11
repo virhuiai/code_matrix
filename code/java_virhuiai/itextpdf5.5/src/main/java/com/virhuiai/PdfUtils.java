@@ -1,6 +1,6 @@
 package com.virhuiai;
 
-import com.itextpdf.text.pdf.parser.LocationTextExtractionStrategy;
+
 import com.itextpdf.text.pdf.parser.PdfReaderContentParser;
 import com.itextpdf.text.pdf.parser.Vector;
 
@@ -26,7 +26,7 @@ public class PdfUtils {
      * @param locationalResultBetween
      * @return
      */
-    public static Map<String, String> parseMapOfTwoColumnTableByLocationalResult(List<LocationTextExtractionStrategy.TextChunk> locationalResultBetween){
+    public static Map<String, String> parseMapOfTwoColumnTableByLocationalResult(List<LocTextExtractionStrategy.TextChunk> locationalResultBetween){
         if(null == locationalResultBetween || locationalResultBetween.isEmpty()){
             throw new CommonRuntimeException("XXXX","位置信息列表不能为空");
         }
@@ -49,8 +49,8 @@ public class PdfUtils {
 
         Map<String,String> rs = new HashMap<>();
         for(int i=0;i<locationalResultBetween.size();i=i+2){
-            LocationTextExtractionStrategy.TextChunk loc1 = locationalResultBetween.get(i);
-            LocationTextExtractionStrategy.TextChunk loc2 = locationalResultBetween.get(i+1);
+            LocTextExtractionStrategy.TextChunk loc1 = locationalResultBetween.get(i);
+            LocTextExtractionStrategy.TextChunk loc2 = locationalResultBetween.get(i+1);
             // x的比较
             if(loc1.getStartLocation().get(Vector.I1) < loc2.getStartLocation().get(Vector.I1)){
                 rs.put(loc1.getText(), loc2.getText());
@@ -72,9 +72,9 @@ public class PdfUtils {
         //在try-with-resources语句中使用
         try (CloseablePdfReader reader = new CloseablePdfReader(filePath);) {
             PdfReaderContentParser parser = new PdfReaderContentParser(reader);
-            LocationTextExtractionStrategy strategy = parser.processContent(pageNumber, new LocationTextExtractionStrategy());
+            LocTextExtractionStrategy strategy = parser.processContent(pageNumber, new LocTextExtractionStrategy());
 
-            List<LocationTextExtractionStrategy.TextChunk> locationalResult = PdfTextUtils.fetchLocationalResult(strategy);
+            List<LocTextExtractionStrategy.TextChunk> locationalResult = PdfTextUtils.fetchLocationalResult(strategy);
 
             Vector beforeVec = PdfTextLocationUtils.getFstContainTextVec(locationalResult, "xxxx");
             Vector afterVec = PdfTextLocationUtils.getFstContainTextVec(locationalResult, "xxxx");
@@ -82,7 +82,7 @@ public class PdfUtils {
                 throw new CommonRuntimeException("XXXX", "未找到边界文字");
             }
 
-            List<LocationTextExtractionStrategy.TextChunk> locationalResultBetween = PdfTextLocationUtils.getLocationalResultBetween(locationalResult, beforeVec, afterVec);
+            List<LocTextExtractionStrategy.TextChunk> locationalResultBetween = PdfTextLocationUtils.getLocationalResultBetween(locationalResult, beforeVec, afterVec);
             if (null == locationalResultBetween || locationalResultBetween.isEmpty()) {
                 throw new CommonRuntimeException("XXXX", "未找到边界内的文字");
             }

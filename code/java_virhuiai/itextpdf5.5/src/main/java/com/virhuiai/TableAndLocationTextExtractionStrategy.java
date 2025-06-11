@@ -9,7 +9,7 @@ import java.util.*;
 /**
  * 这个类用于从PDF中提取表格和文本位置信息
  */
-public class TableAndLocationTextExtractionStrategy extends LocationTextExtractionStrategy implements ExtRenderListener {
+public class TableAndLocationTextExtractionStrategy extends LocTextExtractionStrategy implements ExtRenderListener {
 
     /**
      * 当前点

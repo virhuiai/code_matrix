@@ -1,6 +1,6 @@
 package com.virhuiai;
 
-import com.itextpdf.text.pdf.parser.LocationTextExtractionStrategy;
+
 import com.itextpdf.text.pdf.parser.Vector;
 
 import java.util.ArrayList;
@@ -20,11 +20,11 @@ public class PdfTextLocationUtils {
      * @return 文本位置向量
      */
     public static Vector getFstContainTextVec(
-            List<LocationTextExtractionStrategy.TextChunk> locationalResult,
+            List<LocTextExtractionStrategy.TextChunk> locationalResult,
             String containText) {
-        Iterator<LocationTextExtractionStrategy.TextChunk> var1 = locationalResult.iterator();
+        Iterator<LocTextExtractionStrategy.TextChunk> var1 = locationalResult.iterator();
         while (var1.hasNext()) {
-            LocationTextExtractionStrategy.TextChunk location = var1.next();
+            LocTextExtractionStrategy.TextChunk location = var1.next();
             Vector startLocation = location.getStartLocation();
             String text = location.getText();
             if (text.contains(containText)) {
@@ -42,15 +42,15 @@ public class PdfTextLocationUtils {
      * @param afterVec 下边界向量
      * @return 范围内的位置结果列表
      */
-    public static List<LocationTextExtractionStrategy.TextChunk> getLocationalResultBetween(
-            List<LocationTextExtractionStrategy.TextChunk> locationalResult,
+    public static List<LocTextExtractionStrategy.TextChunk> getLocationalResultBetween(
+            List<LocTextExtractionStrategy.TextChunk> locationalResult,
             Vector beforeVec,
             Vector afterVec) {
-        List<LocationTextExtractionStrategy.TextChunk> rsList = new ArrayList<>();
+        List<LocTextExtractionStrategy.TextChunk> rsList = new ArrayList<>();
 
-        Iterator<LocationTextExtractionStrategy.TextChunk> var1 = locationalResult.iterator();
+        Iterator<LocTextExtractionStrategy.TextChunk> var1 = locationalResult.iterator();
         while (var1.hasNext()) {
-            LocationTextExtractionStrategy.TextChunk location = var1.next();
+            LocTextExtractionStrategy.TextChunk location = var1.next();
             Vector startLocation = location.getStartLocation();
             float startY = startLocation.get(Vector.I2);
 
