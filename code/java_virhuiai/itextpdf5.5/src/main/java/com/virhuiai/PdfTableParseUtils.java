@@ -1,4 +1,5 @@
 package com.virhuiai;
+import TableStrategy.TextChunk;
 import com.itextpdf.text.pdf.parser.LocationTextExtractionStrategy;
 import com.itextpdf.text.pdf.parser.PdfReaderContentParser;
 
@@ -269,9 +270,9 @@ public class PdfTableParseUtils {
     /**
      * 提取和处理文本块 过滤 排序
      */
-    private static List<LocTextExtractionStrategy.TextChunk> extractAndProcessTextChunks(
+    private static List<TextChunk> extractAndProcessTextChunks(
             TableAndLocationTextExtractionStrategy strategy) {
-        List<LocTextExtractionStrategy.TextChunk> locationalResult =
+        List<TextChunk> locationalResult =
                 ReflectionUtils.fetchObjResultFromSuperClass(strategy, "locationalResult");
 
         // 过滤掉倾斜的文字
@@ -289,7 +290,7 @@ public class PdfTableParseUtils {
     /**
      * 判断文本块是否在单元格内
      */
-    private static boolean isTextInCell(LocTextExtractionStrategy.TextChunk textChunk,
+    private static boolean isTextInCell(TextChunk textChunk,
                                         PdfCellPos cell) {
         com.itextpdf.text.pdf.parser.Vector sl = textChunk.getStartLocation();
         com.itextpdf.text.pdf.parser.Vector el = textChunk.getEndLocation();
@@ -305,7 +306,7 @@ public class PdfTableParseUtils {
      */
     private static PdfCellTextPos extractTextFromCell(
             PdfCellPos cell,
-            List<LocTextExtractionStrategy.TextChunk> locationalResult) {
+            List<TextChunk> locationalResult) {
 
         PdfCellTextPos.Builder textPos = new PdfCellTextPos.Builder();
         StringBuilder textSb = new StringBuilder();
@@ -317,7 +318,7 @@ public class PdfTableParseUtils {
                 .yBtm(cell.getyBtm());
 
         // 遍历所有文本块，找出在单元格内的文本
-        for (LocTextExtractionStrategy.TextChunk textChunk : locationalResult) {
+        for (TextChunk textChunk : locationalResult) {
             try {
                 if (isTextInCell(textChunk, cell)) {
                     textSb.append(textChunk.getText());
@@ -336,7 +337,7 @@ public class PdfTableParseUtils {
      */
     private static List<PdfCellTextPos> extractCellTexts(
             List<PdfCellPos> cells,
-            List<LocTextExtractionStrategy.TextChunk> locationalResult) {
+            List<TextChunk> locationalResult) {
 
         List<PdfCellTextPos> cellTextList = new ArrayList<>();
 
@@ -395,7 +396,7 @@ public class PdfTableParseUtils {
      */
     private static Map<String, String> processSingleCellGroup(
             List<PdfCellPos> cells,
-            List<LocTextExtractionStrategy.TextChunk> locationalResult) {
+            List<TextChunk> locationalResult) {
 
         List<PdfCellTextPos> cellTextList = extractCellTexts(cells, locationalResult);
 
@@ -413,7 +414,7 @@ public class PdfTableParseUtils {
      */
     private static List<Map<String, String>> processCellGroups(
             List<List<PdfCellPos>> cellGroups,
-            List<LocTextExtractionStrategy.TextChunk> locationalResult) {
+            List<TextChunk> locationalResult) {
 
         List<Map<String, String>> rs = new ArrayList<>();
 
@@ -462,7 +463,7 @@ public class PdfTableParseUtils {
             // 分析表格单元格
             List<List<PdfCellPos>> cellGroups = PdfTableParseUtils.analyzeTableCells(lineList);
             // 提取和处理文本块 过滤 排序
-            List<LocTextExtractionStrategy.TextChunk> locationalResult = extractAndProcessTextChunks(strategy);
+            List<TextChunk> locationalResult = extractAndProcessTextChunks(strategy);
 
             // 处理所有单元格组
             return processCellGroups(cellGroups, locationalResult);

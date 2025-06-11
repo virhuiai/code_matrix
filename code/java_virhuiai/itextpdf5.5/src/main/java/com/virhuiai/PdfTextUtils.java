@@ -1,6 +1,7 @@
 package com.virhuiai;
 
 
+import TableStrategy.TextChunk;
 import com.itextpdf.text.pdf.parser.Vector;
 import com.virhuiai.CshLogUtils.CshLogUtils;
 import org.apache.commons.logging.Log;
@@ -22,7 +23,7 @@ public class PdfTextUtils {
     /**
      * 通过反射获取TextChunk的方向向量
      */
-    private static Vector getOrientationVector(LocTextExtractionStrategy.TextChunk textChunk)
+    private static Vector getOrientationVector(TextChunk textChunk)
             throws Exception {
         return ReflectionUtils.fetchObjResult(textChunk.getLocation(), "orientationVector");
     }
@@ -33,16 +34,16 @@ public class PdfTextUtils {
      * @param textChunks 原始文本块列表
      * @return 只包含非倾斜文字的列表
      */
-    public static List<LocTextExtractionStrategy.TextChunk> filterSkewedText(
-            List<LocTextExtractionStrategy.TextChunk> textChunks) {
+    public static List<TextChunk> filterSkewedText(
+            List<TextChunk> textChunks) {
 
         if (textChunks == null || textChunks.isEmpty()) {
             return new ArrayList<>();
         }
 
-        List<LocTextExtractionStrategy.TextChunk> filteredChunks = new ArrayList<>();
+        List<TextChunk> filteredChunks = new ArrayList<>();
 
-        for (LocTextExtractionStrategy.TextChunk chunk : textChunks) {
+        for (TextChunk chunk : textChunks) {
             try {
                 // 获取文本的方向向量
                 Vector orientation = getOrientationVector(chunk);
@@ -85,7 +86,7 @@ public class PdfTextUtils {
     /**
      * 获取TextChunk的起始Y坐标
      */
-    private static float getStartY(LocTextExtractionStrategy.TextChunk chunk) {
+    private static float getStartY(TextChunk chunk) {
         try {
             return chunk.getStartLocation().get(Vector.I2); // Y坐标
         } catch (Exception e) {
@@ -97,7 +98,7 @@ public class PdfTextUtils {
     /**
      * 获取TextChunk的起始X坐标
      */
-    private static float getStartX(LocTextExtractionStrategy.TextChunk chunk) {
+    private static float getStartX(TextChunk chunk) {
         try {
             return chunk.getStartLocation().get(Vector.I1); // X坐标
         } catch (Exception e) {
@@ -113,22 +114,22 @@ public class PdfTextUtils {
      * @param locationalResult 需要排序的文本块列表
      * @return 排序后的新列表
      */
-    public static List<LocTextExtractionStrategy.TextChunk> sortByYDescending(
-            List<LocTextExtractionStrategy.TextChunk> locationalResult) {
+    public static List<TextChunk> sortByYDescending(
+            List<TextChunk> locationalResult) {
 
         if (locationalResult == null || locationalResult.isEmpty()) {
             return new ArrayList<>();
         }
 
         // 创建新列表以避免修改原列表
-        List<LocTextExtractionStrategy.TextChunk> sortedList =
+        List<TextChunk> sortedList =
                 new ArrayList<>(locationalResult);
 
         // 使用自定义比较器排序
-        Collections.sort(sortedList, new Comparator<LocTextExtractionStrategy.TextChunk>() {
+        Collections.sort(sortedList, new Comparator<TextChunk>() {
             @Override
-            public int compare(LocTextExtractionStrategy.TextChunk chunk1,
-                               LocTextExtractionStrategy.TextChunk chunk2) {
+            public int compare(TextChunk chunk1,
+                               TextChunk chunk2) {
                 try {
                     float y1 = getStartY(chunk1);
                     float y2 = getStartY(chunk2);
@@ -151,22 +152,22 @@ public class PdfTextUtils {
      * @param locationalResult 需要排序的文本块列表
      * @return 排序后的新列表
      */
-    public static List<LocTextExtractionStrategy.TextChunk> sortByXAscending(
-            List<LocTextExtractionStrategy.TextChunk> locationalResult) {
+    public static List<TextChunk> sortByXAscending(
+            List<TextChunk> locationalResult) {
 
         if (locationalResult == null || locationalResult.isEmpty()) {
             return new ArrayList<>();
         }
 
         // 创建新列表以避免修改原列表
-        List<LocTextExtractionStrategy.TextChunk> sortedList =
+        List<TextChunk> sortedList =
                 new ArrayList<>(locationalResult);
 
         // 使用自定义比较器排序
-        Collections.sort(sortedList, new Comparator<LocTextExtractionStrategy.TextChunk>() {
+        Collections.sort(sortedList, new Comparator<TextChunk>() {
             @Override
-            public int compare(LocTextExtractionStrategy.TextChunk chunk1,
-                               LocTextExtractionStrategy.TextChunk chunk2) {
+            public int compare(TextChunk chunk1,
+                               TextChunk chunk2) {
                 try {
                     float x1 = getStartX(chunk1);
                     float x2 = getStartX(chunk2);
@@ -188,7 +189,7 @@ public class PdfTextUtils {
      *
      * @return
      */
-    public static List<LocTextExtractionStrategy.TextChunk> fetchLocationalResult(LocTextExtractionStrategy strategy) {
+    public static List<TextChunk> fetchLocationalResult(LocTextExtractionStrategy strategy) {
         try {
             Class clazz = strategy.getClass();
             // 获取私有字段
@@ -197,7 +198,7 @@ public class PdfTextUtils {
             privateField.setAccessible(true);
             // 通过反射读取父类的私有字段值
             @SuppressWarnings("unchecked")
-            List<LocTextExtractionStrategy.TextChunk> value = (List<LocTextExtractionStrategy.TextChunk>) privateField.get(strategy);
+            List<TextChunk> value = (List<TextChunk>) privateField.get(strategy);
             return value;
         } catch (Exception e) {
             // todo LOG

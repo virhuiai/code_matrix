@@ -1,6 +1,7 @@
 package com.virhuiai;
 
 
+import TableStrategy.TextChunk;
 import com.itextpdf.text.pdf.parser.Vector;
 
 import java.util.ArrayList;
@@ -20,11 +21,11 @@ public class PdfTextLocationUtils {
      * @return 文本位置向量
      */
     public static Vector getFstContainTextVec(
-            List<LocTextExtractionStrategy.TextChunk> locationalResult,
+            List<TextChunk> locationalResult,
             String containText) {
-        Iterator<LocTextExtractionStrategy.TextChunk> var1 = locationalResult.iterator();
+        Iterator<TextChunk> var1 = locationalResult.iterator();
         while (var1.hasNext()) {
-            LocTextExtractionStrategy.TextChunk location = var1.next();
+            TextChunk location = var1.next();
             Vector startLocation = location.getStartLocation();
             String text = location.getText();
             if (text.contains(containText)) {
@@ -42,15 +43,15 @@ public class PdfTextLocationUtils {
      * @param afterVec 下边界向量
      * @return 范围内的位置结果列表
      */
-    public static List<LocTextExtractionStrategy.TextChunk> getLocationalResultBetween(
-            List<LocTextExtractionStrategy.TextChunk> locationalResult,
+    public static List<TextChunk> getLocationalResultBetween(
+            List<TextChunk> locationalResult,
             Vector beforeVec,
             Vector afterVec) {
-        List<LocTextExtractionStrategy.TextChunk> rsList = new ArrayList<>();
+        List<TextChunk> rsList = new ArrayList<>();
 
-        Iterator<LocTextExtractionStrategy.TextChunk> var1 = locationalResult.iterator();
+        Iterator<TextChunk> var1 = locationalResult.iterator();
         while (var1.hasNext()) {
-            LocTextExtractionStrategy.TextChunk location = var1.next();
+            TextChunk location = var1.next();
             Vector startLocation = location.getStartLocation();
             float startY = startLocation.get(Vector.I2);
 

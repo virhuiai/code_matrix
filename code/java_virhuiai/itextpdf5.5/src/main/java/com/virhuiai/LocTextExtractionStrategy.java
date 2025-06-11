@@ -2,6 +2,7 @@ package com.virhuiai;
 
 
 
+import TableStrategy.TextChunk;
 import TableStrategy.TextChunkLocation;
 import TableStrategy.TextChunkLocationDefaultImp;
 import com.itextpdf.text.pdf.parser.*;
@@ -164,20 +165,20 @@ public class LocTextExtractionStrategy implements TextExtractionStrategy {
 
             if (lastChunk == null){
                 // 第一个文本块，直接添加
-                sb.append(chunk.text);
+                sb.append(chunk.getText());
             } else {
                 if (chunk.sameLine(lastChunk)){
                     // 同一行的文本
                     // we only insert a blank space if the trailing character of the previous string wasn't a space, and the leading character of the current string isn't a space
                     // 只有当前一个字符串不以空格结尾，且当前字符串不以空格开始时，才插入空格
-                    if (isChunkAtWordBoundary(chunk, lastChunk) && !startsWithSpace(chunk.text) && !endsWithSpace(lastChunk.text))
+                    if (isChunkAtWordBoundary(chunk, lastChunk) && !startsWithSpace(chunk.getText()) && !endsWithSpace(lastChunk.getText()))
                         sb.append(' ');
 
-                    sb.append(chunk.text);
+                    sb.append(chunk.getText());
                 } else {
                     // 不同行的文本，插入换行符
                     sb.append('\n');
-                    sb.append(chunk.text);
+                    sb.append(chunk.getText());
                 }
             }
             lastChunk = chunk;
@@ -232,101 +233,7 @@ public class LocTextExtractionStrategy implements TextExtractionStrategy {
 
 
 
-    /**
-     * Represents a chunk of text, it's orientation, and location relative to the orientation vector
-     */
-    // 表示一个文本块，包含文本内容及其位置信息
-    public static class TextChunk implements Comparable<TextChunk>{
-        /** the text of the chunk */
-        private final String text;      // 文本内容
-        private final TextChunkLocation location;  // 位置信息
 
-        // 使用起始和结束位置构造文本块
-        public TextChunk(String string, Vector startLocation, Vector endLocation, float charSpaceWidth) {
-            this(string, new TextChunkLocationDefaultImp(startLocation, endLocation, charSpaceWidth));
-        }
-
-        // 使用位置对象构造文本块
-        public TextChunk(String string, TextChunkLocation loc) {
-            this.text = string;
-            this.location = loc;
-        }
-
-        /**
-         * @return the text captured by this chunk
-         */
-        // 获取文本内容
-        public String getText(){
-            return text;
-        }
-
-        /**
-         * @return an object holding location data about this TextChunk
-         */
-        // 获取位置信息对象
-        public TextChunkLocation getLocation() {
-            return location;
-        }
-
-        /**
-         * @return the start location of the text
-         */
-        // 获取文本的起始位置
-        public Vector getStartLocation(){
-            return location.getStartLocation();
-        }
-        /**
-         * @return the end location of the text
-         */
-        // 获取文本的结束位置
-        public Vector getEndLocation(){
-            return location.getEndLocation();
-        }
-
-        /**
-         * @return the width of a single space character as rendered by this chunk
-         */
-        // 获取空格字符的宽度
-        public float getCharSpaceWidth() {
-            return location.getCharSpaceWidth();
-        }
-
-        /**
-         * Computes the distance between the end of 'other' and the beginning of this chunk
-         * in the direction of this chunk's orientation vector.  Note that it's a bad idea
-         * to call this for chunks that aren't on the same line and orientation, but we don't
-         * explicitly check for that condition for performance reasons.
-         * @param other the other {@link TextChunk}
-         * @return the number of spaces between the end of 'other' and the beginning of this chunk
-         */
-        // 计算与另一个文本块的距离
-        public float distanceFromEndOf(TextChunk other){
-            return location.distanceFromEndOf(other.location);
-        }
-
-        // 打印诊断信息，用于调试
-        private void printDiagnostics(){
-            System.out.println("Text (@" + location.getStartLocation() + " -> " + location.getEndLocation() + "): " + text);
-            System.out.println("orientationMagnitude: " + location.orientationMagnitude());
-            System.out.println("distPerpendicular: " + location.distPerpendicular());
-            System.out.println("distParallel: " + location.distParallelStart());
-        }
-
-        /**
-         * Compares based on orientation, perpendicular distance, then parallel distance
-         * @param rhs the other object
-         * @see java.lang.Comparable#compareTo(java.lang.Object)
-         */
-        // 比较方法，委托给位置对象进行比较
-        public int compareTo(TextChunk rhs) {
-            return location.compareTo(rhs.location);
-        }
-
-        // 判断是否在同一行
-        private boolean sameLine(TextChunk lastChunk) {
-            return getLocation().sameLine(lastChunk.getLocation());
-        }
-    }
 
 
 
