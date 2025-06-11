@@ -2,9 +2,7 @@ package com.virhuiai;
 
 
 
-import TableStrategy.TextChunk;
-import TableStrategy.TextChunkLocation;
-import TableStrategy.TextChunkLocationDefaultImp;
+import TableStrategy.*;
 import com.itextpdf.text.pdf.parser.*;
 
 import java.util.ArrayList;
@@ -223,10 +221,6 @@ public class LocTextExtractionStrategy implements TextExtractionStrategy {
         locationalResult.add(tc);
     }
 
-    // 文本块位置策略接口，用于创建文本块的位置信息
-    public static interface TextChunkLocationStrategy {
-        TextChunkLocation createLocation(TextRenderInfo renderInfo, LineSegment baseline);
-    }
 
 
 
@@ -247,18 +241,5 @@ public class LocTextExtractionStrategy implements TextExtractionStrategy {
         // do nothing
     }
 
-    /**
-     * Specifies a filter for filtering {@link TextChunk} objects during text extraction
-     * @see LocTextExtractionStrategy#getResultantText(TextChunkFilter)
-     * @since 5.3.3
-     */
-    // 文本块过滤器接口，用于在文本提取过程中过滤文本块
-    public static interface TextChunkFilter{
-        /**
-         * @param textChunk the chunk to check
-         * @return true if the chunk should be allowed
-         */
-        // 判断是否接受该文本块
-        public boolean accept(TextChunk textChunk);
-    }
+
 }
