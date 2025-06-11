@@ -1,7 +1,5 @@
 package TableStrategy;
 
-import com.virhuiai.LocTextExtractionStrategy;
-
 /**
  * Specifies a filter for filtering {@link TextChunk} objects during text extraction
  * @see LocTextExtractionStrategy#getResultantText(TextChunkFilter)

@@ -1,6 +1,6 @@
 package com.virhuiai;
+import TableStrategy.TableAndLocationTextExtractionStrategy;
 import TableStrategy.TextChunk;
-import com.itextpdf.text.pdf.parser.LocationTextExtractionStrategy;
 import com.itextpdf.text.pdf.parser.PdfReaderContentParser;
 
 import java.awt.geom.Line2D;

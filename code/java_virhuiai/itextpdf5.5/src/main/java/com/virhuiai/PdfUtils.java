@@ -1,14 +1,13 @@
 package com.virhuiai;
 
 
+import TableStrategy.LocTextExtractionStrategy;
 import TableStrategy.TextChunk;
 import com.itextpdf.text.pdf.parser.PdfReaderContentParser;
 import com.itextpdf.text.pdf.parser.Vector;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 

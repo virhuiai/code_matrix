@@ -1,6 +1,7 @@
 package com.virhuiai;
 
 
+import TableStrategy.LocTextExtractionStrategy;
 import TableStrategy.TextChunk;
 import com.itextpdf.text.pdf.parser.Vector;
 import com.virhuiai.CshLogUtils.CshLogUtils;

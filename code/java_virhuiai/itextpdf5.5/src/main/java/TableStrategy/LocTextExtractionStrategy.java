@@ -1,4 +1,4 @@
-package com.virhuiai;
+package TableStrategy;
 
 
 
@@ -220,15 +220,6 @@ public class LocTextExtractionStrategy implements TextExtractionStrategy {
         TextChunk tc = new TextChunk(renderInfo.getText(), tclStrat.createLocation(renderInfo, segment));
         locationalResult.add(tc);
     }
-
-
-
-
-
-
-
-
-
 
 
     /**

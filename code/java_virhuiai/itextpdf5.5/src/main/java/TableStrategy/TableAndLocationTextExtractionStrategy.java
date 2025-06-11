@@ -1,6 +1,8 @@
-package com.virhuiai;
+package TableStrategy;
 
 import com.itextpdf.text.pdf.parser.*;
+import com.virhuiai.GeometryUtils;
+import com.virhuiai.PdfPathUtils;
 
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
@@ -21,10 +23,6 @@ public class TableAndLocationTextExtractionStrategy extends LocTextExtractionStr
      */
     private Point2D.Float pathStartPoint = null;
 
-//    /**
-//     * 点来源记录
-//     */
-//    private List<PathConstructionRenderInfo> pointSrcList = new ArrayList<>();
 
     /**
      * 线记录
