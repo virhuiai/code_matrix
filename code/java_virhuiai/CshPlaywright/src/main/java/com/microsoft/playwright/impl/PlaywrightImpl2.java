@@ -3,7 +3,7 @@ package com.microsoft.playwright.impl;
 import com.google.gson.JsonObject;
 import com.microsoft.playwright.Playwright;
 import com.microsoft.playwright.PlaywrightException;
-import com.microsoft.playwright.impl.driver.Driver;
+import com.microsoft.playwright.impl.driver.Driver2;
 import com.virhuiai.ReflectionUtils;
 
 import java.io.IOException;
@@ -15,13 +15,17 @@ public class PlaywrightImpl2 extends PlaywrightImpl{
         super(parent, type, guid, initializer);
     }
 
+    public static PlaywrightImpl create(Playwright2.CreateOptions options) {
+        return createImpl(options, false);
+    }
+
     public static PlaywrightImpl createImpl(Playwright.CreateOptions options, boolean forceNewDriverInstanceForTests) {
         Map<String, String> env = Collections.emptyMap();
         if (options != null && options.env != null) {
             env = options.env;
         }
 
-        Driver driver = forceNewDriverInstanceForTests ? Driver.createAndInstall(env, true) : Driver.ensureDriverInstalled(env, true);
+        Driver2 driver = forceNewDriverInstanceForTests ? Driver2.createAndInstall(env, true) : Driver2.ensureDriverInstalled(env, true);
 
 
         try {
