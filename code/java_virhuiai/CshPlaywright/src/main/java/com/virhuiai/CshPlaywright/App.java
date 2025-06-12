@@ -33,20 +33,20 @@ public class App {
      * @param args
      */
     public static void main(String[] args) {
-        Playwright playwright = Playwright2.create();//接口中的静态方法（Java 8特性） 用户只需要知道 Playwright 接口，不需要知道 PlaywrightImpl
-        Browser browser = playwright.chromium().launch(new BrowserType.LaunchOptions().setHeadless(false));
 
-        Page page = browser.newPage();
+        try (Playwright playwright = Playwright2.create()) {
+            Browser browser = playwright.chromium().launch(new BrowserType.LaunchOptions().setHeadless(false));
+            Page page = browser.newPage();
 
-        // 添加一个会在每个页面加载前执行的脚本
+            // 添加一个会在每个页面加载前执行的脚本
 //        page.addInitScript("var abcdef='文字改变自addInitScript！';");
-        // 或者从文件加载脚本
-        // page.addInitScript(Paths.get("path/to/script.js"));
+            // 或者从文件加载脚本
+            // page.addInitScript(Paths.get("path/to/script.js"));
 
 //        page.navigate("file:///Volumes/RamDisk/simple.html");
-        // Go to https://weread.qq.com/web/reader/eeb327a0813ab79bcg0177de
-        page.navigate("https://weread.qq.com/web/reader/eeb327a0813ab79bcg0177dekecc32f3013eccbc87e4b62e");
-        // Press ArrowRight
+            // Go to https://weread.qq.com/web/reader/eeb327a0813ab79bcg0177de
+            page.navigate("https://weread.qq.com/web/reader/eeb327a0813ab79bcg0177dekecc32f3013eccbc87e4b62e");
+            // Press ArrowRight
 //        page.press("body:has-text('')", "ArrowRight");
 //        page.press("body:has-text('')", "ArrowRight");
 //        page.press("body:has-text('')", "ArrowRight");
@@ -54,9 +54,27 @@ public class App {
 
 
 
-        System.out.println(page.title());
+
+
+            System.out.println(page.title());
+
+            // 保持程序运行，等待用户输入
+            System.out.println("按Enter键关闭浏览器...");
+            System.in.read();
 //        browser.close();
 //        playwright.close();
+        }catch (Exception e) {
+            System.out.println("error: " + e.getMessage());
+        }
+//        finally {
+//            // 手动关闭资源
+//            if (browser != null) {
+//                browser.close();
+//            }
+//            playwright.close();
+//        }
+
+
     }
     // 生成代码
     // mvn exec:java -e -D exec.mainClass=com.microsoft.playwright.CLI -D exec.args="codegen https://weread.qq.com/web/reader/eeb327a0813ab79bcg0177de"
