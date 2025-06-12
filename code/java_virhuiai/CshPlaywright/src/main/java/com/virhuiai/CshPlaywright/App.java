@@ -50,7 +50,7 @@ public class App {
 //        page.press("body:has-text('')", "ArrowRight");
 //        page.press("body:has-text('')", "ArrowRight");
 //        page.press("body:has-text('')", "ArrowRight");
-        page.click("div:nth-child(0)");
+//        page.click("div:nth-child(0)");
 
 
 

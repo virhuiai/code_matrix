@@ -15,7 +15,7 @@ public abstract class Driver2 {
      * 环境变量映射表
      * 用于存储驱动程序运行时所需的环境变量
      */
-    protected final Map<String, String> env = new LinkedHashMap();
+    protected final Map<String, String> env = new LinkedHashMap<>();
 
     /**
      * 单例实例
