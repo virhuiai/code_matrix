@@ -5,7 +5,9 @@ import java.lang.ProcessBuilder.Redirect;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.*;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -77,6 +79,9 @@ public class DriverJar2 extends Driver2 {
             this.env.put("PLAYWRIGHT_NODEJS_PATH", this.preinstalledNodePath.toString());
         }
 
+
+        // todo allPlatForm
+//        this.extractDriverToTempDir_allPlatform();
 
         // 从JAR包中提取驱动程序到临时目录
         this.extractDriverToTempDir();
@@ -185,6 +190,15 @@ public class DriverJar2 extends Driver2 {
         // 根据平台获取对应的驱动程序资源路径
         return classloader.getResource("driver/" + platformDir()).toURI();
     }
+
+    public static URI getDriverResourceURI(String platformDir) throws URISyntaxException {
+        // 获取当前线程的类加载器
+        ClassLoader classloader = Thread.currentThread().getContextClassLoader();
+        // 根据平台获取对应的驱动程序资源路径
+        return classloader.getResource("driver/" + platformDir).toURI();
+    }
+
+
 
 
     /**
@@ -359,6 +373,21 @@ public class DriverJar2 extends Driver2 {
         }
     }
 
+    /**
+     * 获取所有支持的平台列表/由 platformDir
+     * @return 支持的平台列表
+     */
+    public static List<String> getSupportedPlatforms() {
+        return Arrays.asList(
+                "win32_x64",      // Windows平台
+                "linux",          // Linux平台（非ARM64架构）
+                "linux-arm64",    // Linux ARM64平台
+                "mac"             // macOS平台
+        );
+    }
+
+
+
 
     /**
      * 获取驱动程序目录 - 返回驱动程序的临时目录路径
@@ -367,5 +396,96 @@ public class DriverJar2 extends Driver2 {
     protected Path driverDir() {
         return this.driverTempDir;
     }
+
+
+    void extractDriverToTempDir_allPlatform() throws URISyntaxException, IOException {
+        List<String> supportedPlatforms = getSupportedPlatforms();
+        for (String supportedPlatform : supportedPlatforms) {
+            System.out.println("----平台supportedPlatform:" + supportedPlatform);
+            // 获取原始URI
+            URI originalUri = getDriverResourceURI(supportedPlatform);
+            System.out.println("获取原始URI originalUri:" + originalUri);// 获取原始URI originalUri:jar:file:/Volumes/THAWSPACE/Soft.Ok/devEnv/maven/localRepository/com/microsoft/playwright/driver-bundle/1.29.0/driver-bundle-1.29.0.jar!/driver/win32_x64  @@
+
+
+            // 处理可能的嵌套JAR情况
+            URI uri = this.maybeExtractNestedJar(originalUri);
+            // 如果是JAR协议，初始化文件系统
+            FileSystem fileSystem = "jar".equals(uri.getScheme()) ? this.initFileSystem(uri) : null;
+
+            try {
+                // 获取源根目录路径
+                Path srcRoot = Paths.get(uri);
+                // 转换为默认文件系统路径（用于计算相对路径）
+                Path srcRootDefaultFs = Paths.get(srcRoot.toString());
+
+                Files.walk(srcRoot).forEach((fromPath) -> {
+                    System.out.println("fromPath:" + fromPath);
+                });
+                if(1==1){
+                    continue;
+                }
+
+                // 遍历源目录中的所有文件和目录
+                Files.walk(srcRoot).forEach((fromPath) -> {
+
+                    // 如果已指定预安装的Node.js，跳过内嵌的node可执行文件
+                    if (this.preinstalledNodePath != null) {
+                        String fileName = fromPath.getFileName().toString();
+                        if ("node.exe".equals(fileName) || "node".equals(fileName)) {
+                            return;
+                        }
+                    }
+
+
+                    // 计算相对路径
+                    Path relative = srcRootDefaultFs.relativize(Paths.get(fromPath.toString()));
+                    System.out.println("计算相对路径:" + relative);
+                    // 计算目标路径
+                    Path toPath = this.driverTempDir.resolve(relative.toString());
+                    System.out.println("计算目标路径:" + toPath);///var/folders/46/61444s1550j9pmfgffc20x6r0000gn/T/playwright-java-8539884825045601104
+
+                    try {
+                        // 如果是目录，创建对应的目录结构
+                        if (Files.isDirectory(fromPath, new LinkOption[0])) {
+                            Files.createDirectories(toPath);
+                        } else {
+                            // 如果是文件，复制文件内容
+                            Files.copy(fromPath, toPath);
+                            // 如果是可执行文件，设置执行权限
+                            if (isExecutable(toPath)) {
+                                toPath.toFile().setExecutable(true, true);
+                            }
+                        }
+
+
+                        // 标记文件在程序退出时删除
+                        toPath.toFile().deleteOnExit();
+                    } catch (IOException var8) {
+                        // 提取失败时抛出运行时异常
+                        throw new RuntimeException("Failed to extract driver from " + uri + ", full uri: " + originalUri, var8);
+                    }
+                });
+            } catch (Throwable var7) {
+                // 确保文件系统被正确关闭
+                if (fileSystem != null) {
+                    try {
+                        fileSystem.close();
+                    } catch (Throwable var6) {
+                        var7.addSuppressed(var6);
+                    }
+                }
+
+                throw var7;
+            }
+
+
+            // 关闭文件系统
+            if (fileSystem != null) {
+                fileSystem.close();
+            }
+        }
+
+    }
+
 }
 

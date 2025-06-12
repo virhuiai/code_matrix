@@ -10,6 +10,9 @@ import com.microsoft.playwright.impl.Playwright2;
 import com.virhuiai.CshLogUtils.CshLogUtils;
 import org.apache.commons.logging.Log;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
 /**
  * 主应用类，用于创建和配置HTTP代理服务器
  * 该应用程序基于BrowserMob Proxy实现了一个能够拦截和修改HTTP/HTTPS流量的代理服务器
@@ -30,12 +33,19 @@ public class App {
      ln -s /Volumes/THAWSPACE/Soft.Freezed/ms-playwright-1.18.0  /Users/virhuiai/Library/Caches/ms-playwright
      ln -s /Volumes/THAWSPACE/Soft.Freezed/ms-playwright-1.29.0  /Users/virhuiai/Library/Caches/ms-playwright
 
+     浏览器默认下载到以下位置
+     Windows: %USERPROFILE%\AppData\Local\ms-playwright
+     macOS: ~/Library/Caches/ms-playwright
+     Linux: ~/.cache/ms-playwright
+
      * @param args
      */
     public static void main(String[] args) {
 
         try (Playwright playwright = Playwright2.create()) {
-            Browser browser = playwright.chromium().launch(new BrowserType.LaunchOptions().setHeadless(false));
+//            Browser browser = playwright.chromium().launch(new BrowserType.LaunchOptions().setHeadless(false));
+            Browser browser = playwright.chromium().launch(new BrowserType.LaunchOptions()
+                    .setExecutablePath(Paths.get("/Volumes/THAWSPACE/Soft.Freezed/Google Chrome.app/Contents/MacOS/Google Chrome")).setHeadless(false));
             Page page = browser.newPage();
 
             // 添加一个会在每个页面加载前执行的脚本
