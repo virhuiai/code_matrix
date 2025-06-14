@@ -32,7 +32,7 @@ public interface StringCompareUtils {
      * @return 如果seq包含searchChar,返回true,否则返回false
      */
     default boolean contains(CharSequence seq, int searchChar) {
-        if (StringUtils.INSTANCE.isEmpty(seq)) {
+        if (Str.Utils.isEmpty(seq)) {
             return false;
         } else {
             return CharSequenceUtils.indexOf(seq, searchChar, 0) >= 0;
@@ -47,7 +47,7 @@ public interface StringCompareUtils {
      * @return 如果souce包含strList中的所有元素,返回true,否则返回false
      */
     default boolean compapre(String souce, List<String> strList) {
-        if (StringUtils.INSTANCE.isBlank(souce) || strList == null || strList.size() <= 0) {
+        if (Str.Utils.isBlank(souce) || strList == null || strList.size() <= 0) {
             return false;
         }
         for (String str : strList) {

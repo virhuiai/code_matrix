@@ -20,22 +20,22 @@ public interface StringDesensitizeUtils {
      */
     default String strDesensitize(String oriStr, int preLen, int afterLen, String desSymP) {
         String desSym = desSymP;
-        if (StringUtils.INSTANCE.isBlank(oriStr)) {
+        if (Str.Utils.isBlank(oriStr)) {
             return "";
         }
-        if (StringUtils.INSTANCE.isBlank(desSym)) {
+        if (Str.Utils.isBlank(desSym)) {
             desSym = "*";
         }
         if (oriStr.length() < preLen + afterLen) {
             return oriStr;
         }
         StringBuffer str = new StringBuffer();
-        String pre = StringUtils.INSTANCE.substring(oriStr, 0, preLen);
+        String pre = Str.Utils.substring(oriStr, 0, preLen);
         str.append(pre);
         for (int i = 0; i < oriStr.length() - (preLen + afterLen); i++) {
             str.append(desSym);
         }
-        String aft = StringUtils.INSTANCE.substring(oriStr, oriStr.length() - afterLen);
+        String aft = Str.Utils.substring(oriStr, oriStr.length() - afterLen);
         str.append(aft);
         return str.toString();
     }
@@ -49,17 +49,17 @@ public interface StringDesensitizeUtils {
      */
     default String strRightDesensitize(String oriStr, int lastbit, String desSymP) {
         String desSym = desSymP;
-        if (StringUtils.INSTANCE.isBlank(oriStr)) {
+        if (Str.Utils.isBlank(oriStr)) {
             return "";
         }
-        if (StringUtils.INSTANCE.isBlank(desSym)) {
+        if (Str.Utils.isBlank(desSym)) {
             desSym = "*";
         }
         if (oriStr.length() < lastbit) {
             return oriStr;
         }
         StringBuffer str = new StringBuffer();
-        String pre = StringUtils.INSTANCE.substring(oriStr, 0, oriStr.length() - lastbit);
+        String pre = Str.Utils.substring(oriStr, 0, oriStr.length() - lastbit);
         str.append(pre);
         for (int i = 0; i < lastbit; i++) {
             str.append(desSym);
@@ -76,10 +76,10 @@ public interface StringDesensitizeUtils {
      */
     default String strLeftDesensitize(String oriStr, int prebit, String desSymP) {
         String desSym = desSymP;
-        if (StringUtils.INSTANCE.isBlank(oriStr)) {
+        if (Str.Utils.isBlank(oriStr)) {
             return "";
         }
-        if (StringUtils.INSTANCE.isBlank(desSym)) {
+        if (Str.Utils.isBlank(desSym)) {
             desSym = "*";
         }
         if (oriStr.length() < prebit) {
@@ -89,7 +89,7 @@ public interface StringDesensitizeUtils {
         for (int i = 0; i < prebit; i++) {
             str.append(desSym);
         }
-        String last = StringUtils.INSTANCE.substring(oriStr, prebit, oriStr.length());
+        String last = Str.Utils.substring(oriStr, prebit, oriStr.length());
         str.append(last);
         return str.toString();
     }
@@ -102,10 +102,10 @@ public interface StringDesensitizeUtils {
      */
     default String strAllDesensitize(String oriStr, String desSymP) {
         String desSym = desSymP;
-        if (StringUtils.INSTANCE.isBlank(oriStr)) {
+        if (Str.Utils.isBlank(oriStr)) {
             return "";
         }
-        if (StringUtils.INSTANCE.isBlank(desSym)) {
+        if (Str.Utils.isBlank(desSym)) {
             desSym = "*";
         }
         StringBuffer str = new StringBuffer();

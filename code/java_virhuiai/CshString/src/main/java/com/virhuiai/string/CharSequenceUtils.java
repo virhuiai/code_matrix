@@ -348,7 +348,7 @@ public final class CharSequenceUtils {
      */
     public static  char[] toCharArray(CharSequence source) {
         // 获取长度（使用StringUtils处理null的情况）
-        int len = StringUtils.INSTANCE.length(source);
+        int len = Str.Utils.length(source);
         // 长度为0时返回预定义的空数组，避免创建新对象
         if (len == 0) {
             return EMPTY_CHAR_ARRAY;

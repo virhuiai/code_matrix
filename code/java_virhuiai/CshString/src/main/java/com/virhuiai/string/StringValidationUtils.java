@@ -35,7 +35,7 @@ public interface StringValidationUtils {
      * @return 如果是整数返回true,否则返回false
      */
     default boolean isInteger(String str) {
-        String str2 = StringUtils.INSTANCE.trimText(str);
+        String str2 = Str.Utils.trimText(str);
         int len = str2.length();
         char c = str2.charAt(0);
         int i = (c == '-' || c == '+') ? 1 : 0;
@@ -58,7 +58,7 @@ public interface StringValidationUtils {
      * @return 如果字符序列为null或长度为0或全部为空白字符,返回true,否则返回false
      */
     default boolean isBlank(CharSequence cs) {
-        int strLen = StringUtils.INSTANCE.length(cs);
+        int strLen = Str.Utils.length(cs);
         if (strLen == 0) {
             return true;
         } else {

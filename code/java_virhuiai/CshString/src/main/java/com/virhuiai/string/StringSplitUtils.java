@@ -42,10 +42,10 @@ public interface StringSplitUtils {
      * @return 分割后的字符串数组,如果原字符串为空或分隔符为空,返回null
      */
     default String[] tokenizeToStringArray(String str, String delimiters) {
-        if (!StringUtils.INSTANCE.hasText(str)) {
+        if (!Str.Utils.hasText(str)) {
             return null;
         }
-        if (!StringUtils.INSTANCE.hasText(delimiters)) {
+        if (!Str.Utils.hasText(delimiters)) {
             return new String[]{str};
         }
         return tokenizeToStringArray(str, delimiters, true, true);

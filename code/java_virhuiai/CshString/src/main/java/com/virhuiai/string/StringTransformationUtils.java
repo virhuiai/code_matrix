@@ -49,7 +49,7 @@ public interface StringTransformationUtils {
      * @return 处理后的字符串
      */
     default String trimText(String str) {
-        if (!StringUtils.INSTANCE.hasText(str)) {
+        if (!Str.Utils.hasText(str)) {
             return "";
         }
         char[] c = str.toCharArray();
@@ -88,7 +88,7 @@ public interface StringTransformationUtils {
      * @return 处理后的字符串
      */
     default String trimLeft(String str) {
-        if (!StringUtils.INSTANCE.hasText(str)) {
+        if (!Str.Utils.hasText(str)) {
             return "";
         }
         char[] c = str.toCharArray();
@@ -114,7 +114,7 @@ public interface StringTransformationUtils {
      * @return 处理后的字符串
      */
     default String trimRight(String str) {
-        if (!StringUtils.INSTANCE.hasText(str)) {
+        if (!Str.Utils.hasText(str)) {
             return "";
         }
         char[] c = str.toCharArray();
@@ -142,7 +142,7 @@ public interface StringTransformationUtils {
      * @return 转换后的字符串,如果原字符串为空,返回原字符串
      */
     default String convertEncode(String strIn, String encoding, String targetEncoding) {
-        if (!StringUtils.INSTANCE.hasText(strIn)) {
+        if (!Str.Utils.hasText(strIn)) {
             return strIn;
         }
         try {
@@ -174,7 +174,7 @@ public interface StringTransformationUtils {
      * @return 如果对象不为null,返回对象的字符串表示,否则返回默认值
      */
     default String parseString(Object obj, String defalut) {
-        if (!StringUtils.INSTANCE.hasText(defalut)) {
+        if (!Str.Utils.hasText(defalut)) {
             defalut = "";
         }
         if (obj != null) {
@@ -194,7 +194,7 @@ public interface StringTransformationUtils {
             return defalut;
         }
         String temp = obj.toString().trim();
-        if (StringUtils.INSTANCE.isBlank(temp)) {
+        if (Str.Utils.isBlank(temp)) {
             return defalut;
         }
         return temp;
@@ -206,7 +206,7 @@ public interface StringTransformationUtils {
      * @return 编码后的字符串,如果原字符串为null或空白,返回原字符串
      */
     default String encodeString(String str) {
-        return StringUtils.INSTANCE.isNotBlank(str) ? encodeURL(str) : str;
+        return Str.Utils.isNotBlank(str) ? encodeURL(str) : str;
     }
 
 
