@@ -2,17 +2,8 @@ package com.virhuiai.string;
 
 /**
  * 包含字符串验证相关的方法
- *    - hasText
- *    - isInteger  依赖
- *    - isBlank 依赖
- *    - isNotBlank
- *    - isEmpty
  */
 public interface StringValidationUtils {
-
-
-
-
     /**
      * 判断字符序列是否 为空
      * @param cs 要判断的字符序列
@@ -242,7 +233,9 @@ public interface StringValidationUtils {
         return str.contains(searchStr);
     }
 
-    
+    public static void main(String[] args) {
+
+    }
 
 
 
