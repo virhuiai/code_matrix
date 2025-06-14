@@ -1,17 +1,15 @@
 package com.virhuiai.CshPlaywright;
 
 
-import com.microsoft.playwright.Browser;
-import com.microsoft.playwright.BrowserType;
-import com.microsoft.playwright.Page;
+import com.microsoft.playwright.*;
 
-import com.microsoft.playwright.Playwright;
 import com.microsoft.playwright.impl.Playwright2;
 import com.virhuiai.CshLogUtils.CshLogUtils;
 import org.apache.commons.logging.Log;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.HashMap;
 
 /**
  * 主应用类，用于创建和配置HTTP代理服务器
@@ -38,15 +36,42 @@ public class App {
      macOS: ~/Library/Caches/ms-playwright
      Linux: ~/.cache/ms-playwright
 
+
+     Downloading Chromium 109.0.5414.46 (playwright build v1041) from https://playwright.azureedge.net/builds/chromium/1041/chromium-mac.zip
+     Downloading Chromium 109.0.5414.46 (playwright build v1041) from https://playwright-akamai.azureedge.net/builds/chromium/1041/chromium-mac.zip
+     Downloading Chromium 109.0.5414.46 (playwright build v1041) from https://playwright-verizon.azureedge.net/builds/chromium/1041/chromium-mac.zip
+
      * @param args
      */
     public static void main(String[] args) {
+        LoginStateManager stateManager = new LoginStateManager("/Volumes/RamDisk/playwright_state.json", 24); // 状态有效期24小时
 
-        try (Playwright playwright = Playwright2.create()) {
+
+        Playwright.CreateOptions option = new Playwright.CreateOptions();
+        HashMap<String, String> opEnv = new HashMap<String, String>();
+        //是否设置了跳过浏览器下载的环境变量
+        opEnv.put("PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD", "1");
+        option.setEnv(opEnv);
+
+        try (Playwright playwright = Playwright2.create(option);
+             Browser browser = playwright.chromium().launch(new BrowserType.LaunchOptions()
+                     .setExecutablePath(Paths.get("/Volumes/THAWSPACE/Soft.Freezed/Google Chrome.app/Contents/MacOS/Google Chrome")).setHeadless(false));
+             // 创建带有状态的上下文
+             BrowserContext context = stateManager.createContextWithState(browser)) {
 //            Browser browser = playwright.chromium().launch(new BrowserType.LaunchOptions().setHeadless(false));
-            Browser browser = playwright.chromium().launch(new BrowserType.LaunchOptions()
-                    .setExecutablePath(Paths.get("/Volumes/THAWSPACE/Soft.Freezed/Google Chrome.app/Contents/MacOS/Google Chrome")).setHeadless(false));
-            Page page = browser.newPage();
+
+
+
+            // touch /Volumes/RamDisk/playwright_state.json
+
+//            error: Failed to read storage state from file
+
+//            BrowserContext context = browser.newContext(new Browser.NewContextOptions()
+//                    .setStorageStatePath(Paths.get(BROWSER_STATE_FILE)));
+
+
+//            Page page = browser.newPage();
+            Page page = context.newPage();
 
             // 添加一个会在每个页面加载前执行的脚本
 //        page.addInitScript("var abcdef='文字改变自addInitScript！';");
@@ -71,6 +96,12 @@ public class App {
             // 保持程序运行，等待用户输入
             System.out.println("按Enter键关闭浏览器...");
             System.in.read();
+
+            stateManager.saveState(context);
+
+
+
+
 //        browser.close();
 //        playwright.close();
         }catch (Exception e) {

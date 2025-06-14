@@ -113,7 +113,7 @@ public class DriverJar2 extends Driver2 {
         // 判断是否需要跳过浏览器下载
         if (skip != null && !"0".equals(skip) && !"false".equals(skip)) {
             // 跳过浏览器下载，因为设置了环境变量
-            System.out.println("Skipping browsers download because `PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD` env variable is set");
+            System.out.println("跳过浏览器下载，因为设置了环境变量 `PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD`");
         } else if (env.get("SELENIUM_REMOTE_URL") == null && System.getenv("SELENIUM_REMOTE_URL") == null) {
             // 如果没有设置Selenium远程URL，则需要本地安装浏览器
             Path driver = this.driverPath();
