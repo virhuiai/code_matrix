@@ -14,12 +14,21 @@ public interface StringValidationUtils {
 
 
     /**
-     * 判断字符序列是否为空
+     * 判断字符序列是否 为空
      * @param cs 要判断的字符序列
      * @return 如果字符序列为null或长度为0,返回true,否则返回false
      */
     default boolean isEmpty(CharSequence cs) {
         return cs == null || cs.length() == 0;
+    }
+
+    /**
+     * 判断字符序列是否 不为空
+     * @param cs
+     * @return
+     */
+    default boolean isNotEmpty(CharSequence cs) {
+        return !isEmpty(cs);
     }
 
 
@@ -108,6 +117,132 @@ public interface StringValidationUtils {
         }
         return false;
     }
+
+    /**
+     * 判断字符串是否只包含数字。
+     * @param str
+     * @return
+     */
+    default boolean isNumeric(String str) {
+        if (str == null || str.length() == 0) {
+            return false;
+        }
+        for (int i = 0; i < str.length(); i++) {
+            if (!Character.isDigit(str.charAt(i))) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * 判断字符串是否只包含字母。
+     * @param str
+     * @return
+     */
+    default boolean isAlpha(String str) {
+        if (str == null || str.length() == 0) {
+            return false;
+        }
+        for (int i = 0; i < str.length(); i++) {
+            if (!Character.isLetter(str.charAt(i))) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * 判断字符串是否只包含字母和数字
+     * @param str
+     * @return
+     */
+    default boolean isAlphanumeric(String str) {
+        if (str == null || str.length() == 0) {
+            return false;
+        }
+        for (int i = 0; i < str.length(); i++) {
+            if (!Character.isLetterOrDigit(str.charAt(i))) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * 判断字符串是否全部为小写字母
+     * @param str
+     * @return
+     */
+    default boolean isLowerCase(String str) {
+        if (str == null || str.length() == 0) {
+            return false;
+        }
+        for (int i = 0; i < str.length(); i++) {
+            if (!Character.isLowerCase(str.charAt(i))) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * 判断字符串是否全部为大写字母
+     * @param str
+     * @return
+     */
+    default boolean isUpperCase(String str) {
+        if (str == null || str.length() == 0) {
+            return false;
+        }
+        for (int i = 0; i < str.length(); i++) {
+            if (!Character.isUpperCase(str.charAt(i))) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * 判断字符串是否以指定的前缀开始。
+     * @param str
+     * @param prefix
+     * @return
+     */
+    default boolean startsWith(String str, String prefix) {
+        if (str == null || prefix == null) {
+            return false;
+        }
+        return str.startsWith(prefix);
+    }
+
+    /**
+     * 判断字符串是否以指定的后缀结束。
+     * @param str
+     * @param suffix
+     * @return
+     */
+    default boolean endsWith(String str, String suffix) {
+        if (str == null || suffix == null) {
+            return false;
+        }
+        return str.endsWith(suffix);
+    }
+
+    /**
+     * 判断字符串是否包含指定的子串。
+     * @param str
+     * @param searchStr
+     * @return
+     */
+    default boolean contains(String str, String searchStr) {
+        if (str == null || searchStr == null) {
+            return false;
+        }
+        return str.contains(searchStr);
+    }
+
+    
 
 
 
