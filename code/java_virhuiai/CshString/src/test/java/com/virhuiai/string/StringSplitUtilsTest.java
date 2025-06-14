@@ -130,6 +130,7 @@ public class StringSplitUtilsTest {
             Assert.fail("Expected IllegalArgumentException");
         } catch (IllegalArgumentException e) {
             // 期望抛出 IllegalArgumentException 异常
+            Assert.assertEquals("Length must be greater than 0", e.getMessage());
         }
 
         List<String> tokens6 = utils.splitByLength("abcdef", 10);
