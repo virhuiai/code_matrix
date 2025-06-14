@@ -12,6 +12,8 @@ public final class CharSequenceUtils {
     // toString方法的字符限制，用于性能优化
     // 当字符串长度小于等于16时，使用特定的优化策略
     static final int TO_STRING_LIMIT = 16;
+    // 1114111 是Unicode的最大值
+    static final int MAX_CODE_POINT = 0x10FFFF;
 
     // 空字符数组常量，避免重复创建空数组
     public static final char[] EMPTY_CHAR_ARRAY = new char[0];
@@ -95,8 +97,7 @@ public final class CharSequenceUtils {
                 return -1;
             } else {
                 // 补充字符（U+10000到U+10FFFF）
-                // TODO: 1114111是Unicode的最大值，可以定义为常量 MAX_CODE_POINT = 0x10FFFF
-                if (searchChar <= 1114111) {
+                if (searchChar <= MAX_CODE_POINT) {
                     // 将补充字符转换为代理对（高位代理和低位代理）
                     char[] chars = Character.toChars(searchChar);
 
@@ -241,8 +242,8 @@ public final class CharSequenceUtils {
                     return -1;
                 } else {
                     // 补充字符（U+10000到U+10FFFF）
-                    // TODO: 1114111是Unicode的最大值，可以定义为常量 MAX_CODE_POINT = 0x10FFFF
-                    if (searchChar <= 1114111) {
+                    // T 1114111是Unicode的最大值，定义为常量 MAX_CODE_POINT = 0x10FFFF
+                    if (searchChar <= MAX_CODE_POINT) {
                         // 将补充字符转换为代理对
                         char[] chars = Character.toChars(searchChar);
                         // 如果起始位置是最后一个字符，无法匹配代理对

@@ -9,10 +9,17 @@ import java.net.URLEncoder;
 import java.util.*;
 import java.io.UnsupportedEncodingException;
 
+/**
+ * 字符串工具类
+ */
 public class StringUtils {
     private static final LoggerUtils logger = LoggerUtils.getLog((Class<?>) StringUtils.class);
 
-
+    /**
+     * 判断字符串是否有内容
+     * @param str 要判断的字符串
+     * @return 如果字符串不为null且长度大于0,返回true,否则返回false
+     */
     public static boolean hasText(String str) {
         int strLen;
         if (str != null && (strLen = str.length()) != 0) {
@@ -26,8 +33,13 @@ public class StringUtils {
         return false;
     }
 
-
-
+    /**
+     * 替换字符串
+     * @param str 原字符串
+     * @param strSrc 要替换的字符串
+     * @param strTarget 替换后的字符串
+     * @return 替换后的字符串
+     */
     public static String replace(String str, String strSrc, String strTarget) {
         int s = 0;
         StringBuffer result = new StringBuffer();
@@ -47,8 +59,11 @@ public class StringUtils {
         }
     }
 
-
-
+    /**
+     * 去除字符串两端的空白字符
+     * @param str 要处理的字符串
+     * @return 处理后的字符串
+     */
     public static String trimText(String str) {
         if (!hasText(str)) {
             return "";
@@ -83,7 +98,11 @@ public class StringUtils {
         return new String(c, offset, end - offset);
     }
 
-
+    /**
+     * 去除字符串左边的空白字符
+     * @param str 要处理的字符串
+     * @return 处理后的字符串
+     */
     public static String trimLeft(String str) {
         if (!hasText(str)) {
             return "";
@@ -105,8 +124,11 @@ public class StringUtils {
         return new String(c, offset, c.length - offset);
     }
 
-
-
+    /**
+     * 去除字符串右边的空白字符
+     * @param str 要处理的字符串
+     * @return 处理后的字符串
+     */
     public static String trimRight(String str) {
         if (!hasText(str)) {
             return "";
@@ -128,8 +150,14 @@ public class StringUtils {
         return new String(c, 0, end);
     }
 
-
-
+    /**
+     * 将字符串按指定分隔符分割成字符串数组
+     * @param str 要分割的字符串
+     * @param delimiters 分隔符
+     * @param trimTokens 是否去除分割后每个元素两端的空白字符
+     * @param ignoreEmptyTokens 是否忽略空元素
+     * @return 分割后的字符串数组
+     */
     public static String[] tokenizeToStringArray(String str, String delimiters, boolean trimTokens, boolean ignoreEmptyTokens) {
         StringTokenizer st = new StringTokenizer(str, delimiters);
         List tokens = new ArrayList();
@@ -145,6 +173,12 @@ public class StringUtils {
         return (String[]) tokens.toArray(new String[tokens.size()]);
     }
 
+    /**
+     * 将字符串按指定分隔符分割成字符串数组,去除每个元素两端空白字符,忽略空元素
+     * @param str 要分割的字符串
+     * @param delimiters 分隔符
+     * @return 分割后的字符串数组,如果原字符串为空或分隔符为空,返回null
+     */
     public static String[] tokenizeToStringArray(String str, String delimiters) {
         if (!hasText(str)) {
             return null;
@@ -155,8 +189,12 @@ public class StringUtils {
         return tokenizeToStringArray(str, delimiters, true, true);
     }
 
-
-
+    /**
+     * 判断一个类是否是指定的类或接口
+     * @param objClass 要判断的类
+     * @param className 类名或接口名
+     * @return 如果是,返回true,否则返回false
+     */
     private static boolean isClassOrInterface(Class objClass, String className) {
         if (objClass.getClass().getName().equals(className)) {
             return true;
@@ -170,6 +208,12 @@ public class StringUtils {
         return false;
     }
 
+    /**
+     * 判断一个类是否是指定类的子类
+     * @param objClass 要判断的类
+     * @param className 父类名
+     * @return 如果是,返回true,否则返回false
+     */
     private static boolean isSubClassOf(Class objClass, String className) {
         while (!isClassOrInterface(objClass, className)) {
             Class objClass2 = objClass.getSuperclass();
@@ -181,7 +225,12 @@ public class StringUtils {
         return true;
     }
 
-
+    /**
+     * 将Iterator转换成字符串
+     * @param iterator 要转换的Iterator
+     * @param objClass Iterator的类
+     * @return 转换后的字符串
+     */
     private static String processIterator(Iterator iterator, Class objClass) {
         StringBuffer result = new StringBuffer();
         result.append(objClass.getName());
@@ -194,8 +243,12 @@ public class StringUtils {
         return result.toString();
     }
 
-
-
+    /**
+     * 将Enumeration转换成字符串
+     * @param enumeration 要转换的Enumeration
+     * @param objClass Enumeration的类
+     * @return 转换后的字符串
+     */
     private static String processEnumeration(Enumeration enumeration, Class objClass) {
         StringBuffer result = new StringBuffer();
         result.append(objClass.getName());
@@ -208,6 +261,12 @@ public class StringUtils {
         return result.toString();
     }
 
+    /**
+     * 将Map转换成字符串
+     * @param map 要转换的Map
+     * @param objClass Map的类
+     * @return 转换后的字符串
+     */
     private static String processMap(Map map, Class objClass) {
         StringBuffer result = new StringBuffer();
         Collection keys = map.keySet();
@@ -220,6 +279,11 @@ public class StringUtils {
         return result.toString();
     }
 
+    /**
+     * 将任意对象转换为字符串
+     * @param obj 要转换的对象
+     * @return 转换后的字符串,如果对象为null,返回null
+     */
     public static String toString(Object obj) {
         if (obj == null) {
             return null;
@@ -287,8 +351,11 @@ public class StringUtils {
         return result.toString();
     }
 
-
-
+    /**
+     * 判断字符串是否是整数
+     * @param str 要判断的字符串
+     * @return 如果是整数返回true,否则返回false
+     */
     public static boolean isInteger(String str) {
         String str2 = trimText(str);
         int len = str2.length();
@@ -306,9 +373,13 @@ public class StringUtils {
         return false;
     }
 
-
-
-
+    /**
+     * 转换字符编码
+     * @param strIn 要转换的字符串
+     * @param encoding 原编码
+     * @param targetEncoding 目标编码
+     * @return 转换后的字符串,如果原字符串为空,返回原字符串
+     */
     public static String convertEncode(String strIn, String encoding, String targetEncoding) {
         if (!hasText(strIn)) {
             return strIn;
@@ -335,8 +406,12 @@ public class StringUtils {
         }
     }
 
-
-
+    /**
+     * 将对象转换成字符串
+     * @param obj 要转换的对象
+     * @param defalut 默认值
+     * @return 如果对象不为null,返回对象的字符串表示,否则返回默认值
+     */
     public static String parseString(Object obj, String defalut) {
         if (!hasText(defalut)) {
             defalut = "";
@@ -347,11 +422,20 @@ public class StringUtils {
         return defalut;
     }
 
-
+    /**
+     * 返回字符序列的长度
+     * @param cs 字符序列
+     * @return 如果字符序列为null,返回0,否则返回字符序列的长度
+     */
     public static int length(CharSequence cs) {
         return cs == null ? 0 : cs.length();
     }
 
+    /**
+     * 判断字符序列是否为空
+     * @param cs 要判断的字符序列
+     * @return 如果字符序列为null或长度为0或全部为空白字符,返回true,否则返回false
+     */
     public static boolean isBlank(CharSequence cs) {
         int strLen = length(cs);
         if (strLen == 0) {
@@ -367,7 +451,12 @@ public class StringUtils {
         }
     }
 
-
+    /**
+     * 返回字符串从指定位置开始的子字符串
+     * @param str 原字符串
+     * @param start 起始位置,如果小于0,从字符串末尾开始算起
+     * @return 子字符串,如果原字符串为null,返回null
+     */
     public static String substring(String str, int start) {
         if (str == null) {
             return null;
@@ -384,6 +473,13 @@ public class StringUtils {
         }
     }
 
+    /**
+     * 返回字符串指定范围的子字符串
+     * @param str 原字符串
+     * @param start 起始位置,如果小于0,从字符串末尾开始算起
+     * @param end 结束位置,如果小于0,从字符串末尾开始算起
+     * @return 子字符串,如果原字符串为null,返回null
+     */
     public static String substring(String str, int start, int end) {
         if (str == null) {
             return null;
@@ -416,6 +512,14 @@ public class StringUtils {
         }
     }
 
+    /**
+     * 对字符串进行脱敏处理
+     * @param oriStr 原字符串
+     * @param preLen 保留的前面字符数
+     * @param afterLen 保留的后面字符数
+     * @param desSymP 用来替换中间字符的字符
+     * @return 脱敏后的字符串,如果原字符串为null或空,返回空字符串
+     */
     public static String strDesensitize(String oriStr, int preLen, int afterLen, String desSymP) {
         String desSym = desSymP;
         if (isBlank(oriStr)) {
@@ -438,6 +542,13 @@ public class StringUtils {
         return str.toString();
     }
 
+    /**
+     * 对字符串末尾进行脱敏处理
+     * @param oriStr 原字符串
+     * @param lastbit 脱敏的末尾字符数
+     * @param desSymP 用来替换末尾字符的字符
+     * @return 脱敏后的字符串,如果原字符串为null或空,返回空字符串
+     */
     public static String strRightDesensitize(String oriStr, int lastbit, String desSymP) {
         String desSym = desSymP;
         if (isBlank(oriStr)) {
@@ -458,9 +569,13 @@ public class StringUtils {
         return str.toString();
     }
 
-
-
-
+    /**
+     * 对字符串开头进行脱敏处理
+     * @param oriStr 原字符串
+     * @param prebit 脱敏的开头字符数
+     * @param desSymP 用来替换开头字符的字符
+     * @return 脱敏后的字符串,如果原字符串为null或空,返回空字符串
+     */
     public static String strLeftDesensitize(String oriStr, int prebit, String desSymP) {
         String desSym = desSymP;
         if (isBlank(oriStr)) {
@@ -481,6 +596,12 @@ public class StringUtils {
         return str.toString();
     }
 
+    /**
+     * 对整个字符串进行脱敏处理
+     * @param oriStr 原字符串
+     * @param desSymP 用来替换所有字符的字符
+     * @return 脱敏后的字符串,如果原字符串为null或空,返回空字符串
+     */
     public static String strAllDesensitize(String oriStr, String desSymP) {
         String desSym = desSymP;
         if (isBlank(oriStr)) {
@@ -496,7 +617,11 @@ public class StringUtils {
         return str.toString();
     }
 
-
+    /**
+     * 对URL进行编码
+     * @param s 要编码的URL
+     * @return 编码后的URL
+     */
     public static String encodeURL(String s) {
         String encodedString;
         try {
@@ -508,7 +633,12 @@ public class StringUtils {
         return encodedString.replaceAll("\\+", "%20");
     }
 
-
+    /**
+     * 判断字符序列是否包含指定的字符序列
+     * @param seq 原字符序列
+     * @param searchSeq 要查找的字符序列
+     * @return 如果seq包含searchSeq,返回true,否则返回false
+     */
     public static boolean contains(CharSequence seq, CharSequence searchSeq) {
         if (seq != null && searchSeq != null) {
             return CharSequenceUtils.indexOf(seq, searchSeq, 0) >= 0;
@@ -517,6 +647,12 @@ public class StringUtils {
         }
     }
 
+    /**
+     * 判断字符序列是否包含指定的字符
+     * @param seq 原字符序列
+     * @param searchChar 要查找的字符
+     * @return 如果seq包含searchChar,返回true,否则返回false
+     */
     public static boolean contains(CharSequence seq, int searchChar) {
         if (isEmpty(seq)) {
             return false;
@@ -525,6 +661,12 @@ public class StringUtils {
         }
     }
 
+    /**
+     * 判断字符串是否包含指定的字符串列表中的所有元素
+     * @param souce 原字符串
+     * @param strList 要查找的字符串列表
+     * @return 如果souce包含strList中的所有元素,返回true,否则返回false
+     */
     public static boolean compapre(String souce, List<String> strList) {
         if (isBlank(souce) || strList == null || strList.size() <= 0) {
             return false;
@@ -537,6 +679,12 @@ public class StringUtils {
         return true;
     }
 
+    /**
+     * 将对象转换为字符串
+     * @param obj 要转换的对象
+     * @param defalut 默认值
+     * @return 如果对象不为null且不为空白,返回对象的字符串表示,否则返回默认值
+     */
     public static String getString(Object obj, String defalut) {
         if (obj == null) {
             return defalut;
@@ -548,16 +696,29 @@ public class StringUtils {
         return temp;
     }
 
+    /**
+     * 对字符串进行URL编码
+     * @param str 要编码的字符串
+     * @return 编码后的字符串,如果原字符串为null或空白,返回原字符串
+     */
     public static String encodeString(String str) {
         return isNotBlank(str) ? encodeURL(str) : str;
     }
 
-
+    /**
+     * 判断字符序列是否不为空
+     * @param cs 要判断的字符序列
+     * @return 如果字符序列不为null且不全为空白字符,返回true,否则返回false
+     */
     public static boolean isNotBlank(CharSequence cs) {
         return !isBlank(cs);
     }
 
-
+    /**
+     * 判断字符序列是否为空
+     * @param cs 要判断的字符序列
+     * @return 如果字符序列为null或长度为0,返回true,否则返回false
+     */
     public static boolean isEmpty(CharSequence cs) {
         return cs == null || cs.length() == 0;
     }
