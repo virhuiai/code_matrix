@@ -33,7 +33,7 @@ public interface ObjectStringUtils {
      * @return 如果是,返回true,否则返回false
      */
     default boolean isClassOrInterface(Class objClass, String className) {
-        if (objClass.getClass().getName().equals(className)) {
+        if (objClass.getName().equals(className)) {
             return true;
         }
         Class[] classes = objClass.getInterfaces();

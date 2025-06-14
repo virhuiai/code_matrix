@@ -122,7 +122,7 @@ public class ObjectStringUtilsTest {
 
     // --- Tests for isClassOrInterface ---
     @Test
-    public void testIsClassOrInterface_DirectMatch() {
+    public void testIsClassOrInterface_DirectMatch() {//java.lang.Class
         assertTrue(objectStringUtils.isClassOrInterface(String.class, "java.lang.String"));// todo
     }
 
