@@ -114,4 +114,61 @@ public interface StringDesensitizeUtils {
         }
         return str.toString();
     }
+
+    /**
+     * 脱敏手机号码,保留前3位和后4位,中间用指定字符替换
+     * @param mobile 手机号码
+     * @param desSymP 用来替换中间字符的字符
+     * @return 脱敏后的手机号码,如果手机号码为null或空,返回空字符串
+     */
+    default String mobileDesensitize(String mobile, String desSymP) {
+        return strDesensitize(mobile, 3, 4, desSymP);
+    }
+
+    /**
+     * 脱敏身份证号码,保留前6位和后4位,中间用指定字符替换
+     * @param idCard 身份证号码
+     * @param desSymP 用来替换中间字符的字符
+     * @return 脱敏后的身份证号码,如果身份证号码为null或空,返回空字符串
+     */
+    default String idCardDesensitize(String idCard, String desSymP) {
+        return strDesensitize(idCard, 6, 4, desSymP);
+    }
+
+    /**
+     * 脱敏银行卡号,保留前6位和后4位,中间用指定字符替换
+     * @param bankCard 银行卡号
+     * @param desSymP 用来替换中间字符的字符
+     * @return 脱敏后的银行卡号,如果银行卡号为null或空,返回空字符串
+     */
+    default String bankCardDesensitize(String bankCard, String desSymP) {
+        return strDesensitize(bankCard, 6, 4, desSymP);
+    }
+
+    /**
+     * 脱敏姓名,保留第一个字符,其余字符用指定字符替换
+     * @param name 姓名
+     * @param desSymP 用来替换其余字符的字符
+     * @return 脱敏后的姓名,如果姓名为null或空,返回空字符串
+     */
+    default String nameDesensitize(String name, String desSymP) {
+        return strLeftDesensitize(name, name.length() - 1, desSymP);
+    }
+
+    /**
+     * 脱敏邮箱,保留@符号前的第一个字符和@符号后的内容,其余字符用指定字符替换
+     * @param email 邮箱
+     * @param desSymP 用来替换其余字符的字符
+     * @return 脱敏后的邮箱,如果邮箱为null或空,返回空字符串
+     */
+    default String emailDesensitize(String email, String desSymP) {
+        if (Str.Utils.isBlank(email)) {
+            return "";
+        }
+        int atIndex = email.indexOf("@");
+        if (atIndex <= 1) {
+            return email;
+        }
+        return strDesensitize(email, 1, email.length() - atIndex, desSymP);
+    }
 }
