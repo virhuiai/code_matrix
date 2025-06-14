@@ -22,6 +22,13 @@ public interface StringSplitUtils {
      * @return 分割后的字符串数组
      */
     default String[] tokenizeToStringArray(String str, String delimiters, boolean trimTokens, boolean ignoreEmptyTokens) {
+        if (!Str.Utils.hasText(str)) {
+            return new String[0];
+        }
+        if (!Str.Utils.hasText(delimiters)) {
+            return new String[]{str};
+        }
+
         StringTokenizer st = new StringTokenizer(str, delimiters);
         List tokens = new ArrayList();
         while (st.hasMoreTokens()) {
@@ -43,12 +50,6 @@ public interface StringSplitUtils {
      * @return 分割后的字符串数组,如果原字符串为空或分隔符为空,返回null
      */
     default String[] tokenizeToStringArray(String str, String delimiters) {
-        if (!Str.Utils.hasText(str)) {
-            return null;
-        }
-        if (!Str.Utils.hasText(delimiters)) {
-            return new String[]{str};
-        }
         return tokenizeToStringArray(str, delimiters, true, true);
     }
 
@@ -59,8 +60,11 @@ public interface StringSplitUtils {
      * @return 分割后的字符串列表,如果原字符串为空,返回空列表
      */
     default List<String> split(String str, String delimiter) {
-        if (str == null) {
+        if (Str.Utils.isBlank(str)) {
             return new ArrayList<>();
+        }
+        if (Str.Utils.isBlank(delimiter)) {
+            return Arrays.asList(str);
         }
         String[] tokens = str.split(delimiter);
         return Arrays.asList(tokens);
@@ -72,7 +76,7 @@ public interface StringSplitUtils {
      * @return 分割后的字符串数组,如果原字符串为空,返回空数组
      */
     default String[] splitByWhitespace(String str) {
-        if (str == null) {
+        if (Str.Utils.isBlank(str)) {
             return new String[0];
         }
         return str.split("\\s+");
@@ -83,10 +87,14 @@ public interface StringSplitUtils {
      * @param str 要分割的字符串
      * @param length 分割后每个字符串的长度
      * @return 分割后的字符串列表,如果原字符串为空,返回空列表
+     * 在 length 为0或小于0时选择抛出 IllegalArgumentException 异常
      */
     default List<String> splitByLength(String str, int length) {
-        if (str == null) {
+        if (Str.Utils.isBlank(str)) {
             return new ArrayList<>();
+        }
+        if (length <= 0) {
+            throw new IllegalArgumentException("Length must be greater than 0");
         }
         List<String> list = new ArrayList<>();
         int index = 0;
@@ -103,7 +111,7 @@ public interface StringSplitUtils {
      * @return 分割后的单词列表,如果原字符串为空,返回空列表
      */
     default List<String> splitCamelCase(String str) {
-        if (str == null) {
+        if (Str.Utils.isBlank(str)) {
             return new ArrayList<>();
         }
         List<String> list = new ArrayList<>();
