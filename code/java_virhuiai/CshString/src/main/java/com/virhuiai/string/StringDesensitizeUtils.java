@@ -2,10 +2,6 @@ package com.virhuiai.string;
 
 /**
  * 包含字符串脱敏相关的方法
- *    - strDesensitize
- *    - strRightDesensitize
- *    - strLeftDesensitize
- *    - strAllDesensitize
  */
 public interface StringDesensitizeUtils {
 
@@ -152,7 +148,10 @@ public interface StringDesensitizeUtils {
      * @return 脱敏后的姓名,如果姓名为null或空,返回空字符串
      */
     default String nameDesensitize(String name, String desSymP) {
-        return strLeftDesensitize(name, name.length() - 1, desSymP);
+        if(Str.Utils.isBlank(name)){
+            return "";
+        }
+        return strRightDesensitize(name, name.length() - 1, desSymP);
     }
 
     /**
