@@ -32,7 +32,7 @@ public enum Str
         implements StringValidationUtils, StringTransformationUtils,
         StringSplitUtils, StringDesensitizeUtils,
         StringSubstringUtils, StringCompareUtils,
-        ObjectStringUtils, StringLengthUtils
+        ObjectStringUtils, StringLengthUtils,UrlUtils
 {
     Utils;
     private Str() {
