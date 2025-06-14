@@ -31,11 +31,28 @@ public interface UrlUtils {
         if (Str.Utils.isBlank(url)) {
             return null;
         }
-        String[] parts = url.split("/");
-        if (parts.length < 3) {
+
+        // 查找协议分隔符 "://"
+        int protocolEnd = url.indexOf("://");
+        if (protocolEnd == -1) {
             return null;
         }
-        return parts[2];
+
+        // 从 "://" 后面开始查找第三个斜杠
+        int domainStart = protocolEnd + 3;
+        int domainEnd = url.indexOf('/', domainStart);
+
+        // 如果没有找到第三个斜杠，说明URL只包含协议和域名
+        if (domainEnd == -1) {
+            // 检查是否有内容
+            if (domainStart >= url.length()) {
+                return null;
+            }
+            return url.substring(domainStart);
+        }
+
+        // 提取域名部分（从 :// 后到第三个斜杠之间）
+        return url.substring(domainStart, domainEnd);
     }
 
     /**
