@@ -5,15 +5,6 @@ import java.net.URLEncoder;
 
 /**
  * 字符串转换相关的方法
- *    - replace
- *    - trimText
- *    - trimLeft
- *    - trimRight
- *    - convertEncode 依赖 StringValidationUtils
- *    - parseString 依赖 StringValidationUtils
- *    - getString 依赖 StringValidationUtils
- *    - encodeString 依赖 StringValidationUtils
- *    - encodeURL
  */
 public interface StringTransformationUtils {
 
@@ -225,5 +216,70 @@ public interface StringTransformationUtils {
 
         return encodedString.replaceAll("\\+", "%20");
     }
+
+    /**
+     * 将字符串的首字母转换为大写
+     * @param str 要转换的字符串
+     * @return 首字母大写后的字符串,如果原字符串为null或空白,返回原字符串
+     */
+    default String capitalize(String str) {
+        if (Str.Utils.isBlank(str)) {
+            return str;
+        }
+        char[] chars = str.toCharArray();
+        chars[0] = Character.toUpperCase(chars[0]);
+        return new String(chars);
+    }
+
+    /**
+     * 反转字符串
+     * @param str 要反转的字符串
+     * @return 反转后的字符串,如果原字符串为null或空白,返回原字符串
+     */
+    default String reverse(String str) {
+        if (Str.Utils.isBlank(str)) {
+            return str;
+        }
+        return new StringBuilder(str).reverse().toString();
+    }
+
+    /**
+     * 将字符串转换为小写
+     * @param str 要转换的字符串
+     * @return 小写后的字符串,如果原字符串为null或空白,返回原字符串
+     */
+    default String toLowerCase(String str) {
+        return Str.Utils.isBlank(str) ? str : str.toLowerCase();
+    }
+
+    /**
+     * 将字符串转换为大写
+     * @param str 要转换的字符串
+     * @return 大写后的字符串,如果原字符串为null或空白,返回原字符串
+     */
+    default String toUpperCase(String str) {
+        return Str.Utils.isBlank(str) ? str : str.toUpperCase();
+    }
+
+    /**
+     * 计算字符串中子串出现的次数
+     * @param str 原字符串
+     * @param sub 要查找的子串
+     * @return 子串在原字符串中出现的次数,如果原字符串或子串为null或空白,返回0
+     */
+    default int countMatches(String str, String sub) {
+        if (Str.Utils.isBlank(str) || Str.Utils.isBlank(sub)) {
+            return 0;
+        }
+        int count = 0;
+        int idx = 0;
+        while ((idx = str.indexOf(sub, idx)) != -1) {
+            count++;
+            idx += sub.length();
+        }
+        return count;
+    }
+
+    
 
 }
