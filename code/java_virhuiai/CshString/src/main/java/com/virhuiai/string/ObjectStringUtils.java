@@ -192,7 +192,7 @@ public interface ObjectStringUtils {
         return result.toString();
     }
 
-    ////////////
+    //////////// todo test
 
     /**
      * 将 Iterator 转换为字符串，使用自定义格式
