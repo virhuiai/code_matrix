@@ -24,7 +24,7 @@ public interface StringTransformationUtils {
      * @param strTarget 替换后的字符串
      * @return 替换后的字符串
      */
-    public static String replace(String str, String strSrc, String strTarget) {
+    default String replace(String str, String strSrc, String strTarget) {
         int s = 0;
         StringBuffer result = new StringBuffer();
         if (strSrc == null || strSrc.equals("")) {
@@ -48,8 +48,8 @@ public interface StringTransformationUtils {
      * @param str 要处理的字符串
      * @return 处理后的字符串
      */
-    public static String trimText(String str) {
-        if (!StringValidationUtils.hasText(str)) {
+    default String trimText(String str) {
+        if (!StringUtils.INSTANCE.hasText(str)) {
             return "";
         }
         char[] c = str.toCharArray();
@@ -87,8 +87,8 @@ public interface StringTransformationUtils {
      * @param str 要处理的字符串
      * @return 处理后的字符串
      */
-    public static String trimLeft(String str) {
-        if (!StringValidationUtils.hasText(str)) {
+    default String trimLeft(String str) {
+        if (!StringUtils.INSTANCE.hasText(str)) {
             return "";
         }
         char[] c = str.toCharArray();
@@ -113,8 +113,8 @@ public interface StringTransformationUtils {
      * @param str 要处理的字符串
      * @return 处理后的字符串
      */
-    public static String trimRight(String str) {
-        if (!StringValidationUtils.hasText(str)) {
+    default String trimRight(String str) {
+        if (!StringUtils.INSTANCE.hasText(str)) {
             return "";
         }
         char[] c = str.toCharArray();
@@ -141,8 +141,8 @@ public interface StringTransformationUtils {
      * @param targetEncoding 目标编码
      * @return 转换后的字符串,如果原字符串为空,返回原字符串
      */
-    public static String convertEncode(String strIn, String encoding, String targetEncoding) {
-        if (!StringValidationUtils.hasText(strIn)) {
+    default String convertEncode(String strIn, String encoding, String targetEncoding) {
+        if (!StringUtils.INSTANCE.hasText(strIn)) {
             return strIn;
         }
         try {
@@ -173,8 +173,8 @@ public interface StringTransformationUtils {
      * @param defalut 默认值
      * @return 如果对象不为null,返回对象的字符串表示,否则返回默认值
      */
-    public static String parseString(Object obj, String defalut) {
-        if (!StringValidationUtils.hasText(defalut)) {
+    default String parseString(Object obj, String defalut) {
+        if (!StringUtils.INSTANCE.hasText(defalut)) {
             defalut = "";
         }
         if (obj != null) {
@@ -189,12 +189,12 @@ public interface StringTransformationUtils {
      * @param defalut 默认值
      * @return 如果对象不为null且不为空白,返回对象的字符串表示,否则返回默认值
      */
-    public static String getString(Object obj, String defalut) {
+    default String getString(Object obj, String defalut) {
         if (obj == null) {
             return defalut;
         }
         String temp = obj.toString().trim();
-        if (StringValidationUtils.isBlank(temp)) {
+        if (StringUtils.INSTANCE.isBlank(temp)) {
             return defalut;
         }
         return temp;
@@ -205,8 +205,8 @@ public interface StringTransformationUtils {
      * @param str 要编码的字符串
      * @return 编码后的字符串,如果原字符串为null或空白,返回原字符串
      */
-    public static String encodeString(String str) {
-        return StringValidationUtils.isNotBlank(str) ? encodeURL(str) : str;
+    default String encodeString(String str) {
+        return StringUtils.INSTANCE.isNotBlank(str) ? encodeURL(str) : str;
     }
 
 
@@ -215,7 +215,7 @@ public interface StringTransformationUtils {
      * @param s 要编码的URL
      * @return 编码后的URL
      */
-    public static String encodeURL(String s) {
+    default String encodeURL(String s) {
         String encodedString;
         try {
             encodedString = URLEncoder.encode(s, "UTF-8");

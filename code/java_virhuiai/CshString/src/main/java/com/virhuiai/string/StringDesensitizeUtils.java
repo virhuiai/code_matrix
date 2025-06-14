@@ -18,24 +18,24 @@ public interface StringDesensitizeUtils {
      * @param desSymP 用来替换中间字符的字符
      * @return 脱敏后的字符串,如果原字符串为null或空,返回空字符串
      */
-    public static String strDesensitize(String oriStr, int preLen, int afterLen, String desSymP) {
+    default String strDesensitize(String oriStr, int preLen, int afterLen, String desSymP) {
         String desSym = desSymP;
-        if (StringValidationUtils.isBlank(oriStr)) {
+        if (StringUtils.INSTANCE.isBlank(oriStr)) {
             return "";
         }
-        if (StringValidationUtils.isBlank(desSym)) {
+        if (StringUtils.INSTANCE.isBlank(desSym)) {
             desSym = "*";
         }
         if (oriStr.length() < preLen + afterLen) {
             return oriStr;
         }
         StringBuffer str = new StringBuffer();
-        String pre = StringSubstringUtils.substring(oriStr, 0, preLen);
+        String pre = StringUtils.INSTANCE.substring(oriStr, 0, preLen);
         str.append(pre);
         for (int i = 0; i < oriStr.length() - (preLen + afterLen); i++) {
             str.append(desSym);
         }
-        String aft = StringSubstringUtils.substring(oriStr, oriStr.length() - afterLen);
+        String aft = StringUtils.INSTANCE.substring(oriStr, oriStr.length() - afterLen);
         str.append(aft);
         return str.toString();
     }
@@ -47,19 +47,19 @@ public interface StringDesensitizeUtils {
      * @param desSymP 用来替换末尾字符的字符
      * @return 脱敏后的字符串,如果原字符串为null或空,返回空字符串
      */
-    public static String strRightDesensitize(String oriStr, int lastbit, String desSymP) {
+    default String strRightDesensitize(String oriStr, int lastbit, String desSymP) {
         String desSym = desSymP;
-        if (StringValidationUtils.isBlank(oriStr)) {
+        if (StringUtils.INSTANCE.isBlank(oriStr)) {
             return "";
         }
-        if (StringValidationUtils.isBlank(desSym)) {
+        if (StringUtils.INSTANCE.isBlank(desSym)) {
             desSym = "*";
         }
         if (oriStr.length() < lastbit) {
             return oriStr;
         }
         StringBuffer str = new StringBuffer();
-        String pre = StringSubstringUtils.substring(oriStr, 0, oriStr.length() - lastbit);
+        String pre = StringUtils.INSTANCE.substring(oriStr, 0, oriStr.length() - lastbit);
         str.append(pre);
         for (int i = 0; i < lastbit; i++) {
             str.append(desSym);
@@ -74,12 +74,12 @@ public interface StringDesensitizeUtils {
      * @param desSymP 用来替换开头字符的字符
      * @return 脱敏后的字符串,如果原字符串为null或空,返回空字符串
      */
-    public static String strLeftDesensitize(String oriStr, int prebit, String desSymP) {
+    default String strLeftDesensitize(String oriStr, int prebit, String desSymP) {
         String desSym = desSymP;
-        if (StringValidationUtils.isBlank(oriStr)) {
+        if (StringUtils.INSTANCE.isBlank(oriStr)) {
             return "";
         }
-        if (StringValidationUtils.isBlank(desSym)) {
+        if (StringUtils.INSTANCE.isBlank(desSym)) {
             desSym = "*";
         }
         if (oriStr.length() < prebit) {
@@ -89,7 +89,7 @@ public interface StringDesensitizeUtils {
         for (int i = 0; i < prebit; i++) {
             str.append(desSym);
         }
-        String last = StringSubstringUtils.substring(oriStr, prebit, oriStr.length());
+        String last = StringUtils.INSTANCE.substring(oriStr, prebit, oriStr.length());
         str.append(last);
         return str.toString();
     }
@@ -100,12 +100,12 @@ public interface StringDesensitizeUtils {
      * @param desSymP 用来替换所有字符的字符
      * @return 脱敏后的字符串,如果原字符串为null或空,返回空字符串
      */
-    public static String strAllDesensitize(String oriStr, String desSymP) {
+    default String strAllDesensitize(String oriStr, String desSymP) {
         String desSym = desSymP;
-        if (StringValidationUtils.isBlank(oriStr)) {
+        if (StringUtils.INSTANCE.isBlank(oriStr)) {
             return "";
         }
-        if (StringValidationUtils.isBlank(desSym)) {
+        if (StringUtils.INSTANCE.isBlank(desSym)) {
             desSym = "*";
         }
         StringBuffer str = new StringBuffer();

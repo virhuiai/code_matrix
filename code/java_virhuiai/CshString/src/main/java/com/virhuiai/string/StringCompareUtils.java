@@ -15,7 +15,7 @@ public interface StringCompareUtils {
      * @param searchSeq 要查找的字符序列
      * @return 如果seq包含searchSeq,返回true,否则返回false
      */
-    public static boolean contains(CharSequence seq, CharSequence searchSeq) {
+    default boolean contains(CharSequence seq, CharSequence searchSeq) {
         if (seq != null && searchSeq != null) {
             return CharSequenceUtils.indexOf(seq, searchSeq, 0) >= 0;
         } else {
@@ -31,8 +31,8 @@ public interface StringCompareUtils {
      * @param searchChar 要查找的字符
      * @return 如果seq包含searchChar,返回true,否则返回false
      */
-    public static boolean contains(CharSequence seq, int searchChar) {
-        if (StringValidationUtils.isEmpty(seq)) {
+    default boolean contains(CharSequence seq, int searchChar) {
+        if (StringUtils.INSTANCE.isEmpty(seq)) {
             return false;
         } else {
             return CharSequenceUtils.indexOf(seq, searchChar, 0) >= 0;
@@ -46,8 +46,8 @@ public interface StringCompareUtils {
      * @param strList 要查找的字符串列表
      * @return 如果souce包含strList中的所有元素,返回true,否则返回false
      */
-    public static boolean compapre(String souce, List<String> strList) {
-        if (StringValidationUtils.isBlank(souce) || strList == null || strList.size() <= 0) {
+    default boolean compapre(String souce, List<String> strList) {
+        if (StringUtils.INSTANCE.isBlank(souce) || strList == null || strList.size() <= 0) {
             return false;
         }
         for (String str : strList) {

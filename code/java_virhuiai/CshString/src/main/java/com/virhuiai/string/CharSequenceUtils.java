@@ -16,7 +16,7 @@ public final class CharSequenceUtils {
     static final int MAX_CODE_POINT = 0x10FFFF;
 
     // 空字符数组常量，避免重复创建空数组
-    public static final char[] EMPTY_CHAR_ARRAY = new char[0];
+    public static  final char[] EMPTY_CHAR_ARRAY = new char[0];
 
     /**
      * 检查从指定位置开始的字符序列是否与搜索字符序列匹配
@@ -335,7 +335,7 @@ public final class CharSequenceUtils {
      * @param start 起始位置
      * @return 子序列，如果cs为null则返回null
      */
-    public static CharSequence subSequence(CharSequence cs, int start) {
+    public static  CharSequence subSequence(CharSequence cs, int start) {
         // 空值检查，如果为null直接返回null
         return cs == null ? null : cs.subSequence(start, cs.length());
     }
@@ -346,9 +346,9 @@ public final class CharSequenceUtils {
      * @param source 源字符序列
      * @return 字符数组，如果源为空则返回空数组
      */
-    public static char[] toCharArray(CharSequence source) {
+    public static  char[] toCharArray(CharSequence source) {
         // 获取长度（使用StringUtils处理null的情况）
-        int len = StringLengthUtils.length(source);
+        int len = StringUtils.INSTANCE.length(source);
         // 长度为0时返回预定义的空数组，避免创建新对象
         if (len == 0) {
             return EMPTY_CHAR_ARRAY;

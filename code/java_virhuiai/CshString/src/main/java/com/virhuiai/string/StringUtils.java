@@ -2,12 +2,7 @@ package com.virhuiai.string;
 
 import com.virhuiai.CshLogUtils.v2.LoggerUtils;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.net.URLEncoder;
-import java.util.*;
-import java.io.UnsupportedEncodingException;
+
 
 /**
  * 字符串工具类
@@ -25,11 +20,36 @@ import java.io.UnsupportedEncodingException;
 
  *
  */
-public class StringUtils implements StringValidationUtils, StringTransformationUtils,
+//public class StringUtils
+//        implements StringValidationUtils, StringTransformationUtils,
+//        StringSplitUtils, StringDesensitizeUtils,
+//        StringSubstringUtils, StringCompareUtils,
+//        ObjectStringUtils, StringLengthUtils
+//{
+//    public StringUtils() {
+//    }
+////    private static final LoggerUtils logger = LoggerUtils.getLog((Class<?>) StringUtils.class);
+//}
+
+public enum StringUtils
+        implements StringValidationUtils, StringTransformationUtils,
         StringSplitUtils, StringDesensitizeUtils,
         StringSubstringUtils, StringCompareUtils,
-        ObjectStringUtils, StringLengthUtils {
-    private static final LoggerUtils logger = LoggerUtils.getLog((Class<?>) StringUtils.class);
+        ObjectStringUtils, StringLengthUtils
+{
+    INSTANCE;
 
+    // 私有化构造函数
+    private StringUtils() {
+    }
 
+    // 可选：如果需要在初始化时执行一些操作,可以使用实例初始化方法
+    // private void init() {
+    //     // 初始化操作
+    // }
+
+    // 在这里实现接口的方法
+    // ...
+
+//    private static final LoggerUtils logger = LoggerUtils.getLog((Class<?>) StringUtils.class);
 }

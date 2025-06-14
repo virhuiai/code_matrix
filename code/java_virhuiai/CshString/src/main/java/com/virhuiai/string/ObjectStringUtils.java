@@ -26,7 +26,7 @@ public interface ObjectStringUtils {
      * @param className 类名或接口名
      * @return 如果是,返回true,否则返回false
      */
-    public static boolean isClassOrInterface(Class objClass, String className) {
+    default boolean isClassOrInterface(Class objClass, String className) {
         if (objClass.getClass().getName().equals(className)) {
             return true;
         }
@@ -45,7 +45,7 @@ public interface ObjectStringUtils {
      * @param className 父类名
      * @return 如果是,返回true,否则返回false
      */
-    public static boolean isSubClassOf(Class objClass, String className) {
+    default boolean isSubClassOf(Class objClass, String className) {
         while (!isClassOrInterface(objClass, className)) {
             Class objClass2 = objClass.getSuperclass();
             objClass = Object.class;
@@ -62,7 +62,7 @@ public interface ObjectStringUtils {
      * @param obj 要转换的对象
      * @return 转换后的字符串,如果对象为null,返回null
      */
-    public static String toString(Object obj) {
+    default String toString(Object obj) {
         if (obj == null) {
             return null;
         }
@@ -136,7 +136,7 @@ public interface ObjectStringUtils {
      * @param objClass Iterator的类
      * @return 转换后的字符串
      */
-    public static String processIterator(Iterator iterator, Class objClass) {
+    default String processIterator(Iterator iterator, Class objClass) {
         StringBuffer result = new StringBuffer();
         result.append(objClass.getName());
         result.append('{');
@@ -156,7 +156,7 @@ public interface ObjectStringUtils {
      * @param objClass Enumeration的类
      * @return 转换后的字符串
      */
-    public static String processEnumeration(Enumeration enumeration, Class objClass) {
+    default String processEnumeration(Enumeration enumeration, Class objClass) {
         StringBuffer result = new StringBuffer();
         result.append(objClass.getName());
         result.append('{');
@@ -174,7 +174,7 @@ public interface ObjectStringUtils {
      * @param objClass Map的类
      * @return 转换后的字符串
      */
-    public static String processMap(Map map, Class objClass) {
+    default String processMap(Map map, Class objClass) {
         StringBuffer result = new StringBuffer();
         Collection keys = map.keySet();
         result.append(objClass.getName());

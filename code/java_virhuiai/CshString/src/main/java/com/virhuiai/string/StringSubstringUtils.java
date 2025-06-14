@@ -12,7 +12,7 @@ public interface StringSubstringUtils {
      * @param start 起始位置,如果小于0,从字符串末尾开始算起
      * @return 子字符串,如果原字符串为null,返回null
      */
-    public static String substring(String str, int start) {
+    default String substring(String str, int start) {
         if (str == null) {
             return null;
         } else {
@@ -36,7 +36,7 @@ public interface StringSubstringUtils {
      * @param end 结束位置,如果小于0,从字符串末尾开始算起
      * @return 子字符串,如果原字符串为null,返回null
      */
-    public static String substring(String str, int start, int end) {
+    default String substring(String str, int start, int end) {
         if (str == null) {
             return null;
         } else {

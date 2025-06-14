@@ -11,7 +11,7 @@ public interface StringLengthUtils {
      * @param cs 字符序列
      * @return 如果字符序列为null,返回0,否则返回字符序列的长度
      */
-    public static int length(CharSequence cs) {
+    default int length(CharSequence cs) {
         return cs == null ? 0 : cs.length();
     }
 }

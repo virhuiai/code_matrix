@@ -20,7 +20,7 @@ public interface StringSplitUtils {
      * @param ignoreEmptyTokens 是否忽略空元素
      * @return 分割后的字符串数组
      */
-    public static String[] tokenizeToStringArray(String str, String delimiters, boolean trimTokens, boolean ignoreEmptyTokens) {
+    default String[] tokenizeToStringArray(String str, String delimiters, boolean trimTokens, boolean ignoreEmptyTokens) {
         StringTokenizer st = new StringTokenizer(str, delimiters);
         List tokens = new ArrayList();
         while (st.hasMoreTokens()) {
@@ -41,11 +41,11 @@ public interface StringSplitUtils {
      * @param delimiters 分隔符
      * @return 分割后的字符串数组,如果原字符串为空或分隔符为空,返回null
      */
-    public static String[] tokenizeToStringArray(String str, String delimiters) {
-        if (!StringValidationUtils.hasText(str)) {
+    default String[] tokenizeToStringArray(String str, String delimiters) {
+        if (!StringUtils.INSTANCE.hasText(str)) {
             return null;
         }
-        if (!StringValidationUtils.hasText(delimiters)) {
+        if (!StringUtils.INSTANCE.hasText(delimiters)) {
             return new String[]{str};
         }
         return tokenizeToStringArray(str, delimiters, true, true);
