@@ -280,6 +280,92 @@ public interface StringTransformationUtils {
         return count;
     }
 
-    
+    /////添加几个与下划线、大小驼峰命名相关的转换方法:
+
+    /**
+     * 将下划线命名的字符串转换为小驼峰命名
+     * 例如: hello_world => helloWorld
+     * @param str 要转换的字符串
+     * @return 小驼峰命名的字符串,如果原字符串为null或空白,返回原字符串
+     */
+    default String underscoreToCamelCase(String str) {
+        if (Str.Utils.isBlank(str)) {
+            return str;
+        }
+        String[] parts = str.split("_");
+        StringBuilder sb = new StringBuilder(parts[0]);
+        for (int i = 1; i < parts.length; i++) {
+            sb.append(capitalize(parts[i]));
+        }
+        return sb.toString();
+    }
+
+
+    /**
+     * 将下划线命名的字符串转换为大驼峰命名
+     * 例如: hello_world => HelloWorld
+     * @param str 要转换的字符串
+     * @return 大驼峰命名的字符串,如果原字符串为null或空白,返回原字符串
+     */
+    default String underscoreToPascalCase(String str) {
+        if (Str.Utils.isBlank(str)) {
+            return str;
+        }
+        String[] parts = str.split("_");
+        StringBuilder sb = new StringBuilder();
+        for (String part : parts) {
+            sb.append(capitalize(part));
+        }
+        return sb.toString();
+    }
+
+    /**
+     * 将小驼峰命名的字符串转换为下划线命名
+     * 例如: helloWorld => hello_world
+     * @param str 要转换的字符串
+     * @return 下划线命名的字符串,如果原字符串为null或空白,返回原字符串
+     */
+    default String camelCaseToUnderscore(String str) {
+        if (Str.Utils.isBlank(str)) {
+            return str;
+        }
+        StringBuilder sb = new StringBuilder();
+        for (char c : str.toCharArray()) {
+            if (Character.isUpperCase(c)) {
+                sb.append("_").append(Character.toLowerCase(c));
+            } else {
+                sb.append(c);
+            }
+        }
+        return sb.toString();
+    }
+
+
+    /**
+     * 将大驼峰命名的字符串转换为下划线命名
+     * 例如: HelloWorld => hello_world
+     * @param str 要转换的字符串
+     * @return 下划线命名的字符串,如果原字符串为null或空白,返回原字符串
+     */
+    default String pascalCaseToUnderscore(String str) {
+        if (Str.Utils.isBlank(str)) {
+            return str;
+        }
+        StringBuilder sb = new StringBuilder();
+        for (char c : str.toCharArray()) {
+            if (Character.isUpperCase(c)) {
+                if (sb.length() > 0) {
+                    sb.append("_");
+                }
+                sb.append(Character.toLowerCase(c));
+            } else {
+                sb.append(c);
+            }
+        }
+        return sb.toString();
+    }
+
+
+
 
 }
