@@ -133,7 +133,7 @@ public interface UrlUtils {
             }
         } catch (URISyntaxException e) {
             // Handle malformed URL string, perhaps log an error or return null
-            e.printStackTrace();
+
             return null;
         }
     }
