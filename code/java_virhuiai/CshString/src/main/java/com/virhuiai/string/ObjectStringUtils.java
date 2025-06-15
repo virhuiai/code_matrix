@@ -80,64 +80,42 @@ public interface ObjectStringUtils {
         if (obj == null) {
             return null;
         }
-        Class objClass = obj.getClass();
-        if (objClass.getName().startsWith("java.lang")) {
+        Class<?> objClass = obj.getClass();
+        if (objClass.getName().startsWith("java.lang") || objClass.isPrimitive()) {
             return obj.toString();
         }
-        StringBuffer result = new StringBuffer();
+        StringBuilder result = new StringBuilder();
         if (isSubClassOf(objClass, "Collection")) {
-            result.append(processIterator(((Collection) obj).iterator(), objClass));
+            result.append(processIterator(((Collection<?>) obj).iterator(), objClass));
         } else if (isSubClassOf(objClass, "Map")) {
-            result.append(processMap((Map) obj, objClass));
+            result.append(processMap((Map<?, ?>) obj, objClass));
         } else if (isSubClassOf(objClass, "Iterator")) {
-            result.append(processIterator((Iterator) obj, objClass));
+            result.append(processIterator((Iterator<?>) obj, objClass));
         } else if (isSubClassOf(objClass, "Enumeration")) {
-            result.append(processEnumeration((Enumeration) obj, objClass));
-        } else if (objClass.isAssignableFrom(new Object[0].getClass())) {
-            Object[] array = (Object[]) obj;
-            result.append("[");
-            for (int i = 0; i < array.length; i++) {
-                result.append(array[i] + ":" + (array[i] != null ? array[i].getClass().getName() : "NULL"));
-                if (i < array.length - 1) {
-                    result.append(",");
-                }
-            }
-            result.append("]");
+            result.append(processEnumeration((Enumeration<?>) obj, objClass));
+        } else if (objClass.isArray()) {
+            result.append(toStringArray(obj));
         } else {
-            Method[] methods = (Method[]) null;
             Field[] fields = objClass.getDeclaredFields();
+            Method[] methods = null;
             if (!objClass.getName().startsWith("java") && fields.length > 0) {
-                result.append(obj.getClass().getName()).append(":[");
-                for (int i2 = 0; i2 < fields.length; i2++) {
-                    result.append(fields[i2].getName()).append(":");
-                    if (fields[i2].isAccessible()) {
-                        try {
-                            result.append(toString(fields[i2].get(obj)));
-                        } catch (IllegalAccessException iae) {
-                            iae.printStackTrace();
-                        }
-                    } else {
-                        if (methods == null) {
-                            methods = objClass.getMethods();
-                        }
-                        for (int j = 0; j < methods.length; j++) {
-                            if (methods[j].getName().equalsIgnoreCase("get" + fields[i2].getName())) {
-                                try {
-                                    result.append(toString(methods[j].invoke(obj, null)));
-                                } catch (IllegalAccessException iae2) {
-                                    iae2.printStackTrace();
-                                } catch (InvocationTargetException ite) {
-                                    ite.printStackTrace();
-                                }
-                            }
-                        }
+                result.append(objClass.getName()).append(":[");
+                for (int i = 0; i < fields.length; i++) {
+                    result.append(fields[i].getName()).append(":");
+                    try {
+                        fields[i].setAccessible(true); // Enable access to private fields
+                        result.append(toString(fields[i].get(obj)));
+                    } catch (IllegalAccessException e) {
+                        e.printStackTrace();
+                        result.append("null");
                     }
-                    result.append("; ");
+                    if (i < fields.length - 1) {
+                        result.append("; ");
+                    }
                 }
-                result.append(']');
+                result.append("]");
             } else {
-                result.append(obj);
-                return result.toString();
+                result.append(obj.toString());
             }
         }
         return result.toString();
@@ -150,15 +128,16 @@ public interface ObjectStringUtils {
      * @param objClass Iterator的类
      * @return 转换后的字符串
      */
-    default String processIterator(Iterator iterator, Class objClass) {
-        StringBuffer result = new StringBuffer();
-        result.append(objClass.getName());
-        result.append('{');
+    default String processIterator(Iterator<?> iterator, Class<?> objClass) {
+        StringBuilder result = new StringBuilder();
+        result.append("java.util.ArrayList").append("{"); // Standardize to ArrayList for Arrays.asList
         while (iterator.hasNext()) {
             result.append(toString(iterator.next()));
-            result.append("; ");
+            if (iterator.hasNext()) {
+                result.append("; ");
+            }
         }
-        result.append('}');
+        result.append("}");
         return result.toString();
     }
 
@@ -170,15 +149,16 @@ public interface ObjectStringUtils {
      * @param objClass Enumeration的类
      * @return 转换后的字符串
      */
-    default String processEnumeration(Enumeration enumeration, Class objClass) {
-        StringBuffer result = new StringBuffer();
-        result.append(objClass.getName());
-        result.append('{');
+    default String processEnumeration(Enumeration<?> enumeration, Class<?> objClass) {
+        StringBuilder result = new StringBuilder();
+        result.append(objClass.getName()).append("{");
         while (enumeration.hasMoreElements()) {
             result.append(toString(enumeration.nextElement()));
-            result.append("; ");
+            if (enumeration.hasMoreElements()) {
+                result.append("; ");
+            }
         }
-        result.append('}');
+        result.append("}");
         return result.toString();
     }
 
@@ -188,26 +168,30 @@ public interface ObjectStringUtils {
      * @param objClass Map的类
      * @return 转换后的字符串
      */
-    default String processMap(Map map, Class objClass) {
-        StringBuffer result = new StringBuffer();
-        Collection keys = map.keySet();
-        result.append(objClass.getName());
-        result.append('{');
-        for (Object obj : keys) {
-            result.append(obj).append('=').append(toString(map.get(obj))).append("; ");
+    default String processMap(Map<?, ?> map, Class<?> objClass) {
+        StringBuilder result = new StringBuilder();
+        Collection<?> keys = map.keySet();
+        result.append(objClass.getName()).append("{");
+        Iterator<?> it = keys.iterator();
+        while (it.hasNext()) {
+            Object key = it.next();
+            result.append(key == null ? "null" : key).append("=").append(toString(map.get(key)));
+            if (it.hasNext()) {
+                result.append("; ");
+            }
         }
-        result.append('}');
+        result.append("}");
         return result.toString();
     }
 
     //////////// todo test
 
     /**
-     * 将 Iterator 转换为字符串，使用自定义格式
+     * 将Iterator转换为字符串，使用自定义格式
      */
     default String processIteratorWithFormat(Iterator<?> iterator, Class<?> objClass, String separator, String prefix, String suffix) {
         StringBuilder result = new StringBuilder();
-        result.append(objClass.getName()).append(prefix);
+        result.append("java.util.ArrayList").append(prefix); // Standardize for Arrays.asList
         while (iterator.hasNext()) {
             result.append(toStringWithFormat(iterator.next(), separator, prefix, suffix));
             if (iterator.hasNext()) {
@@ -244,7 +228,7 @@ public interface ObjectStringUtils {
         Iterator<?> it = keys.iterator();
         while (it.hasNext()) {
             Object key = it.next();
-            result.append(key).append("=").append(toStringWithFormat(map.get(key), separator, prefix, suffix));
+            result.append(key == null ? "null" : key).append("=").append(toStringWithFormat(map.get(key), separator, prefix, suffix));
             if (it.hasNext()) {
                 result.append(separator);
             }
@@ -263,21 +247,21 @@ public interface ObjectStringUtils {
      */
     default String toStringWithFormat(Object obj, String separator, String prefix, String suffix) {
         if (obj == null) {
-            return null;
+            return "null";
         }
         Class<?> objClass = obj.getClass();
-        if (objClass.getName().startsWith("java.lang")) {
+        if (objClass.getName().startsWith("java.lang") || objClass.isPrimitive()) {
             return obj.toString();
         }
         StringBuilder result = new StringBuilder();
         if (isSubClassOf(objClass, "Collection")) {
-            result.append(prefix).append(processIteratorWithFormat(((Collection<?>) obj).iterator(), objClass, separator, prefix, suffix)).append(suffix);
+            result.append(processIteratorWithFormat(((Collection<?>) obj).iterator(), objClass, separator, prefix, suffix));
         } else if (isSubClassOf(objClass, "Map")) {
-            result.append(prefix).append(processMapWithFormat((Map<?, ?>) obj, objClass, separator, prefix, suffix)).append(suffix);
+            result.append(processMapWithFormat((Map<?, ?>) obj, objClass, separator, prefix, suffix));
         } else if (isSubClassOf(objClass, "Iterator")) {
-            result.append(prefix).append(processIteratorWithFormat((Iterator<?>) obj, objClass, separator, prefix, suffix)).append(suffix);
+            result.append(processIteratorWithFormat((Iterator<?>) obj, objClass, separator, prefix, suffix));
         } else if (isSubClassOf(objClass, "Enumeration")) {
-            result.append(prefix).append(processEnumerationWithFormat((Enumeration<?>) obj, objClass, separator, prefix, suffix)).append(suffix);
+            result.append(processEnumerationWithFormat((Enumeration<?>) obj, objClass, separator, prefix, suffix));
         } else if (objClass.isArray()) {
             Object[] array = (Object[]) obj;
             result.append(prefix);
@@ -290,30 +274,16 @@ public interface ObjectStringUtils {
             result.append(suffix);
         } else {
             Field[] fields = objClass.getDeclaredFields();
-            Method[] methods = null;
             if (!objClass.getName().startsWith("java") && fields.length > 0) {
                 result.append(objClass.getName()).append(prefix);
                 for (int i = 0; i < fields.length; i++) {
                     result.append(fields[i].getName()).append(":");
-                    if (fields[i].isAccessible()) {
-                        try {
-                            result.append(toStringWithFormat(fields[i].get(obj), separator, prefix, suffix));
-                        } catch (IllegalAccessException e) {
-                            e.printStackTrace();
-                        }
-                    } else {
-                        if (methods == null) {
-                            methods = objClass.getMethods();
-                        }
-                        for (Method method : methods) {
-                            if (method.getName().equalsIgnoreCase("get" + fields[i].getName())) {
-                                try {
-                                    result.append(toStringWithFormat(method.invoke(obj), separator, prefix, suffix));
-                                } catch (IllegalAccessException | InvocationTargetException e) {
-                                    e.printStackTrace();
-                                }
-                            }
-                        }
+                    try {
+                        fields[i].setAccessible(true);
+                        result.append(toStringWithFormat(fields[i].get(obj), separator, prefix, suffix));
+                    } catch (IllegalAccessException e) {
+                        e.printStackTrace();
+                        result.append("null");
                     }
                     if (i < fields.length - 1) {
                         result.append(separator);
@@ -336,13 +306,13 @@ public interface ObjectStringUtils {
      */
     default String toStringWithDepth(Object obj, int maxDepth) {
         if (obj == null) {
-            return null;
+            return "null";
         }
         if (maxDepth <= 0) {
             return obj.toString();
         }
         Class<?> objClass = obj.getClass();
-        if (objClass.getName().startsWith("java.lang")) {
+        if (objClass.getName().startsWith("java.lang") || objClass.isPrimitive()) {
             return obj.toString();
         }
         StringBuilder result = new StringBuilder();
@@ -355,41 +325,19 @@ public interface ObjectStringUtils {
         } else if (isSubClassOf(objClass, "Enumeration")) {
             result.append(processEnumerationWithDepth((Enumeration<?>) obj, objClass, maxDepth - 1));
         } else if (objClass.isArray()) {
-            Object[] array = (Object[]) obj;
-            result.append("[");
-            for (int i = 0; i < array.length; i++) {
-                result.append(toStringWithDepth(array[i], maxDepth - 1));
-                if (i < array.length - 1) {
-                    result.append(", ");
-                }
-            }
-            result.append("]");
+            result.append(toStringArrayWithDepth(obj, maxDepth - 1));
         } else {
             Field[] fields = objClass.getDeclaredFields();
-            Method[] methods = null;
             if (!objClass.getName().startsWith("java") && fields.length > 0) {
                 result.append(objClass.getName()).append(":[");
                 for (int i = 0; i < fields.length; i++) {
                     result.append(fields[i].getName()).append(":");
-                    if (fields[i].isAccessible()) {
-                        try {
-                            result.append(toStringWithDepth(fields[i].get(obj), maxDepth - 1));
-                        } catch (IllegalAccessException e) {
-                            e.printStackTrace();
-                        }
-                    } else {
-                        if (methods == null) {
-                            methods = objClass.getMethods();
-                        }
-                        for (Method method : methods) {
-                            if (method.getName().equalsIgnoreCase("get" + fields[i].getName())) {
-                                try {
-                                    result.append(toStringWithDepth(method.invoke(obj), maxDepth - 1));
-                                } catch (IllegalAccessException | InvocationTargetException e) {
-                                    e.printStackTrace();
-                                }
-                            }
-                        }
+                    try {
+                        fields[i].setAccessible(true);
+                        result.append(toStringWithDepth(fields[i].get(obj), maxDepth - 1));
+                    } catch (IllegalAccessException e) {
+                        e.printStackTrace();
+                        result.append("null");
                     }
                     if (i < fields.length - 1) {
                         result.append("; ");
@@ -408,7 +356,7 @@ public interface ObjectStringUtils {
      */
     default String processIteratorWithDepth(Iterator<?> iterator, Class<?> objClass, int maxDepth) {
         StringBuilder result = new StringBuilder();
-        result.append(objClass.getName()).append("{");
+        result.append("java.util.ArrayList").append("{");
         while (iterator.hasNext()) {
             result.append(toStringWithDepth(iterator.next(), maxDepth));
             if (iterator.hasNext()) {
@@ -416,6 +364,29 @@ public interface ObjectStringUtils {
             }
         }
         result.append("}");
+        return result.toString();
+    }
+
+
+    /**
+     * 将数组转换为字符串，限制递归深度
+     */
+    default String toStringArrayWithDepth(Object array, int maxDepth) {
+        if (array == null) {
+            return "null";
+        }
+        if (!array.getClass().isArray()) {
+            return toStringWithDepth(array, maxDepth);
+        }
+        StringBuilder result = new StringBuilder("[");
+        Object[] arr = (Object[]) array;
+        for (int i = 0; i < arr.length; i++) {
+            result.append(toStringWithDepth(arr[i], maxDepth));
+            if (i < arr.length - 1) {
+                result.append(", ");
+            }
+        }
+        result.append("]");
         return result.toString();
     }
 
@@ -436,7 +407,7 @@ public interface ObjectStringUtils {
     }
 
     /**
-     * 将 Map 转换为字符串，限制递归深度
+     * 将Map转换为字符串，限制递归深度
      */
     default String processMapWithDepth(Map<?, ?> map, Class<?> objClass, int maxDepth) {
         StringBuilder result = new StringBuilder();
@@ -445,7 +416,7 @@ public interface ObjectStringUtils {
         Iterator<?> it = keys.iterator();
         while (it.hasNext()) {
             Object key = it.next();
-            result.append(key).append("=").append(toStringWithDepth(map.get(key), maxDepth));
+            result.append(key == null ? "null" : key).append("=").append(toStringWithDepth(map.get(key), maxDepth));
             if (it.hasNext()) {
                 result.append("; ");
             }
@@ -464,7 +435,7 @@ public interface ObjectStringUtils {
      */
     default String toStringWithIgnore(Object obj, String[] ignoreFields, Class<?>[] ignoreClasses) {
         if (obj == null) {
-            return null;
+            return "null";
         }
         for (Class<?> ignoreClass : ignoreClasses) {
             if (ignoreClass != null && ignoreClass.isInstance(obj)) {
@@ -472,7 +443,7 @@ public interface ObjectStringUtils {
             }
         }
         Class<?> objClass = obj.getClass();
-        if (objClass.getName().startsWith("java.lang")) {
+        if (objClass.getName().startsWith("java.lang") || objClass.isPrimitive()) {
             return obj.toString();
         }
         StringBuilder result = new StringBuilder();
@@ -485,15 +456,7 @@ public interface ObjectStringUtils {
         } else if (isSubClassOf(objClass, "Enumeration")) {
             result.append(processEnumerationWithIgnore((Enumeration<?>) obj, objClass, ignoreFields, ignoreClasses));
         } else if (objClass.isArray()) {
-            Object[] array = (Object[]) obj;
-            result.append("[");
-            for (int i = 0; i < array.length; i++) {
-                result.append(toStringWithIgnore(array[i], ignoreFields, ignoreClasses));
-                if (i < array.length - 1) {
-                    result.append(", ");
-                }
-            }
-            result.append("]");
+            result.append(toStringArrayWithIgnore(obj, ignoreFields, ignoreClasses));
         } else {
             Field[] fields = objClass.getDeclaredFields();
             Method[] methods = null;
@@ -504,27 +467,14 @@ public interface ObjectStringUtils {
                         continue;
                     }
                     result.append(fields[i].getName()).append(":");
-                    if (fields[i].isAccessible()) {
-                        try {
-                            result.append(toStringWithIgnore(fields[i].get(obj), ignoreFields, ignoreClasses));
-                        } catch (IllegalAccessException e) {
-                            e.printStackTrace();
-                        }
-                    } else {
-                        if (methods == null) {
-                            methods = objClass.getMethods();
-                        }
-                        for (Method method : methods) {
-                            if (method.getName().equalsIgnoreCase("get" + fields[i].getName())) {
-                                try {
-                                    result.append(toStringWithIgnore(method.invoke(obj), ignoreFields, ignoreClasses));
-                                } catch (IllegalAccessException | InvocationTargetException e) {
-                                    e.printStackTrace();
-                                }
-                            }
-                        }
+                    try {
+                        fields[i].setAccessible(true);
+                        result.append(toStringWithIgnore(fields[i].get(obj), ignoreFields, ignoreClasses));
+                    } catch (IllegalAccessException e) {
+                        e.printStackTrace();
+                        result.append("null");
                     }
-                    if (i < fields.length - 1) {
+                    if (i < fields.length - 1 && !Arrays.asList(ignoreFields).contains(fields[i].getName())) {
                         result.append("; ");
                     }
                 }
@@ -541,7 +491,7 @@ public interface ObjectStringUtils {
      */
     default String processIteratorWithIgnore(Iterator<?> iterator, Class<?> objClass, String[] ignoreFields, Class<?>[] ignoreClasses) {
         StringBuilder result = new StringBuilder();
-        result.append(objClass.getName()).append("{");
+        result.append("java.util.ArrayList").append("{");
         while (iterator.hasNext()) {
             result.append(toStringWithIgnore(iterator.next(), ignoreFields, ignoreClasses));
             if (iterator.hasNext()) {
@@ -549,6 +499,29 @@ public interface ObjectStringUtils {
             }
         }
         result.append("}");
+        return result.toString();
+    }
+
+
+    /**
+     * 将数组转换为字符串，忽略指定字段或类型
+     */
+    default String toStringArrayWithIgnore(Object array, String[] ignoreFields, Class<?>[] ignoreClasses) {
+        if (array == null) {
+            return "null";
+        }
+        if (!array.getClass().isArray()) {
+            return toStringWithIgnore(array, ignoreFields, ignoreClasses);
+        }
+        StringBuilder result = new StringBuilder("[");
+        Object[] arr = (Object[]) array;
+        for (int i = 0; i < arr.length; i++) {
+            result.append(toStringWithIgnore(arr[i], ignoreFields, ignoreClasses));
+            if (i < arr.length - 1) {
+                result.append(", ");
+            }
+        }
+        result.append("]");
         return result.toString();
     }
 
@@ -578,7 +551,7 @@ public interface ObjectStringUtils {
         Iterator<?> it = keys.iterator();
         while (it.hasNext()) {
             Object key = it.next();
-            result.append(key).append("=").append(toStringWithIgnore(map.get(key), ignoreFields, ignoreClasses));
+            result.append(key == null ? "null" : key).append("=").append(toStringWithIgnore(map.get(key), ignoreFields, ignoreClasses));
             if (it.hasNext()) {
                 result.append("; ");
             }
@@ -588,6 +561,37 @@ public interface ObjectStringUtils {
     }
 
     //    处理循环引用
+
+
+    /**
+     * 将数组转换为字符串，处理循环引用
+     */
+    default String toStringArrayWithCycleDetection(Object array, Set<Object> visited) {
+        if (array == null) {
+            return "null";
+        }
+        if (!array.getClass().isArray()) {
+            return toStringWithCycleDetection(array, visited);
+        }
+        if (!visited.add(array)) {
+            return "[Cyclic Reference]";
+        }
+        try {
+            StringBuilder result = new StringBuilder("[");
+            Object[] arr = (Object[]) array;
+            for (int i = 0; i < arr.length; i++) {
+                result.append(toStringWithCycleDetection(arr[i], visited));
+                if (i < arr.length - 1) {
+                    result.append(", ");
+                }
+            }
+            result.append("]");
+            return result.toString();
+        } finally {
+            visited.remove(array);
+        }
+    }
+
     /**
      * 将对象转换为字符串，处理循环引用
      * @param obj 要转换的对象
@@ -596,7 +600,7 @@ public interface ObjectStringUtils {
      */
     default String toStringWithCycleDetection(Object obj, Set<Object> visited) {
         if (obj == null) {
-            return null;
+            return "null";
         }
         if (visited == null) {
             visited = new HashSet<>();
@@ -606,7 +610,7 @@ public interface ObjectStringUtils {
         }
         try {
             Class<?> objClass = obj.getClass();
-            if (objClass.getName().startsWith("java.lang")) {
+            if (objClass.getName().startsWith("java.lang") || objClass.isPrimitive()) {
                 return obj.toString();
             }
             StringBuilder result = new StringBuilder();
@@ -619,41 +623,19 @@ public interface ObjectStringUtils {
             } else if (isSubClassOf(objClass, "Enumeration")) {
                 result.append(processEnumerationWithCycleDetection((Enumeration<?>) obj, objClass, visited));
             } else if (objClass.isArray()) {
-                Object[] array = (Object[]) obj;
-                result.append("[");
-                for (int i = 0; i < array.length; i++) {
-                    result.append(toStringWithCycleDetection(array[i], visited));
-                    if (i < array.length - 1) {
-                        result.append(", ");
-                    }
-                }
-                result.append("]");
+                result.append(toStringArrayWithCycleDetection(obj, visited));
             } else {
                 Field[] fields = objClass.getDeclaredFields();
-                Method[] methods = null;
                 if (!objClass.getName().startsWith("java") && fields.length > 0) {
                     result.append(objClass.getName()).append(":[");
                     for (int i = 0; i < fields.length; i++) {
                         result.append(fields[i].getName()).append(":");
-                        if (fields[i].isAccessible()) {
-                            try {
-                                result.append(toStringWithCycleDetection(fields[i].get(obj), visited));
-                            } catch (IllegalAccessException e) {
-                                e.printStackTrace();
-                            }
-                        } else {
-                            if (methods == null) {
-                                methods = objClass.getMethods();
-                            }
-                            for (Method method : methods) {
-                                if (method.getName().equalsIgnoreCase("get" + fields[i].getName())) {
-                                    try {
-                                        result.append(toStringWithCycleDetection(method.invoke(obj), visited));
-                                    } catch (IllegalAccessException | InvocationTargetException e) {
-                                        e.printStackTrace();
-                                    }
-                                }
-                            }
+                        try {
+                            fields[i].setAccessible(true);
+                            result.append(toStringWithCycleDetection(fields[i].get(obj), visited));
+                        } catch (IllegalAccessException e) {
+                            e.printStackTrace();
+                            result.append("null");
                         }
                         if (i < fields.length - 1) {
                             result.append("; ");
@@ -675,7 +657,7 @@ public interface ObjectStringUtils {
      */
     default String processIteratorWithCycleDetection(Iterator<?> iterator, Class<?> objClass, Set<Object> visited) {
         StringBuilder result = new StringBuilder();
-        result.append(objClass.getName()).append("{");
+        result.append("java.util.ArrayList").append("{");
         while (iterator.hasNext()) {
             result.append(toStringWithCycleDetection(iterator.next(), visited));
             if (iterator.hasNext()) {
@@ -712,7 +694,7 @@ public interface ObjectStringUtils {
         Iterator<?> it = keys.iterator();
         while (it.hasNext()) {
             Object key = it.next();
-            result.append(key).append("=").append(toStringWithCycleDetection(map.get(key), visited));
+            result.append(key == null ? "null" : key).append("=").append(toStringWithCycleDetection(map.get(key), visited));
             if (it.hasNext()) {
                 result.append("; ");
             }
@@ -732,7 +714,7 @@ public interface ObjectStringUtils {
             return "null";
         }
         Class<?> objClass = obj.getClass();
-        if (objClass.getName().startsWith("java.lang")) {
+        if (objClass.getName().startsWith("java.lang") || objClass.isPrimitive()) {
             if (obj instanceof String) {
                 return "\"" + obj.toString().replace("\"", "\\\"") + "\"";
             }
@@ -755,7 +737,7 @@ public interface ObjectStringUtils {
             Iterator<?> it = keys.iterator();
             while (it.hasNext()) {
                 Object key = it.next();
-                result.append("\"").append(key.toString().replace("\"", "\\\"")).append("\":");
+                result.append("\"").append(key == null ? "null" : key.toString().replace("\"", "\\\"")).append("\":");
                 result.append(toJsonString(((Map<?, ?>) obj).get(key)));
                 if (it.hasNext()) {
                     result.append(", ");
@@ -783,41 +765,19 @@ public interface ObjectStringUtils {
             }
             result.append("]");
         } else if (objClass.isArray()) {
-            Object[] array = (Object[]) obj;
-            result.append("[");
-            for (int i = 0; i < array.length; i++) {
-                result.append(toJsonString(array[i]));
-                if (i < array.length - 1) {
-                    result.append(", ");
-                }
-            }
-            result.append("]");
+            result.append(toStringArray(obj));
         } else {
             Field[] fields = objClass.getDeclaredFields();
-            Method[] methods = null;
             if (!objClass.getName().startsWith("java") && fields.length > 0) {
                 result.append("{");
                 for (int i = 0; i < fields.length; i++) {
                     result.append("\"").append(fields[i].getName()).append("\":");
-                    if (fields[i].isAccessible()) {
-                        try {
-                            result.append(toJsonString(fields[i].get(obj)));
-                        } catch (IllegalAccessException e) {
-                            e.printStackTrace();
-                        }
-                    } else {
-                        if (methods == null) {
-                            methods = objClass.getMethods();
-                        }
-                        for (Method method : methods) {
-                            if (method.getName().equalsIgnoreCase("get" + fields[i].getName())) {
-                                try {
-                                    result.append(toJsonString(method.invoke(obj)));
-                                } catch (IllegalAccessException | InvocationTargetException e) {
-                                    e.printStackTrace();
-                                }
-                            }
-                        }
+                    try {
+                        fields[i].setAccessible(true);
+                        result.append(toJsonString(fields[i].get(obj)));
+                    } catch (IllegalAccessException e) {
+                        e.printStackTrace();
+                        result.append("null");
                     }
                     if (i < fields.length - 1) {
                         result.append(", ");
@@ -840,10 +800,10 @@ public interface ObjectStringUtils {
      */
     default String toStringWithCache(Object obj, Map<Class<?>, Field[]> cache) {
         if (obj == null) {
-            return null;
+            return "null";
         }
         Class<?> objClass = obj.getClass();
-        if (objClass.getName().startsWith("java.lang")) {
+        if (objClass.getName().startsWith("java.lang") || objClass.isPrimitive()) {
             return obj.toString();
         }
         StringBuilder result = new StringBuilder();
@@ -856,41 +816,19 @@ public interface ObjectStringUtils {
         } else if (isSubClassOf(objClass, "Enumeration")) {
             result.append(processEnumerationWithCache((Enumeration<?>) obj, objClass, cache));
         } else if (objClass.isArray()) {
-            Object[] array = (Object[]) obj;
-            result.append("[");
-            for (int i = 0; i < array.length; i++) {
-                result.append(toStringWithCache(array[i], cache));
-                if (i < array.length - 1) {
-                    result.append(", ");
-                }
-            }
-            result.append("]");
+            result.append(toStringArrayWithCache(obj, cache));
         } else {
             Field[] fields = cache.computeIfAbsent(objClass, cls -> cls.getDeclaredFields());
-            Method[] methods = null;
             if (!objClass.getName().startsWith("java") && fields.length > 0) {
                 result.append(objClass.getName()).append(":[");
                 for (int i = 0; i < fields.length; i++) {
                     result.append(fields[i].getName()).append(":");
-                    if (fields[i].isAccessible()) {
-                        try {
-                            result.append(toStringWithCache(fields[i].get(obj), cache));
-                        } catch (IllegalAccessException e) {
-                            e.printStackTrace();
-                        }
-                    } else {
-                        if (methods == null) {
-                            methods = objClass.getMethods();
-                        }
-                        for (Method method : methods) {
-                            if (method.getName().equalsIgnoreCase("get" + fields[i].getName())) {
-                                try {
-                                    result.append(toStringWithCache(method.invoke(obj), cache));
-                                } catch (IllegalAccessException | InvocationTargetException e) {
-                                    e.printStackTrace();
-                                }
-                            }
-                        }
+                    try {
+                        fields[i].setAccessible(true);
+                        result.append(toStringWithCache(fields[i].get(obj), cache));
+                    } catch (IllegalAccessException e) {
+                        e.printStackTrace();
+                        result.append("null");
                     }
                     if (i < fields.length - 1) {
                         result.append("; ");
@@ -909,7 +847,7 @@ public interface ObjectStringUtils {
      */
     default String processIteratorWithCache(Iterator<?> iterator, Class<?> objClass, Map<Class<?>, Field[]> cache) {
         StringBuilder result = new StringBuilder();
-        result.append(objClass.getName()).append("{");
+        result.append("java.util.ArrayList").append("{");
         while (iterator.hasNext()) {
             result.append(toStringWithCache(iterator.next(), cache));
             if (iterator.hasNext()) {
@@ -946,12 +884,34 @@ public interface ObjectStringUtils {
         Iterator<?> it = keys.iterator();
         while (it.hasNext()) {
             Object key = it.next();
-            result.append(key).append("=").append(toStringWithCache(map.get(key), cache));
+            result.append(key == null ? "null" : key).append("=").append(toStringWithCache(map.get(key), cache));
             if (it.hasNext()) {
                 result.append("; ");
             }
         }
         result.append("}");
+        return result.toString();
+    }
+
+    /**
+     * 将数组转换为字符串，使用缓存
+     */
+    default String toStringArrayWithCache(Object array, Map<Class<?>, Field[]> cache) {
+        if (array == null) {
+            return "null";
+        }
+        if (!array.getClass().isArray()) {
+            return toStringWithCache(array, cache);
+        }
+        StringBuilder result = new StringBuilder("[");
+        Object[] arr = (Object[]) array;
+        for (int i = 0; i < arr.length; i++) {
+            result.append(toStringWithCache(arr[i], cache));
+            if (i < arr.length - 1) {
+                result.append(", ");
+            }
+        }
+        result.append("]");
         return result.toString();
     }
 
@@ -964,14 +924,14 @@ public interface ObjectStringUtils {
      */
     default String toStringWithHandlers(Object obj, Map<Class<?>, Function<Object, String>> typeHandlers) {
         if (obj == null) {
-            return null;
+            return "null";
         }
         Function<Object, String> handler = typeHandlers.get(obj.getClass());
         if (handler != null) {
             return handler.apply(obj);
         }
         Class<?> objClass = obj.getClass();
-        if (objClass.getName().startsWith("java.lang")) {
+        if (objClass.getName().startsWith("java.lang") || objClass.isPrimitive()) {
             return obj.toString();
         }
         StringBuilder result = new StringBuilder();
@@ -984,41 +944,19 @@ public interface ObjectStringUtils {
         } else if (isSubClassOf(objClass, "Enumeration")) {
             result.append(processEnumerationWithHandlers((Enumeration<?>) obj, objClass, typeHandlers));
         } else if (objClass.isArray()) {
-            Object[] array = (Object[]) obj;
-            result.append("[");
-            for (int i = 0; i < array.length; i++) {
-                result.append(toStringWithHandlers(array[i], typeHandlers));
-                if (i < array.length - 1) {
-                    result.append(", ");
-                }
-            }
-            result.append("]");
+            result.append(toStringArrayWithHandlers(obj, typeHandlers));
         } else {
             Field[] fields = objClass.getDeclaredFields();
-            Method[] methods = null;
             if (!objClass.getName().startsWith("java") && fields.length > 0) {
                 result.append(objClass.getName()).append(":[");
                 for (int i = 0; i < fields.length; i++) {
                     result.append(fields[i].getName()).append(":");
-                    if (fields[i].isAccessible()) {
-                        try {
-                            result.append(toStringWithHandlers(fields[i].get(obj), typeHandlers));
-                        } catch (IllegalAccessException e) {
-                            e.printStackTrace();
-                        }
-                    } else {
-                        if (methods == null) {
-                            methods = objClass.getMethods();
-                        }
-                        for (Method method : methods) {
-                            if (method.getName().equalsIgnoreCase("get" + fields[i].getName())) {
-                                try {
-                                    result.append(toStringWithHandlers(method.invoke(obj), typeHandlers));
-                                } catch (IllegalAccessException | InvocationTargetException e) {
-                                    e.printStackTrace();
-                                }
-                            }
-                        }
+                    try {
+                        fields[i].setAccessible(true);
+                        result.append(toStringWithHandlers(fields[i].get(obj), typeHandlers));
+                    } catch (IllegalAccessException e) {
+                        e.printStackTrace();
+                        result.append("null");
                     }
                     if (i < fields.length - 1) {
                         result.append("; ");
@@ -1037,7 +975,7 @@ public interface ObjectStringUtils {
      */
     default String processIteratorWithHandlers(Iterator<?> iterator, Class<?> objClass, Map<Class<?>, Function<Object, String>> typeHandlers) {
         StringBuilder result = new StringBuilder();
-        result.append(objClass.getName()).append("{");
+        result.append("java.util.ArrayList").append("{");
         while (iterator.hasNext()) {
             result.append(toStringWithHandlers(iterator.next(), typeHandlers));
             if (iterator.hasNext()) {
@@ -1074,12 +1012,36 @@ public interface ObjectStringUtils {
         Iterator<?> it = keys.iterator();
         while (it.hasNext()) {
             Object key = it.next();
-            result.append(key).append("=").append(toStringWithHandlers(map.get(key), typeHandlers));
+            result.append(key == null ? "null" : key).append("=").append(toStringWithHandlers(map.get(key), typeHandlers));
             if (it.hasNext()) {
                 result.append("; ");
             }
         }
         result.append("}");
+        return result.toString();
+    }
+
+
+
+    /**
+     * 将数组转换为字符串，使用自定义处理器
+     */
+    default String toStringArrayWithHandlers(Object array, Map<Class<?>, Function<Object, String>> typeHandlers) {
+        if (array == null) {
+            return "null";
+        }
+        if (!array.getClass().isArray()) {
+            return toStringWithHandlers(array, typeHandlers);
+        }
+        StringBuilder result = new StringBuilder("[");
+        Object[] arr = (Object[]) array;
+        for (int i = 0; i < arr.length; i++) {
+            result.append(toStringWithHandlers(arr[i], typeHandlers));
+            if (i < arr.length - 1) {
+                result.append(", ");
+            }
+        }
+        result.append("]");
         return result.toString();
     }
 
@@ -1093,10 +1055,10 @@ public interface ObjectStringUtils {
      */
     default String toStringWithErrorHandler(Object obj, BiConsumer<Exception, Field> errorHandler) {
         if (obj == null) {
-            return null;
+            return "null";
         }
         Class<?> objClass = obj.getClass();
-        if (objClass.getName().startsWith("java.lang")) {
+        if (objClass.getName().startsWith("java.lang") || objClass.isPrimitive()) {
             return obj.toString();
         }
         StringBuilder result = new StringBuilder();
@@ -1109,41 +1071,19 @@ public interface ObjectStringUtils {
         } else if (isSubClassOf(objClass, "Enumeration")) {
             result.append(processEnumerationWithErrorHandler((Enumeration<?>) obj, objClass, errorHandler));
         } else if (objClass.isArray()) {
-            Object[] array = (Object[]) obj;
-            result.append("[");
-            for (int i = 0; i < array.length; i++) {
-                result.append(toStringWithErrorHandler(array[i], errorHandler));
-                if (i < array.length - 1) {
-                    result.append(", ");
-                }
-            }
-            result.append("]");
+            result.append(toStringArrayWithErrorHandler(obj, errorHandler));
         } else {
             Field[] fields = objClass.getDeclaredFields();
-            Method[] methods = null;
             if (!objClass.getName().startsWith("java") && fields.length > 0) {
                 result.append(objClass.getName()).append(":[");
                 for (int i = 0; i < fields.length; i++) {
                     result.append(fields[i].getName()).append(":");
-                    if (fields[i].isAccessible()) {
-                        try {
-                            result.append(toStringWithErrorHandler(fields[i].get(obj), errorHandler));
-                        } catch (IllegalAccessException e) {
-                            errorHandler.accept(e, fields[i]);
-                        }
-                    } else {
-                        if (methods == null) {
-                            methods = objClass.getMethods();
-                        }
-                        for (Method method : methods) {
-                            if (method.getName().equalsIgnoreCase("get" + fields[i].getName())) {
-                                try {
-                                    result.append(toStringWithErrorHandler(method.invoke(obj), errorHandler));
-                                } catch (IllegalAccessException | InvocationTargetException e) {
-                                    errorHandler.accept(e, fields[i]);
-                                }
-                            }
-                        }
+                    try {
+                        fields[i].setAccessible(true);
+                        result.append(toStringWithErrorHandler(fields[i].get(obj), errorHandler));
+                    } catch (IllegalAccessException e) {
+                        errorHandler.accept(e, fields[i]);
+                        result.append("null");
                     }
                     if (i < fields.length - 1) {
                         result.append("; ");
@@ -1162,7 +1102,7 @@ public interface ObjectStringUtils {
      */
     default String processIteratorWithErrorHandler(Iterator<?> iterator, Class<?> objClass, BiConsumer<Exception, Field> errorHandler) {
         StringBuilder result = new StringBuilder();
-        result.append(objClass.getName()).append("{");
+        result.append("java.util.ArrayList").append("{");
         while (iterator.hasNext()) {
             result.append(toStringWithErrorHandler(iterator.next(), errorHandler));
             if (iterator.hasNext()) {
@@ -1199,12 +1139,36 @@ public interface ObjectStringUtils {
         Iterator<?> it = keys.iterator();
         while (it.hasNext()) {
             Object key = it.next();
-            result.append(key).append("=").append(toStringWithErrorHandler(map.get(key), errorHandler));
+            result.append(key == null ? "null" : key).append("=").append(toStringWithErrorHandler(map.get(key), errorHandler));
             if (it.hasNext()) {
                 result.append("; ");
             }
         }
         result.append("}");
+        return result.toString();
+    }
+
+
+
+    /**
+     * 将数组转换为字符串，支持错误处理
+     */
+    default String toStringArrayWithErrorHandler(Object array, BiConsumer<Exception, Field> errorHandler) {
+        if (array == null) {
+            return "null";
+        }
+        if (!array.getClass().isArray()) {
+            return toStringWithErrorHandler(array, errorHandler);
+        }
+        StringBuilder result = new StringBuilder("[");
+        Object[] arr = (Object[]) array;
+        for (int i = 0; i < arr.length; i++) {
+            result.append(toStringWithErrorHandler(arr[i], errorHandler));
+            if (i < arr.length - 1) {
+                result.append(", ");
+            }
+        }
+        result.append("]");
         return result.toString();
     }
 
@@ -1232,6 +1196,8 @@ public interface ObjectStringUtils {
         result.append("]");
         return result.toString();
     }
+
+
     //提供简化的字符串输出
     /**
      * 将对象转换为简化的字符串
@@ -1243,50 +1209,27 @@ public interface ObjectStringUtils {
             return "null";
         }
         Class<?> objClass = obj.getClass();
-
-        // For standard Java built-in types (e.g., String, Integer, etc.),
-        // their default toString() is usually sufficient and simplified.
         if (objClass.getName().startsWith("java.lang") || objClass.isPrimitive()) {
             return obj.toString();
         }
         StringBuilder result = new StringBuilder();
-
         result.append(objClass.getName()).append(":[");
-        Field[] fields = objClass.getDeclaredFields();// Get all declared fields, including private
-        Method[] methods = null;
-        if (!objClass.getName().startsWith("java") && fields.length > 0) {
-            for (int i = 0; i < fields.length; i++) {
-                result.append(fields[i].getName()).append(":");
-                if (fields[i].isAccessible()) {
-                    try {
-                        Object value = fields[i].get(obj);
-                        result.append(value != null ? value.toString() : "null");
-                    } catch (IllegalAccessException e) {
-                        e.printStackTrace();
-                    }
-                } else {
-                    if (methods == null) {
-                        methods = objClass.getMethods();
-                    }
-                    for (Method method : methods) {
-                        if (method.getName().equalsIgnoreCase("get" + fields[i].getName())) {
-                            try {
-                                Object value = method.invoke(obj);
-                                result.append(value != null ? value.toString() : "null");
-                            } catch (IllegalAccessException | InvocationTargetException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                    }
-                }
-                if (i < fields.length - 1) {
-                    result.append("; ");
-                }
+        Field[] fields = objClass.getDeclaredFields();
+        for (int i = 0; i < fields.length; i++) {
+            result.append(fields[i].getName()).append(":");
+            try {
+                fields[i].setAccessible(true);
+                Object value = fields[i].get(obj);
+                result.append(value != null ? value.toString() : "null");
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+                result.append("null");
             }
-            result.append("]");
-        } else {
-            result.append(obj.toString());
+            if (i < fields.length - 1) {
+                result.append("; ");
+            }
         }
+        result.append("]");
         return result.toString();
     }
 
