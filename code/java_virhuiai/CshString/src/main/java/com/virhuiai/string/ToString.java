@@ -12,8 +12,10 @@ import java.util.Map;
 
 /**
  * 包含对象转字符串相关的方法
+ *
+ * 一个接口可以继承多个接口，从而聚合所有父接口的抽象方法和默认方法。
  */
-public interface ToString {
+public interface ToString  extends  ToStringDepthLimited,ToStringnCycleDetection{
 
 /**
  * 判断一个类是否是指定的类或接口
@@ -81,6 +83,7 @@ default boolean isClassOrInterface(Class objClass, String className) {
     /**
      * 将Iterator转换为字符串，使用自定义格式
      */
+    @Deprecated
     default String processIteratorWithFormat(Iterator<?> iterator, Class<?> objClass, String separator, String prefix, String suffix) {
         StringBuilder result = new StringBuilder();
         // 修正：使用实际的 objClass.getName()
@@ -98,6 +101,7 @@ default boolean isClassOrInterface(Class objClass, String className) {
     /**
      * 将 Enumeration 转换为字符串，使用自定义格式
      */
+    @Deprecated
     default String processEnumerationWithFormat(Enumeration<?> enumeration, Class<?> objClass, String separator, String prefix, String suffix) {
         StringBuilder result = new StringBuilder();
         result.append(objClass.getName()).append(prefix);
@@ -114,6 +118,7 @@ default boolean isClassOrInterface(Class objClass, String className) {
     /**
      * 将 Map 转换为字符串，使用自定义格式
      */
+    @Deprecated
     default String processMapWithFormat(Map<?, ?> map, Class<?> objClass, String separator, String prefix, String suffix) {
         StringBuilder result = new StringBuilder();
         Collection<?> keys = map.keySet();
@@ -139,6 +144,7 @@ default boolean isClassOrInterface(Class objClass, String className) {
      * @param suffix    容器类型的后缀
      * @return 转换后的字符串
      */
+    @Deprecated
     default String toStringWithFormat(Object obj, String separator, String prefix, String suffix) {
         if (obj == null) {
             return "null";
@@ -202,6 +208,7 @@ default boolean isClassOrInterface(Class objClass, String className) {
      * @param ignoreClasses 忽略的类
      * @return 转换后的字符串
      */
+    @Deprecated
     default String toStringWithIgnore(Object obj, String[] ignoreFields, Class<?>[] ignoreClasses) {
         if (obj == null) {
             return "null";
@@ -260,6 +267,7 @@ default boolean isClassOrInterface(Class objClass, String className) {
     /**
      * 将 Iterator 转换为字符串，忽略指定字段或类型
      */
+    @Deprecated
     default String processIteratorWithIgnore(Iterator<?> iterator, Class<?> objClass, String[] ignoreFields, Class<?>[] ignoreClasses) {
         StringBuilder result = new StringBuilder();
         // Changed "java.util.ArrayList" to objClass.getName() for consistency
@@ -278,6 +286,7 @@ default boolean isClassOrInterface(Class objClass, String className) {
     /**
      * 将数组转换为字符串，忽略指定字段或类型
      */
+    @Deprecated
     default String toStringArrayWithIgnore(Object array, String[] ignoreFields, Class<?>[] ignoreClasses) {
         if (array == null) {
             return "null";
@@ -300,6 +309,7 @@ default boolean isClassOrInterface(Class objClass, String className) {
     /**
      * 将 Enumeration 转换为字符串，忽略指定字段或类型
      */
+    @Deprecated
     default String processEnumerationWithIgnore(Enumeration<?> enumeration, Class<?> objClass, String[] ignoreFields, Class<?>[] ignoreClasses) {
         StringBuilder result = new StringBuilder();
         result.append(objClass.getName()).append("{");
@@ -316,6 +326,7 @@ default boolean isClassOrInterface(Class objClass, String className) {
     /**
      * 将 Map 转换为字符串，忽略指定字段或类型
      */
+    @Deprecated
     default String processMapWithIgnore(Map<?, ?> map, Class<?> objClass, String[] ignoreFields, Class<?>[] ignoreClasses) {
         StringBuilder result = new StringBuilder();
         Collection<?> keys = map.keySet();
