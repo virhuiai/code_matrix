@@ -32,7 +32,7 @@ public enum Str
         implements Validation, Transformation,
         Split, Desensitize,
         Substring, Compare,
-        ToString, ToJson,ToStringDepthLimited,
+        ToString, ToJson,ToStringDepthLimited,ToStringnCycleDetection,
         Length, Url
 {
     Utils;

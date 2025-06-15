@@ -32,7 +32,7 @@ public interface ToStringDepthLimited {
         }
         StringBuilder result = new StringBuilder();
         if (obj instanceof Collection) {
-            result.append(processIteratorWithDepth(((Collection<?>) obj).iterator(), objClass, maxDepth - 1));
+            result.append(processCollectionWithDepth((Collection<?>) obj, objClass, maxDepth - 1));
         } else if (obj instanceof Map) {
             result.append(processMapWithDepth((Map<?, ?>) obj, objClass, maxDepth - 1));
         } else if (obj instanceof Iterator) {
@@ -80,6 +80,13 @@ public interface ToStringDepthLimited {
         }
         result.append("}");
         return result.toString();
+    }
+
+    /**
+     * 将 Collection 转换为字符串，限制递归深度。
+     */
+    default String processCollectionWithDepth(Collection<?> collection, Class<?> objClass, int maxDepth) {
+        return processIteratorWithDepth(collection.iterator(), objClass, maxDepth);
     }
 
 
