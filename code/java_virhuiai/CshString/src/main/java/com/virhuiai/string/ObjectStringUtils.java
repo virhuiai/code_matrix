@@ -58,12 +58,20 @@ default boolean isClassOrInterface(Class objClass, String className) {
      * @return 如果是,返回true,否则返回false
      */
     default boolean isSubClassOf(Class objClass, String className) {
-        if (objClass == null || className == null) {
+        // 根据单元测试 @Test(expected = NullPointerException.class) 的要求，
+        // 当 objClass 为 null 时，应该抛出 NullPointerException。
+        if (objClass == null) {
+            throw new NullPointerException("objClass cannot be null");
+        }
+        if (className == null) {
             return false;
         }
 
         Class<?> currentClass = objClass;
         while (currentClass != null) {
+            // isClassOrInterface 方法已经处理了 objClass 为 null 的情况，
+            // 但在此处，由于我们已在方法开头检查 objClass 为 null 并抛出异常，
+            // currentClass 在循环首次迭代时不会为 null。
             if (isClassOrInterface(currentClass, className)) {
                 return true;
             }
