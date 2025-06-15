@@ -239,20 +239,20 @@ public class ObjectStringUtilsTest {
     @Test
     public void testToString_Collection_ListWithPrimitives() {
         List<Integer> list = Arrays.asList(1, 2, 3);
-        assertEquals("java.util.ArrayList{1; 2; 3}", objectStringUtils.toString(list));
+        assertEquals("java.util.Arrays$ArrayList{1; 2; 3}", objectStringUtils.toString(list));
     }
 
     @Test
     public void testToString_Collection_ListWithObjects() {
         List<SimpleObject> list = Arrays.asList(new SimpleObject());
         String expectedInner = "com.virhuiai.string.ObjectStringUtilsTest$SimpleObject:[name:Test; value:123; active:true]";
-        assertEquals("java.util.ArrayList{" + expectedInner + "}", objectStringUtils.toString(list));
+        assertEquals("java.util.Arrays$ArrayList{" + expectedInner + "}", objectStringUtils.toString(list));
     }
 
     @Test
     public void testToString_Collection_ListWithNull() {
         List<String> list = Arrays.asList("A", null, "B");
-        assertEquals("java.util.ArrayList{A; null; B}", objectStringUtils.toString(list));
+        assertEquals("java.util.Arrays$ArrayList{A; null; B}", objectStringUtils.toString(list));
     }
 
     @Test
@@ -318,7 +318,7 @@ public class ObjectStringUtilsTest {
     public void testToString_NestedObject() {
         NestedObject nested = new NestedObject();
         String expectedSimple = "com.virhuiai.string.ObjectStringUtilsTest$SimpleObject:[name:Test; value:123; active:true]";
-        String expectedList = "java.util.ArrayList{item1; item2}"; // Use Arrays$ArrayList if created by Arrays.asList
+        String expectedList = "java.util.Arrays$ArrayList{item1; item2}"; // Use Arrays$ArrayList if created by Arrays.asList
         String expected = "com.virhuiai.string.ObjectStringUtilsTest$NestedObject:[outerName:Outer; innerObject:" + expectedSimple + "; items:" + expectedList + "]";
         //                 com.virhuiai.string.ObjectStringUtilsTest$NestedObject:[outerName:Outer; innerObject:com.virhuiai.string.ObjectStringUtilsTest$SimpleObject:[name:Test; value:123; active:true]; items:java.util.Arrays$ArrayList{item1; item2; }]
         assertEquals(expected, objectStringUtils.toString(nested));//
@@ -329,7 +329,7 @@ public class ObjectStringUtilsTest {
     @Test
     public void testProcessIterator_Empty() {
         Iterator<String> iterator = Collections.<String>emptyList().iterator();
-        assertEquals("java.util.ArrayList{}", objectStringUtils.processIterator(iterator, iterator.getClass()));
+        assertEquals("java.util.Collections$EmptyIterator{}", objectStringUtils.processIterator(iterator, iterator.getClass()));
         
     }
 
@@ -337,7 +337,7 @@ public class ObjectStringUtilsTest {
     public void testProcessIterator_WithElements() {
         List<String> list = Arrays.asList("A", "B");
         Iterator<String> iterator = list.iterator();
-        assertEquals("java.util.ArrayList{A; B}", objectStringUtils.processIterator(iterator, list.getClass()));
+        assertEquals("java.util.Arrays$ArrayList{A; B}", objectStringUtils.processIterator(iterator, list.getClass()));
 
 //        Expected :java.util.ArrayList{A; B; }
 //        Actual   :java.util.Arrays$ArrayList{A; B; }
@@ -350,7 +350,7 @@ public class ObjectStringUtilsTest {
 
 //        Expected :java.util.ArrayList{X; null; Y; }
 //        Actual   :java.util.Arrays$ArrayList{X; null; Y; }
-        assertEquals("java.util.ArrayList{X; null; Y}", objectStringUtils.processIterator(iterator, list.getClass()));
+        assertEquals("java.util.Arrays$ArrayList{X; null; Y}", objectStringUtils.processIterator(iterator, list.getClass()));
     }
 
     // --- Tests for processEnumeration ---
@@ -427,7 +427,7 @@ public class ObjectStringUtilsTest {
     public void testProcessIteratorWithFormat_WithElements() {
         List<String> list = Arrays.asList("A", "B", "C");
         Iterator<String> iterator = list.iterator();
-        assertEquals("java.util.ArrayList[A::B::C]", objectStringUtils.processIteratorWithFormat(iterator, list.getClass(), "::", "[", "]"));
+        assertEquals("java.util.Arrays$ArrayList[A::B::C]", objectStringUtils.processIteratorWithFormat(iterator, list.getClass(), "::", "[", "]"));
         
     }
 
@@ -435,7 +435,7 @@ public class ObjectStringUtilsTest {
     public void testProcessIteratorWithFormat_WithNullsAndCustomSeparator() {
         List<String> list = Arrays.asList("X", null, "Y");
         Iterator<String> iterator = list.iterator();
-        assertEquals("java.util.ArrayList<X|null|Y>", objectStringUtils.processIteratorWithFormat(iterator, list.getClass(), "|", "<", ">"));
+        assertEquals("java.util.Arrays$ArrayList<X|null|Y>", objectStringUtils.processIteratorWithFormat(iterator, list.getClass(), "|", "<", ">"));
         //
     }
 
@@ -511,7 +511,7 @@ public class ObjectStringUtilsTest {
     @Test
     public void testToStringWithFormat_Collection() {
         List<String> list = Arrays.asList("A", "B");
-        assertEquals("java.util.ArrayList[A;B]", objectStringUtils.toStringWithFormat(list, ";", "[", "]"));
+        assertEquals("java.util.Arrays$ArrayList[A;B]", objectStringUtils.toStringWithFormat(list, ";", "[", "]"));
 
     }
 
@@ -593,7 +593,7 @@ public class ObjectStringUtilsTest {
         // items: processIteratorWithDepth(items.iterator(), List.class, 1) -> List.class + "{" + toStringWithDepth("item1",1) + "; " + toStringWithDepth("item2",1) + "; }"
         String expectedInnerObjStrAtDepth2 = "com.virhuiai.string.ObjectStringUtilsTest$SimpleObject:[name:Test; value:123; active:true]";
         String expectedListItemsStrAtDepth2 = "item1; item2"; // Still just item; because it's a String
-        String expectedDepth2ForNested = "com.virhuiai.string.ObjectStringUtilsTest$NestedObject:[outerName:Outer; innerObject:" + expectedInnerObjStrAtDepth2 + "; items:java.util.ArrayList{" + expectedListItemsStrAtDepth2 + "}]";
+        String expectedDepth2ForNested = "com.virhuiai.string.ObjectStringUtilsTest$NestedObject:[outerName:Outer; innerObject:" + expectedInnerObjStrAtDepth2 + "; items:java.util.Arrays$ArrayList{" + expectedListItemsStrAtDepth2 + "}]";
         assertEquals(expectedDepth2ForNested, objectStringUtils.toStringWithDepth(nested, 2));
     }
 
@@ -775,13 +775,13 @@ public class ObjectStringUtilsTest {
     @Test
     public void testToJsonString_Collection_ListWithPrimitives() {
         List<Integer> list = Arrays.asList(1, 2, 3);
-        assertEquals("[1, 2, 3]", objectStringUtils.toJsonString(list));
+        assertEquals("[1,2,3]", objectStringUtils.toJsonString(list));
     }
 
     @Test
     public void testToJsonString_Collection_ListWithStrings() {
         List<String> list = Arrays.asList("A", "B", "C");
-        assertEquals("[\"A\", \"B\", \"C\"]", objectStringUtils.toJsonString(list));
+        assertEquals("[\"A\",\"B\",\"C\"]", objectStringUtils.toJsonString(list));
     }
 
     @Test
@@ -794,7 +794,7 @@ public class ObjectStringUtilsTest {
     @Test
     public void testToJsonString_Collection_ListWithNull() {
         List<String> list = Arrays.asList("A", null, "B");
-        assertEquals("[\"A\", null, \"B\"]", objectStringUtils.toJsonString(list));
+        assertEquals("[\"A\",null,\"B\"]", objectStringUtils.toJsonString(list));
     }
 
     @Test
@@ -837,14 +837,14 @@ public class ObjectStringUtilsTest {
         // intArray is Object, so it will be treated as an Object array.
         // The elements will be boxed to Integer and then toJsonString will be called.
         // It correctly handles primitive arrays by casting to Object[] and iterating.
-        assertEquals("[1, 2, 3]", objectStringUtils.toJsonString(new Integer[]{1, 2, 3}));
+        assertEquals("[1,2,3]", objectStringUtils.toJsonString(new Integer[]{1, 2, 3}));
     }
 
     @Test
     public void testToJsonString_Array_ObjectArray() {
         SimpleObject[] objArray = {new SimpleObject(), null};
         String simpleObjJson = objectStringUtils.toJsonString(new SimpleObject());
-        assertEquals("[{\"name\":\"Test\", \"value\":123, \"active\":true}, null]", objectStringUtils.toJsonString(objArray));
+        assertEquals("[{\"name\":\"Test\",\"value\":123,\"active\":true},null]", objectStringUtils.toJsonString(objArray));
     }
 
     @Test
@@ -853,7 +853,7 @@ public class ObjectStringUtilsTest {
         String simpleObjJson = objectStringUtils.toJsonString(new SimpleObject());
         // For Lists within custom objects, they should be rendered as JSON arrays
         // The "items" field in NestedObject is a List.
-        String expectedItemsJson = "[\"item1\", \"item2\"]"; // Assuming `toJsonString` for list is correct
+        String expectedItemsJson = "[\"item1\",\"item2\"]"; // Assuming `toJsonString` for list is correct
 
         String result = objectStringUtils.toJsonString(nested);
         assertTrue(result.startsWith("{"));
