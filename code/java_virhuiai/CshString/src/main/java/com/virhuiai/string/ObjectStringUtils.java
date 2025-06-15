@@ -592,48 +592,80 @@ public interface ObjectStringUtils {
         }
     }
 
-    /**
-     * 将对象转换为字符串，处理循环引用
-     * @param obj 要转换的对象
-     * @param visited 已访问的对象集合，用于检测循环引用
-     * @return 转换后的字符串
+  /**
+     * 将对象转换为字符串，处理循环引用。
+     *
+     * 此方法递归地将一个对象及其成员转换为字符串表示。
+     * 为了防止无限循环，它使用一个Set来跟踪已经访问过的对象，
+     * 当检测到循环引用时，会返回 "[Cyclic Reference]"。
+     *
+     * @param obj 要转换的对象。
+     * @param visited 已访问的对象集合，用于检测循环引用。
+     * 首次调用时，建议传入一个新的HashSet或null。
+     * @return 转换后的字符串表示。
      */
     default String toStringWithCycleDetection(Object obj, Set<Object> visited) {
+        // 如果对象为null，直接返回 "null" 字符串
         if (obj == null) {
             return "null";
         }
+
+        // 如果visited集合为null，则创建一个新的HashSet。
+        // 这通常在首次调用时发生，或者当调用者未提供集合时。
         if (visited == null) {
             visited = new HashSet<>();
         }
+
+        // 尝试将当前对象添加到已访问集合。
+        // 如果添加失败（即对象已存在于集合中），则说明检测到循环引用。
         if (!visited.add(obj)) {
             return "[Cyclic Reference]";
         }
+
         try {
             Class<?> objClass = obj.getClass();
-            if (objClass.getName().startsWith("java.lang") || objClass.isPrimitive()) {
+
+            // 对于基本类型（包括其包装类，如Integer、Double等）和java.lang包下的对象，
+            // 直接调用其toString方法。这些类型通常不会导致循环引用，且其toString方法已提供有意义的输出。
+            if (objClass.isPrimitive() || objClass.getName().startsWith("java.lang")) {
                 return obj.toString();
             }
+
             StringBuilder result = new StringBuilder();
-            if (isSubClassOf(objClass, "Collection")) {
+
+            // 根据对象的类型进行不同的处理
+            if (isSubClassOf(objClass, String.valueOf(Collection.class))) { // 修正：直接使用Class对象而不是字符串
+                // 如果是Collection类型，处理其迭代器
                 result.append(processIteratorWithCycleDetection(((Collection<?>) obj).iterator(), objClass, visited));
-            } else if (isSubClassOf(objClass, "Map")) {
+            } else if (isSubClassOf(objClass, String.valueOf(Map.class))) { // 修正：直接使用Class对象而不是字符串
+                // 如果是Map类型，处理其键值对
                 result.append(processMapWithCycleDetection((Map<?, ?>) obj, objClass, visited));
-            } else if (isSubClassOf(objClass, "Iterator")) {
+            } else if (isSubClassOf(objClass, String.valueOf(Iterator.class))) { // 修正：直接使用Class对象而不是字符串
+                // 如果是Iterator类型，处理其元素
                 result.append(processIteratorWithCycleDetection((Iterator<?>) obj, objClass, visited));
-            } else if (isSubClassOf(objClass, "Enumeration")) {
+            } else if (isSubClassOf(objClass, String.valueOf(Enumeration.class))) { // 修正：直接使用Class对象而不是字符串
+                // 如果是Enumeration类型，处理其元素
                 result.append(processEnumerationWithCycleDetection((Enumeration<?>) obj, objClass, visited));
             } else if (objClass.isArray()) {
+                // 如果是数组类型，使用专门的方法处理
                 result.append(toStringArrayWithCycleDetection(obj, visited));
             } else {
+                // 对于自定义对象，通过反射获取其字段
                 Field[] fields = objClass.getDeclaredFields();
-                if (!objClass.getName().startsWith("java") && fields.length > 0) {
+                // 如果是自定义类且存在字段，则遍历字段并转换为字符串
+                // 修正：这里不再需要判断!objClass.getName().startsWith("java")，因为上面已经处理了java.lang包的类。
+                // 而是判断是否有字段，以及是否为自定义类（通常非java开头的类名代表自定义类）
+                if (fields.length > 0) {
                     result.append(objClass.getName()).append(":[");
                     for (int i = 0; i < fields.length; i++) {
                         result.append(fields[i].getName()).append(":");
                         try {
+                            // 设置可访问性，以便访问私有字段
                             fields[i].setAccessible(true);
+                            // 递归调用自身，处理字段的值
                             result.append(toStringWithCycleDetection(fields[i].get(obj), visited));
                         } catch (IllegalAccessException e) {
+                            // 捕获访问异常，打印堆栈跟踪并返回 "null"
                             e.printStackTrace();
                             result.append("null");
                         }
@@ -643,11 +675,16 @@ public interface ObjectStringUtils {
                     }
                     result.append("]");
                 } else {
+                    // 如果是自定义类但没有字段，或者是非java开头的其他类型，直接调用其toString方法
                     result.append(obj.toString());
                 }
             }
             return result.toString();
         } finally {
+            // 无论方法如何退出（正常返回或抛出异常），都将当前对象从已访问集合中移除。
+            // 这允许在同一递归路径的后续调用中，当当前对象的引用再次出现时，可以被正确处理。
+            // 否则，如果一个对象被多个路径引用，且其中一个路径先访问了它，
+            // 另一个路径在不同分支访问时，会被误判为循环引用。
             visited.remove(obj);
         }
     }

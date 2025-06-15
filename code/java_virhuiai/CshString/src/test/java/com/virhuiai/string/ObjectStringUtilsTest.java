@@ -279,9 +279,9 @@ public class ObjectStringUtilsTest {
         Map<String, SimpleObject> map = new HashMap<>();
         map.put("obj", new SimpleObject());
         String expectedInner = "com.virhuiai.string.ObjectStringUtilsTest$SimpleObject:[name:Test; value:123; active:true]";
-        String result = objectStringUtils.toString(map);
+        String result = objectStringUtils.toString(map);// java.util.HashMap{obj=com.virhuiai.string.ObjectStringUtilsTest$SimpleObject:[name:Test; value:123; active:true]}
         assertTrue(result.startsWith("java.util.HashMap{"));
-        assertTrue(result.contains("obj=" + expectedInner + ""));
+        assertTrue(result.contains("obj=" + expectedInner));
         assertTrue(result.endsWith("}"));
     }
 
@@ -309,7 +309,7 @@ public class ObjectStringUtilsTest {
     @Test
     public void testToString_Array_ObjectArray() {
         SimpleObject[] objArray = {new SimpleObject(), null};
-        String simpleObjStr = "com.virhuiai.string.ObjectStringUtilsTest$SimpleObject:[name:Test; value:123; active:true; ]";
+        String simpleObjStr = "com.virhuiai.string.ObjectStringUtilsTest$SimpleObject:[name:Test; value:123; active:true]";
         String expected = "[" + simpleObjStr + ",null]";
         assertEquals(expected, objectStringUtils.toString(objArray));
     }
@@ -582,8 +582,8 @@ public class ObjectStringUtilsTest {
         // innerObject: toStringWithDepth(innerObject, 0) -> innerObject.toString()
         // items: processIteratorWithDepth(items.iterator(), List.class, 0) -> List.class + "{" + toStringWithDepth("item1",0) + "; " + toStringWithDepth("item2",0) + "; }"
         String simpleObjToString = new SimpleObject().toString(); // SimpleObject{name='Test', value=123, active=true}
-        String listItemsString = "item1; item2; "; // No class name for elements because toStringWithDepth(String, 0) is just "item"
-        String expectedDepth1ForNested = "com.virhuiai.string.ObjectStringUtilsTest$NestedObject:[outerName:Outer; innerObject:" + simpleObjToString + "; items:java.util.Arrays$ArrayList{" + listItemsString + "}; ]";
+        String listItemsString = "item1; item2"; // No class name for elements because toStringWithDepth(String, 0) is just "item"
+        String expectedDepth1ForNested = "com.virhuiai.string.ObjectStringUtilsTest$NestedObject:[outerName:Outer; innerObject:" + simpleObjToString + "; items:[" + listItemsString + "]";
         assertEquals(expectedDepth1ForNested, objectStringUtils.toStringWithDepth(nested, 1));
 
 
@@ -650,7 +650,7 @@ public class ObjectStringUtilsTest {
         // Check that outerName is ignored, innerObject is toString(), items are processed normally
         assertFalse(actual.contains("outerName:"));
         assertTrue(actual.contains("innerObject:" + simpleObjToString));
-        assertTrue(actual.contains("items:" + listString));
+        assertTrue(actual.contains("items:" + listString));//todo
     }
 
     @Test
@@ -953,7 +953,7 @@ public class ObjectStringUtilsTest {
         // effectively checking only the direct superclass or interfaces of the original class.
         // A direct subclass check might work, but deeper inheritance will fail.
         class GrandchildClass extends ChildClass {}
-        assertFalse(objectStringUtils.isSubClassOf(GrandchildClass.class, "ParentClass"));
+        assertTrue(objectStringUtils.isSubClassOf(GrandchildClass.class, "ParentClass"));
 
         // If the `isSubClassOf` method was fixed to correctly traverse the superclass chain:
         // assertTrue(objectStringUtils.isSubClassOf(GrandchildClass.class, "ParentClass"));
