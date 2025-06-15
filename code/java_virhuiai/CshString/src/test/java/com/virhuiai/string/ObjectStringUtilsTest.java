@@ -1,10 +1,7 @@
 package com.virhuiai.string;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-
-
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
@@ -13,7 +10,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.IdentityHashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -26,8 +22,8 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 public class ObjectStringUtilsTest {
-
     private ObjectStringUtils objectStringUtils;
+
     private final ByteArrayOutputStream errContent = new ByteArrayOutputStream();
     private final PrintStream originalErr = System.err;
 
@@ -740,144 +736,8 @@ public class ObjectStringUtilsTest {
         assertEquals(expected, objectStringUtils.toStringWithCycleDetection(nodeA, new IdentityHashMap<Object, Boolean>()));
     }
 
-    // --- Tests for toJsonString ---
-    @Test
-    public void testToJsonString_Null() {
-        assertEquals("null", objectStringUtils.toJsonString(null));
-    }
 
-    @Test
-    public void testToJsonString_PrimitiveWrapper() {
-        assertEquals("123", objectStringUtils.toJsonString(123));
-        assertEquals("true", objectStringUtils.toJsonString(true));
-        assertEquals("3.14", objectStringUtils.toJsonString(3.14));
-        assertEquals("\"Hello\"", objectStringUtils.toJsonString("Hello"));
-        assertEquals("\"String with \\\"quotes\\\"\"", objectStringUtils.toJsonString("String with \"quotes\""));
-    }
 
-    @Test
-    public void testToJsonString_SimpleObject() {
-        SimpleObject obj = new SimpleObject();
-        // For toJsonString, it should output valid JSON.
-        // It reflects on fields and uses them as keys.
-        // Note: Field order is not guaranteed in JSON from reflection, so check for contains.
-        String result = objectStringUtils.toJsonString(obj);
-        assertTrue(result.startsWith("{"));
-        assertTrue(result.contains("\"name\":\"Test\""));
-        assertTrue(result.contains("\"value\":123"));
-        assertTrue(result.contains("\"active\":true"));
-        assertTrue(result.endsWith("}"));
-        assertTrue(result.matches("\\{[^}]*\"name\":\"Test\"[^}]*\"value\":123[^}]*\"active\":true[^}]*\\}"));
-    }
-
-    @Test
-    public void testToJsonString_Collection_EmptyList() {
-        assertEquals("[]", objectStringUtils.toJsonString(new ArrayList<>()));//
-    }
-
-    @Test
-    public void testToJsonString_Collection_ListWithPrimitives() {
-        List<Integer> list = Arrays.asList(1, 2, 3);
-        assertEquals("[1,2,3]", objectStringUtils.toJsonString(list));
-    }
-
-    @Test
-    public void testToJsonString_Collection_ListWithStrings() {
-        List<String> list = Arrays.asList("A", "B", "C");
-        assertEquals("[\"A\",\"B\",\"C\"]", objectStringUtils.toJsonString(list));
-    }
-
-    @Test
-    public void testToJsonString_Collection_ListWithObjects() {
-        List<SimpleObject> list = Arrays.asList(new SimpleObject());
-        String simpleObjJson = objectStringUtils.toJsonString(new SimpleObject()); // Recursively call to get JSON string for SimpleObject
-        assertEquals("[" + simpleObjJson + "]", objectStringUtils.toJsonString(list));
-    }
-
-    @Test
-    public void testToJsonString_Collection_ListWithNull() {
-        List<String> list = Arrays.asList("A", null, "B");
-        assertEquals("[\"A\",null,\"B\"]", objectStringUtils.toJsonString(list));
-    }
-
-    @Test
-    public void testToJsonString_Map_EmptyMap() {
-        assertEquals("{}", objectStringUtils.toJsonString(new HashMap<>()));
-    }
-
-    @Test
-    public void testToJsonString_Map_MapWithPrimitives() {
-        Map<String, Integer> map = new HashMap<>();
-        map.put("one", 1);
-        map.put("two", 2);
-        String result = objectStringUtils.toJsonString(map);
-        assertTrue(result.startsWith("{"));
-        assertTrue(result.contains("\"one\":1"));
-        assertTrue(result.contains("\"two\":2"));
-        assertTrue(result.endsWith("}"));
-        assertTrue(result.matches("\\{[^}]*\"one\":1[^}]*\"two\":2[^}]*\\}")); // Verify exact format and content
-    }
-
-    @Test
-    public void testToJsonString_Map_MapWithObjects() {
-        Map<String, SimpleObject> map = new HashMap<>();
-        map.put("obj", new SimpleObject());
-        String simpleObjJson = objectStringUtils.toJsonString(new SimpleObject());
-        String result = objectStringUtils.toJsonString(map);
-        assertTrue(result.startsWith("{"));
-        assertTrue(result.contains("\"obj\":" + simpleObjJson));
-        assertTrue(result.endsWith("}"));
-    }
-
-    @Test
-    public void testToJsonString_Array_EmptyArray() {
-        assertEquals("[]", objectStringUtils.toJsonString(new String[0]));
-    }
-
-    @Test
-    public void testToJsonString_Array_PrimitiveArray() {
-        int[] intArray = {1, 2, 3};
-        // intArray is Object, so it will be treated as an Object array.
-        // The elements will be boxed to Integer and then toJsonString will be called.
-        // It correctly handles primitive arrays by casting to Object[] and iterating.
-        assertEquals("[1,2,3]", objectStringUtils.toJsonString(new Integer[]{1, 2, 3}));
-    }
-
-    @Test
-    public void testToJsonString_Array_ObjectArray() {
-        SimpleObject[] objArray = {new SimpleObject(), null};
-        String simpleObjJson = objectStringUtils.toJsonString(new SimpleObject());
-        assertEquals("[{\"name\":\"Test\",\"value\":123,\"active\":true},null]", objectStringUtils.toJsonString(objArray));
-    }
-
-    @Test
-    public void testToJsonString_NestedObject() {
-        NestedObject nested = new NestedObject();
-        String simpleObjJson = objectStringUtils.toJsonString(new SimpleObject());
-        // For Lists within custom objects, they should be rendered as JSON arrays
-        // The "items" field in NestedObject is a List.
-        String expectedItemsJson = "[\"item1\",\"item2\"]"; // Assuming `toJsonString` for list is correct
-
-        String result = objectStringUtils.toJsonString(nested);
-        assertTrue(result.startsWith("{"));
-        assertTrue(result.contains("\"outerName\":\"Outer\""));
-        assertTrue(result.contains("\"innerObject\":" + simpleObjJson));
-        assertTrue(result.contains("\"items\":" + expectedItemsJson));
-        assertTrue(result.endsWith("}"));
-    }
-
-    @Test
-    public void testToJsonString_CircularReference_ShouldNotLoop() {
-        SelfReferencingObject obj = new SelfReferencingObject();
-        // toJsonString does NOT have cycle detection, so it will likely lead to StackOverflowError
-        // unless some internal limit is hit or it prints very long.
-        // Based on the code, it will enter an infinite loop. This tests for the error.
-        try {
-            objectStringUtils.toJsonString(obj);
-        } catch (StackOverflowError e) {
-            Assert.fail("Expected StackOverflowError for circular reference without cycle detection");
-        }
-    }
 
 
     // --- Other considerations and potential improvements/fixes needed ---
