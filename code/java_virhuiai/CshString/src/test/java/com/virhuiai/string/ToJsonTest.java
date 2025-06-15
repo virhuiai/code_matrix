@@ -11,13 +11,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class JsonStringConverterTest extends TestCase {
+public class ToJsonTest extends TestCase {
 
-    private JsonStringConverter objectStringUtils;
+    private ToJson objectStringUtils;
 
     @Before
     public void setUp() {
-        objectStringUtils = new JsonStringConverter() {};
+        objectStringUtils = new ToJson() {};
         // Redirect System.err to capture printStackTrace output
     }
 
@@ -32,7 +32,7 @@ public class JsonStringConverterTest extends TestCase {
 
     @Test
     public void testToJsonString_SimpleObject() {
-        ObjectStringUtilsTest.SimpleObject obj = new ObjectStringUtilsTest.SimpleObject();
+        ToStringTest.SimpleObject obj = new ToStringTest.SimpleObject();
         // For toJsonString, it should output valid JSON.
         // It reflects on fields and uses them as keys.
         // Note: Field order is not guaranteed in JSON from reflection, so check for contains.
@@ -59,8 +59,8 @@ public class JsonStringConverterTest extends TestCase {
 
     @Test
     public void testToJsonString_Collection_ListWithObjects() {
-        List<ObjectStringUtilsTest.SimpleObject> list = Arrays.asList(new ObjectStringUtilsTest.SimpleObject());
-        String simpleObjJson = objectStringUtils.toJsonString(new ObjectStringUtilsTest.SimpleObject()); // Recursively call to get JSON string for SimpleObject
+        List<ToStringTest.SimpleObject> list = Arrays.asList(new ToStringTest.SimpleObject());
+        String simpleObjJson = objectStringUtils.toJsonString(new ToStringTest.SimpleObject()); // Recursively call to get JSON string for SimpleObject
         assertEquals("[" + simpleObjJson + "]", objectStringUtils.toJsonString(list));
     }
 
@@ -81,9 +81,9 @@ public class JsonStringConverterTest extends TestCase {
 
     @Test
     public void testToJsonString_Map_MapWithObjects() {
-        Map<String, ObjectStringUtilsTest.SimpleObject> map = new HashMap<>();
-        map.put("obj", new ObjectStringUtilsTest.SimpleObject());
-        String simpleObjJson = objectStringUtils.toJsonString(new ObjectStringUtilsTest.SimpleObject());
+        Map<String, ToStringTest.SimpleObject> map = new HashMap<>();
+        map.put("obj", new ToStringTest.SimpleObject());
+        String simpleObjJson = objectStringUtils.toJsonString(new ToStringTest.SimpleObject());
         String result = objectStringUtils.toJsonString(map);
         assertTrue(result.startsWith("{"));
         assertTrue(result.contains("\"obj\":" + simpleObjJson));
@@ -110,15 +110,15 @@ public class JsonStringConverterTest extends TestCase {
 
     @Test
     public void testToJsonString_Array_ObjectArray() {
-        ObjectStringUtilsTest.SimpleObject[] objArray = {new ObjectStringUtilsTest.SimpleObject(), null};
-        String simpleObjJson = objectStringUtils.toJsonString(new ObjectStringUtilsTest.SimpleObject());
+        ToStringTest.SimpleObject[] objArray = {new ToStringTest.SimpleObject(), null};
+        String simpleObjJson = objectStringUtils.toJsonString(new ToStringTest.SimpleObject());
         assertEquals("[{\"name\":\"Test\",\"value\":123,\"active\":true},null]", objectStringUtils.toJsonString(objArray));
     }
 
     @Test
     public void testToJsonString_NestedObject() {
-        ObjectStringUtilsTest.NestedObject nested = new ObjectStringUtilsTest.NestedObject();
-        String simpleObjJson = objectStringUtils.toJsonString(new ObjectStringUtilsTest.SimpleObject());
+        ToStringTest.NestedObject nested = new ToStringTest.NestedObject();
+        String simpleObjJson = objectStringUtils.toJsonString(new ToStringTest.SimpleObject());
         // For Lists within custom objects, they should be rendered as JSON arrays
         // The "items" field in NestedObject is a List.
         String expectedItemsJson = "[\"item1\",\"item2\"]"; // Assuming `toJsonString` for list is correct
@@ -133,7 +133,7 @@ public class JsonStringConverterTest extends TestCase {
 
     @Test
     public void testToJsonString_CircularReference_ShouldNotLoop() {
-        ObjectStringUtilsTest.SelfReferencingObject obj = new ObjectStringUtilsTest.SelfReferencingObject();
+        ToStringTest.SelfReferencingObject obj = new ToStringTest.SelfReferencingObject();
         // toJsonString does NOT have cycle detection, so it will likely lead to StackOverflowError
         // unless some internal limit is hit or it prints very long.
         // Based on the code, it will enter an infinite loop. This tests for the error.

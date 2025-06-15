@@ -3,9 +3,9 @@ package com.virhuiai.string;
 import org.junit.Assert;
 import org.junit.Test;
 
-public class StringDesensitizeUtilsTest {
+public class DesensitizeTest {
 
-    private StringDesensitizeUtils utils = new StringDesensitizeUtils() {};
+    private Desensitize utils = new Desensitize() {};
 
     @Test
     public void testStrDesensitize() {

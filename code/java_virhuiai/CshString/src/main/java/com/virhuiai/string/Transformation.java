@@ -6,7 +6,7 @@ import java.net.URLEncoder;
 /**
  * 字符串转换相关的方法
  */
-public interface StringTransformationUtils {
+public interface Transformation {
 
     /**
      * 替换字符串

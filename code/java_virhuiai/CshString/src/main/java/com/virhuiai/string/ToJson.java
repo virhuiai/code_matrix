@@ -8,7 +8,7 @@ import java.util.Map;
 /**
  * 将对象转换为 JSON 格式字符串的功能。
  */
-public interface JsonStringConverter {
+public interface ToJson {
 
 
 

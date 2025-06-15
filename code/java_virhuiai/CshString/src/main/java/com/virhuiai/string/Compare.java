@@ -7,7 +7,7 @@ import java.util.List;
  *    - contains
  *    - compapre
  */
-public interface StringCompareUtils {
+public interface Compare {
 
     /**
      * 判断字符序列是否包含指定的字符序列

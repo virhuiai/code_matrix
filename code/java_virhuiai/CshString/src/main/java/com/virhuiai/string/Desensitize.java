@@ -3,7 +3,7 @@ package com.virhuiai.string;
 /**
  * 包含字符串脱敏相关的方法
  */
-public interface StringDesensitizeUtils {
+public interface Desensitize {
 
 
     /**

@@ -6,9 +6,9 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.List;
 
-public class StringCompareUtilsTest {
+public class CompareTest {
 
-    private StringCompareUtils utils = new StringCompareUtils() {};
+    private Compare utils = new Compare() {};
 
     @Test
     public void testContainsCharSequence() {

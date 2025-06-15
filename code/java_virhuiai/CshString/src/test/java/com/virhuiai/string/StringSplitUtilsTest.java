@@ -8,7 +8,7 @@ import java.util.List;
 
 public class StringSplitUtilsTest {
 
-    private StringSplitUtils utils = new StringSplitUtils() {};
+    private Split utils = new Split() {};
 
     @Test
     public void testTokenizeToStringArray() {

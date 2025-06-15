@@ -3,9 +3,9 @@ package com.virhuiai.string;
 import org.junit.Assert;
 import org.junit.Test;
 
-public class StringSubstringUtilsTest {
+public class SubstringTest {
 
-    private StringSubstringUtils utils = new StringSubstringUtils() {};
+    private Substring utils = new Substring() {};
     @Test
     public void testSubstringWithStartIndex() {
         // 正案例

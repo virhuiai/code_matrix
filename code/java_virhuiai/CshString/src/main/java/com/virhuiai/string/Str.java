@@ -29,10 +29,11 @@ package com.virhuiai.string;
 
  */
 public enum Str
-        implements StringValidationUtils, StringTransformationUtils,
-        StringSplitUtils, StringDesensitizeUtils,
-        StringSubstringUtils, StringCompareUtils,
-        ObjectStringUtils, StringLengthUtils,UrlUtils
+        implements Validation, Transformation,
+        Split, Desensitize,
+        Substring, Compare,
+        ToString, ToJson,
+        Length, Url
 {
     Utils;
     private Str() {

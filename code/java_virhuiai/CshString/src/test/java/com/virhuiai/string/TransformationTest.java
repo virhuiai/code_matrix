@@ -5,8 +5,8 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 
-public class StringTransformationUtilsTest {
-    private StringTransformationUtils utils = new StringTransformationUtils() {};
+public class TransformationTest {
+    private Transformation utils = new Transformation() {};
 
     @Test
     public void testReplace() {

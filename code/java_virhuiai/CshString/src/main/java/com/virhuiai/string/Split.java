@@ -9,7 +9,7 @@ import java.util.StringTokenizer;
  * 包含字符串分割相关的方法
  *    - tokenizeToStringArray
  */
-public interface StringSplitUtils {
+public interface Split {
 
 
 

@@ -4,7 +4,7 @@ package com.virhuiai.string;
  * 包含获取字符序列长度的方法
  *    - length
  */
-public interface StringLengthUtils {
+public interface Length {
 
     /**
      * 返回字符序列的长度

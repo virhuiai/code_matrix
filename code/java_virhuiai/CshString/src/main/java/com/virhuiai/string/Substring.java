@@ -4,7 +4,7 @@ package com.virhuiai.string;
  * 包含字符串截取相关的方法
  *    - substring
  */
-public interface StringSubstringUtils {
+public interface Substring {
 
     /**
      * 返回字符串从指定位置开始的子字符串

@@ -11,7 +11,7 @@ import java.util.Map;
 /**
  * 包含 URL 解析和提取相关的工具方法
  */
-public interface UrlUtils {
+public interface Url {
 
     /**
      * 提取 URL 地址中的协议部分

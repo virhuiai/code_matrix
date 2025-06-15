@@ -3,7 +3,7 @@ package com.virhuiai.string;
 /**
  * 包含字符串验证相关的方法
  */
-public interface StringValidationUtils {
+public interface Validation {
     /**
      * 判断字符序列是否 为空
      * @param cs 要判断的字符序列

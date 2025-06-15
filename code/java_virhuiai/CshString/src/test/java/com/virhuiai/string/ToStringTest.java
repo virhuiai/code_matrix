@@ -21,8 +21,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-public class ObjectStringUtilsTest {
-    private ObjectStringUtils objectStringUtils;
+public class ToStringTest {
+    private ToString toString;
 
     private final ByteArrayOutputStream errContent = new ByteArrayOutputStream();
     private final PrintStream originalErr = System.err;
@@ -107,7 +107,7 @@ public class ObjectStringUtilsTest {
 
     @Before
     public void setUp() {
-        objectStringUtils = new ObjectStringUtils() {};
+        toString = new ToString() {};
         // Redirect System.err to capture printStackTrace output
         System.setErr(new PrintStream(errContent));
     }
@@ -120,27 +120,27 @@ public class ObjectStringUtilsTest {
     // --- Tests for isClassOrInterface ---
     @Test
     public void testIsClassOrInterface_DirectMatch() {//java.lang.Class
-        assertTrue(objectStringUtils.isClassOrInterface(String.class, "java.lang.String"));
+        assertTrue(toString.isClassOrInterface(String.class, "java.lang.String"));
     }
 
     @Test
     public void testIsClassOrInterface_InterfaceMatch() {
         // Test with a common interface
-        assertTrue(objectStringUtils.isClassOrInterface(ArrayList.class, "List"));
-        assertTrue(objectStringUtils.isClassOrInterface(HashMap.class, "Map"));
-        assertTrue(objectStringUtils.isClassOrInterface(Iterator.class, "Iterator"));
-        assertTrue(objectStringUtils.isClassOrInterface(Vector.class, "RandomAccess"));
+        assertTrue(toString.isClassOrInterface(ArrayList.class, "List"));
+        assertTrue(toString.isClassOrInterface(HashMap.class, "Map"));
+        assertTrue(toString.isClassOrInterface(Iterator.class, "Iterator"));
+        assertTrue(toString.isClassOrInterface(Vector.class, "RandomAccess"));
     }
 
     @Test
     public void testIsClassOrInterface_NoMatch() {
-        assertFalse(objectStringUtils.isClassOrInterface(String.class, "Integer"));
-        assertFalse(objectStringUtils.isClassOrInterface(Object.class, "Collection"));
+        assertFalse(toString.isClassOrInterface(String.class, "Integer"));
+        assertFalse(toString.isClassOrInterface(Object.class, "Collection"));
     }
 
     @Test(expected = NullPointerException.class)
     public void testIsClassOrInterface_NullClass() {
-        assertFalse(objectStringUtils.isClassOrInterface(null, "String"));// todo now
+        assertFalse(toString.isClassOrInterface(null, "String"));// todo now
     }
 
     @Test
@@ -148,72 +148,72 @@ public class ObjectStringUtilsTest {
         // This case will likely not throw an exception but return false,
         // as null.equals() would throw NPE, but if className is null, it won't match.
         // The original code only checks for String equality.
-        assertFalse(objectStringUtils.isClassOrInterface(String.class, null));
+        assertFalse(toString.isClassOrInterface(String.class, null));
     }
 
     // --- Tests for isSubClassOf ---
     @Test
     public void testIsSubClassOf_DirectSubclass() {
-        assertTrue(objectStringUtils.isSubClassOf(ChildClass.class, "ParentClass"));
+        assertTrue(toString.isSubClassOf(ChildClass.class, "ParentClass"));
     }
 
     @Test
     public void testIsSubClassOf_SelfClass() {
         // Original logic might return true if it matches itself in isClassOrInterface
-        assertTrue(objectStringUtils.isSubClassOf(ParentClass.class, "ParentClass"));
+        assertTrue(toString.isSubClassOf(ParentClass.class, "ParentClass"));
     }
 
     @Test
     public void testIsSubClassOf_Interface() {
-        assertTrue(objectStringUtils.isSubClassOf(ArrayList.class, "Collection"));
-        assertTrue(objectStringUtils.isSubClassOf(HashMap.class, "Map"));
+        assertTrue(toString.isSubClassOf(ArrayList.class, "Collection"));
+        assertTrue(toString.isSubClassOf(HashMap.class, "Map"));
     }
 
     @Test
     public void testIsSubClassOf_ObjectBaseClass() {
-        assertTrue(objectStringUtils.isSubClassOf(String.class, "Object"));
+        assertTrue(toString.isSubClassOf(String.class, "Object"));
     }
 
     @Test
     public void testIsSubClassOf_NoRelation() {
-        assertFalse(objectStringUtils.isSubClassOf(String.class, "Integer"));
-        assertFalse(objectStringUtils.isSubClassOf(ParentClass.class, "ChildClass")); // Parent is not a sub-class of Child
+        assertFalse(toString.isSubClassOf(String.class, "Integer"));
+        assertFalse(toString.isSubClassOf(ParentClass.class, "ChildClass")); // Parent is not a sub-class of Child
     }
 
     @Test(expected = NullPointerException.class)
     public void testIsSubClassOf_NullClass() {
-        assertNull(objectStringUtils.isSubClassOf(null, "Object"));
+        assertNull(toString.isSubClassOf(null, "Object"));
     }
 
     @Test
     public void testIsSubClassOf_NullClassName() {
-        assertFalse(objectStringUtils.isSubClassOf(String.class, null));
+        assertFalse(toString.isSubClassOf(String.class, null));
     }
 
 
     // --- Tests for toString ---
     @Test
     public void testToString_Null() {
-        assertNull(objectStringUtils.toString(null));
+        assertNull(toString.toString(null));
     }
 
     @Test
     public void testToString_PrimitiveWrapper() {
-        assertEquals("123", objectStringUtils.toString(123));
-        assertEquals("true", objectStringUtils.toString(true));
-        assertEquals("3.14", objectStringUtils.toString(3.14));
-        assertEquals("Hello", objectStringUtils.toString("Hello"));
+        assertEquals("123", toString.toString(123));
+        assertEquals("true", toString.toString(true));
+        assertEquals("3.14", toString.toString(3.14));
+        assertEquals("Hello", toString.toString("Hello"));
     }
 
     @Test
     public void testToString_SimpleObject() {
         SimpleObject obj = new SimpleObject();
         // The expected string format for custom objects is: ClassName:[fieldName:fieldValue; ...]
-        String expected = "com.virhuiai.string.ObjectStringUtilsTest$SimpleObject:[name:Test; value:123; active:true]";
+        String expected = "com.virhuiai.string.ToStringTest$SimpleObject:[name:Test; value:123; active:true]";
         // Note: The actual output for private fields accessed via reflection can vary if setAccessible(true) isn't used.
         // The provided toString code attempts to use getters if not accessible, which is good.
         // This test assumes fields are accessible or getters work.
-        assertEquals(expected, objectStringUtils.toString(obj));
+        assertEquals(expected, toString.toString(obj));
     }
 
     @Test
@@ -221,8 +221,8 @@ public class ObjectStringUtilsTest {
         PrivateFieldNoGetter obj = new PrivateFieldNoGetter();
         // Expecting private field 'secret' to be null/empty or handled by toString if no getter
         // The current implementation prints stack traces for inaccessible fields/methods.
-        String expected = "com.virhuiai.string.ObjectStringUtilsTest$PrivateFieldNoGetter:[secret:null; exposed:visible; ]"; // 'secret' will likely be null if reflection fails and no getter.
-        String actual = objectStringUtils.toString(obj);// com.virhuiai.string.ObjectStringUtilsTest$PrivateFieldNoGetter:[secret:hidden; exposed:visible]
+        String expected = "com.virhuiai.string.ToStringTest$PrivateFieldNoGetter:[secret:null; exposed:visible; ]"; // 'secret' will likely be null if reflection fails and no getter.
+        String actual = toString.toString(obj);// com.virhuiai.string.ToStringTest$PrivateFieldNoGetter:[secret:hidden; exposed:visible]
         assertTrue(actual.contains("exposed:visible"));//
         assertTrue(actual.contains("secret:hidden")); // It will try to get it, and if it fails, it might print null or just skip.
 //        assertTrue(errContent.toString().contains("IllegalAccessException")); // Verify error output
@@ -230,31 +230,31 @@ public class ObjectStringUtilsTest {
 
     @Test
     public void testToString_Collection_EmptyList() {
-        assertEquals("java.util.ArrayList{}", objectStringUtils.toString(new ArrayList<>()));//
+        assertEquals("java.util.ArrayList{}", toString.toString(new ArrayList<>()));//
     }
 
     @Test
     public void testToString_Collection_ListWithPrimitives() {
         List<Integer> list = Arrays.asList(1, 2, 3);
-        assertEquals("java.util.Arrays$ArrayList{1; 2; 3}", objectStringUtils.toString(list));
+        assertEquals("java.util.Arrays$ArrayList{1; 2; 3}", toString.toString(list));
     }
 
     @Test
     public void testToString_Collection_ListWithObjects() {
         List<SimpleObject> list = Arrays.asList(new SimpleObject());
-        String expectedInner = "com.virhuiai.string.ObjectStringUtilsTest$SimpleObject:[name:Test; value:123; active:true]";
-        assertEquals("java.util.Arrays$ArrayList{" + expectedInner + "}", objectStringUtils.toString(list));
+        String expectedInner = "com.virhuiai.string.ToStringTest$SimpleObject:[name:Test; value:123; active:true]";
+        assertEquals("java.util.Arrays$ArrayList{" + expectedInner + "}", toString.toString(list));
     }
 
     @Test
     public void testToString_Collection_ListWithNull() {
         List<String> list = Arrays.asList("A", null, "B");
-        assertEquals("java.util.Arrays$ArrayList{A; null; B}", objectStringUtils.toString(list));
+        assertEquals("java.util.Arrays$ArrayList{A; null; B}", toString.toString(list));
     }
 
     @Test
     public void testToString_Map_EmptyMap() {
-        assertEquals("java.util.HashMap{}", objectStringUtils.toString(new HashMap<>()));
+        assertEquals("java.util.HashMap{}", toString.toString(new HashMap<>()));
     }
 
     @Test
@@ -263,7 +263,7 @@ public class ObjectStringUtilsTest {
         map.put("one", 1);
         map.put("two", 2);
         // Order of map keys is not guaranteed, so check for contains
-        String result = objectStringUtils.toString(map);// java.util.HashMap{one=1; two=2}
+        String result = toString.toString(map);// java.util.HashMap{one=1; two=2}
         assertTrue(result.startsWith("java.util.HashMap{"));
         assertTrue(result.contains("one=1"));
         assertTrue(result.contains("two=2"));
@@ -275,8 +275,8 @@ public class ObjectStringUtilsTest {
     public void testToString_Map_MapWithObjects() {
         Map<String, SimpleObject> map = new HashMap<>();
         map.put("obj", new SimpleObject());
-        String expectedInner = "com.virhuiai.string.ObjectStringUtilsTest$SimpleObject:[name:Test; value:123; active:true]";
-        String result = objectStringUtils.toString(map);// java.util.HashMap{obj=com.virhuiai.string.ObjectStringUtilsTest$SimpleObject:[name:Test; value:123; active:true]}
+        String expectedInner = "com.virhuiai.string.ToStringTest$SimpleObject:[name:Test; value:123; active:true]";
+        String result = toString.toString(map);// java.util.HashMap{obj=com.virhuiai.string.ToStringTest$SimpleObject:[name:Test; value:123; active:true]}
         assertTrue(result.startsWith("java.util.HashMap{"));
         assertTrue(result.contains("obj=" + expectedInner));
         assertTrue(result.endsWith("}"));
@@ -284,7 +284,7 @@ public class ObjectStringUtilsTest {
 
     @Test
     public void testToString_Array_EmptyArray() {
-        assertEquals("[]", objectStringUtils.toString(new String[0]));
+        assertEquals("[]", toString.toString(new String[0]));
 //        Expected :[]
 //        Actual   :[Ljava.lang.String;@3a4afd8d
     }
@@ -297,7 +297,7 @@ public class ObjectStringUtilsTest {
         // which for primitive types like int would be their value.
         // It also appends ":class_name"
         String expected = "[1, 2, 3]";
-        assertEquals(expected, objectStringUtils.toString(new Integer[]{1,2,3})); // Changed to Integer[] for consistent behavior
+        assertEquals(expected, toString.toString(new Integer[]{1,2,3})); // Changed to Integer[] for consistent behavior
 
 //        Expected :[1:java.lang.Integer,2:java.lang.Integer,3:java.lang.Integer]
 //        Actual   :[Ljava.lang.Integer;@3830f1c0
@@ -306,19 +306,19 @@ public class ObjectStringUtilsTest {
     @Test
     public void testToString_Array_ObjectArray() {
         SimpleObject[] objArray = {new SimpleObject(), null};
-        String simpleObjStr = "com.virhuiai.string.ObjectStringUtilsTest$SimpleObject:[name:Test; value:123; active:true]";
+        String simpleObjStr = "com.virhuiai.string.ToStringTest$SimpleObject:[name:Test; value:123; active:true]";
         String expected = "[" + simpleObjStr + ", null]";
-        assertEquals(expected, objectStringUtils.toString(objArray));
+        assertEquals(expected, toString.toString(objArray));
     }
 
     @Test
     public void testToString_NestedObject() {
         NestedObject nested = new NestedObject();
-        String expectedSimple = "com.virhuiai.string.ObjectStringUtilsTest$SimpleObject:[name:Test; value:123; active:true]";
+        String expectedSimple = "com.virhuiai.string.ToStringTest$SimpleObject:[name:Test; value:123; active:true]";
         String expectedList = "java.util.Arrays$ArrayList{item1; item2}"; // Use Arrays$ArrayList if created by Arrays.asList
-        String expected = "com.virhuiai.string.ObjectStringUtilsTest$NestedObject:[outerName:Outer; innerObject:" + expectedSimple + "; items:" + expectedList + "]";
-        //                 com.virhuiai.string.ObjectStringUtilsTest$NestedObject:[outerName:Outer; innerObject:com.virhuiai.string.ObjectStringUtilsTest$SimpleObject:[name:Test; value:123; active:true]; items:java.util.Arrays$ArrayList{item1; item2; }]
-        assertEquals(expected, objectStringUtils.toString(nested));//
+        String expected = "com.virhuiai.string.ToStringTest$NestedObject:[outerName:Outer; innerObject:" + expectedSimple + "; items:" + expectedList + "]";
+        //                 com.virhuiai.string.ToStringTest$NestedObject:[outerName:Outer; innerObject:com.virhuiai.string.ToStringTest$SimpleObject:[name:Test; value:123; active:true]; items:java.util.Arrays$ArrayList{item1; item2; }]
+        assertEquals(expected, toString.toString(nested));//
     }
 
 
@@ -326,7 +326,7 @@ public class ObjectStringUtilsTest {
     @Test
     public void testProcessIterator_Empty() {
         Iterator<String> iterator = Collections.<String>emptyList().iterator();
-        assertEquals("java.util.Collections$EmptyIterator{}", objectStringUtils.processIterator(iterator, iterator.getClass()));
+        assertEquals("java.util.Collections$EmptyIterator{}", toString.processIterator(iterator, iterator.getClass()));
         
     }
 
@@ -334,7 +334,7 @@ public class ObjectStringUtilsTest {
     public void testProcessIterator_WithElements() {
         List<String> list = Arrays.asList("A", "B");
         Iterator<String> iterator = list.iterator();
-        assertEquals("java.util.Arrays$ArrayList{A; B}", objectStringUtils.processIterator(iterator, list.getClass()));
+        assertEquals("java.util.Arrays$ArrayList{A; B}", toString.processIterator(iterator, list.getClass()));
 
 //        Expected :java.util.ArrayList{A; B; }
 //        Actual   :java.util.Arrays$ArrayList{A; B; }
@@ -347,34 +347,34 @@ public class ObjectStringUtilsTest {
 
 //        Expected :java.util.ArrayList{X; null; Y; }
 //        Actual   :java.util.Arrays$ArrayList{X; null; Y; }
-        assertEquals("java.util.Arrays$ArrayList{X; null; Y}", objectStringUtils.processIterator(iterator, list.getClass()));
+        assertEquals("java.util.Arrays$ArrayList{X; null; Y}", toString.processIterator(iterator, list.getClass()));
     }
 
     // --- Tests for processEnumeration ---
     @Test
     public void testProcessEnumeration_Empty() {
         Enumeration<String> enumeration = Collections.emptyEnumeration();
-        assertEquals("java.util.Collections$EmptyEnumeration{}", objectStringUtils.processEnumeration(enumeration, enumeration.getClass()));
+        assertEquals("java.util.Collections$EmptyEnumeration{}", toString.processEnumeration(enumeration, enumeration.getClass()));
     }
 
     @Test
     public void testProcessEnumeration_WithElements() {
         Vector<String> vector = new Vector<>(Arrays.asList("C", "D"));
         Enumeration<String> enumeration = vector.elements();
-        assertEquals("java.util.Vector{C; D}", objectStringUtils.processEnumeration(enumeration, vector.getClass()));
+        assertEquals("java.util.Vector{C; D}", toString.processEnumeration(enumeration, vector.getClass()));
     }
 
     @Test
     public void testProcessEnumeration_WithNullElements() {
         Vector<String> vector = new Vector<>(Arrays.asList("C", null, "D"));
         Enumeration<String> enumeration = vector.elements();
-        assertEquals("java.util.Vector{C; null; D}", objectStringUtils.processEnumeration(enumeration, vector.getClass()));
+        assertEquals("java.util.Vector{C; null; D}", toString.processEnumeration(enumeration, vector.getClass()));
     }
 
     // --- Tests for processMap ---
     @Test
     public void testProcessMap_Empty() {
-        assertEquals("java.util.HashMap{}", objectStringUtils.processMap(new HashMap<>(), HashMap.class));
+        assertEquals("java.util.HashMap{}", toString.processMap(new HashMap<>(), HashMap.class));
     }
 
     @Test
@@ -382,7 +382,7 @@ public class ObjectStringUtilsTest {
         Map<String, Integer> map = new HashMap<>();
         map.put("key1", 10);
         map.put("key2", 20);
-        String result = objectStringUtils.processMap(map, map.getClass());//java.util.HashMap{key1=10; key2=20}
+        String result = toString.processMap(map, map.getClass());//java.util.HashMap{key1=10; key2=20}
         assertTrue(result.startsWith("java.util.HashMap{"));
         assertTrue(result.contains("key1=10"));
         assertTrue(result.contains("key2=20"));
@@ -394,7 +394,7 @@ public class ObjectStringUtilsTest {
         Map<String, String> map = new HashMap<>();
         map.put("k1", "v1");
         map.put("k2", null);
-        String result = objectStringUtils.processMap(map, map.getClass());
+        String result = toString.processMap(map, map.getClass());
         assertTrue(result.startsWith("java.util.HashMap{"));
         assertTrue(result.contains("k1=v1"));
         assertTrue(result.contains("k2=null"));
@@ -406,7 +406,7 @@ public class ObjectStringUtilsTest {
         Map<String, String> map = new HashMap<>();
         map.put("k1", "v1");
         map.put(null, "nullValue");
-        String result = objectStringUtils.processMap(map, map.getClass());// java.util.HashMap{null=nullValue; k1=v1}
+        String result = toString.processMap(map, map.getClass());// java.util.HashMap{null=nullValue; k1=v1}
         assertTrue(result.startsWith("java.util.HashMap{"));
         assertTrue(result.contains("k1=v1"));
         assertTrue(result.contains("null=nullValue"));
@@ -417,14 +417,14 @@ public class ObjectStringUtilsTest {
     @Test
     public void testProcessIteratorWithFormat_Empty() {
         Iterator<String> iterator = Collections.<String>emptyList().iterator();
-        assertEquals("java.util.ArrayList[]", objectStringUtils.processIteratorWithFormat(iterator, ArrayList.class, "::", "[", "]"));
+        assertEquals("java.util.ArrayList[]", toString.processIteratorWithFormat(iterator, ArrayList.class, "::", "[", "]"));
     }
 
     @Test
     public void testProcessIteratorWithFormat_WithElements() {
         List<String> list = Arrays.asList("A", "B", "C");
         Iterator<String> iterator = list.iterator();
-        assertEquals("java.util.Arrays$ArrayList[A::B::C]", objectStringUtils.processIteratorWithFormat(iterator, list.getClass(), "::", "[", "]"));
+        assertEquals("java.util.Arrays$ArrayList[A::B::C]", toString.processIteratorWithFormat(iterator, list.getClass(), "::", "[", "]"));
         
     }
 
@@ -432,7 +432,7 @@ public class ObjectStringUtilsTest {
     public void testProcessIteratorWithFormat_WithNullsAndCustomSeparator() {
         List<String> list = Arrays.asList("X", null, "Y");
         Iterator<String> iterator = list.iterator();
-        assertEquals("java.util.Arrays$ArrayList<X|null|Y>", objectStringUtils.processIteratorWithFormat(iterator, list.getClass(), "|", "<", ">"));
+        assertEquals("java.util.Arrays$ArrayList<X|null|Y>", toString.processIteratorWithFormat(iterator, list.getClass(), "|", "<", ">"));
         //
     }
 
@@ -440,20 +440,20 @@ public class ObjectStringUtilsTest {
     @Test
     public void testProcessEnumerationWithFormat_Empty() {
         Enumeration<String> enumeration = Collections.emptyEnumeration();
-        assertEquals("java.util.Collections$EmptyEnumeration<>", objectStringUtils.processEnumerationWithFormat(enumeration, enumeration.getClass(), "-", "<", ">"));
+        assertEquals("java.util.Collections$EmptyEnumeration<>", toString.processEnumerationWithFormat(enumeration, enumeration.getClass(), "-", "<", ">"));
     }
 
     @Test
     public void testProcessEnumerationWithFormat_WithElements() {
         Vector<String> vector = new Vector<>(Arrays.asList("E", "F"));
         Enumeration<String> enumeration = vector.elements();
-        assertEquals("java.util.Vector(E|F)", objectStringUtils.processEnumerationWithFormat(enumeration, vector.getClass(), "|", "(", ")"));
+        assertEquals("java.util.Vector(E|F)", toString.processEnumerationWithFormat(enumeration, vector.getClass(), "|", "(", ")"));
     }
 
     // --- Tests for processMapWithFormat ---
     @Test
     public void testProcessMapWithFormat_Empty() {
-        assertEquals("java.util.HashMap{}", objectStringUtils.processMapWithFormat(new HashMap<>(), HashMap.class, ",", "{", "}"));
+        assertEquals("java.util.HashMap{}", toString.processMapWithFormat(new HashMap<>(), HashMap.class, ",", "{", "}"));
     }
 
     @Test
@@ -461,7 +461,7 @@ public class ObjectStringUtilsTest {
         Map<String, Integer> map = new HashMap<>();
         map.put("k1", 1);
         map.put("k2", 2);
-        String result = objectStringUtils.processMapWithFormat(map, map.getClass(), ";", "{", "}");
+        String result = toString.processMapWithFormat(map, map.getClass(), ";", "{", "}");
         assertTrue(result.startsWith("java.util.HashMap{"));
         assertTrue(result.contains("k1=1"));
         assertTrue(result.contains("k2=2"));
@@ -474,7 +474,7 @@ public class ObjectStringUtilsTest {
         Map<String, String> map = new HashMap<>();
         map.put("n1", null);
         map.put(null, "v2");
-        String result = objectStringUtils.processMapWithFormat(map, map.getClass(), " & ", "((", "))");
+        String result = toString.processMapWithFormat(map, map.getClass(), " & ", "((", "))");
         assertTrue(result.startsWith("java.util.HashMap(("));
         assertTrue(result.contains("n1=null"));
         assertTrue(result.contains("null=v2"));
@@ -486,77 +486,77 @@ public class ObjectStringUtilsTest {
     // --- Tests for toStringWithFormat ---
     @Test
     public void testToStringWithFormat_Null() {
-        assertEquals("null", objectStringUtils.toStringWithFormat(null, ",", "[", "]"));
+        assertEquals("null", toString.toStringWithFormat(null, ",", "[", "]"));
     }
 
     @Test
     public void testToStringWithFormat_PrimitiveWrapper() {
-        assertEquals("123", objectStringUtils.toStringWithFormat(123, ",", "[", "]"));
-        assertEquals("Hello", objectStringUtils.toStringWithFormat("Hello", ",", "[", "]"));
+        assertEquals("123", toString.toStringWithFormat(123, ",", "[", "]"));
+        assertEquals("Hello", toString.toStringWithFormat("Hello", ",", "[", "]"));
     }
 
     @Test
     public void testToStringWithFormat_SimpleObject() {
         SimpleObject obj = new SimpleObject();
-        String expected = "com.virhuiai.string.ObjectStringUtilsTest$SimpleObject[[name:Test,value:123,active:true]]";
-        assertEquals(expected, objectStringUtils.toStringWithFormat(obj, ",", "[[", "]]"));
-//        Expected :com.virhuiai.string.ObjectStringUtilsTest$SimpleObject[[name:Test,value:123,active:true]]
-//        Actual   :com.virhuiai.string.ObjectStringUtilsTest$SimpleObject[[name:,value:123,active:]]
+        String expected = "com.virhuiai.string.ToStringTest$SimpleObject[[name:Test,value:123,active:true]]";
+        assertEquals(expected, toString.toStringWithFormat(obj, ",", "[[", "]]"));
+//        Expected :com.virhuiai.string.ToStringTest$SimpleObject[[name:Test,value:123,active:true]]
+//        Actual   :com.virhuiai.string.ToStringTest$SimpleObject[[name:,value:123,active:]]
         
     }
 
     @Test
     public void testToStringWithFormat_Collection() {
         List<String> list = Arrays.asList("A", "B");
-        assertEquals("java.util.Arrays$ArrayList[A;B]", objectStringUtils.toStringWithFormat(list, ";", "[", "]"));
+        assertEquals("java.util.Arrays$ArrayList[A;B]", toString.toStringWithFormat(list, ";", "[", "]"));
 
     }
 
     @Test
     public void testToStringWithFormat_Array() {
         String[] arr = {"x", "y"};
-        assertEquals("[x,y]", objectStringUtils.toStringWithFormat(arr, ",", "[", "]"));
+        assertEquals("[x,y]", toString.toStringWithFormat(arr, ",", "[", "]"));
     }
 
     @Test
     public void testToStringWithFormat_EmptyArray() {
         String[] arr = {};
-        assertEquals("[]", objectStringUtils.toStringWithFormat(arr, ",", "[", "]"));
+        assertEquals("[]", toString.toStringWithFormat(arr, ",", "[", "]"));
     }
 
     // --- Tests for toStringWithDepth ---
     @Test
     public void testToStringWithDepth_Null() {
-        assertEquals("null",objectStringUtils.toStringWithDepth(null, 5));
+        assertEquals("null", toString.toStringWithDepth(null, 5));
     }
 
     @Test
     public void testToStringWithDepth_MaxDepthZero() {
         SimpleObject obj = new SimpleObject();
         // At depth 0, it should just call obj.toString()
-        assertEquals(obj.toString(), objectStringUtils.toStringWithDepth(obj, 0));
-        assertEquals("123", objectStringUtils.toStringWithDepth(123, 0));
+        assertEquals(obj.toString(), toString.toStringWithDepth(obj, 0));
+        assertEquals("123", toString.toStringWithDepth(123, 0));
     }
 
     @Test
     public void testToStringWithDepth_BasicObjectFullDepth() {
         SimpleObject obj = new SimpleObject();
-        String expected = "com.virhuiai.string.ObjectStringUtilsTest$SimpleObject:[name:Test; value:123; active:true]";
-        assertEquals(expected, objectStringUtils.toStringWithDepth(obj, 1)); // Depth 1 should be enough for simple objects
-        assertEquals(expected, objectStringUtils.toStringWithDepth(obj, 5));
-//        Expected :com.virhuiai.string.ObjectStringUtilsTest$SimpleObject:[name:Test; value:123; active:true; ]
-//        Actual   :com.virhuiai.string.ObjectStringUtilsTest$SimpleObject:[name:; value:123; active:] 
+        String expected = "com.virhuiai.string.ToStringTest$SimpleObject:[name:Test; value:123; active:true]";
+        assertEquals(expected, toString.toStringWithDepth(obj, 1)); // Depth 1 should be enough for simple objects
+        assertEquals(expected, toString.toStringWithDepth(obj, 5));
+//        Expected :com.virhuiai.string.ToStringTest$SimpleObject:[name:Test; value:123; active:true; ]
+//        Actual   :com.virhuiai.string.ToStringTest$SimpleObject:[name:; value:123; active:] 
     }
 
     @Test
     public void testToStringWithDepth_NestedObjectLimitedDepth() {
         NestedObject nested = new NestedObject();
         // Depth 1: Should show nested object's class and basic info, but not its fields
-        String expectedAtDepth1 = "com.virhuiai.string.ObjectStringUtilsTest$NestedObject:[outerName:Outer; innerObject:SimpleObject{name='Test', value=123, active=true}; items:[item1, item2]]";
-        assertEquals(expectedAtDepth1, objectStringUtils.toStringWithDepth(nested, 1));
+        String expectedAtDepth1 = "com.virhuiai.string.ToStringTest$NestedObject:[outerName:Outer; innerObject:SimpleObject{name='Test', value=123, active=true}; items:[item1, item2]]";
+        assertEquals(expectedAtDepth1, toString.toStringWithDepth(nested, 1));
 
-//        Expected :com.virhuiai.string.ObjectStringUtilsTest$NestedObject:[outerName:Outer; innerObject:SimpleObject{name='Test', value=123, active=true}; items:java.util.Arrays$ArrayList{item1; item2; }; ]
-//        Actual   :com.virhuiai.string.ObjectStringUtilsTest$NestedObject:[outerName:; innerObject:; items:[item1, item2]]
+//        Expected :com.virhuiai.string.ToStringTest$NestedObject:[outerName:Outer; innerObject:SimpleObject{name='Test', value=123, active=true}; items:java.util.Arrays$ArrayList{item1; item2; }; ]
+//        Actual   :com.virhuiai.string.ToStringTest$NestedObject:[outerName:; innerObject:; items:[item1, item2]]
 //
         // Depth 2: Should go one level deeper, showing innerObject's fields
         // The original implementation seems to apply depth to `toString` calls for elements,
@@ -567,11 +567,11 @@ public class ObjectStringUtilsTest {
         // with `maxDepth = 0`, leading to `innerObject.toString()`.
         String expectedInnerObjStr = "SimpleObject{name='Test', value=123, active=true}";
         String expectedListStr = "java.util.Arrays$ArrayList{item1; item2; }"; // The current processIteratorWithDepth prints class name + {..}, and then elements at maxDepth
-        String expectedDepth2 = "com.virhuiai.string.ObjectStringUtilsTest$NestedObject:[outerName:Outer; innerObject:com.virhuiai.string.ObjectStringUtilsTest$SimpleObject:[name:Test; value:123; active:true; ]; items:java.util.Arrays$ArrayList{" + expectedListStr.substring(expectedListStr.indexOf("{") + 1, expectedListStr.lastIndexOf("}")) + "}; ]";
+        String expectedDepth2 = "com.virhuiai.string.ToStringTest$NestedObject:[outerName:Outer; innerObject:com.virhuiai.string.ToStringTest$SimpleObject:[name:Test; value:123; active:true; ]; items:java.util.Arrays$ArrayList{" + expectedListStr.substring(expectedListStr.indexOf("{") + 1, expectedListStr.lastIndexOf("}")) + "}; ]";
         // Correction: The `processIteratorWithDepth` calls `toStringWithDepth` on its elements.
         // So at depth 2, list items "item1", "item2" will be rendered with depth 1, which will be their toString()
         String expectedListDepth2 = "java.util.Arrays$ArrayList{item1; item2; }";
-        expectedDepth2 = "com.virhuiai.string.ObjectStringUtilsTest$NestedObject:[outerName:Outer; innerObject:com.virhuiai.string.ObjectStringUtilsTest$SimpleObject:[name:Test; value:123; active:true; ]; items:" + expectedListDepth2 + "; ]";
+        expectedDepth2 = "com.virhuiai.string.ToStringTest$NestedObject:[outerName:Outer; innerObject:com.virhuiai.string.ToStringTest$SimpleObject:[name:Test; value:123; active:true; ]; items:" + expectedListDepth2 + "; ]";
 
         // Re-evaluating the expected output based on the provided code's behavior:
         // When maxDepth is 1:
@@ -580,38 +580,38 @@ public class ObjectStringUtilsTest {
         // items: processIteratorWithDepth(items.iterator(), List.class, 0) -> List.class + "{" + toStringWithDepth("item1",0) + "; " + toStringWithDepth("item2",0) + "; }"
         String simpleObjToString = new SimpleObject().toString(); // SimpleObject{name='Test', value=123, active=true}
         String listItemsString = "item1, item2"; // No class name for elements because toStringWithDepth(String, 0) is just "item"
-        String expectedDepth1ForNested = "com.virhuiai.string.ObjectStringUtilsTest$NestedObject:[outerName:Outer; innerObject:" + simpleObjToString + "; items:[" + listItemsString + "]]";
-        assertEquals(expectedDepth1ForNested, objectStringUtils.toStringWithDepth(nested, 1));
+        String expectedDepth1ForNested = "com.virhuiai.string.ToStringTest$NestedObject:[outerName:Outer; innerObject:" + simpleObjToString + "; items:[" + listItemsString + "]]";
+        assertEquals(expectedDepth1ForNested, toString.toStringWithDepth(nested, 1));
 
 
         // When maxDepth is 2:
         // outerName: "Outer"
-        // innerObject: toStringWithDepth(innerObject, 1) -> com.virhuiai.string.ObjectStringUtilsTest$SimpleObject:[name:Test; value:123; active:true; ]
+        // innerObject: toStringWithDepth(innerObject, 1) -> com.virhuiai.string.ToStringTest$SimpleObject:[name:Test; value:123; active:true; ]
         // items: processIteratorWithDepth(items.iterator(), List.class, 1) -> List.class + "{" + toStringWithDepth("item1",1) + "; " + toStringWithDepth("item2",1) + "; }"
-        String expectedInnerObjStrAtDepth2 = "com.virhuiai.string.ObjectStringUtilsTest$SimpleObject:[name:Test; value:123; active:true]";
+        String expectedInnerObjStrAtDepth2 = "com.virhuiai.string.ToStringTest$SimpleObject:[name:Test; value:123; active:true]";
         String expectedListItemsStrAtDepth2 = "item1; item2"; // Still just item; because it's a String
-        String expectedDepth2ForNested = "com.virhuiai.string.ObjectStringUtilsTest$NestedObject:[outerName:Outer; innerObject:" + expectedInnerObjStrAtDepth2 + "; items:java.util.Arrays$ArrayList{" + expectedListItemsStrAtDepth2 + "}]";
-        assertEquals(expectedDepth2ForNested, objectStringUtils.toStringWithDepth(nested, 2));
+        String expectedDepth2ForNested = "com.virhuiai.string.ToStringTest$NestedObject:[outerName:Outer; innerObject:" + expectedInnerObjStrAtDepth2 + "; items:java.util.Arrays$ArrayList{" + expectedListItemsStrAtDepth2 + "}]";
+        assertEquals(expectedDepth2ForNested, toString.toStringWithDepth(nested, 2));
     }
 
 
     // --- Tests for toStringWithIgnore ---
     @Test
     public void testToStringWithIgnore_Null() {
-        assertEquals("null", objectStringUtils.toStringWithIgnore(null, new String[]{}, new Class<?>[]{}));
+        assertEquals("null", toString.toStringWithIgnore(null, new String[]{}, new Class<?>[]{}));
     }
 
     @Test
     public void testToStringWithIgnore_IgnoreField() {
         SimpleObject obj = new SimpleObject();
         String[] ignoreFields = {"value", "active"};
-        String expected = "com.virhuiai.string.ObjectStringUtilsTest$SimpleObject:[name:Test; ]"; // Only name should be present
-        String actual = objectStringUtils.toStringWithIgnore(obj, ignoreFields, new Class<?>[]{});
+        String expected = "com.virhuiai.string.ToStringTest$SimpleObject:[name:Test; ]"; // Only name should be present
+        String actual = toString.toStringWithIgnore(obj, ignoreFields, new Class<?>[]{});
         // Order of fields can vary in reflection, so check contains
         assertTrue(actual.contains("name:Test"));
         assertFalse(actual.contains("value:"));
         assertFalse(actual.contains("active:"));
-        assertTrue(actual.contains("com.virhuiai.string.ObjectStringUtilsTest$SimpleObject:["));
+        assertTrue(actual.contains("com.virhuiai.string.ToStringTest$SimpleObject:["));
         assertTrue(actual.endsWith("]"));
     }
 
@@ -620,7 +620,7 @@ public class ObjectStringUtilsTest {
         SimpleObject obj = new SimpleObject();
         Class<?>[] ignoreClasses = {SimpleObject.class};
         // If the object itself is an ignored class, it should just call obj.toString()
-        assertEquals(obj.toString(), objectStringUtils.toStringWithIgnore(obj, new String[]{}, ignoreClasses));
+        assertEquals(obj.toString(), toString.toStringWithIgnore(obj, new String[]{}, ignoreClasses));
     }
 
     @Test
@@ -630,8 +630,8 @@ public class ObjectStringUtilsTest {
         // The innerObject should be rendered by its own toString() if its class is ignored
         String simpleObjToString = new SimpleObject().toString();
         String listString = "java.util.Arrays$ArrayList{item1; item2}";
-        String expected = "com.virhuiai.string.ObjectStringUtilsTest$NestedObject:[outerName:Outer; innerObject:" + simpleObjToString + "; items:" + listString + "]";
-        assertEquals(expected, objectStringUtils.toStringWithIgnore(nested, new String[]{}, ignoreClasses));
+        String expected = "com.virhuiai.string.ToStringTest$NestedObject:[outerName:Outer; innerObject:" + simpleObjToString + "; items:" + listString + "]";
+        assertEquals(expected, toString.toStringWithIgnore(nested, new String[]{}, ignoreClasses));
     }
 
     @Test
@@ -642,7 +642,7 @@ public class ObjectStringUtilsTest {
 
         String simpleObjToString = new SimpleObject().toString();
         String listString = "java.util.Arrays$ArrayList{item1; item2}";
-        String actual = objectStringUtils.toStringWithIgnore(nested, ignoreFields, ignoreClasses);//com.virhuiai.string.ObjectStringUtilsTest$NestedObject:[innerObject:SimpleObject{name='Test', value=123, active=true}; items:java.util.ArrayList{item1; item2}]
+        String actual = toString.toStringWithIgnore(nested, ignoreFields, ignoreClasses);//com.virhuiai.string.ToStringTest$NestedObject:[innerObject:SimpleObject{name='Test', value=123, active=true}; items:java.util.ArrayList{item1; item2}]
 
         // Check that outerName is ignored, innerObject is toString(), items are processed normally
         assertFalse(actual.contains("outerName:"));
@@ -653,29 +653,29 @@ public class ObjectStringUtilsTest {
     @Test
     public void testToStringWithIgnore_EmptyIgnoreArrays() {
         SimpleObject obj = new SimpleObject();
-        String expected = "com.virhuiai.string.ObjectStringUtilsTest$SimpleObject:[name:Test; value:123; active:true]";
-        assertEquals(expected, objectStringUtils.toStringWithIgnore(obj, new String[]{}, new Class<?>[]{}));
+        String expected = "com.virhuiai.string.ToStringTest$SimpleObject:[name:Test; value:123; active:true]";
+        assertEquals(expected, toString.toStringWithIgnore(obj, new String[]{}, new Class<?>[]{}));
     }
 
     // --- Tests for Cycle Detection ---
     @Test
     public void testToStringWithCycleDetection_Null() {
-        assertEquals("null", objectStringUtils.toStringWithCycleDetection(null, new IdentityHashMap<Object, Boolean>()));
+        assertEquals("null", toString.toStringWithCycleDetection(null, new IdentityHashMap<Object, Boolean>()));
     }
 
     @Test
     public void testToStringWithCycleDetection_NoCycle() {
         SimpleObject obj = new SimpleObject();
-        String expected = "com.virhuiai.string.ObjectStringUtilsTest$SimpleObject{name=Test; value=123; active=true}";
-        assertEquals(expected, objectStringUtils.toStringWithCycleDetection(obj, new IdentityHashMap<Object, Boolean>()));
+        String expected = "com.virhuiai.string.ToStringTest$SimpleObject{name=Test; value=123; active=true}";
+        assertEquals(expected, toString.toStringWithCycleDetection(obj, new IdentityHashMap<Object, Boolean>()));
     }
 
     @Test
     public void testToStringWithCycleDetection_SelfReferencingObject() {
         SelfReferencingObject obj = new SelfReferencingObject();
         // The 'self' field should be detected as a cycle
-        String expected = "com.virhuiai.string.ObjectStringUtilsTest$SelfReferencingObject{name=Self; self=[Cyclic Reference]}";
-        assertEquals(expected, objectStringUtils.toStringWithCycleDetection(obj, new IdentityHashMap<Object, Boolean>()));
+        String expected = "com.virhuiai.string.ToStringTest$SelfReferencingObject{name=Self; self=[Cyclic Reference]}";
+        assertEquals(expected, toString.toStringWithCycleDetection(obj, new IdentityHashMap<Object, Boolean>()));
     }
 
     @Test
@@ -685,12 +685,12 @@ public class ObjectStringUtilsTest {
         a.b = b;
         b.a = a;
 
-        String expectedA = "com.virhuiai.string.ObjectStringUtilsTest$TwoWayReferenceA{name=A; b=com.virhuiai.string.ObjectStringUtilsTest$TwoWayReferenceB{name=B; a=[Cyclic Reference]}}";
-        assertEquals(expectedA, objectStringUtils.toStringWithCycleDetection(a, new IdentityHashMap<Object, Boolean>()));
+        String expectedA = "com.virhuiai.string.ToStringTest$TwoWayReferenceA{name=A; b=com.virhuiai.string.ToStringTest$TwoWayReferenceB{name=B; a=[Cyclic Reference]}}";
+        assertEquals(expectedA, toString.toStringWithCycleDetection(a, new IdentityHashMap<Object, Boolean>()));
 
         // Also test starting from B
-        String expectedB = "com.virhuiai.string.ObjectStringUtilsTest$TwoWayReferenceB{name=B; a=com.virhuiai.string.ObjectStringUtilsTest$TwoWayReferenceA{name=A; b=[Cyclic Reference]}}";
-        assertEquals(expectedB, objectStringUtils.toStringWithCycleDetection(b, new IdentityHashMap<Object, Boolean>()));
+        String expectedB = "com.virhuiai.string.ToStringTest$TwoWayReferenceB{name=B; a=com.virhuiai.string.ToStringTest$TwoWayReferenceA{name=A; b=[Cyclic Reference]}}";
+        assertEquals(expectedB, toString.toStringWithCycleDetection(b, new IdentityHashMap<Object, Boolean>()));
     }
 
     @Test
@@ -702,7 +702,7 @@ public class ObjectStringUtilsTest {
         list.add("Item2");
 
         String expectedList = "java.util.ArrayList{Item1; [Cyclic Reference]; Item2}";
-        assertEquals(expectedList, objectStringUtils.toStringWithCycleDetection(list, new IdentityHashMap<Object, Boolean>()));// todo now
+        assertEquals(expectedList, toString.toStringWithCycleDetection(list, new IdentityHashMap<Object, Boolean>()));// todo now
     }
 
     @Test
@@ -713,7 +713,7 @@ public class ObjectStringUtilsTest {
         map.put("self", map); // Self-referencing map
         map.put("key2", "value2");
         //java.util.HashMap{key1=value1; key2=value2; self=[Cyclic Reference]}
-        String result = objectStringUtils.toStringWithCycleDetection(map, new IdentityHashMap<Object, Boolean>());
+        String result = toString.toStringWithCycleDetection(map, new IdentityHashMap<Object, Boolean>());
         assertTrue(result.startsWith("java.util.HashMap{"));
         assertTrue(result.contains("key1=value1"));
         assertTrue(result.contains("self=[Cyclic Reference]"));
@@ -732,8 +732,8 @@ public class ObjectStringUtilsTest {
         nodeB.next = nodeC;
         nodeC.next = nodeA; // Cycle A->B->C->A
 
-        String expected = "com.virhuiai.string.ObjectStringUtilsTest$Node{id=A; next=com.virhuiai.string.ObjectStringUtilsTest$Node{id=B; next=com.virhuiai.string.ObjectStringUtilsTest$Node{id=C; next=[Cyclic Reference]}}}";
-        assertEquals(expected, objectStringUtils.toStringWithCycleDetection(nodeA, new IdentityHashMap<Object, Boolean>()));
+        String expected = "com.virhuiai.string.ToStringTest$Node{id=A; next=com.virhuiai.string.ToStringTest$Node{id=B; next=com.virhuiai.string.ToStringTest$Node{id=C; next=[Cyclic Reference]}}}";
+        assertEquals(expected, toString.toStringWithCycleDetection(nodeA, new IdentityHashMap<Object, Boolean>()));
     }
 
 
@@ -773,8 +773,8 @@ public class ObjectStringUtilsTest {
         // This is `Class.class.getName()` which is "java.lang.Class", not the name of objClass itself.
         // So this part of the original `isClassOrInterface` method is flawed.
         // It will only return true if objClass is Class.class and className is "java.lang.Class".
-        assertTrue(objectStringUtils.isClassOrInterface(String.class, "java.lang.String")); // This would be false default
-        assertTrue(objectStringUtils.isClassOrInterface(Class.class, "java.lang.Class")); // This would be true
+        assertTrue(toString.isClassOrInterface(String.class, "java.lang.String")); // This would be false default
+        assertTrue(toString.isClassOrInterface(Class.class, "java.lang.Class")); // This would be true
     }
 
     // Given the current flawed isClassOrInterface, some isSubClassOf tests might be misleading.
@@ -816,7 +816,7 @@ public class ObjectStringUtilsTest {
         // effectively checking only the direct superclass or interfaces of the original class.
         // A direct subclass check might work, but deeper inheritance will fail.
         class GrandchildClass extends ChildClass {}
-        assertTrue(objectStringUtils.isSubClassOf(GrandchildClass.class, "ParentClass"));
+        assertTrue(toString.isSubClassOf(GrandchildClass.class, "ParentClass"));
 
         // If the `isSubClassOf` method was fixed to correctly traverse the superclass chain:
         // assertTrue(objectStringUtils.isSubClassOf(GrandchildClass.class, "ParentClass"));

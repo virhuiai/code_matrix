@@ -1,27 +1,19 @@
 package com.virhuiai.string;
 
-import com.sun.org.apache.xpath.internal.operations.Bool;
-
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.IdentityHashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Set;
-import java.util.function.BiConsumer;
-import java.util.function.Function;
 
 /**
  * 包含对象转字符串相关的方法
  */
-public interface ObjectStringUtils {
+public interface ToString {
 
 /**
  * 判断一个类是否是指定的类或接口

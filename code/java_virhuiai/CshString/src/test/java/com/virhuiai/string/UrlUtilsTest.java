@@ -1,6 +1,5 @@
 package com.virhuiai.string;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -13,16 +12,16 @@ import static org.junit.Assert.assertTrue;
 
 public class UrlUtilsTest {
 
-    private UrlUtils urlUtils;
+    private Url urlUtils;
 
     // 创建UrlUtils的实现类用于测试
-    private static class UrlUtilsImpl implements UrlUtils {
+    private static class UrlImpl implements Url {
         // 使用默认实现
     }
 
     @Before
     public void setUp() {
-        urlUtils = new UrlUtilsImpl();
+        urlUtils = new UrlImpl();
     }
 
     // ==================== getProtocol 方法测试 ====================

@@ -3,9 +3,9 @@ package com.virhuiai.string;
 import org.junit.Assert;
 import org.junit.Test;
 
-public class StringLengthUtilsTest {
+public class LengthTest {
 
-    private StringLengthUtils utils = new StringLengthUtils() {};
+    private Length utils = new Length() {};
 
     @Test
     public void testLength() {
