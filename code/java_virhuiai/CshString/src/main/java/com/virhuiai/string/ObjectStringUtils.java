@@ -632,6 +632,34 @@ default boolean isClassOrInterface(Class objClass, String className) {
             return obj.toString();
         }
 
+        // 核心修复：将Map和Collection的循环引用检测放在它们自己的处理方法中，
+        // 而不是在通用逻辑中将其添加到visited集合。
+        // 这是因为Map和Collection的hashCode()和equals()方法在包含自引用时，
+        // 会导致StackOverflowError。
+        if (obj instanceof Map) {
+            if (visited.contains(obj)) {
+                return "[Cyclic Reference]";
+            }
+            visited.add(obj); // 只有在不包含的情况下才添加
+            try {
+                return processMapWithCycleDetection((Map<?, ?>) obj, objClass, visited);
+            } finally {
+                visited.remove(obj);
+            }
+        } else if (obj instanceof Collection) {
+            if (visited.contains(obj)) {
+                return "[Cyclic Reference]";
+            }
+            visited.add(obj); // 只有在不包含的情况下才添加
+            try {
+                return processCollectionWithCycleDetection((Collection<?>) obj, objClass, visited);
+            } finally {
+                visited.remove(obj);
+            }
+        }
+
+
+        // 对于其他所有对象，才在通用逻辑中进行循环引用检测
         // 尝试将当前对象添加到已访问集合。
         // 如果添加失败（即对象已存在于集合中），则说明检测到循环引用。
         if (!visited.add(obj)) {
@@ -642,13 +670,8 @@ default boolean isClassOrInterface(Class objClass, String className) {
             StringBuilder result = new StringBuilder();
 
             // 根据对象的类型进行不同的处理
-            if (obj instanceof Collection) {
-                // 如果是Collection类型，处理其迭代器
-                result.append(processIteratorWithCycleDetection(((Collection<?>) obj).iterator(), objClass, visited));
-            } else if (obj instanceof Map) {
-                // 如果是Map类型，处理其键值对
-                result.append(processMapWithCycleDetection((Map<?, ?>) obj, objClass, visited));
-            } else if (obj instanceof Iterator) {
+            // 注意：Collection和Map已经在上面独立处理了，这里不再需要检查它们。
+            if (obj instanceof Iterator) {
                 // 如果是Iterator类型，处理其元素
                 result.append(processIteratorWithCycleDetection((Iterator<?>) obj, objClass, visited));
             } else if (obj instanceof Enumeration) {
@@ -693,16 +716,38 @@ default boolean isClassOrInterface(Class objClass, String className) {
             // 这允许在同一递归路径的后续调用中，当当前对象的引用再次出现时，可以被正确处理。
             // 否则，如果一个对象被多个路径引用，且其中一个路径先访问了它，
             // 另一个路径在不同分支访问时，会被误判为循环引用。
-            visited.remove(obj);
+            // 对于Map和Collection，它们的移除操作在各自的处理块中完成
+            if (!(obj instanceof Map) && !(obj instanceof Collection)) {
+                visited.remove(obj);
+            }
         }
     }
+
+    /**
+     * 将 Collection 转换为字符串，处理循环引用
+     */
+    default String processCollectionWithCycleDetection(Collection<?> collection, Class<?> objClass, Set<Object> visited) {
+        StringBuilder result = new StringBuilder();
+        result.append(objClass.getName()).append("{"); // 使用实际类名
+        Iterator<?> iterator = collection.iterator();
+        while (iterator.hasNext()) {
+            result.append(toStringWithCycleDetection(iterator.next(), visited));
+            if (iterator.hasNext()) {
+                result.append("; ");
+            }
+        }
+        result.append("}");
+        return result.toString();
+    }
+
 
     /**
      * 将 Iterator 转换为字符串，处理循环引用
      */
     default String processIteratorWithCycleDetection(Iterator<?> iterator, Class<?> objClass, Set<Object> visited) {
         StringBuilder result = new StringBuilder();
-        result.append("java.util.ArrayList").append("{");
+        // 修复：使用传入的objClass的名称，而不是硬编码"java.util.ArrayList"
+        result.append(objClass.getName()).append("{"); // Iterator没有直接的Class名称表示，这里用Collection的Class名称更合适
         while (iterator.hasNext()) {
             result.append(toStringWithCycleDetection(iterator.next(), visited));
             if (iterator.hasNext()) {
@@ -740,11 +785,13 @@ default boolean isClassOrInterface(Class objClass, String className) {
         while (it.hasNext()) {
             Object key = it.next();
 
-
-            if(key == null){
+            if (key == null) {
                 result.append("null");
-            }else{
-                result.append(key);
+            } else {
+                // 为了避免Map key的toString也导致循环（虽然Map的key通常不是自引用），这里直接使用key的toString()
+                // 但如果key本身是自引用对象，这里仍然可能出问题。
+                // 不过在通常情况下，Map的key是String或其他不可变类型，不会导致此问题。
+                result.append(key.toString());
             }
 
             result.append("=").append(toStringWithCycleDetection(map.get(key), visited));
@@ -756,92 +803,146 @@ default boolean isClassOrInterface(Class objClass, String className) {
         return result.toString();
     }
 
+    // 假设存在此方法，这里不提供其实现，因为它不在问题描述的范围内 toStringArrayWithCycleDetection
+
+
     //支持 JSON 格式输出
     /**
-     * 将对象转换为 JSON 格式的字符串
-     * @param obj 要转换的对象
-     * @return JSON 格式的字符串
+     * 将对象转换为 JSON 格式的字符串，处理循环引用。
+     *
+     * 此方法递归地将一个对象及其成员转换为 JSON 字符串表示。
+     * 为了防止无限循环，它使用一个Set来跟踪已经访问过的对象，
+     * 当检测到循环引用时，会返回 "[Circular Reference]"。
+     *
+     * @param obj 要转换的对象。
+     * @return JSON 格式的字符串。
      */
     default String toJsonString(Object obj) {
+        return toJsonString(obj, new HashSet<>());
+    }
+
+    /**
+     * 将对象转换为 JSON 格式的字符串，处理循环引用。
+     *
+     * @param obj 要转换的对象。
+     * @param visited 已访问的对象集合，用于检测循环引用。
+     * @return JSON 格式的字符串。
+     */
+    default String toJsonString(Object obj, Set<Object> visited) {
         if (obj == null) {
             return "null";
         }
+
+        // 对于基本类型（包括其包装类，如Integer、Double等）和java.lang包下的对象，
+        // 直接处理。这些类型通常不会导致循环引用，且其toString方法已提供有意义的输出。
         Class<?> objClass = obj.getClass();
-        if (objClass.getName().startsWith("java.lang") || objClass.isPrimitive()) {
+        if (objClass.isPrimitive() || objClass.getName().startsWith("java.lang")) {
             if (obj instanceof String) {
+                // 对字符串进行JSON转义
                 return "\"" + obj.toString().replace("\"", "\\\"") + "\"";
             }
+            // 数字、布尔值等直接返回其toString结果
             return obj.toString();
         }
+
+        // 检测循环引用
+        // 如果当前对象已经被访问过，说明存在循环引用，返回特殊标记
+        if (!visited.add(obj)) {
+            return "\"<Circular Reference>\""; // JSON字符串需要双引号
+        }
+
         StringBuilder result = new StringBuilder();
-        if (isSubClassOf(objClass, "Collection")) {
-            result.append("[");
-            Iterator<?> iterator = ((Collection<?>) obj).iterator();
-            while (iterator.hasNext()) {
-                result.append(toJsonString(iterator.next()));
-                if (iterator.hasNext()) {
-                    result.append(", ");
-                }
-            }
-            result.append("]");
-        } else if (isSubClassOf(objClass, "Map")) {
-            result.append("{");
-            Collection<?> keys = ((Map<?, ?>) obj).keySet();
-            Iterator<?> it = keys.iterator();
-            while (it.hasNext()) {
-                Object key = it.next();
-                result.append("\"").append(key == null ? "null" : key.toString().replace("\"", "\\\"")).append("\":");
-                result.append(toJsonString(((Map<?, ?>) obj).get(key)));
-                if (it.hasNext()) {
-                    result.append(", ");
-                }
-            }
-            result.append("}");
-        } else if (isSubClassOf(objClass, "Iterator")) {
-            result.append("[");
-            Iterator<?> iterator = (Iterator<?>) obj;
-            while (iterator.hasNext()) {
-                result.append(toJsonString(iterator.next()));
-                if (iterator.hasNext()) {
-                    result.append(", ");
-                }
-            }
-            result.append("]");
-        } else if (isSubClassOf(objClass, "Enumeration")) {
-            result.append("[");
-            Enumeration<?> enumeration = (Enumeration<?>) obj;
-            while (enumeration.hasMoreElements()) {
-                result.append(toJsonString(enumeration.nextElement()));
-                if (enumeration.hasMoreElements()) {
-                    result.append(", ");
-                }
-            }
-            result.append("]");
-        } else if (objClass.isArray()) {
-            result.append(toStringArray(obj));
-        } else {
-            Field[] fields = objClass.getDeclaredFields();
-            if (!objClass.getName().startsWith("java") && fields.length > 0) {
-                result.append("{");
-                for (int i = 0; i < fields.length; i++) {
-                    result.append("\"").append(fields[i].getName()).append("\":");
-                    try {
-                        fields[i].setAccessible(true);
-                        result.append(toJsonString(fields[i].get(obj)));
-                    } catch (IllegalAccessException e) {
-                        e.printStackTrace();
-                        result.append("null");
+
+        try {
+            if (obj instanceof Collection) {
+                result.append("[");
+                Iterator<?> iterator = ((Collection<?>) obj).iterator();
+                while (iterator.hasNext()) {
+                    result.append(toJsonString(iterator.next(), visited)); // 递归调用时传入visited
+                    if (iterator.hasNext()) {
+                        result.append(", ");
                     }
-                    if (i < fields.length - 1) {
+                }
+                result.append("]");
+            } else if (obj instanceof Map) {
+                result.append("{");
+                Collection<?> keys = ((Map<?, ?>) obj).keySet();
+                Iterator<?> it = keys.iterator();
+                while (it.hasNext()) {
+                    Object key = it.next();
+                    result.append("\"").append(key == null ? "null" : key.toString().replace("\"", "\\\"")).append("\":");
+                    result.append(toJsonString(((Map<?, ?>) obj).get(key), visited)); // 递归调用时传入visited
+                    if (it.hasNext()) {
                         result.append(", ");
                     }
                 }
                 result.append("}");
+            } else if (obj instanceof Iterator) {
+                result.append("[");
+                Iterator<?> iterator = (Iterator<?>) obj;
+                while (iterator.hasNext()) {
+                    result.append(toJsonString(iterator.next(), visited)); // 递归调用时传入visited
+                    if (iterator.hasNext()) {
+                        result.append(", ");
+                    }
+                }
+                result.append("]");
+            } else if (obj instanceof Enumeration) {
+                result.append("[");
+                Enumeration<?> enumeration = (Enumeration<?>) obj;
+                while (enumeration.hasMoreElements()) {
+                    result.append(toJsonString(enumeration.nextElement(), visited)); // 递归调用时传入visited
+                    if (enumeration.hasMoreElements()) {
+                        result.append(", ");
+                    }
+                }
+                result.append("]");
+            } else if (objClass.isArray()) {
+                // 数组处理：遍历数组元素并递归转换为JSON字符串
+                result.append("[");
+                int length = java.lang.reflect.Array.getLength(obj);
+                for (int i = 0; i < length; i++) {
+                    result.append(toJsonString(java.lang.reflect.Array.get(obj, i), visited)); // 递归调用时传入visited
+                    if (i < length - 1) {
+                        result.append(", ");
+                    }
+                }
+                result.append("]");
             } else {
-                result.append("\"").append(obj.toString().replace("\"", "\\\"")).append("\"");
+                // 对于自定义对象，通过反射获取其字段
+                Field[] fields = objClass.getDeclaredFields();
+                // 仅当类不是Java内置类且有字段时，才将其作为JSON对象处理
+                if (!objClass.getName().startsWith("java.") && fields.length > 0) {
+                    result.append("{");
+                    for (int i = 0; i < fields.length; i++) {
+                        result.append("\"").append(fields[i].getName()).append("\":");
+                        try {
+                            fields[i].setAccessible(true);
+                            result.append(toJsonString(fields[i].get(obj), visited)); // 递归调用时传入visited
+                        } catch (IllegalAccessException e) {
+                            // 捕获访问异常，打印堆栈跟踪并返回 "null"
+                            e.printStackTrace();
+                            result.append("null"); // 在JSON中，null不带引号
+                        }
+                        if (i < fields.length - 1) {
+                            result.append(", ");
+                        }
+                    }
+                    result.append("}");
+                } else {
+                    // 对于没有字段的自定义对象或者其他无法按JSON对象/数组处理的类型，
+                    // 默认将其toString结果作为JSON字符串处理（带双引号并转义）
+                    result.append("\"").append(obj.toString().replace("\"", "\\\"")).append("\"");
+                }
             }
+            return result.toString();
+        } finally {
+            // 无论方法如何退出（正常返回或抛出异常），都将当前对象从已访问集合中移除。
+            // 这允许在同一递归路径的后续调用中，当当前对象的引用再次出现时，可以被正确处理。
+            // 否则，如果一个对象被多个路径引用，且其中一个路径先访问了它，
+            // 另一个路径在不同分支访问时，会被误判为循环引用。
+            visited.remove(obj);
         }
-        return result.toString();
     }
 
     // 缓存

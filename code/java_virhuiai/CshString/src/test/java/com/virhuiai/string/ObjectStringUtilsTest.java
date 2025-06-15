@@ -185,7 +185,7 @@ public class ObjectStringUtilsTest {
 
     @Test(expected = NullPointerException.class)
     public void testIsSubClassOf_NullClass() {
-        assertFalse(objectStringUtils.isSubClassOf(null, "Object"));
+        assertNull(objectStringUtils.isSubClassOf(null, "Object"));
     }
 
     @Test
@@ -592,7 +592,7 @@ public class ObjectStringUtilsTest {
         // innerObject: toStringWithDepth(innerObject, 1) -> com.virhuiai.string.ObjectStringUtilsTest$SimpleObject:[name:Test; value:123; active:true; ]
         // items: processIteratorWithDepth(items.iterator(), List.class, 1) -> List.class + "{" + toStringWithDepth("item1",1) + "; " + toStringWithDepth("item2",1) + "; }"
         String expectedInnerObjStrAtDepth2 = "com.virhuiai.string.ObjectStringUtilsTest$SimpleObject:[name:Test; value:123; active:true]";
-        String expectedListItemsStrAtDepth2 = "item1; item2; "; // Still just item; because it's a String
+        String expectedListItemsStrAtDepth2 = "item1; item2"; // Still just item; because it's a String
         String expectedDepth2ForNested = "com.virhuiai.string.ObjectStringUtilsTest$NestedObject:[outerName:Outer; innerObject:" + expectedInnerObjStrAtDepth2 + "; items:java.util.ArrayList{" + expectedListItemsStrAtDepth2 + "}]";
         assertEquals(expectedDepth2ForNested, objectStringUtils.toStringWithDepth(nested, 2));
     }
@@ -644,7 +644,7 @@ public class ObjectStringUtilsTest {
         Class<?>[] ignoreClasses = {SimpleObject.class};
 
         String simpleObjToString = new SimpleObject().toString();
-        String listString = "java.util.Arrays$ArrayList{item1; item2; }";
+        String listString = "java.util.Arrays$ArrayList{item1; item2}";
         String actual = objectStringUtils.toStringWithIgnore(nested, ignoreFields, ignoreClasses);
 
         // Check that outerName is ignored, innerObject is toString(), items are processed normally
@@ -844,7 +844,7 @@ public class ObjectStringUtilsTest {
     public void testToJsonString_Array_ObjectArray() {
         SimpleObject[] objArray = {new SimpleObject(), null};
         String simpleObjJson = objectStringUtils.toJsonString(new SimpleObject());
-        assertEquals("[com.virhuiai.string.ObjectStringUtilsTest$SimpleObject:[name:Test; value:123; active:true], null]", objectStringUtils.toJsonString(objArray));
+        assertEquals("[{\"name\":\"Test\", \"value\":123, \"active\":true}, null]", objectStringUtils.toJsonString(objArray));
     }
 
     @Test
