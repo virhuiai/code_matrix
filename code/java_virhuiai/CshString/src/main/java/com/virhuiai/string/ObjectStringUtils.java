@@ -29,16 +29,20 @@ public interface ObjectStringUtils {
     /**
      * 判断一个类是否是指定的类或接口
      * @param objClass 要判断的类
-     * @param className 类名或接口名
-     * @return 如果是,返回true,否则返回false
+     * @param className 类名或接口名（简单名或全限定名）
+     * @return 如果是，返回true，否则返回false
      */
     default boolean isClassOrInterface(Class objClass, String className) {
-        if (objClass.getName().equals(className) || objClass.getName().equals("java.util." + className)) {
+         if (objClass == null || className == null) {
+            return false;
+        }
+
+        if (objClass.getName().equals(className) || objClass.getSimpleName().equals(className)) {
             return true;
         }
         Class[] classes = objClass.getInterfaces();
         for (Class cls : classes) {
-            if (cls.getName().equals("java.util." + className)) {
+            if (cls.getSimpleName().equals(className) || cls.getName().equals(className)) {
                 return true;
             }
         }
@@ -46,20 +50,24 @@ public interface ObjectStringUtils {
     }
 
     /**
-     * 判断一个类是否是指定类的子类
+     * 判断一个类是否是指定类的子类或实现指定接口
      * @param objClass 要判断的类
-     * @param className 父类名
+     * @param className 父类名或接口名（简单名或全限定名）
      * @return 如果是,返回true,否则返回false
      */
     default boolean isSubClassOf(Class objClass, String className) {
-        while (!isClassOrInterface(objClass, className)) {
-            Class objClass2 = objClass.getSuperclass();
-            objClass = Object.class;
-            if (objClass2.equals(Object.class)) {
-                return false;
-            }
+        if (objClass == null || className == null) {
+            return false;
         }
-        return true;
+
+        Class<?> currentClass = objClass;
+        while (currentClass != null) {
+            if (isClassOrInterface(currentClass, className)) {
+                return true;
+            }
+            currentClass = currentClass.getSuperclass();
+        }
+        return false;
     }
 
 
