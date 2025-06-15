@@ -14,6 +14,7 @@ import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.IdentityHashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -632,7 +633,7 @@ public class ObjectStringUtilsTest {
         Class<?>[] ignoreClasses = {SimpleObject.class}; // Ignore SimpleObject within NestedObject
         // The innerObject should be rendered by its own toString() if its class is ignored
         String simpleObjToString = new SimpleObject().toString();
-        String listString = "java.util.ArrayList{item1; item2}";
+        String listString = "java.util.Arrays$ArrayList{item1; item2}";
         String expected = "com.virhuiai.string.ObjectStringUtilsTest$NestedObject:[outerName:Outer; innerObject:" + simpleObjToString + "; items:" + listString + "]";
         assertEquals(expected, objectStringUtils.toStringWithIgnore(nested, new String[]{}, ignoreClasses));
     }
@@ -644,13 +645,13 @@ public class ObjectStringUtilsTest {
         Class<?>[] ignoreClasses = {SimpleObject.class};
 
         String simpleObjToString = new SimpleObject().toString();
-        String listString = "java.util.ArrayList{item1; item2}";
+        String listString = "java.util.Arrays$ArrayList{item1; item2}";
         String actual = objectStringUtils.toStringWithIgnore(nested, ignoreFields, ignoreClasses);//com.virhuiai.string.ObjectStringUtilsTest$NestedObject:[innerObject:SimpleObject{name='Test', value=123, active=true}; items:java.util.ArrayList{item1; item2}]
 
         // Check that outerName is ignored, innerObject is toString(), items are processed normally
         assertFalse(actual.contains("outerName:"));
         assertTrue(actual.contains("innerObject:" + simpleObjToString));
-        assertTrue(actual.contains("items:" + listString));//todo now
+        assertTrue(actual.contains("items:" + listString));
     }
 
     @Test
@@ -663,14 +664,14 @@ public class ObjectStringUtilsTest {
     // --- Tests for Cycle Detection ---
     @Test
     public void testToStringWithCycleDetection_Null() {
-        assertEquals("null", objectStringUtils.toStringWithCycleDetection(null, new HashSet<>()));
+        assertEquals("null", objectStringUtils.toStringWithCycleDetection(null, new IdentityHashMap<Object, Boolean>()));
     }
 
     @Test
     public void testToStringWithCycleDetection_NoCycle() {
         SimpleObject obj = new SimpleObject();
         String expected = "com.virhuiai.string.ObjectStringUtilsTest$SimpleObject{name=Test; value=123; active=true}";
-        assertEquals(expected, objectStringUtils.toStringWithCycleDetection(obj, new HashSet<>()));
+        assertEquals(expected, objectStringUtils.toStringWithCycleDetection(obj, new IdentityHashMap<Object, Boolean>()));
     }
 
     @Test
@@ -678,7 +679,7 @@ public class ObjectStringUtilsTest {
         SelfReferencingObject obj = new SelfReferencingObject();
         // The 'self' field should be detected as a cycle
         String expected = "com.virhuiai.string.ObjectStringUtilsTest$SelfReferencingObject{name=Self; self=[Cyclic Reference]}";
-        assertEquals(expected, objectStringUtils.toStringWithCycleDetection(obj, new HashSet<>()));
+        assertEquals(expected, objectStringUtils.toStringWithCycleDetection(obj, new IdentityHashMap<Object, Boolean>()));
     }
 
     @Test
@@ -689,36 +690,38 @@ public class ObjectStringUtilsTest {
         b.a = a;
 
         String expectedA = "com.virhuiai.string.ObjectStringUtilsTest$TwoWayReferenceA{name=A; b=com.virhuiai.string.ObjectStringUtilsTest$TwoWayReferenceB{name=B; a=[Cyclic Reference]}}";
-        assertEquals(expectedA, objectStringUtils.toStringWithCycleDetection(a, new HashSet<>()));
+        assertEquals(expectedA, objectStringUtils.toStringWithCycleDetection(a, new IdentityHashMap<Object, Boolean>()));
 
         // Also test starting from B
         String expectedB = "com.virhuiai.string.ObjectStringUtilsTest$TwoWayReferenceB{name=B; a=com.virhuiai.string.ObjectStringUtilsTest$TwoWayReferenceA{name=A; b=[Cyclic Reference]}}";
-        assertEquals(expectedB, objectStringUtils.toStringWithCycleDetection(b, new HashSet<>()));
+        assertEquals(expectedB, objectStringUtils.toStringWithCycleDetection(b, new IdentityHashMap<Object, Boolean>()));
     }
 
     @Test
     public void testToStringWithCycleDetection_ListWithSelfReference() {
+        // todo just here
         List<Object> list = new ArrayList<>();
         list.add("Item1");
         list.add(list); // Self-referencing list
         list.add("Item2");
 
-        String expectedList = "java.util.ArrayList{Item1; [Cyclic Reference]; Item2; }";
-        assertEquals(expectedList, objectStringUtils.toStringWithCycleDetection(list, new HashSet<>()));// todo now
+        String expectedList = "java.util.ArrayList{Item1; [Cyclic Reference]; Item2}";
+        assertEquals(expectedList, objectStringUtils.toStringWithCycleDetection(list, new IdentityHashMap<Object, Boolean>()));// todo now
     }
 
     @Test
     public void testToStringWithCycleDetection_MapWithSelfReference() {
+        // todo just here
         Map<String, Object> map = new HashMap<>();
         map.put("key1", "value1");
         map.put("self", map); // Self-referencing map
         map.put("key2", "value2");
-
-        String result = objectStringUtils.toStringWithCycleDetection(map, new HashSet<>());
+        //java.util.HashMap{key1=value1; key2=value2; self=[Cyclic Reference]}
+        String result = objectStringUtils.toStringWithCycleDetection(map, new IdentityHashMap<Object, Boolean>());
         assertTrue(result.startsWith("java.util.HashMap{"));
-        assertTrue(result.contains("key1=value1; "));
-        assertTrue(result.contains("self=[Cyclic Reference]; "));
-        assertTrue(result.contains("key2=value2; "));
+        assertTrue(result.contains("key1=value1"));
+        assertTrue(result.contains("self=[Cyclic Reference]"));
+        assertTrue(result.contains("key2=value2"));
         assertTrue(result.endsWith("}"));
     }
 
@@ -734,7 +737,7 @@ public class ObjectStringUtilsTest {
         nodeC.next = nodeA; // Cycle A->B->C->A
 
         String expected = "com.virhuiai.string.ObjectStringUtilsTest$Node{id=A; next=com.virhuiai.string.ObjectStringUtilsTest$Node{id=B; next=com.virhuiai.string.ObjectStringUtilsTest$Node{id=C; next=[Cyclic Reference]}}}";
-        assertEquals(expected, objectStringUtils.toStringWithCycleDetection(nodeA, new HashSet<>()));
+        assertEquals(expected, objectStringUtils.toStringWithCycleDetection(nodeA, new IdentityHashMap<Object, Boolean>()));
     }
 
     // --- Tests for toJsonString ---
