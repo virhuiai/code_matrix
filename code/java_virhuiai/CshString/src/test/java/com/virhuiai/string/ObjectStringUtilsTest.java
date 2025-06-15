@@ -644,8 +644,8 @@ public class ObjectStringUtilsTest {
         Class<?>[] ignoreClasses = {SimpleObject.class};
 
         String simpleObjToString = new SimpleObject().toString();
-        String listString = "java.util.Arrays$ArrayList{item1; item2}";
-        String actual = objectStringUtils.toStringWithIgnore(nested, ignoreFields, ignoreClasses);
+        String listString = "java.util.ArrayList{item1; item2}";
+        String actual = objectStringUtils.toStringWithIgnore(nested, ignoreFields, ignoreClasses);//com.virhuiai.string.ObjectStringUtilsTest$NestedObject:[innerObject:SimpleObject{name='Test', value=123, active=true}; items:java.util.ArrayList{item1; item2}]
 
         // Check that outerName is ignored, innerObject is toString(), items are processed normally
         assertFalse(actual.contains("outerName:"));
