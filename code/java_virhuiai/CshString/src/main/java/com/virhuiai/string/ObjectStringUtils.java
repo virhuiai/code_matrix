@@ -16,12 +16,6 @@ import java.util.function.Function;
 
 /**
  * 包含对象转字符串相关的方法
- *    - toString
- *    - isClassOrInterface
- *    - isSubClassOf
- *    - processIterator
- *    - processEnumeration
- *    - processMap
  */
 public interface ObjectStringUtils {
 
@@ -632,36 +626,32 @@ default boolean isClassOrInterface(Class objClass, String className) {
             return obj.toString();
         }
 
-        // 核心修复：将Map和Collection的循环引用检测放在它们自己的处理方法中，
-        // 而不是在通用逻辑中将其添加到visited集合。
-        // 这是因为Map和Collection的hashCode()和equals()方法在包含自引用时，
-        // 会导致StackOverflowError。
+        // 核心修复逻辑：对于Map和Collection类型，在尝试访问其内容之前，
+        // 先检查是否已经访问过。这可以避免在添加它们到visited集合时，
+        // 它们的hashCode()或equals()方法因自引用而导致的StackOverflowError。
         if (obj instanceof Map) {
             if (visited.contains(obj)) {
                 return "[Cyclic Reference]";
             }
-            visited.add(obj); // 只有在不包含的情况下才添加
+            visited.add(obj); // 将当前Map添加到已访问集合
             try {
                 return processMapWithCycleDetection((Map<?, ?>) obj, objClass, visited);
             } finally {
-                visited.remove(obj);
+                visited.remove(obj); // 处理完成后移除，以便其他路径可以正确处理
             }
         } else if (obj instanceof Collection) {
             if (visited.contains(obj)) {
                 return "[Cyclic Reference]";
             }
-            visited.add(obj); // 只有在不包含的情况下才添加
+            visited.add(obj); // 将当前Collection添加到已访问集合
             try {
                 return processCollectionWithCycleDetection((Collection<?>) obj, objClass, visited);
             } finally {
-                visited.remove(obj);
+                visited.remove(obj); // 处理完成后移除
             }
         }
 
-
-        // 对于其他所有对象，才在通用逻辑中进行循环引用检测
-        // 尝试将当前对象添加到已访问集合。
-        // 如果添加失败（即对象已存在于集合中），则说明检测到循环引用。
+        // 对于其他所有非Map、非Collection的对象，在进行深度遍历前进行循环引用检测
         if (!visited.add(obj)) {
             return "[Cyclic Reference]";
         }
@@ -687,9 +677,9 @@ default boolean isClassOrInterface(Class objClass, String className) {
                 // 修正：这里不再需要判断!objClass.getName().startsWith("java")，因为上面已经处理了java.lang包的类。
                 // 而是判断是否有字段，以及是否为自定义类（通常非java开头的类名代表自定义类）
                 if (fields.length > 0) {
-                    result.append(objClass.getName()).append(":[");
+                    result.append(objClass.getName()).append("{"); // 统一使用大括号
                     for (int i = 0; i < fields.length; i++) {
-                        result.append(fields[i].getName()).append(":");
+                        result.append(fields[i].getName()).append("="); // 统一使用等号
                         try {
                             // 设置可访问性，以便访问私有字段
                             fields[i].setAccessible(true);
@@ -704,7 +694,7 @@ default boolean isClassOrInterface(Class objClass, String className) {
                             result.append("; ");
                         }
                     }
-                    result.append("]");
+                    result.append("}");
                 } else {
                     // 如果是自定义类但没有字段，或者是非java开头的其他类型，直接调用其toString方法
                     result.append(obj.toString());
@@ -712,11 +702,7 @@ default boolean isClassOrInterface(Class objClass, String className) {
             }
             return result.toString();
         } finally {
-            // 无论方法如何退出（正常返回或抛出异常），都将当前对象从已访问集合中移除。
-            // 这允许在同一递归路径的后续调用中，当当前对象的引用再次出现时，可以被正确处理。
-            // 否则，如果一个对象被多个路径引用，且其中一个路径先访问了它，
-            // 另一个路径在不同分支访问时，会被误判为循环引用。
-            // 对于Map和Collection，它们的移除操作在各自的处理块中完成
+            // 对于非Map和非Collection的对象，处理完成后从已访问集合中移除
             if (!(obj instanceof Map) && !(obj instanceof Collection)) {
                 visited.remove(obj);
             }
@@ -746,8 +732,7 @@ default boolean isClassOrInterface(Class objClass, String className) {
      */
     default String processIteratorWithCycleDetection(Iterator<?> iterator, Class<?> objClass, Set<Object> visited) {
         StringBuilder result = new StringBuilder();
-        // 修复：使用传入的objClass的名称，而不是硬编码"java.util.ArrayList"
-        result.append(objClass.getName()).append("{"); // Iterator没有直接的Class名称表示，这里用Collection的Class名称更合适
+        result.append(objClass.getName()).append("{"); // 尽量保持一致的输出格式
         while (iterator.hasNext()) {
             result.append(toStringWithCycleDetection(iterator.next(), visited));
             if (iterator.hasNext()) {
@@ -779,29 +764,32 @@ default boolean isClassOrInterface(Class objClass, String className) {
      */
     default String processMapWithCycleDetection(Map<?, ?> map, Class<?> objClass, Set<Object> visited) {
         StringBuilder result = new StringBuilder();
-        Collection<?> keys = map.keySet();
         result.append(objClass.getName()).append("{");
-        Iterator<?> it = keys.iterator();
+        Iterator<?> it = map.entrySet().iterator(); // 遍历entrySet而不是keySet，可以同时获取键和值
+        boolean first = true;
         while (it.hasNext()) {
-            Object key = it.next();
+            if (!first) {
+                result.append("; ");
+            }
+            Map.Entry<?, ?> entry = (Map.Entry<?, ?>) it.next();
+            Object key = entry.getKey();
+            Object value = entry.getValue();
 
             if (key == null) {
                 result.append("null");
             } else {
-                // 为了避免Map key的toString也导致循环（虽然Map的key通常不是自引用），这里直接使用key的toString()
-                // 但如果key本身是自引用对象，这里仍然可能出问题。
-                // 不过在通常情况下，Map的key是String或其他不可变类型，不会导致此问题。
-                result.append(key.toString());
+                // 递归处理键，因为键也可能是复杂对象或自引用
+                result.append(toStringWithCycleDetection(key, visited));
             }
 
-            result.append("=").append(toStringWithCycleDetection(map.get(key), visited));
-            if (it.hasNext()) {
-                result.append("; ");
-            }
+
+            result.append("=").append(toStringWithCycleDetection(value, visited));
+            first = false;
         }
         result.append("}");
         return result.toString();
     }
+
 
     // 假设存在此方法，这里不提供其实现，因为它不在问题描述的范围内 toStringArrayWithCycleDetection
 

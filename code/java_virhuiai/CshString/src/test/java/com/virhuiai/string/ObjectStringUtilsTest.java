@@ -669,7 +669,7 @@ public class ObjectStringUtilsTest {
     @Test
     public void testToStringWithCycleDetection_NoCycle() {
         SimpleObject obj = new SimpleObject();
-        String expected = "com.virhuiai.string.ObjectStringUtilsTest$SimpleObject:[name:Test; value:123; active:true]";
+        String expected = "com.virhuiai.string.ObjectStringUtilsTest$SimpleObject{name=Test; value=123; active=true}";
         assertEquals(expected, objectStringUtils.toStringWithCycleDetection(obj, new HashSet<>()));
     }
 
@@ -677,7 +677,7 @@ public class ObjectStringUtilsTest {
     public void testToStringWithCycleDetection_SelfReferencingObject() {
         SelfReferencingObject obj = new SelfReferencingObject();
         // The 'self' field should be detected as a cycle
-        String expected = "com.virhuiai.string.ObjectStringUtilsTest$SelfReferencingObject:[name:Self; self:[Cyclic Reference]]";
+        String expected = "com.virhuiai.string.ObjectStringUtilsTest$SelfReferencingObject{name=Self; self=[Cyclic Reference]}";
         assertEquals(expected, objectStringUtils.toStringWithCycleDetection(obj, new HashSet<>()));
     }
 
@@ -688,11 +688,11 @@ public class ObjectStringUtilsTest {
         a.b = b;
         b.a = a;
 
-        String expectedA = "com.virhuiai.string.ObjectStringUtilsTest$TwoWayReferenceA:[name:A; b:com.virhuiai.string.ObjectStringUtilsTest$TwoWayReferenceB:[name:B; a:[Cyclic Reference]]]";
+        String expectedA = "com.virhuiai.string.ObjectStringUtilsTest$TwoWayReferenceA{name=A; b=com.virhuiai.string.ObjectStringUtilsTest$TwoWayReferenceB{name=B; a=[Cyclic Reference]}}";
         assertEquals(expectedA, objectStringUtils.toStringWithCycleDetection(a, new HashSet<>()));
 
         // Also test starting from B
-        String expectedB = "com.virhuiai.string.ObjectStringUtilsTest$TwoWayReferenceB:[name:B; a:com.virhuiai.string.ObjectStringUtilsTest$TwoWayReferenceA:[name:A; b:[Cyclic Reference]]]";
+        String expectedB = "com.virhuiai.string.ObjectStringUtilsTest$TwoWayReferenceB{name=B; a=com.virhuiai.string.ObjectStringUtilsTest$TwoWayReferenceA{name=A; b=[Cyclic Reference]}}";
         assertEquals(expectedB, objectStringUtils.toStringWithCycleDetection(b, new HashSet<>()));
     }
 
@@ -733,7 +733,7 @@ public class ObjectStringUtilsTest {
         nodeB.next = nodeC;
         nodeC.next = nodeA; // Cycle A->B->C->A
 
-        String expected = "com.virhuiai.string.ObjectStringUtilsTest$Node:[id:A; next:com.virhuiai.string.ObjectStringUtilsTest$Node:[id:B; next:com.virhuiai.string.ObjectStringUtilsTest$Node:[id:C; next:[Cyclic Reference]]]]";
+        String expected = "com.virhuiai.string.ObjectStringUtilsTest$Node{id=A; next=com.virhuiai.string.ObjectStringUtilsTest$Node{id=B; next=com.virhuiai.string.ObjectStringUtilsTest$Node{id=C; next=[Cyclic Reference]}}}";
         assertEquals(expected, objectStringUtils.toStringWithCycleDetection(nodeA, new HashSet<>()));
     }
 
