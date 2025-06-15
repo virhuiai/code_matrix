@@ -25,29 +25,37 @@ import java.util.function.Function;
  */
 public interface ObjectStringUtils {
 
-
-    /**
-     * 判断一个类是否是指定的类或接口
-     * @param objClass 要判断的类
-     * @param className 类名或接口名（简单名或全限定名）
-     * @return 如果是，返回true，否则返回false
-     */
-    default boolean isClassOrInterface(Class objClass, String className) {
-         if (objClass == null || className == null) {
-            return false;
-        }
-
-        if (objClass.getName().equals(className) || objClass.getSimpleName().equals(className)) {
-            return true;
-        }
-        Class[] classes = objClass.getInterfaces();
-        for (Class cls : classes) {
-            if (cls.getSimpleName().equals(className) || cls.getName().equals(className)) {
-                return true;
-            }
-        }
+/**
+ * 判断一个类是否是指定的类或接口
+ * @param objClass 要判断的类
+ * @param className 类名或接口名（简单名或全限定名）
+ * @return 如果是，返回true，否则返回false
+ */
+default boolean isClassOrInterface(Class objClass, String className) {
+    // 根据单元测试 @Test(expected = NullPointerException.class) 的要求，
+    // 当 objClass 为 null 时，应该抛出 NullPointerException，而不是返回 false。
+    // 因此移除对 objClass == null 的判断。
+    if (className == null) {
         return false;
     }
+
+    // 原始逻辑，如果 objClass 为 null，这里会抛出 NullPointerException，符合测试预期。
+    if (objClass.getName().equals(className) || objClass.getSimpleName().equals(className)) {
+        return true;
+    }
+    Class[] classes = objClass.getInterfaces();
+    for (Class cls : classes) {
+        if (cls.getSimpleName().equals(className) || cls.getName().equals(className)) {
+            return true;
+        }
+    }
+    // 递归检查父类，因为接口可以被父类实现
+    Class superClass = objClass.getSuperclass();
+    if (superClass != null && isClassOrInterface(superClass, className)) {
+        return true;
+    }
+    return false;
+}
 
     /**
      * 判断一个类是否是指定类的子类或实现指定接口
@@ -616,6 +624,14 @@ public interface ObjectStringUtils {
             visited = new HashSet<>();
         }
 
+        // 对于基本类型（包括其包装类，如Integer、Double等）和java.lang包下的对象，
+        // 直接调用其toString方法。这些类型通常不会导致循环引用，且其toString方法已提供有意义的输出。
+        // 这一步应该在添加visited集合之前，因为这些对象不需要循环引用检测。
+        Class<?> objClass = obj.getClass();
+        if (objClass.isPrimitive() || objClass.getName().startsWith("java.lang")) {
+            return obj.toString();
+        }
+
         // 尝试将当前对象添加到已访问集合。
         // 如果添加失败（即对象已存在于集合中），则说明检测到循环引用。
         if (!visited.add(obj)) {
@@ -623,27 +639,19 @@ public interface ObjectStringUtils {
         }
 
         try {
-            Class<?> objClass = obj.getClass();
-
-            // 对于基本类型（包括其包装类，如Integer、Double等）和java.lang包下的对象，
-            // 直接调用其toString方法。这些类型通常不会导致循环引用，且其toString方法已提供有意义的输出。
-            if (objClass.isPrimitive() || objClass.getName().startsWith("java.lang")) {
-                return obj.toString();
-            }
-
             StringBuilder result = new StringBuilder();
 
             // 根据对象的类型进行不同的处理
-            if (isSubClassOf(objClass, String.valueOf(Collection.class))) { // 修正：直接使用Class对象而不是字符串
+            if (obj instanceof Collection) {
                 // 如果是Collection类型，处理其迭代器
                 result.append(processIteratorWithCycleDetection(((Collection<?>) obj).iterator(), objClass, visited));
-            } else if (isSubClassOf(objClass, String.valueOf(Map.class))) { // 修正：直接使用Class对象而不是字符串
+            } else if (obj instanceof Map) {
                 // 如果是Map类型，处理其键值对
                 result.append(processMapWithCycleDetection((Map<?, ?>) obj, objClass, visited));
-            } else if (isSubClassOf(objClass, String.valueOf(Iterator.class))) { // 修正：直接使用Class对象而不是字符串
+            } else if (obj instanceof Iterator) {
                 // 如果是Iterator类型，处理其元素
                 result.append(processIteratorWithCycleDetection((Iterator<?>) obj, objClass, visited));
-            } else if (isSubClassOf(objClass, String.valueOf(Enumeration.class))) { // 修正：直接使用Class对象而不是字符串
+            } else if (obj instanceof Enumeration) {
                 // 如果是Enumeration类型，处理其元素
                 result.append(processEnumerationWithCycleDetection((Enumeration<?>) obj, objClass, visited));
             } else if (objClass.isArray()) {
@@ -731,7 +739,15 @@ public interface ObjectStringUtils {
         Iterator<?> it = keys.iterator();
         while (it.hasNext()) {
             Object key = it.next();
-            result.append(key == null ? "null" : key).append("=").append(toStringWithCycleDetection(map.get(key), visited));
+
+
+            if(key == null){
+                result.append("null");
+            }else{
+                result.append(key);
+            }
+
+            result.append("=").append(toStringWithCycleDetection(map.get(key), visited));
             if (it.hasNext()) {
                 result.append("; ");
             }

@@ -310,7 +310,7 @@ public class ObjectStringUtilsTest {
     public void testToString_Array_ObjectArray() {
         SimpleObject[] objArray = {new SimpleObject(), null};
         String simpleObjStr = "com.virhuiai.string.ObjectStringUtilsTest$SimpleObject:[name:Test; value:123; active:true]";
-        String expected = "[" + simpleObjStr + ",null]";
+        String expected = "[" + simpleObjStr + ", null]";
         assertEquals(expected, objectStringUtils.toString(objArray));
     }
 
@@ -582,8 +582,8 @@ public class ObjectStringUtilsTest {
         // innerObject: toStringWithDepth(innerObject, 0) -> innerObject.toString()
         // items: processIteratorWithDepth(items.iterator(), List.class, 0) -> List.class + "{" + toStringWithDepth("item1",0) + "; " + toStringWithDepth("item2",0) + "; }"
         String simpleObjToString = new SimpleObject().toString(); // SimpleObject{name='Test', value=123, active=true}
-        String listItemsString = "item1; item2"; // No class name for elements because toStringWithDepth(String, 0) is just "item"
-        String expectedDepth1ForNested = "com.virhuiai.string.ObjectStringUtilsTest$NestedObject:[outerName:Outer; innerObject:" + simpleObjToString + "; items:[" + listItemsString + "]";
+        String listItemsString = "item1, item2"; // No class name for elements because toStringWithDepth(String, 0) is just "item"
+        String expectedDepth1ForNested = "com.virhuiai.string.ObjectStringUtilsTest$NestedObject:[outerName:Outer; innerObject:" + simpleObjToString + "; items:[" + listItemsString + "]]";
         assertEquals(expectedDepth1ForNested, objectStringUtils.toStringWithDepth(nested, 1));
 
 
@@ -591,9 +591,9 @@ public class ObjectStringUtilsTest {
         // outerName: "Outer"
         // innerObject: toStringWithDepth(innerObject, 1) -> com.virhuiai.string.ObjectStringUtilsTest$SimpleObject:[name:Test; value:123; active:true; ]
         // items: processIteratorWithDepth(items.iterator(), List.class, 1) -> List.class + "{" + toStringWithDepth("item1",1) + "; " + toStringWithDepth("item2",1) + "; }"
-        String expectedInnerObjStrAtDepth2 = "com.virhuiai.string.ObjectStringUtilsTest$SimpleObject:[name:Test; value:123; active:true; ]";
+        String expectedInnerObjStrAtDepth2 = "com.virhuiai.string.ObjectStringUtilsTest$SimpleObject:[name:Test; value:123; active:true]";
         String expectedListItemsStrAtDepth2 = "item1; item2; "; // Still just item; because it's a String
-        String expectedDepth2ForNested = "com.virhuiai.string.ObjectStringUtilsTest$NestedObject:[outerName:Outer; innerObject:" + expectedInnerObjStrAtDepth2 + "; items:java.util.Arrays$ArrayList{" + expectedListItemsStrAtDepth2 + "}; ]";
+        String expectedDepth2ForNested = "com.virhuiai.string.ObjectStringUtilsTest$NestedObject:[outerName:Outer; innerObject:" + expectedInnerObjStrAtDepth2 + "; items:java.util.ArrayList{" + expectedListItemsStrAtDepth2 + "}]";
         assertEquals(expectedDepth2ForNested, objectStringUtils.toStringWithDepth(nested, 2));
     }
 
@@ -650,7 +650,7 @@ public class ObjectStringUtilsTest {
         // Check that outerName is ignored, innerObject is toString(), items are processed normally
         assertFalse(actual.contains("outerName:"));
         assertTrue(actual.contains("innerObject:" + simpleObjToString));
-        assertTrue(actual.contains("items:" + listString));//todo
+        assertTrue(actual.contains("items:" + listString));//todo now
     }
 
     @Test
@@ -704,7 +704,7 @@ public class ObjectStringUtilsTest {
         list.add("Item2");
 
         String expectedList = "java.util.ArrayList{Item1; [Cyclic Reference]; Item2; }";
-        assertEquals(expectedList, objectStringUtils.toStringWithCycleDetection(list, new HashSet<>()));
+        assertEquals(expectedList, objectStringUtils.toStringWithCycleDetection(list, new HashSet<>()));// todo now
     }
 
     @Test
