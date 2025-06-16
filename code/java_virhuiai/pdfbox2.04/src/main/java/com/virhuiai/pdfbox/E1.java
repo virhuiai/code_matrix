@@ -9,23 +9,16 @@ import java.io.IOException;
  */
 public class E1 {
     public static void main(String[] args) {
-        //PDDocument类属于org.apache.pdfbox.pdmodel包，是PDF文档的内存表示。因此，通过实例化此类，您可以创建一个空的PDF文档，如以下代码块所示。
-        PDDocument document = new PDDocument();
-        //创建文档后，您需要将此文档保存到所需的路径，您可以使用PDDocument类的Save()方法来实现。此方法接受一个字符串值，表示您希望存储文档的路径，作为参数。以下是PDDocument类save()方法的原型。
-        try {
+        //PDDocument类属于org.apache.pdfbox.pdmodel包，是PDF文档的内存表示。
+        //通过try-with-resources方式创建PDDocument实例，自动管理资源关闭
+        try (PDDocument document = new PDDocument()) {
+            //创建文档后，使用save()方法将文档保存到指定路径
             document.save("/Volumes/RamDisk/E1.pdf");
+            System.out.println("PDF created");
+            //不需要显式调用close()，try-with-resources会自动关闭资源
         } catch (IOException e) {
             throw new RuntimeException(e);
-        }finally {
-            try {
-                System.out.println("PDF created");
-                document.close();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
         }
-        //步骤 3：关闭文档
-        //当您的任务完成后，最后，您需要使用close()方法关闭PDDocument对象。以下是PDDocument类close()方法的原型。
-
+        //try-with-resources会自动处理关闭文档，无需步骤3
     }
 }
