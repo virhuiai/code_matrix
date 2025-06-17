@@ -15,8 +15,10 @@ public class E9 {
     public static void main(String[] args) {
         // 定义输入PDF文件的路径
         String inputPath = "/Volumes/RamDisk/E8.pdf";
+        FilePermissionUtils.validateReadableFile(new File(inputPath));
         // 定义输出PDF文件的路径
         String outputPath = "/Volumes/RamDisk/E9.pdf";
+        FilePermissionUtils.validateReadWriteFile(new File(outputPath));
 
         // 使用try-with-resources加载现有PDF文档并确保资源自动关闭
         try (PDDocument document = PDDocument.load(new File(inputPath))) {
