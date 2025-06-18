@@ -4,6 +4,7 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
+
 import java.io.File;
 import java.io.IOException;
 
@@ -11,28 +12,29 @@ import java.io.IOException;
  * 用于加载现有PDF文档，向指定页面添加文本内容，并保存为新文件的示例程序。
  * 该类使用Apache PDFBox库操作PDF文档。
  */
-public class E9 {
+public class E9Dot2 {
     public static void main(String[] args) {
         // 定义输入PDF文件的路径
         // 定义输出PDF文件的路径
-        String outputPath = "/Volumes/RamDisk/E9.pdf";
+        String outputPath = "/Volumes/RamDisk/E9Dot2.pdf";
         FilePermissionUtils.validateReadWriteFile(new File(outputPath));
 
-        // 使用try-with-resources加载现有PDF文档并确保资源自动关闭
-        try (PDDocument document = PDDocumentUtils.loadPdfThenProcess("/Volumes/RamDisk/E8.pdf")) {
-            // 获取文档的指定页面（索引1，对应第二页）
-            addTextToPage(document);
+        // 使用loadPDF2方法加载PDF并通过回调处理文档
+        PDDocumentUtils.loadPdfThenProcess("/Volumes/RamDisk/E8.pdf", document -> {
+            try {
+                // 获取文档的指定页面（索引1，对应第二页）并添加文本
+                addTextToPage(document);
 
-            // 保存修改后的PDF文档到指定输出路径
-            document.save(new File(outputPath));
+                // 保存修改后的PDF文档到指定输出路径
+                document.save(new File(outputPath));
 
-            // 打印提示信息，确认内容已成功添加
-            System.out.println("内容已添加");
-
-        } catch (IOException e) {
-            // 捕获并处理IO异常，例如文件加载或保存失败
-            throw new RuntimeException("无法加载或保存PDF文档: " + e.getMessage(), e);
-        }
+                // 打印提示信息，确认内容已成功添加
+                System.out.println("内容已添加");
+            } catch (IOException e) {
+                // 捕获并处理IO异常，例如页面操作或保存失败
+                throw new RuntimeException("处理PDF文档时出错: " + e.getMessage(), e);
+            }
+        });
     }
 
     /**
