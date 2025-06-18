@@ -1,7 +1,7 @@
 package com.virhuiai.pdfbox;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdmodel.PDPageTree;
+import org.apache.pdfbox.pdmodel.PDPage;
 
 import java.io.File;
 import java.io.IOException;
@@ -57,6 +57,7 @@ public class PDDocumentUtils {
 
     /**
      * 验证PDF文档中指定的页面索引是否有效。
+     * PDDocumentUtils.validPage(document,);
      *
      * @param document PDF文档对象，不能为空
      * @param page 要验证的页面索引（从0开始）
@@ -82,6 +83,31 @@ public class PDDocumentUtils {
             // 错误信息包含无效的页面索引值以及有效的索引范围
             throw new IllegalArgumentException("无效的页面索引: " + page + "。页面索引必须在0到" + (numberOfPages - 1) + "之间");
         }
+    }
+    /**
+     * 获取PDF文档中指定索引的页面，并在获取前验证索引有效性。
+     *
+     * @param document PDF文档对象，不能为空
+     * @param pageIndex 要获取的页面索引（从0开始）
+     * @return 指定索引的PDPage对象
+     * @throws IllegalArgumentException 如果文档为空或页面索引无效
+     */
+    public static PDPage getValidatedPage(PDDocument document, int pageIndex) {
+        // 验证输入的PDF文档对象是否为空
+        if (document == null) {
+            throw new IllegalArgumentException("PDF文档不能为空");
+        }
+
+        // 获取PDF文档的总页面数，使用getNumberOfPages()以提高效率
+        int numberOfPages = document.getNumberOfPages();
+
+        // 验证页面索引是否有效，确保索引在0到总页面数-1之间
+        if (pageIndex < 0 || pageIndex >= numberOfPages) {
+            throw new IllegalArgumentException("无效的页面索引: " + pageIndex + "。页面索引必须在0到" + (numberOfPages - 1) + "之间");
+        }
+
+        // 返回指定索引的页面对象
+        return document.getPage(pageIndex);
     }
 
 
