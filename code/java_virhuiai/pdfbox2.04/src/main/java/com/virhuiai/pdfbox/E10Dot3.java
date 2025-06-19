@@ -3,23 +3,23 @@ package com.virhuiai.pdfbox;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
+import org.apache.pdfbox.pdmodel.font.PDType0Font;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
  * 用于加载现有PDF文档，向指定页面添加多行文本内容，并保存为新文件的示例程序。
  * 该类使用Apache PDFBox库操作PDF文档。
  */
-public class E10Dot2 {
+public class E10Dot3 {
     public static void main(String[] args) {
         // 定义输入PDF文件的路径
         String inputPath = "/Volumes/RamDisk/E8.pdf";
         // 定义输出PDF文件的路径
-        String outputPath = "/Volumes/RamDisk/E10Dot2.pdf";
+        String outputPath = "/Volumes/RamDisk/E10Dot3.pdf";
         FilePermissionUtils.validateReadWriteFile(new File(outputPath));
 
         // 使用loadPDF2方法加载PDF并通过回调处理文档
@@ -65,7 +65,12 @@ public class E10Dot2 {
             contentStream.beginText();
 
             // 设置文本字体和大小
-            PDType1Font font = PDType1Font.TIMES_ROMAN;
+//            PDType1Font font = PDType1Font.TIMES_ROMAN;
+            // 加载中文字体文件（例如微软雅黑）
+            File fontFile = new File("/Volumes/THAWSPACE/Document/方正-字体/FangZhengFangSongJianTi/FangZhengFangSongJianTi-1.ttf");
+//            File fontFile = new File("/System/Library/Fonts/PingFang.ttc");// Exception in thread "main" java.lang.RuntimeException: 处理PDF文档时出错: head is mandatory // 这个错误信息 "head is mandatory" 通常与字体文件有关，表示字体文件的"head"表（包含字体整体信息的重要表）缺失或损坏。这在处理某些中文字体时比较常见。
+            PDType0Font font = PDType0Font.load(document, fontFile);
+
             float fontSize = 16;
             contentStream.setFont(font, fontSize);
 
@@ -79,17 +84,22 @@ public class E10Dot2 {
             // 定义要添加的文本内容
             String text = "我This is an example of adding text to a page in the pdf document. we can add as many lines; This is an example of adding text to a page in the pdf document. we can add as many lines as we want like this using the ShowText() method of the ContentStream class.";
 
-            // 将文本按行分割以实现自动换行
-            List<String> lines = TextUtils.wrapText(text, maxWidth, font, fontSize);
-
-            // 逐行写入文本
-            for (String line : lines) {
-                contentStream.showText(line);
-                contentStream.newLine();
-            }
-
+            contentStream.showText(text);
             // 结束文本内容流
             contentStream.endText();
+            contentStream.close();
+
+
+//            // 将文本按行分割以实现自动换行
+//            List<String> lines = TextUtils.wrapText(text, maxWidth, font, fontSize);
+//
+//            // 逐行写入文本
+//            for (String line : lines) {
+//                contentStream.showText(line);
+//                contentStream.newLine();
+//            }
+
+
         }
     }
 

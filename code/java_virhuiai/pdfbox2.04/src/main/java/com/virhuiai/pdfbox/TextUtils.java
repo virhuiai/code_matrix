@@ -56,4 +56,85 @@ public class TextUtils {
 
         return lines;
     }
+
+    /**
+     * todo 测试 中文文本没有空格分隔，需要逐字符处理。
+     * @param text
+     * @param maxWidth
+     * @param font
+     * @param fontSize
+     * @return
+     * @throws IOException
+     */
+    public static List<String> wrapTextChinese(String text, float maxWidth, PDType1Font font, float fontSize) throws IOException {
+        List<String> lines = new ArrayList<>();
+        StringBuilder currentLine = new StringBuilder();
+        float currentWidth = 0;
+
+        // 逐字符处理
+        for (int i = 0; i < text.length(); i++) {
+            char c = text.charAt(i);
+            String charStr = String.valueOf(c);
+
+            // 计算当前字符宽度
+            float charWidth = font.getStringWidth(charStr) / 1000 * fontSize;
+
+            // 检查是否需要换行
+            if (currentWidth + charWidth <= maxWidth) {
+                currentLine.append(charStr);
+                currentWidth += charWidth;
+            } else {
+                // 如果超出，保存当前行并开始新行
+                if (currentLine.length() > 0) {
+                    lines.add(currentLine.toString());
+                }
+                currentLine = new StringBuilder(charStr);
+                currentWidth = charWidth;
+            }
+        }
+
+        // 添加最后一行
+        if (currentLine.length() > 0) {
+            lines.add(currentLine.toString());
+        }
+
+        return lines;
+    }
+
+    // 判断是否为标点符号（简化版）
+    private static boolean isPunctuation(char c) {
+        return "，。；：、？！\"'（）【】《》".indexOf(c) != -1;
+    }
+
+    // 在换行逻辑中添加标点符号处理
+//if (isPunctuation(c) && currentLine.length() == 0) {
+//        // 如果是标点符号且位于行首，尝试将其添加到上一行
+//        if (!lines.isEmpty()) {
+//            String lastLine = lines.get(lines.size() - 1);
+//            if (lastLine.length() * charWidth < maxWidth * 0.9) {
+//                // 如果上一行还有空间，将标点添加到上一行
+//                lines.set(lines.size() - 1, lastLine + charStr);
+//                continue;
+//            }
+//        }
+//    }
+
+//    // 检测连续的英文字符
+//    private static boolean isEnglishChar(char c) {
+//        return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z');
+//    }
+//
+//// 在主循环中添加英文单词完整性处理
+//if (isEnglishChar(c)) {
+//        // 尝试获取完整单词
+//        int wordEnd = i;
+//        while (wordEnd < text.length() && isEnglishChar(text.charAt(wordEnd))) {
+//            wordEnd++;
+//        }
+//        String word = text.substring(i, wordEnd);
+//        float wordWidth = font.getStringWidth(word) / 1000 * fontSize;
+//
+//        // 处理单词整体...
+//        i = wordEnd - 1; // 调整索引
+//    }
 }
