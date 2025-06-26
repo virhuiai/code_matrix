@@ -318,3 +318,119 @@ mxGraphUtils.regTreeNodeShape = function(graph, layout){
 
     return TreeNodeShape;
 }
+
+/////
+/**
+ * 初始化样式
+ * @param graph
+ */
+mxGraphUtils.initStyles = function(graph){
+
+    // 主节点容器样式
+    graph.getStylesheet().putCellStyle('mainContainer', {
+        'fillColor': 'white',
+        'strokeColor': '#E0E0E0',
+        'strokeWidth': 1,
+        'rounded': true,
+        'arcSize': 10,
+        'shadow': true
+    });
+
+    // 标题栏样式
+    graph.getStylesheet().putCellStyle('headerBlue', {
+        'fillColor': '#5B9BD5',
+        'strokeColor': 'none',
+        'fontColor': 'white',
+        'fontSize': 16,
+        'fontStyle': 1,
+        'rounded': true,
+        'arcSize': 10,
+        'align': 'left',
+        'verticalAlign': 'middle',
+        'spacingLeft': 10
+    });
+
+    // 标签样式
+    graph.getStylesheet().putCellStyle('tag', {
+        'fillColor': 'none',
+        'strokeColor': 'none',
+        'fontColor': '#B0D4F5',
+        'fontSize': 12,
+        'align': 'right',
+        'verticalAlign': 'middle',
+        'spacingRight': 10
+    });
+
+    // 按钮样式
+    graph.getStylesheet().putCellStyle('button', {
+        'fillColor': '#5B9BD5',
+        'strokeColor': 'none',
+        'fontColor': 'white',
+        'fontSize': 14,
+        'rounded': true,
+        'arcSize': 20
+    });
+
+    // 文本标签样式
+    graph.getStylesheet().putCellStyle('label', {
+        'fillColor': 'none',
+        'strokeColor': 'none',
+        'fontColor': '#666666',
+        'fontSize': 14,
+        'align': 'left',
+        'verticalAlign': 'middle'
+    });
+
+    // 值标签样式
+    graph.getStylesheet().putCellStyle('value', {
+        'fillColor': 'none',
+        'strokeColor': 'none',
+        'fontColor': '#333333',
+        'fontSize': 14,
+        'fontStyle': 1,
+        'align': 'left',
+        'verticalAlign': 'middle'
+    });
+
+    // 流程号样式
+    graph.getStylesheet().putCellStyle('processNumber', {
+        'fillColor': 'none',
+        'strokeColor': 'none',
+        'fontColor': '#5B9BD5',
+        'fontSize': 18,
+        'fontStyle': 1,
+        'align': 'left',
+        'verticalAlign': 'middle'
+    });
+
+    // 子节点容器样式
+    graph.getStylesheet().putCellStyle('subContainer', {
+        'fillColor': 'white',
+        'strokeColor': '#E0E0E0',
+        'strokeWidth': 1,
+        'rounded': true,
+        'arcSize': 10,
+        'shadow': true
+    });
+
+    // 子节点标题样式
+    graph.getStylesheet().putCellStyle('subHeader', {
+        'fillColor': '#5B9BD5',
+        'strokeColor': 'none',
+        'fontColor': 'white',
+        'fontSize': 14,
+        'fontStyle': 1,
+        'rounded': true,
+        'arcSize': 10,
+        'align': 'left',
+        'verticalAlign': 'middle',
+        'spacingLeft': 10
+    });
+
+    // 边的样式
+    var edgeStyle = graph.getStylesheet().getDefaultEdgeStyle();
+    edgeStyle[mxConstants.STYLE_STROKECOLOR] = '#5B9BD5';
+    edgeStyle[mxConstants.STYLE_STROKEWIDTH] = 2;
+    edgeStyle[mxConstants.STYLE_ROUNDED] = true;
+    edgeStyle[mxConstants.STYLE_EDGE] = mxEdgeStyle.OrthConnector;
+}
