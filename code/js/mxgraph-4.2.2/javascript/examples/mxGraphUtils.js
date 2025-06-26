@@ -333,14 +333,23 @@ mxGraphUtils.initStyles = function(graph){
         'strokeWidth': 1,
         'rounded': true,
         'arcSize': 10,
-        'shadow': true
+        // 'shadow': true
+    });
+
+    // 主节点标题背景样式
+    graph.getStylesheet().putCellStyle('mainHeaderBg', {
+        'fillColor': '#5B9BD5',
+        'strokeColor': '#5B9BD6',
+        'strokeWidth': 1,
+        'rounded': true,
+        'arcSize': 10,
     });
 
     // 标题栏样式
-    graph.getStylesheet().putCellStyle('headerBlue', {
-        'fillColor': '#5B9BD5',
+    graph.getStylesheet().putCellStyle('headerBlack', {
+        'fillColor': 'white',
         'strokeColor': 'none',
-        'fontColor': 'white',
+        'fontColor': 'black',
         'fontSize': 16,
         'fontStyle': 1,
         'rounded': true,
@@ -434,3 +443,5 @@ mxGraphUtils.initStyles = function(graph){
     edgeStyle[mxConstants.STYLE_ROUNDED] = true;
     edgeStyle[mxConstants.STYLE_EDGE] = mxEdgeStyle.OrthConnector;
 }
+
+
