@@ -1,0 +1,62 @@
+<!--
+
+-->
+<html>
+<head>
+	<title></title>
+
+	<!-- Sets the basepath for the library if not in same directory -->
+	<script type="text/javascript">
+		mxBasePath = '../src';
+	</script>
+
+	<!-- Loads and initializes the library -->
+	<script type="text/javascript" src="../src/js/mxClient.js"></script>
+	<script type="text/javascript" src="./mxGraphUtils.js"></script>
+
+	<!-- Example code -->
+	<script type="text/javascript">
+
+
+        // 程序从这里开始。在具有指定ID的DOM节点中创建一个示例图。
+        // 该函数从文档的onLoad事件处理程序调用（见下文）。
+        function main(container) {
+            // 检查浏览器是否受支持
+            if (!mxClient.isBrowserSupported()) {
+                // 如果浏览器不受支持，则显示错误消息。
+                mxUtils.error('Browser is not supported!', 200, false);
+            } else {
+                // 在给定的容器内创建图
+                var graph = new mxGraph(container);
+
+
+                // 获取插入新单元的默认父级。这通常是root的第一个子节点（即层0）。
+                var parent = graph.getDefaultParent();
+
+                // 在单个步骤中向模型添加单元
+                graph.getModel().beginUpdate();
+                try {
+                    var v1 = graph.insertVertex(parent, null, 'Hello,', 20, 20, 80, 30);
+                    var v2 = graph.insertVertex(parent, null, 'World!', 200, 150, 80, 30);
+                    var e1 = graph.insertEdge(parent, null, '', v1, v2);
+                } finally {
+                    // 更新显示
+                    graph.getModel().endUpdate();
+                }
+            }
+        };
+
+	</script>
+</head>
+
+
+<!-- Page passes the container for the graph to the program -->
+<body onload="main(document.getElementById('graphContainer'))">
+
+<!-- Creates a container for the graph with a grid wallpaper -->
+<div id="graphContainer"
+	 style="position:relative;overflow:hidden;width:321px;height:241px;cursor:default;">
+</div>
+</body>
+</html>
+
