@@ -345,6 +345,14 @@ mxGraphUtils.initStyles = function(graph){
         'arcSize': 10,
     });
 
+    graph.getStylesheet().putCellStyle('mainBodyBg', {
+        'fillColor': 'grey',
+        'strokeColor': '#5B9BD6',
+        'strokeWidth': 1,
+        'rounded': true,
+        'arcSize': 10,
+    });
+
     // 标题栏样式
     graph.getStylesheet().putCellStyle('headerBlack', {
         'fillColor': 'white',

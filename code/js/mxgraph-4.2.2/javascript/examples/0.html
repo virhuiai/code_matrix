@@ -4,6 +4,7 @@
 <html>
 <head>
     <title></title>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
     <!-- Sets the basepath for the library if not in same directory -->
     <script type="text/javascript">
@@ -26,14 +27,58 @@
 
             // 在给定的容器内创建图
             var graph = new mxGraph(container);
-
-
             // 获取插入新单元的默认父级。这通常是root的第一个子节点（即层0）。
             var parent = graph.getDefaultParent();
+
+			// 启用节点选择
+			graph.setEnabled(true);
+			graph.setConnectable(false);
+			graph.setCellsEditable(false);
+			graph.setCellsResizable(false);
+			// 创建自定义样式
+			var style = graph.getStylesheet().createDefaultVertexStyle();
+
+			mxGraphUtils.initStyles(graph);
+
             mxGraphUtils.insertToGraph(graph, parent, function (parent) {
-                var v1 = graph.insertVertex(parent, null, 'Hello,', 20, 20, 80, 30);
-                var v2 = graph.insertVertex(parent, null, 'World!', 200, 150, 80, 30);
-                var e1 = graph.insertEdge(parent, null, '', v1, v2);
+
+
+
+				// 主节点容器
+				// var mainContainer = graph.insertVertex(mainGroup, null, '', 0, 0, 750, 220,
+				// 		'mainContainer');
+				// // 主节点标题栏背景
+				// var mainHeaderBg = graph.insertVertex(mainContainer, null, '', 0, 0, 750, 45,
+				// 		'fillColor=#5B9BD5;strokeColor=none;rounded=1;arcSize=10');
+
+				// 主节点容器
+				var mainContainer = graph.insertVertex(parent, null, '', 0, 0, 750, 220, 'mainContainer');
+
+				// // 主节点标题栏背景 - 修改后只在顶部有圆角
+				var mainHeaderBg = graph.insertVertex(mainContainer, null, '', 0, 0, mainContainer.geometry.width, 25,
+						'mainHeaderBg');
+				// mainHeaderBg.geometry.offset = new mxPoint(0, 0);
+				mainHeaderBg.geometry.relative = true;
+
+				var point = graph.insertVertex(mainContainer, null, '', 0, 0, 20, 20, 'shape=ellipse;resizable=0;fillColor=#5B9BD5;strokeColor=#5B9BD5;');
+				point.geometry.offset = new mxPoint(10,  mainHeaderBg.geometry.height + 11);
+				point.geometry.relative = true;
+
+
+				// 主节点标题
+				var title = graph.insertVertex(mainContainer, null, '申请/维护', 0, 0, 200, 45, 'headerBlack;strokeColor=none');
+				title.geometry.offset = new mxPoint(point.geometry.width + 10 ,  mainHeaderBg.geometry.height);
+				title.geometry.relative = true;
+
+				// 已办结标签
+				var tag = graph.insertVertex(mainContainer, null, '已办结', 0, 0, 85, 45, 'tag');
+				tag.geometry.offset = new mxPoint(mainContainer.geometry.width - tag.geometry.width ,  mainHeaderBg.geometry.height);
+				tag.geometry.relative = true;
+
+				//
+
+
+
             });
 
 
@@ -48,7 +93,7 @@
 
 <!-- Creates a container for the graph with a grid wallpaper -->
 <div id="graphContainer"
-     style="position:relative;overflow:hidden;width:321px;height:241px;cursor:default;">
+     style="position:relative;overflow:hidden;cursor:default;">
 </div>
 </body>
 </html>
