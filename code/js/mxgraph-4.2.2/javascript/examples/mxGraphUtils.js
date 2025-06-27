@@ -321,96 +321,122 @@ mxGraphUtils.regTreeNodeShape = function(graph, layout){
 
 /////
 /**
+ * 根据步骤获取颜色
+ * @param {number} step 步骤标识
+ * @returns {string} 颜色值
+ */
+mxGraphUtils.getColorByStep = function(step) {
+    switch (step) {
+        case 0:
+            return '#999999'; // 未开始
+        case 1:
+            return '#fd9a01'; // 进行中
+        case 2:
+            return '#3399fe'; // 办结了
+        default:
+            return '#000000'; // 默认颜色，可根据实际情况调整
+    }
+}
+
+/**
+ * 生成style名称
+ * @param pre
+ * @param step
+ */
+mxGraphUtils.getStyleNameByStep = function(pre, step){
+    switch (step) {
+        case 0:
+            return pre + 'BeforeProcess'; // 未开始
+        case 1:
+            return pre + 'InProcess'; // 进行中
+        case 2:
+            return pre + 'AfterProcess'; // 办结了
+        default:
+            return pre + step; //
+    }
+}
+
+/**
  * 初始化样式
  * @param graph
  */
 mxGraphUtils.initStyles = function(graph){
 
     // 主节点容器样式
-    graph.getStylesheet().putCellStyle('mainContainer', {
+    graph.getStylesheet().putCellStyle('nodeContainer', {
         'fillColor': 'white',
         'strokeColor': '#E0E0E0',
         'strokeWidth': 1,
         'rounded': true,
-        'arcSize': 10,
+        'arcSize': 1,
         // 'shadow': true
     });
 
-    // 主节点标题背景样式
-    graph.getStylesheet().putCellStyle('mainHeaderBg', {
-        'fillColor': '#5B9BD5',
-        'strokeColor': '#5B9BD6',
-        'strokeWidth': 1,
+
+    for (var step = 0; step < 3; step++){
+        // top bg
+        graph.getStylesheet().putCellStyle(
+            mxGraphUtils.getStyleNameByStep("nodeTopBg", step),
+            {
+                'fillColor': mxGraphUtils.getColorByStep(step),// 蓝色
+                'strokeColor': mxGraphUtils.getColorByStep(step),
+                'strokeWidth': 1,
+                'rounded': true,
+                'arcSize': 1,
+            });
+
+        // 标题前 点 处理
+        graph.getStylesheet().putCellStyle(mxGraphUtils.getStyleNameByStep('nodeTitlePoint', step), {
+            'shape':'ellipse',
+            'fillColor': mxGraphUtils.getColorByStep(step),
+            'strokeColor': mxGraphUtils.getColorByStep(step),
+        });
+
+
+        graph.getStylesheet().putCellStyle(mxGraphUtils.getStyleNameByStep('nodeTitle', step), {
+            'background':'transparent',
+            'strokeColor': 'transparent',
+            'fillColor': 'transparent',
+            'fontColor': 'black',
+            'fontSize': 16,
+            // 'fillColor': 'white',
+            // 'strokeColor': 'none',
+            // 'fontStyle': 1,
+            // 'rounded': true,
+            // 'arcSize': 10,
+            // 'align': 'left',
+            // 'verticalAlign': 'middle',
+            // 'spacingLeft': 10
+        });
+
+        // 标签样式
+        graph.getStylesheet().putCellStyle(
+            mxGraphUtils.getStyleNameByStep('nodeTitleTag', step)
+            , {
+                'fillColor': 'none',
+                'strokeColor': 'none',
+                'fontColor': mxGraphUtils.getColorByStep(step),
+                'fontSize': 12,
+                'align': 'right',
+                'verticalAlign': 'middle',
+                'spacingRight': 10
+            });
+
+    }
+
+    //节点内容样式
+    graph.getStylesheet().putCellStyle('nodeBodyBg', {
+        'fillColor': '#f2f2f2',
+        'strokeColor': '#f2f2f2',
+        // 'strokeWidth': 1,
         'rounded': true,
-        'arcSize': 10,
+        'arcSize': 1,
+        'shape':'rectangle',
     });
 
-    graph.getStylesheet().putCellStyle('mainBodyBg', {
-        'fillColor': 'grey',
-        'strokeColor': '#5B9BD6',
-        'strokeWidth': 1,
-        'rounded': true,
-        'arcSize': 10,
-    });
 
-    // 标题栏样式
-    graph.getStylesheet().putCellStyle('headerBlack', {
-        'fillColor': 'white',
-        'strokeColor': 'none',
-        'fontColor': 'black',
-        'fontSize': 16,
-        'fontStyle': 1,
-        'rounded': true,
-        'arcSize': 10,
-        'align': 'left',
-        'verticalAlign': 'middle',
-        'spacingLeft': 10
-    });
-
-    // 标签样式
-    graph.getStylesheet().putCellStyle('tag', {
-        'fillColor': 'none',
-        'strokeColor': 'none',
-        'fontColor': '#B0D4F5',
-        'fontSize': 12,
-        'align': 'right',
-        'verticalAlign': 'middle',
-        'spacingRight': 10
-    });
-
-    // 按钮样式
-    graph.getStylesheet().putCellStyle('button', {
-        'fillColor': '#5B9BD5',
-        'strokeColor': 'none',
-        'fontColor': 'white',
-        'fontSize': 14,
-        'rounded': true,
-        'arcSize': 20
-    });
-
-    // 文本标签样式
-    graph.getStylesheet().putCellStyle('label', {
-        'fillColor': 'none',
-        'strokeColor': 'none',
-        'fontColor': '#666666',
-        'fontSize': 14,
-        'align': 'left',
-        'verticalAlign': 'middle'
-    });
-
-    // 值标签样式
-    graph.getStylesheet().putCellStyle('value', {
-        'fillColor': 'none',
-        'strokeColor': 'none',
-        'fontColor': '#333333',
-        'fontSize': 14,
-        'fontStyle': 1,
-        'align': 'left',
-        'verticalAlign': 'middle'
-    });
-
-    // 流程号样式
-    graph.getStylesheet().putCellStyle('processNumber', {
+    //
+    graph.getStylesheet().putCellStyle('nodeBodySubTitle', {
         'fillColor': 'none',
         'strokeColor': 'none',
         'fontColor': '#5B9BD5',
@@ -420,29 +446,28 @@ mxGraphUtils.initStyles = function(graph){
         'verticalAlign': 'middle'
     });
 
-    // 子节点容器样式
-    graph.getStylesheet().putCellStyle('subContainer', {
-        'fillColor': 'white',
-        'strokeColor': '#E0E0E0',
-        'strokeWidth': 1,
-        'rounded': true,
-        'arcSize': 10,
-        'shadow': true
-    });
 
-    // 子节点标题样式
-    graph.getStylesheet().putCellStyle('subHeader', {
+    // 按钮样式
+    graph.getStylesheet().putCellStyle('nodeBodySubTitleTag', {
         'fillColor': '#5B9BD5',
         'strokeColor': 'none',
         'fontColor': 'white',
         'fontSize': 14,
-        'fontStyle': 1,
         'rounded': true,
-        'arcSize': 10,
-        'align': 'left',
-        'verticalAlign': 'middle',
-        'spacingLeft': 10
+        'arcSize': 20
     });
+
+    // 文本
+    graph.getStylesheet().putCellStyle('nodeBodyRow', {
+        'fillColor': 'transparent',
+        'strokeColor': 'transparent',
+        'fontColor': 'black',
+        'fontSize': 14,
+        // 'fontStyle': 1,
+        'align': 'left',
+        'verticalAlign': 'middle'
+    });
+
 
     // 边的样式
     var edgeStyle = graph.getStylesheet().getDefaultEdgeStyle();
@@ -452,4 +477,155 @@ mxGraphUtils.initStyles = function(graph){
     edgeStyle[mxConstants.STYLE_EDGE] = mxEdgeStyle.OrthConnector;
 }
 
+// /**
+//  * 插入相对位置节点
+//  * @param parent
+//  * @param id
+//  * @param value
+//  * @param x
+//  * @param y
+//  * @param width
+//  * @param height
+//  * @param style
+//  * @param relative
+//  * @returns {*}
+//  */
+// mxGraphUtils.insertVertexRelative = function (parent, id, value, x, y, width, height, style, relative) {
+//     var newVertex = graph.insertVertex(parent, id, value, x, y, width, height, style, relative);
+//     newVertex.geometry.relative = true;
+//     return newVertex;
+// }
 
+
+mxGraphUtils.newMyNode = function(conf){
+    var graph=conf.graph;
+    var parent=conf.parent;
+    var step = conf.step;
+
+    var w1 = conf.w1;
+    var h1 = conf.h1;
+
+
+    var y1Current = 0;
+    var lastVertex = null;
+    // 主节点容器
+    var oneNode = graph.insertVertex(parent, null, '', 0, 0, w1, h1, 'nodeContainer');
+
+    //top 背景
+    var mainHeaderBg = graph.insertVertex(oneNode, null, '', 0, 0, oneNode.geometry.width, 25,
+        mxGraphUtils.getStyleNameByStep("nodeTopBg", step),true);
+    // mainHeaderBg.geometry.offset = new mxPoint(0, 0);
+    lastVertex = mainHeaderBg;
+    y1Current += lastVertex.geometry.height;
+
+    /////////////  标题
+    var point = graph.insertVertex(oneNode, null, '', 0, 0, 20, 20,
+        mxGraphUtils.getStyleNameByStep('nodeTitlePoint', step)
+        , true);
+    y1Current += 11;
+    point.geometry.offset = new mxPoint(10,  y1Current);
+    lastVertex = point;
+    y1Current += lastVertex.geometry.height;
+
+    // 主节点标题
+    var title = graph.insertVertex(oneNode, null, '标题标题标题', 0, 0, 0, 0, mxGraphUtils.getStyleNameByStep('nodeTitle', step),true);
+    graph.updateCellSize(title);
+    title.geometry.offset = new mxPoint((2 * point.geometry.width) ,  y1Current - lastVertex.geometry.height);
+
+
+    // 已办结标签
+    var tag = graph.insertVertex(oneNode, null, '已办结', 0, 0, 0, 0, mxGraphUtils.getStyleNameByStep('nodeTitleTag', step), true);
+    // 更新大小以适应其内容
+    graph.updateCellSize(tag);
+    // console.log("tag.geometry.width " + tag.geometry.width )
+    // console.log("tag.geometry.height " + tag.geometry.height )
+    tag.geometry.offset = new mxPoint(oneNode.geometry.width - tag.geometry.width ,  y1Current - lastVertex.geometry.height);
+    ///////////////////////////////标题 END
+
+
+
+    var marginLR = 10;
+    var marginTB = 15;
+    var y2current = 0;
+    // ------------------
+    var mainBodyBg = graph.insertVertex(oneNode, null, '', 0, 0, oneNode.geometry.width - (2 * marginTB) , oneNode.geometry.height - y1Current - (2 * marginLR), 'nodeBodyBg', true);
+    mainBodyBg.geometry.offset = new mxPoint(marginTB,y1Current + marginLR);
+
+    /// nodeBodySubTitle
+
+    var bodyMarginLR = 10;
+    var bodyMarginTB = 10;
+
+
+    // // 流程号
+    var subTitle = graph.insertVertex(mainBodyBg, null, 'ZQYW2024112956293', 0, 0, 0, 0,
+        'nodeBodySubTitle',true);
+    graph.updateCellSize(subTitle);
+    subTitle.geometry.offset = new mxPoint(bodyMarginLR, bodyMarginTB);
+    lastVertex = subTitle;
+    y2current += lastVertex.geometry.height;
+
+    // 可选的状态
+    var subTitleTag = graph.insertVertex(mainBodyBg, null, '状态  ', 50, 0, 0, 0, 'nodeBodySubTitleTag');
+    graph.updateCellSize(subTitleTag);
+    subTitleTag.geometry.x = mainBodyBg.geometry.width - bodyMarginLR - subTitleTag.geometry.width;
+    subTitleTag.geometry.y = bodyMarginTB;
+
+
+    /////////以下是文字
+    var cellVertex = null;
+    // 一行一个的
+    // 第一行
+    cellVertex = graph.insertVertex(mainBodyBg, null, '标签1：内容1', 0, 0, 0, 14, 'nodeBodyRow', true);
+    // graph.updateCellSize(cellVertex);
+    console.log("cell.geometry.x:" + cellVertex.geometry.x);
+    console.log("cell.geometry.y:" + cellVertex.geometry.y);
+    // cellVertex.geometry.x = 0;
+    // cellVertex.geometry.y = 10;
+    cellVertex.geometry.offset = new mxPoint(bodyMarginLR, y2current + cellVertex.geometry.height);
+    lastVertex = cellVertex;
+    y2current += 2 * lastVertex.geometry.height;
+
+
+    // 一行2个的
+    cellVertex = graph.insertVertex(mainBodyBg, null, '标签2.1：内容2.1', 0, 0, 0, 14, 'nodeBodyRow', true);
+    // graph.updateCellSize(cellVertex);
+    console.log("cell.geometry.x:" + cellVertex.geometry.x);
+    console.log("cell.geometry.y:" + cellVertex.geometry.y);
+    // cellVertex.geometry.x = 0;
+    // cellVertex.geometry.y = 10;
+    cellVertex.geometry.offset = new mxPoint(bodyMarginLR, y2current + cellVertex.geometry.height);
+    lastVertex = cellVertex;
+    y2current += 2 * lastVertex.geometry.height;
+
+    cellVertex = graph.insertVertex(mainBodyBg, null, '标签2.2：内容2.2', 0, 0, 0, 14, 'nodeBodyRow', true);
+    // graph.updateCellSize(cellVertex);
+    console.log("cell.geometry.x:" + cellVertex.geometry.x);
+    console.log("cell.geometry.y:" + cellVertex.geometry.y);
+    // cellVertex.geometry.x = 0;
+    // cellVertex.geometry.y = 10;
+    cellVertex.geometry.offset = new mxPoint(mainBodyBg.geometry.width / 2, y2current - lastVertex.geometry.height);
+
+    ////
+    // 一行2个的
+    cellVertex = graph.insertVertex(mainBodyBg, null, '标签3.1：内容3.1', 0, 0, 0, 14, 'nodeBodyRow', true);
+    // graph.updateCellSize(cellVertex);
+    console.log("cell.geometry.x:" + cellVertex.geometry.x);
+    console.log("cell.geometry.y:" + cellVertex.geometry.y);
+    // cellVertex.geometry.x = 0;
+    // cellVertex.geometry.y = 10;
+    cellVertex.geometry.offset = new mxPoint(bodyMarginLR, y2current + cellVertex.geometry.height);
+    lastVertex = cellVertex;
+    y2current += 2 * lastVertex.geometry.height;
+
+    cellVertex = graph.insertVertex(mainBodyBg, null, '标签3.2：内容3.2', 0, 0, 0, 14, 'nodeBodyRow', true);
+    // graph.updateCellSize(cellVertex);
+    console.log("cell.geometry.x:" + cellVertex.geometry.x);
+    console.log("cell.geometry.y:" + cellVertex.geometry.y);
+    // cellVertex.geometry.x = 0;
+    // cellVertex.geometry.y = 10;
+    cellVertex.geometry.offset = new mxPoint(mainBodyBg.geometry.width / 2, y2current - lastVertex.geometry.height);
+
+
+    return oneNode;
+}
