@@ -3,24 +3,25 @@
   
   User object example for mxGraph. This example demonstrates using
   XML objects as values for cells.
+  mxGraph用户对象示例。本示例演示如何将XML对象作为单元格的值使用。
 -->
 <html>
 <head>
 	<title>User object example for mxGraph</title>
+	<!-- mxGraph用户对象示例 -->
 
-	<!-- Sets the basepath for the library if not in same directory -->
+	<!-- 设置库的基础路径（如果不在同一目录） -->
 	<script type="text/javascript">
-		mxBasePath = '../src';
+		mxBasePath = '../src'; // 指定mxGraph库的根目录
 	</script>
 
-	<!-- Loads and initializes the library -->
+	<!-- 加载并初始化mxGraph库 -->
 	<script type="text/javascript" src="../src/js/mxClient.js"></script>
 
-	<!-- Example code -->
+	<!-- 示例代码 -->
 	<script type="text/javascript">
-		// Program starts here. Creates a sample graph in the
-		// DOM node with the specified ID. This function is invoked
-		// from the onLoad event handler of the document (see below).
+		// 程序入口。在指定ID的DOM节点中创建示例图形
+		// 该函数由文档的onLoad事件处理器调用（见下方）
 		function main(container)
 		{
 			// Checks if the browser is supported
@@ -33,47 +34,51 @@
 			{
 				// Note that these XML nodes will be enclosing the
 				// mxCell nodes for the model cells in the output
-				var doc = mxUtils.createXmlDocument();
+				// 注意：这些XML节点将包裹模型中的mxCell节点
+				var doc = mxUtils.createXmlDocument();// 创建XML文档对象
 
+				// 创建Person1节点并设置属性
 				var person1 = doc.createElement('Person');
 				person1.setAttribute('firstName', 'Daffy');
 				person1.setAttribute('lastName', 'Duck');
 
+				// 创建Person2节点并设置属性
 				var person2 = doc.createElement('Person');
 				person2.setAttribute('firstName', 'Bugs');
 				person2.setAttribute('lastName', 'Bunny');
 
+				// 创建关系节点
 				var relation = doc.createElement('Knows');
 				relation.setAttribute('since', '1985');
 				
-				// Creates the graph inside the given container
+				// 在指定容器中创建图形实例
 				var graph = new mxGraph(container);
 
-				// Optional disabling of sizing
+				// 禁用单元格大小调整功能
 				graph.setCellsResizable(false);
 				
-				// Configures the graph contains to resize and
-				// add a border at the bottom, right
+				// 配置图形容器自动调整大小
+				// 并添加右下边框
 				graph.setResizeContainer(true);
 				graph.minimumContainerSize = new mxRectangle(0, 0, 500, 380);
 				graph.setBorder(60);
 				
-				// Stops editing on enter key, handles escape
+				// 添加键盘处理器（回车停止编辑，ESC处理）
 				new mxKeyHandler(graph);
 
-				// Overrides method to disallow edge label editing
+				// 重写方法：禁止边标签编辑
 				graph.isCellEditable = function(cell)
 				{
-					return !this.getModel().isEdge(cell);
+					return !this.getModel().isEdge(cell);// 仅顶点可编辑
 				};
 				
-				// Overrides method to provide a cell label in the display
+				// 重写方法：提供显示用的单元格标签
 				graph.convertValueToString = function(cell)
 				{
-					if (mxUtils.isNode(cell.value))
+					if (mxUtils.isNode(cell.value))// 处理XML节点类型的值
 					{
 						if (cell.value.nodeName.toLowerCase() == 'person')
-						{
+						{  // 处理Person节点
 							var firstName = cell.getAttribute('firstName', '');
 							var lastName = cell.getAttribute('lastName', '');
 
@@ -85,50 +90,52 @@
 							return firstName;
 						}
 						else if (cell.value.nodeName.toLowerCase() == 'knows')
-						{
+						{// 处理关系节点
 							return cell.value.nodeName + ' (Since '
 									+  cell.getAttribute('since', '') + ')';
 						}
 
 					}
 
-					return '';
+					return ''; // 默认返回空字符串
 				};
 
-				// Overrides method to store a cell label in the model
+				// 重写方法：将单元格标签变更存储到模型
 				var cellLabelChanged = graph.cellLabelChanged;
 				graph.cellLabelChanged = function(cell, newValue, autoSize)
 				{
 					if (mxUtils.isNode(cell.value) &&
 						cell.value.nodeName.toLowerCase() == 'person')
-					{
+					{  // 处理Person节点的标签变更
 						var pos = newValue.indexOf(' ');
 
+						// 解析名字和姓氏
 						var firstName = (pos > 0) ? newValue.substring(0,
 								pos) : newValue;
 						var lastName = (pos > 0) ? newValue.substring(
 								pos + 1, newValue.length) : '';
 
-						// Clones the value for correct undo/redo
+						// 克隆节点以实现正确的撤销/重做
 						var elt = cell.value.cloneNode(true);
 
+						// 更新属性
 						elt.setAttribute('firstName', firstName);
 						elt.setAttribute('lastName', lastName);
 
 						newValue = elt;
 						autoSize = true;
 					}
-					
+					// 调用原始方法
 					cellLabelChanged.apply(this, arguments);
 				};
 
-				// Overrides method to create the editing value
+				// 重写方法：创建编辑值
 				var getEditingValue = graph.getEditingValue;
 				graph.getEditingValue = function(cell)
 				{
 					if (mxUtils.isNode(cell.value) &&
 						cell.value.nodeName.toLowerCase() == 'person')
-					{
+					{  // 为Person节点返回"名 姓"格式
 						var firstName = cell.getAttribute('firstName', '');
 						var lastName = cell.getAttribute('lastName', '');
 
@@ -138,11 +145,12 @@
 
 				// Adds a special tooltip for edges
 				graph.setTooltips(true);
-				
+                // 为边添加特殊工具提示
 				var getTooltipForCell = graph.getTooltipForCell;
 				graph.getTooltipForCell = function(cell)
 				{
 					// Adds some relation details for edges
+					// 为边添加关系详情
 					if (graph.getModel().isEdge(cell))
 					{
 						var src = this.getLabel(this.getModel().getTerminal(cell, true));
@@ -155,45 +163,48 @@
 				};
 				
 				// Enables rubberband selection
+				// 启用框选功能
 				new mxRubberband(graph);
 
-				// Adds an option to view the XML of the graph
+				// 添加查看XML的按钮
 				document.body.appendChild(mxUtils.button('View XML', function()
 				{
 					var encoder = new mxCodec();
 					var node = encoder.encode(graph.getModel());
+					// 弹出格式化后的XML
 					mxUtils.popup(mxUtils.getPrettyXml(node), true);
 				}));
 
-				// Changes the style for match the markup
-				// Creates the default style for vertices
+				// 修改样式以匹配标记
+				// 创建默认顶点样式
 				var style = graph.getStylesheet().getDefaultVertexStyle();
-				style[mxConstants.STYLE_STROKECOLOR] = 'gray';
-				style[mxConstants.STYLE_ROUNDED] = true;
-				style[mxConstants.STYLE_SHADOW] = true;
-				style[mxConstants.STYLE_FILLCOLOR] = '#DFDFDF';
-				style[mxConstants.STYLE_GRADIENTCOLOR] = 'white';
-				style[mxConstants.STYLE_FONTCOLOR] = 'black';
-				style[mxConstants.STYLE_FONTSIZE] = '12';
-				style[mxConstants.STYLE_SPACING] = 4;
+				style[mxConstants.STYLE_STROKECOLOR] = 'gray'; // 边框颜色
+				style[mxConstants.STYLE_ROUNDED] = true;      // 圆角
+				style[mxConstants.STYLE_SHADOW] = true;        // 阴影
+				style[mxConstants.STYLE_FILLCOLOR] = '#DFDFDF'; // 填充色
+				style[mxConstants.STYLE_GRADIENTCOLOR] = 'white'; // 渐变色
+				style[mxConstants.STYLE_FONTCOLOR] = 'black';  // 字体颜色
+				style[mxConstants.STYLE_FONTSIZE] = '12';      // 字体大小
+				style[mxConstants.STYLE_SPACING] = 4;          // 间距
 		
-				// Creates the default style for edges
+				// 创建默认边样式
 				style = graph.getStylesheet().getDefaultEdgeStyle();
-				style[mxConstants.STYLE_STROKECOLOR] = '#0C0C0C';
-				style[mxConstants.STYLE_LABEL_BACKGROUNDCOLOR] = 'white';
-				style[mxConstants.STYLE_EDGE] = mxEdgeStyle.ElbowConnector;
-				style[mxConstants.STYLE_ROUNDED] = true;
-				style[mxConstants.STYLE_FONTCOLOR] = 'black';
-				style[mxConstants.STYLE_FONTSIZE] = '10';
+				style[mxConstants.STYLE_STROKECOLOR] = '#0C0C0C'; // 边颜色
+				style[mxConstants.STYLE_LABEL_BACKGROUNDCOLOR] = 'white'; // 标签背景
+				style[mxConstants.STYLE_EDGE] = mxEdgeStyle.ElbowConnector; // 连接线样式
+				style[mxConstants.STYLE_ROUNDED] = true;    // 圆角
+				style[mxConstants.STYLE_FONTCOLOR] = 'black'; // 字体颜色
+				style[mxConstants.STYLE_FONTSIZE] = '10';   // 字体大小
 				
-				// Gets the default parent for inserting new cells. This
-				// is normally the first child of the root (ie. layer 0).
+				// 获取插入新单元格的默认父级
+				// 通常是根节点的第一个子节点（即第0层）
 				var parent = graph.getDefaultParent();
 								
-				// Adds cells to the model in a single step
+				// 在单个步骤中添加单元格到模型
 				graph.getModel().beginUpdate();
 				try
 				{
+				    // 插入两个顶点和一条边
 					var v1 = graph.insertVertex(parent, null, person1, 40, 40, 80, 30);
 					var v2 = graph.insertVertex(parent, null, person2, 200, 150, 80, 30);
 					var e1 = graph.insertEdge(parent, null, relation, v1, v2);
@@ -206,6 +217,7 @@
 
 				// Implements a properties panel that uses
 				// mxCellAttributeChange to change properties
+				// 实现属性面板，使用mxCellAttributeChange变更属性
 				graph.getSelectionModel().addListener(mxEvent.CHANGE, function(sender, evt)
 				{
 					selectionChanged(graph);
@@ -222,12 +234,15 @@
 				var div = document.getElementById('properties');
 
 				// Forces focusout in IE
+				// 在IE中强制失去焦点
 				graph.container.focus();
 
 				// Clears the DIV the non-DOM way
+				// 清空属性面板
 				div.innerHTML = '';
 
 				// Gets the selection cell
+				// 获取当前选择的单元格
 				var cell = graph.getSelectionCell();
 
 				if (cell == null)
@@ -242,13 +257,15 @@
 					div.appendChild(center);
 					mxUtils.br(div);
 
-					// Creates the form from the attributes of the user object
+					// 从用户对象属性创建表单
 					var form = new mxForm();
 	
+					// 遍历所有属性创建输入字段
 					var attrs = cell.value.attributes;
 					
 					for (var i = 0; i < attrs.length; i++)
 					{
+					    // 将表单添加到面板
 						createTextField(graph, form, cell, attrs[i]);
 					}
 	
@@ -259,26 +276,33 @@
 
 			/**
 			 * Creates the textfield for the given property.
+			   为指定属性创建文本字段
 			 */
 			function createTextField(graph, form, cell, attribute)
 			{
+			    // 添加文本输入框
 				var input = form.addText(attribute.nodeName + ':', attribute.nodeValue);
 
+                // 应用变更的处理函数
 				var applyHandler = function()
 				{
 					var newValue = input.value || '';
 					var oldValue = cell.getAttribute(attribute.nodeName, '');
 
+					// 值有变化时执行更新
 					if (newValue != oldValue)
 					{
 						graph.getModel().beginUpdate();
                         
                         try
                         {
+                            // 创建属性变更命令
                         	var edit = new mxCellAttributeChange(
  		                           cell, attribute.nodeName,
  		                           newValue);
+                           	// 执行变更
                            	graph.getModel().execute(edit);
+                           	// 更新单元格大小
                            	graph.updateCellSize(cell);
                         }
                         finally
@@ -288,16 +312,19 @@
 					}
 				}; 
 
+				// 回车键提交
 				mxEvent.addListener(input, 'keypress', function (evt)
 				{
 					// Needs to take shift into account for textareas
+					// 需要考虑Shift键（特别是文本域）
 					if (evt.keyCode == /*enter*/13 &&
 						!mxEvent.isShiftDown(evt))
 					{
-						input.blur();
+						input.blur();// 失去焦点触发保存
 					}
 				});
 
+				// IE特殊处理
 				if (mxClient.IS_IE)
 				{
 					mxEvent.addListener(input, 'focusout', applyHandler);
@@ -310,6 +337,9 @@
 					// As a workaround you should use a local variable
 					// that stores the focused field and invoke blur
 					// explicitely where we do the graph.focus above.
+					// 注意：已知问题是在Firefox中改变选择会导致字段失去焦点，
+					// 但不会触发blur事件。解决方法是在graph.focus之前
+					// 使用局部变量存储焦点字段并显式调用blur
 					mxEvent.addListener(input, 'blur', applyHandler);
 				}
 			}
