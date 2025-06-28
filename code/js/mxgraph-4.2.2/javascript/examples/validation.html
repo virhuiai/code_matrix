@@ -21,12 +21,16 @@
 		// Program starts here. Creates a sample graph in the
 		// DOM node with the specified ID. This function is invoked
 		// from the onLoad event handler of the document (see below).
+		// 程序从这里开始。在具有指定 ID 的 DOM 节点中创建示例图。
+		// 此函数由文档的 onLoad 事件处理程序调用（见下文）。
 		function main(container)
 		{
 			// Checks if the browser is supported
+			// 检查浏览器是否受支持
 			if (!mxClient.isBrowserSupported())
 			{
 				// Displays an error message if the browser is not supported.
+				// 如果浏览器不受支持，则显示错误消息。
 				mxUtils.error('Browser is not supported!', 200, false);
 			}
 			else
@@ -37,34 +41,41 @@
 				var subtargetNode = xmlDocument.createElement('Subtarget');
 				
 				// Creates the graph inside the given container
+				// 在给定容器内创建图
 				var graph = new mxGraph(container);
-				graph.setConnectable(true);
-				graph.setTooltips(true);
-				graph.setAllowDanglingEdges(false);
-				graph.setMultigraph(false);
+				graph.setConnectable(true);// todo
+				graph.setTooltips(true);// todo
+				graph.setAllowDanglingEdges(false);// todo
+				graph.setMultigraph(false);// todo
 
+// todo
 				// Source nodes needs 1..2 connected Targets
+				// 源节点需要连接 1 到 2 个目标节点
 				graph.multiplicities.push(new mxMultiplicity(
 				   true, 'Source', null, null, 1, 2, ['Target'],
-				   'Source Must Have 1 or 2 Targets',
-				   'Source Must Connect to Target'));
-
+				   'Source Must Have 1 or 2 Targets',//// 源节点必须有 1 或 2 个目标节点
+				   'Source Must Connect to Target'));// 源节点必须连接到目标节点
+// todo
 				// Source node does not want any incoming connections
+				// 源节点不接受任何传入连接
 				graph.multiplicities.push(new mxMultiplicity(
 				   false, 'Source', null, null, 0, 0, null,
-				   'Source Must Have No Incoming Edge',
-				   null)); // Type does not matter
-
+				   'Source Must Have No Incoming Edge',// 源节点不能有传入边
+				   null)); // Type does not matter// 类型不重要
+// todo
 				// Target needs exactly one incoming connection from Source
+				// 目标节点需要来自源节点的一个传入连接
 				graph.multiplicities.push(new mxMultiplicity(
 				   false, 'Target', null, null, 1, 1, ['Source'],
-				   'Target Must Have 1 Source',
-				   'Target Must Connect From Source'));
+				   'Target Must Have 1 Source',// 目标节点必须有 1 个源节点
+				   'Target Must Connect From Source'));// 目标节点必须从源节点连接
 				
 				// Enables rubberband selection
+				// 启用橡皮筋选择
 				new mxRubberband(graph);
 
 				// Removes cells when [DELETE] is pressed
+				// 当按下 [DELETE] 键时移除单元格
 				var keyHandler = new mxKeyHandler(graph);
 				keyHandler.bindKey(46, function(evt)
 				{
@@ -76,6 +87,7 @@
 
 				// Installs automatic validation (use editor.validation = true
 				// if you are using an mxEditor instance)
+				// 安装自动验证（如果您正在使用 mxEditor 实例，请使用 editor.validation = true）
 				var listener = function(sender, evt)
 				{
 					graph.validateGraph();
@@ -85,9 +97,11 @@
 				
 				// Gets the default parent for inserting new cells. This
 				// is normally the first child of the root (ie. layer 0).
+				// 获取用于插入新单元格的默认父级。这通常是根的第一个子级（即第 0 层）。
 				var parent = graph.getDefaultParent();
 								
 				// Adds cells to the model in a single step
+				// 在一个步骤中将单元格添加到模型
 				graph.getModel().beginUpdate();
 				try
 				{
@@ -105,6 +119,7 @@
 				finally
 				{
 					// Updates the display
+					// 更新显示
 					graph.getModel().endUpdate();
 				}
 			}
