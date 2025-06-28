@@ -33,6 +33,7 @@ for storing references to ports.)
 -->
 <head>
 	<title>Wires</title>
+<!-- todo 详细说明	 -->
 	<!-- Sets the basepath for the library if not in same directory -->
 	<script type="text/javascript">
 		mxBasePath = '../src';
@@ -44,6 +45,8 @@ for storing references to ports.)
 		// If connect preview is not moved away then getCellAt is used to detect the cell under
 		// the mouse if the mouse is over the preview shape in IE (no event transparency), ie.
 		// the built-in hit-detection of the HTML document will not be used in this case.
+		// 如果连接预览没有移开，那么当鼠标悬停在 IE 中的预览形状上时（没有事件透明度），
+		// getCellAt 用于检测鼠标下的单元格，即在这种情况下不会使用 HTML 文档的内置点击检测。
 		mxConnectionHandler.prototype.movePreviewAway = false;
 		mxConnectionHandler.prototype.waypointsEnabled = true;
 		mxGraph.prototype.resetEdgesOnConnect = false;
@@ -52,18 +55,22 @@ for storing references to ports.)
 		var strokeWidth = 2;
 		
 		// Replaces the port image
+		// 替换端口图像
 		mxConstraintHandler.prototype.pointImage = new mxImage('images/dot.gif', 10, 10);
 		
 		// Enables guides
+		// 启用参考线
 		mxGraphHandler.prototype.guidesEnabled = true;
 		
 	    // Alt disables guides
+	    // 按住 Alt 键禁用参考线
 	    mxGuide.prototype.isEnabledForEvent = function(evt)
 	    {
 	    	return !mxEvent.isAltDown(evt);
 	    };
 		
 		// Enables snapping waypoints to terminals
+		// 启用将路径点吸附到终点
 		mxEdgeHandler.prototype.snapToTerminals = true;
 		
 		function main(container)
@@ -77,22 +84,28 @@ for storing references to ports.)
 			graph.foldingEnabled = false;
 			
 			//Maximum size
+			// 最大尺寸
 			graph.maximumGraphBounds = new mxRectangle(0, 0, 800, 600)
 			graph.border = 50;
 
 			// Panning handler consumed right click so this must be
 			// disabled if right click should stop connection handler.
+			// 平移处理程序会消耗右键单击事件，因此如果右键单击应该停止连接处理程序，则必须禁用此功能。
 			graph.panningHandler.isPopupTrigger = function() { return false; };
 			
 			// Enables return key to stop editing (use shift-enter for newlines)
+			// 启用回车键停止编辑（使用 shift-enter 换行）
 			graph.setEnterStopsCellEditing(true);
 
 			// Adds rubberband selection
+			// 添加橡皮筋选择
 			new mxRubberband(graph);
 			
 			// Alternative solution for implementing connection points without child cells.
 			// This can be extended as shown in portrefs.html example to allow for per-port
 			// incoming/outgoing direction.
+			// 另一种实现连接点而无需子单元格的解决方案。
+			// 如图 portrefs.html 示例所示，这可以扩展以允许每个端口的输入/输出方向。
 			graph.getAllConnectionConstraints = function(terminal)
 			{
 			   var geo = (terminal != null) ? this.getCellGeometry(terminal.cell) : null;
@@ -109,6 +122,7 @@ for storing references to ports.)
 			};
 
 			// Makes sure non-relative cells can only be connected via constraints
+			// 确保非相对单元格只能通过约束连接
 			graph.connectionHandler.isConnectableCell = function(cell)
 			{
 				if (this.graph.getModel().isEdge(cell))
@@ -128,6 +142,7 @@ for storing references to ports.)
 			};
 			
 			// Adds a special tooltip for edges
+			// 为边添加特殊工具提示
 			graph.setTooltips(true);
 			
 			var getTooltipForCell = graph.getTooltipForCell;
@@ -165,6 +180,7 @@ for storing references to ports.)
 			};
 
 			// Switch for black background and bright styles
+			// 切换黑色背景和明亮样式
 			var invert = false;
 			
 			if (invert)
@@ -172,6 +188,7 @@ for storing references to ports.)
 				container.style.backgroundColor = 'black';
 				
 				// White in-place editor text color
+				// 白色就地编辑器文本颜色
 				mxCellEditorStartEditing = mxCellEditor.prototype.startEditing;
 				mxCellEditor.prototype.startEditing = function (cell, trigger)
 				{
@@ -203,6 +220,7 @@ for storing references to ports.)
 			//style['rounded'] = '1';
 			
 			// Sets join node size
+			// 设置连接节点大小
 			style['startSize'] = joinNodeSize;
 			style['endSize'] = joinNodeSize;
 			
@@ -273,6 +291,7 @@ for storing references to ports.)
 				v19.geometry.width = 10;
 				v19.geometry.height = 4;
 				// NOTE: portConstraint is defined for east direction, so must be inverted here
+				// 注意：portConstraint 定义为东向，因此此处必须反转
 				v19.style = 'shape=triangle;direction=north;spacingBottom=12;align=center;portConstraint=horizontal;'+
 					'fontSize=8;strokeColor=' + strokeColor + ';routingCenterY=0.5;';
 				v19.geometry.offset = new mxPoint(-4, -4);
@@ -282,6 +301,7 @@ for storing references to ports.)
 					'shape=resistor;verticalLabelPosition=top;verticalAlign=bottom;');
 				
 				// Uses implementation of connection points via constraints (see above)
+				// 使用通过约束实现的连接点（见上文）
 				//v2.setConnectable(false);
 
  				/*var v21 = graph.insertVertex(v2, null, 'A', 0, 0.5, 10, 1,
@@ -303,6 +323,7 @@ for storing references to ports.)
 				
 				// Connection constraints implemented in edges, alternatively this
 				// can be implemented using references, see: portrefs.html
+				// 边中实现的连接约束，或者可以使用引用实现，请参阅：portrefs.html
 				var e1 = graph.insertEdge(parent, null, 'e1', v1.getChildAt(7), v2,
 					'entryX=0;entryY=0.5;entryPerimeter=0;');
 				e1.geometry.points = [new mxPoint(180, 110)];
@@ -356,6 +377,7 @@ for storing references to ports.)
 			}));
 			
 			// Undo/redo
+			// 撤销/重做
 			var undoManager = new mxUndoManager();
 			var listener = function(sender, evt)
 			{
@@ -375,12 +397,14 @@ for storing references to ports.)
 			}));
 
 			// Shows XML for debugging the actual model
+			// 显示 XML 以调试实际模型
 			document.body.appendChild(mxUtils.button('Delete', function()
 			{
 				graph.removeCells();
 			}));
 			
 			// Wire-mode
+			// 线条模式
 			var checkbox = document.createElement('input');
 			checkbox.setAttribute('type', 'checkbox');
 			
@@ -388,6 +412,7 @@ for storing references to ports.)
 			mxUtils.write(document.body, 'Wire Mode');
 			
 			// Starts connections on the background in wire-mode
+			// 在线条模式下在背景上开始连接
 			var connectionHandlerIsStartEvent = graph.connectionHandler.isStartEvent;
 			graph.connectionHandler.isStartEvent = function(me)
 			{
@@ -396,6 +421,7 @@ for storing references to ports.)
 			
 			// Avoids any connections for gestures within tolerance except when in wire-mode
 			// or when over a port
+			// 避免在容差范围内的手势进行任何连接，除非处于线条模式或悬停在端口上
 			var connectionHandlerMouseUp = graph.connectionHandler.mouseUp;
 			graph.connectionHandler.mouseUp = function(sender, me)
 			{
@@ -409,6 +435,7 @@ for storing references to ports.)
 					{
 						// Selects edges in non-wire mode for single clicks, but starts
 						// connecting for non-edges regardless of wire-mode
+						// 在非线条模式下为单击选择边，但无论线条模式如何，都为非边开始连接
 						if (!checkbox.checked && this.graph.getModel().isEdge(this.previous.cell))
 						{
 							this.reset();
@@ -422,6 +449,7 @@ for storing references to ports.)
 			};
 			
 			// Grid
+			// 网格
 			var checkbox2 = document.createElement('input');
 			checkbox2.setAttribute('type', 'checkbox');
 			checkbox2.setAttribute('checked', 'true');
@@ -451,6 +479,7 @@ for storing references to ports.)
 -->
 	<script type="text/javascript">
 		// Computes the position of edge to edge connection points.
+		// 计算边到边连接点的位置。
 		mxGraphView.prototype.updateFixedTerminalPoint = function(edge, terminal, source, constraint)
 		{
 			var pt = null;
@@ -478,27 +507,32 @@ for storing references to ports.)
 				pt = geo.getTerminalPoint(source);
 
 				// Computes edge-to-edge connection point
+				// 计算边到边连接点
 				if (pt != null)
 				{
 					pt = new mxPoint(s * (tr.x + pt.x + orig.x),
 									 s * (tr.y + pt.y + orig.y));
 					
 					// Finds nearest segment on edge and computes intersection
+					// 查找边上最近的线段并计算交点
 					if (terminal != null && terminal.absolutePoints != null)
 					{
 						var seg = mxUtils.findNearestSegment(terminal, pt.x, pt.y);
 
 						// Finds orientation of the segment
+						// 查找线段的方向
 						var p0 = terminal.absolutePoints[seg];
 						var pe = terminal.absolutePoints[seg + 1];
 						var horizontal = (p0.x - pe.x == 0);
 						
 						// Stores the segment in the edge state
+						// 将线段存储在边状态中
 						var key = (source) ? 'sourceConstraint' : 'targetConstraint';
 						var value = (horizontal) ? 'horizontal' : 'vertical';
 						edge.style[key] = value;
 						
 						// Keeps the coordinate within the segment bounds
+						// 将坐标保持在线段范围内
 						if (horizontal)
 						{
 							pt.x = p0.x;
@@ -514,6 +548,7 @@ for storing references to ports.)
 					}
 				}
 				// Computes constraint connection points on vertices and ports
+				// 计算顶点和端口上的约束连接点
 				else if (terminal != null && terminal.cell.geometry.relative)
 				{
 					pt = new mxPoint(this.getRoutingCenterX(terminal),
@@ -521,6 +556,7 @@ for storing references to ports.)
 				}
 
 				// Snaps point to grid
+				// 将点吸附到网格
 				/*if (pt != null)
 				{
 					var tr = this.graph.view.translate;
@@ -539,6 +575,7 @@ for storing references to ports.)
 -->
 	<script type="text/javascript">
 		// Sets source terminal point for edge-to-edge connections.
+		// 设置边到边连接的源端点。
 		mxConnectionHandler.prototype.createEdgeState = function(me)
 		{
 			var edge = this.graph.createEdge();
@@ -561,12 +598,14 @@ for storing references to ports.)
 		};
 		
 		// Uses right mouse button to create edges on background (see also: lines 67 ff)
+		// 使用鼠标右键在背景上创建边（另请参阅：第 67 行及以下）
 		mxConnectionHandler.prototype.isStopEvent = function(me)
 		{
 			return me.getState() != null || mxEvent.isRightMouseButton(me.getEvent());
 		};
 		
 		// Updates target terminal point for edge-to-edge connections.
+		// 更新边到边连接的目标端点。
 		mxConnectionHandlerUpdateCurrentState = mxConnectionHandler.prototype.updateCurrentState;
 		mxConnectionHandler.prototype.updateCurrentState = function(me)
 		{
@@ -589,6 +628,7 @@ for storing references to ports.)
 		};
 
 		// Updates the terminal and control points in the cloned preview.
+		// 更新克隆预览中的终端和控制点。
 		mxEdgeSegmentHandler.prototype.clonePreviewState = function(point, terminal)
 		{
 			var clone = mxEdgeHandler.prototype.clonePreviewState.apply(this, arguments);
@@ -599,9 +639,11 @@ for storing references to ports.)
 				clone.cell.geometry = clone.cell.geometry.clone();
 				
 				// Sets the terminal point of an edge if we're moving one of the endpoints
+				// 如果我们正在移动其中一个端点，则设置边的端点
 				if (this.graph.getModel().isEdge(clone.cell))
 				{
 					// TODO: Only set this if the target or source terminal is an edge
+					// TODO: 仅当目标或源终端是边时才设置此值
 					clone.cell.geometry.setTerminalPoint(point, this.isSource);
 				}
 				else
@@ -672,12 +714,14 @@ for storing references to ports.)
 			var marker = mxConnectionHandlerCreateMarker.apply(this, arguments);
 			
 			// Uses complete area of cell for new connections (no hotspot)
+			// 使用单元格的完整区域进行新连接（无热点）
 			marker.intersects = function(state, evt)
 			{
 				return true;
 			};
 			
 			// Adds in-place highlighting
+			// 添加就地高亮显示
 			mxCellHighlightHighlight = mxCellHighlight.prototype.highlight;
 			marker.highlight.highlight = function(state)
 			{
@@ -688,6 +732,7 @@ for storing references to ports.)
 						this.state.style = this.lastStyle;
 						
 						// Workaround for shape using current stroke width if no strokewidth defined
+						// 解决形状使用当前描边宽度（如果未定义描边宽度）的问题
 						this.state.style['strokeWidth'] = this.state.style['strokeWidth'] || '1';
 						this.state.style['strokeColor'] = this.state.style['strokeColor'] || 'none';
 						
@@ -725,6 +770,7 @@ for storing references to ports.)
 			var marker = mxEdgeHandlerCreateMarker.apply(this, arguments);
 			
 			// Adds in-place highlighting when reconnecting existing edges
+			// 在重新连接现有边时添加就地高亮显示
 			marker.highlight.highlight = this.graph.connectionHandler.marker.highlight.highlight;
 			
 			return marker;
@@ -795,11 +841,13 @@ for storing references to ports.)
 	mxEdgeStyle.WireConnector = function(state, source, target, hints, result)
 	{
 		// Creates array of all way- and terminalpoints
+		// 创建所有路径点和终端点的数组
 		var pts = state.absolutePoints;
 		var horizontal = true;
 		var hint = null;
 		
 		// Gets the initial connection from the source terminal or edge
+		// 从源终端或边获取初始连接
 		if (source != null && state.view.graph.model.isEdge(source.cell))
 		{
 			horizontal = state.style['sourceConstraint'] == 'horizontal';
@@ -809,6 +857,7 @@ for storing references to ports.)
 			horizontal = source.style['portConstraint'] != 'vertical';
 			
 			// Checks the direction of the shape and rotates
+			// 检查形状的方向并旋转
 			var direction = source.style[mxConstants.STYLE_DIRECTION];
 			
 			if (direction == 'north' || direction == 'south')
@@ -818,7 +867,9 @@ for storing references to ports.)
 		}
 		
 		// Adds the first point
+		// 添加第一个点
 		// TODO: Should move along connected segment
+		// TODO: 应该沿着连接的线段移动
 		var pt = pts[0];
 		
 		if (pt == null && source != null)
@@ -833,9 +884,11 @@ for storing references to ports.)
 		var first = pt;
 
 		// Adds the waypoints
+		// 添加路径点
 		if (hints != null && hints.length > 0)
 		{
 			// FIXME: First segment not movable
+			// FIXME: 第一个线段不可移动
 			/*hint = state.view.transformControlPoint(state, hints[0]);
 			mxLog.show();
 			mxLog.debug(hints.length,'hints0.y='+hint.y, pt.y)
@@ -877,9 +930,11 @@ for storing references to ports.)
 		}
 
 		// Adds the last point
+		// 添加最后一个点
 		pt = pts[pts.length - 1];
 
 		// TODO: Should move along connected segment
+		// TODO: 应该沿着连接的线段移动
 		if (pt == null && target != null)
 		{
 			pt = new mxPoint(state.view.getRoutingCenterX(target), state.view.getRoutingCenterY(target));
@@ -901,6 +956,7 @@ for storing references to ports.)
 	mxStyleRegistry.putValue('wireEdgeStyle', mxEdgeStyle.WireConnector);
 	
 	// This connector needs an mxEdgeSegmentHandler
+	// 此连接器需要一个 mxEdgeSegmentHandler
 	mxGraphCreateHandler = mxGraph.prototype.createHandler;
 	mxGraph.prototype.createHandler = function(state)
 	{
