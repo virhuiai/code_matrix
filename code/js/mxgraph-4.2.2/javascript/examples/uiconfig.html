@@ -4,40 +4,51 @@
   UIConfig example for mxGraph. This example demonstrates using a config
   file to configure the toolbar and popup menu in mxEditor.
 -->
+<!-- HTML文档，设置高度为100% -->
 <html style="height:100%;">
 <head>
+	<!-- 页面标题 -->
 	<title>UIConfig example</title>
 
-	<!-- Sets the basepath for the library if not in same directory -->
+	<!-- 设置mxGraph库的基础路径，如果不在同一目录下 -->
 	<script type="text/javascript">
 		mxBasePath = '../src';
 	</script>
 
-	<!-- Loads and initializes the library -->
+	<!-- 加载并初始化mxGraph库 -->
 	<script type="text/javascript" src="../src/js/mxClient.js"></script>
 
-	<!-- Example code -->
+	<!-- 示例代码 -->
 	<script type="text/javascript">
 
 		// Program starts here. Creates a sample graph in the
 		// DOM node with the specified ID. This function is invoked
 		// from the onLoad event handler of the document (see below).
+		/**
+		 * 主函数，程序入口
+		 * 在指定ID的DOM节点中创建示例图形
+		 * 该函数在文档的onLoad事件处理程序中调用（见下方）
+		 */
 		function main()
 		{
-			// Checks if the browser is supported
+			// 检查浏览器是否支持mxGraph
 			if (!mxClient.isBrowserSupported())
 			{
-				// Displays an error message if the browser is not supported.
+				// 如果不支持，显示错误信息
 				mxUtils.error('Browser is not supported!', 200, false);
 			}
 			else
 			{
+				// 显示日志
 				mxLog.show();
 				
 				// Creates the graph inside the given container. The
 				// editor is used to create certain functionality for the
 				// graph, such as the rubberband selection, but most parts
 				// of the UI are custom in this example.
+				// 在给定容器内创建图形
+				// 编辑器用于为图形创建特定功能，如橡皮筋选择
+				// 但在本例中大部分UI是自定义的
 				var editor = new mxEditor();
 
 				// Configures the editor's UI, the toolbar and the popupmenu.
@@ -51,39 +62,57 @@
 				// and toolbar objects, respectively.
 				// Keep in mind that the as-attributes of the add-items in the
 				// toolbar and popupmenu sections refer to keys in mxResources.
+				// 配置编辑器的UI、工具栏和弹出菜单
+				// 注意：配置文件中使用了id为toolbox的元素
+				// 下面的toolbar元素（顶部元素）用于以编程方式创建第二个工具栏
+				// 通过拖放创建的单元格被添加到mxEditor中的templates数组
+				// 同时自定义动作也被添加到编辑器的内置动作中
+				// ui部分将现有的DOM元素分别映射到图形和工具栏对象
+				// 记住：工具栏和弹出菜单部分中add-items的as属性引用mxResources中的键
 				var config = mxUtils.load('uiconfig.xml').getDocumentElement();
+				// 允许eval操作（安全考虑）
 				mxObjectCodec.allowEval = true;
+				// 使用配置文件配置编辑器
 				editor.configure(config);
+				// 禁用eval操作
 				mxObjectCodec.allowEval = false;
 
-				// Enables new connections in the graph
+				// 启用图形中的新连接
 				editor.graph.setConnectable(true);
 
-				// Creates the second toolbar programmatically
+				// 以编程方式创建第二个工具栏
 				var container = document.getElementById('toolbar');
 				var toolbar = new mxDefaultToolbar(container, editor);
 				
-				// Use eg. mxResources.get("delete") to translate tooltip
+				// 使用mxResources.get("delete")等方法来翻译工具提示
+				// 添加工具栏项目：显示XML
 				toolbar.addItem('Show XML', 'images/icons48/gear.png', 'myFirstAction');
+				// 添加工具栏项目：删除
 				toolbar.addItem('Delete', 'images/icons48/keys.png', 'delete');
 				
+				// 在控制台输出编辑器对象
 				console.log('editor', editor);
 			}
 		}
 	</script>
 </head>
 
-<!-- Page passes the container for the graph to the program -->
+<!-- 页面加载时调用main()函数，传递图形容器 -->
 <body onload="main();" style="margin:0px;height:100%;">
+	<!-- 使用表格布局，宽度和高度均为100% -->
 	<table width="100%" height="100%" border="0" cellspacing="0" cellpadding="0">
 	<tr>
+		<!-- 顶部工具栏区域，灰色背景 -->
 		<td id="toolbar" colspan="2" height="80px" style="background:#7F7F7F;padding:10px;">
 		</td>
 	</tr>
 	<tr>
+		<!-- 左侧工具箱区域，灰色背景，固定宽度 -->
 		<td id="toolbox" valign="top" width="70px" style="min-width:70px;background:#7F7F7F;padding:12px;">
 		</td>
+		<!-- 主图形区域，带网格背景和灰色边框 -->
 		<td width="100%" style="background:url('editors/images/grid.gif');border: solid gray 1px;height:100%;">
+			<!-- 图形容器，设置溢出自动处理 -->
 			<div id="graph" style="overflow:auto;width:100%;height:100%;">
 			</div>
 		</td>
