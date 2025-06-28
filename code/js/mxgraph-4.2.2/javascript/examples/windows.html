@@ -22,73 +22,87 @@
 		// Program starts here. Creates a sample graph in the
 		// DOM node with the specified ID. This function is invoked
 		// from the onLoad event handler of the document (see below).
+		// 程序从这里开始。在具有指定ID的DOM节点中创建示例图。
+		// 此函数由文档的onload事件处理程序调用（见下文）。
 		function main(container)
 		{
 			// Checks if the browser is supported
+			// 检查浏览器是否受支持
 			if (!mxClient.isBrowserSupported())
 			{
 				// Displays an error message if the browser is not supported.
+				// 如果浏览器不受支持，则显示错误消息。
 				mxUtils.error('Browser is not supported!', 200, false);
 			}
 			else
 			{
 				// Note that we're using the container scrollbars for the graph so that the
 				// container extends to the parent div inside the window
+				// 注意，我们正在使用容器滚动条来显示图，以便容器
+				// 扩展到窗口内的父div。
 				var wnd = new mxWindow('Scrollable, resizable, given height', container, 50, 50, 220, 224, true, true);
 				
 				// Creates the graph inside the given container
+				// 在给定容器内创建图
 				var graph = new mxGraph(container);
 				
 				// Adds rubberband selection and keystrokes
-				graph.setTooltips(true);
-				graph.setPanning(true);
-				var rubberband = new mxRubberband(graph);
-				new mxKeyHandler(graph);
+				// 添加橡皮筋选择和键盘快捷键
+				graph.setTooltips(true); // 启用工具提示
+				graph.setPanning(true); // 启用平移
+				var rubberband = new mxRubberband(graph); // 创建橡皮筋选择实例
+				new mxKeyHandler(graph); // 创建键盘处理实例
 				
-				mxEvent.disableContextMenu(container);
+				mxEvent.disableContextMenu(container); // 禁用容器的上下文菜单
 
 				// Gets the default parent for inserting new cells. This
 				// is normally the first child of the root (ie. layer 0).
+				// 获取用于插入新单元格的默认父级。这
+				// 通常是根的第一个子级（即第0层）。
 				var parent = graph.getDefaultParent();
 								
 				// Adds cells to the model in a single step
-				graph.getModel().beginUpdate();
+				// 在一个步骤中将单元格添加到模型
+				graph.getModel().beginUpdate(); // 开始模型更新，批量操作
 				try
 				{
-					var v1 = graph.insertVertex(parent, null, 'Hello,', 20, 20, 80, 30);
-					var v2 = graph.insertVertex(parent, null, 'World!', 200, 150, 80, 30);
-					var e1 = graph.insertEdge(parent, null, '', v1, v2);
+					var v1 = graph.insertVertex(parent, null, 'Hello,', 20, 20, 80, 30); // 插入第一个顶点
+					var v2 = graph.insertVertex(parent, null, 'World!', 200, 150, 80, 30); // 插入第二个顶点
+					var e1 = graph.insertEdge(parent, null, '', v1, v2); // 插入连接两个顶点的边
 				}
 				finally
 				{
 					// Updates the display
-					graph.getModel().endUpdate();
+					// 更新显示
+					graph.getModel().endUpdate(); // 结束模型更新，刷新显示
 				}
 
-				wnd.setMaximizable(true);
-				wnd.setResizable(true);
-				wnd.setVisible(true);
+				wnd.setMaximizable(true); // 设置窗口可最大化
+				wnd.setResizable(true); // 设置窗口可调整大小
+				wnd.setVisible(true); // 设置窗口可见
 				
 				var lorem = 'Lorem ipsum dolor sit amet, consectetur adipisici elit, sed eiusmod tempor incidunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquid ex ea commodi consequat. Quis aute iure reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint obcaecat cupiditat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. ';
-				var content = document.createElement('div');
-				mxUtils.write(content, lorem + lorem + lorem);
+				var content = document.createElement('div'); // 创建一个新的div元素作为内容
+				mxUtils.write(content, lorem + lorem + lorem); // 向div中写入文本内容
 				
+				// 创建另一个窗口，内容可滚动、可调整大小，高度自动
 				wnd = new mxWindow('Scrollable, resizable, auto height', content, 300, 50, 200, null, true, true);
-				wnd.setMaximizable(true);
-				wnd.setScrollable(true);
-				wnd.setResizable(true);
-				wnd.setVisible(true);
+				wnd.setMaximizable(true); // 设置窗口可最大化
+				wnd.setScrollable(true); // 设置窗口可滚动
+				wnd.setResizable(true); // 设置窗口可调整大小
+				wnd.setVisible(true); // 设置窗口可见
 				
-				content = content.cloneNode(true)
-				content.style.width = '400px';
+				content = content.cloneNode(true); // 克隆内容节点
+				content.style.width = '400px'; // 设置克隆内容的宽度
 				
+				// 创建第三个窗口，内容可滚动、可调整大小，内容固定
 				wnd = new mxWindow('Scrollable, resizable, fixed content', content, 520, 50, 220, 200, true, true);
-				wnd.setMaximizable(true);
-				wnd.setScrollable(true);
-				wnd.setResizable(true);
-				wnd.setVisible(true);
+				wnd.setMaximizable(true); // 设置窗口可最大化
+				wnd.setScrollable(true); // 设置窗口可滚动
+				wnd.setResizable(true); // 设置窗口可调整大小
+				wnd.setVisible(true); // 设置窗口可见
 				
-				mxLog.show();
+				mxLog.show(); // 显示日志窗口
 			}
 		};
 	</script>
