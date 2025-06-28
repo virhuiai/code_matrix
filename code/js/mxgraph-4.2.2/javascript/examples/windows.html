@@ -41,7 +41,8 @@
 				// 注意，我们正在使用容器滚动条来显示图，以便容器
 				// 扩展到窗口内的父div。
 				var wnd = new mxWindow('Scrollable, resizable, given height', container, 50, 50, 220, 224, true, true);
-				
+				//可滚动、可调整大小、给定高度的窗口
+
 				// Creates the graph inside the given container
 				// 在给定容器内创建图
 				var graph = new mxGraph(container);
@@ -87,6 +88,7 @@
 				
 				// 创建另一个窗口，内容可滚动、可调整大小，高度自动
 				wnd = new mxWindow('Scrollable, resizable, auto height', content, 300, 50, 200, null, true, true);
+				// 可滚动、可调整大小、自动高度的窗口：
 				wnd.setMaximizable(true); // 设置窗口可最大化
 				wnd.setScrollable(true); // 设置窗口可滚动
 				wnd.setResizable(true); // 设置窗口可调整大小
@@ -97,11 +99,15 @@
 				
 				// 创建第三个窗口，内容可滚动、可调整大小，内容固定
 				wnd = new mxWindow('Scrollable, resizable, fixed content', content, 520, 50, 220, 200, true, true);
+				// 可滚动、可调整大小、固定内容的窗口
 				wnd.setMaximizable(true); // 设置窗口可最大化
 				wnd.setScrollable(true); // 设置窗口可滚动
 				wnd.setResizable(true); // 设置窗口可调整大小
 				wnd.setVisible(true); // 设置窗口可见
-				
+				//可滚动 (Scrollable): 当窗口内容超出其可见区域时，可以启用滚动条来方便用户查看完整内容。
+				// 可调整大小 (Resizable): 窗口的边框通常允许用户通过拖动来改变窗口的宽度和高度。
+
+
 				mxLog.show(); // 显示日志窗口
 			}
 		};
