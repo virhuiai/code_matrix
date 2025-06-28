@@ -21,31 +21,43 @@
 		// Program starts here. Creates a sample graph in the
 		// DOM node with the specified ID. This function is invoked
 		// from the onLoad event handler of the document (see below).
+		// 程序从此处开始。在具有指定ID的DOM节点中创建示例图。
+		// 此函数由文档的onLoad事件处理程序调用（见下文）。
 		function main(container)
 		{
 			// Checks if the browser is supported
+			// 检查浏览器是否受支持
 			if (!mxClient.isBrowserSupported())
 			{
 				// Displays an error message if the browser is not supported.
+				// 如果浏览器不受支持，则显示错误消息。
 				mxUtils.error('Browser is not supported!', 200, false);
 			}
 			else
 			{
 				// Creates the graph inside the given container
+				// 在给定容器内创建图表
 				var graph = new mxGraph(container);
 
 				// Enables rubberband selection
+				// 启用橡皮筋选择 todo ？
 				new mxRubberband(graph);
+				/**
+				 * 什么是橡皮筋选择？
+				 * 橡皮筋选择是一种常见的用户界面交互模式，你在许多图形编辑软件（如画图、Photoshop、CAD 软件等）中都能看到它。当你点击并拖动鼠标时，屏幕上会出现一个可调整大小的矩形框，就像一根被拉伸的橡皮筋。一旦你释放鼠标按钮，所有被这个矩形框完全或部分包含的元素都会被选中。
+				 */
 				
 				// Gets the default parent for inserting new cells. This
 				// is normally the first child of the root (ie. layer 0).
+				// 获取用于插入新单元格的默认父级。这通常是根的第一个子级（即第0层）。
 				var parent = graph.getDefaultParent();
 				
-				var showOne = true;
-				var showTwo = true;
-				var showThree = true;
+				var showOne = true; // 显示条件1
+				var showTwo = true; // 显示条件2
+				var showThree = true; // 显示条件3
 				
 				// Overridden to implement dynamic conditions
+				// 重写以实现动态条件
 				graph.isCellVisible = function(cell)
 				{
 					var result = mxGraph.prototype.isCellVisible.apply(this, arguments);
@@ -61,8 +73,9 @@
 				};
 								
 				// Adds cells to the model in a single step
+				// 在一个步骤中将单元格添加到模型
 				var v1;
-				graph.getModel().beginUpdate();
+				graph.getModel().beginUpdate(); // 开始更新模型
 				try
 				{
 					v1 = graph.insertVertex(parent, null, '1', 20, 20, 80, 30);
@@ -72,45 +85,49 @@
 				finally
 				{
 					// Updates the display
+					// 更新显示
 					graph.getModel().endUpdate();
 				}
 				
 				// Dynamic conditions (requires refresh)
-				document.body.appendChild(mxUtils.button('Cond 1', function()
+				// 动态条件（需要刷新）
+				document.body.appendChild(mxUtils.button('Cond 1', function() // 条件1按钮
 				{
-					showOne = !showOne;
-					graph.refresh();
+					showOne = !showOne; // 切换条件1
+					graph.refresh(); // 刷新图表
 				}));
-				document.body.appendChild(mxUtils.button('Cond 2', function()
+				document.body.appendChild(mxUtils.button('Cond 2', function() // 条件2按钮
 				{
-					showTwo = !showTwo;
-					graph.refresh();
+					showTwo = !showTwo; // 切换条件2
+					graph.refresh(); // 刷新图表
 				}));
-				document.body.appendChild(mxUtils.button('Cond 3', function()
+				document.body.appendChild(mxUtils.button('Cond 3', function() // 条件3按钮
 				{
-					showThree = !showThree;
-					graph.refresh();
+					showThree = !showThree; // 切换条件3
+					graph.refresh(); // 刷新图表
 				}));
 				
 				// Explicit show/hide
-				document.body.appendChild(mxUtils.button('Toggle cell', function()
+				// 显式显示/隐藏
+				document.body.appendChild(mxUtils.button('Toggle cell', function() // 切换单元格按钮
 				{
-					graph.toggleCells(!graph.getModel().isVisible(v1), [v1], true);
+					graph.toggleCells(!graph.getModel().isVisible(v1), [v1], true); // 切换单元格v1的可见性
 				}));
 				
 				// Explicit remove/add
-				var removed = null;
+				// 显式删除/添加
+				var removed = null; // 存储被移除的单元格
 				
-				document.body.appendChild(mxUtils.button('Add/remove cell', function()
+				document.body.appendChild(mxUtils.button('Add/remove cell', function() // 添加/移除单元格按钮
 				{
 					if (removed != null)
 					{
-						graph.addCells(removed);
+						graph.addCells(removed); // 添加被移除的单元格
 						removed = null;
 					}
 					else
 					{
-						removed = graph.removeCells([v1]);
+						removed = graph.removeCells([v1]); // 移除单元格v1
 					}
 				}));
 			}
