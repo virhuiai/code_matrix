@@ -1,3 +1,4 @@
+
 <!--
   Copyright (c) 2006-2013, JGraph Ltd
   
@@ -7,227 +8,258 @@
 <html>
 <head>
 	<title>Schema example</title>
-
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<!-- todo html 偏	 -->
+	<!-- 设置库的基本路径，如果不在同一目录下 -->
 	<!-- Sets the basepath for the library if not in same directory -->
 	<script type="text/javascript">
+		// 定义 mxGraph 库的基路径
 		mxBasePath = '../src';
 	</script>
 
+	<!-- 加载并初始化 mxGraph 库 -->
 	<!-- Loads and initializes the library -->
 	<script type="text/javascript" src="../src/js/mxClient.js"></script>
 
+	<!-- 示例代码 -->
 	<!-- Example code -->
 	<script type="text/javascript">
+		// 程序从这里开始。在指定的 DOM 节点中创建示例图。此函数由文档的 onLoad 事件处理程序调用（见下文）。
 		// Program starts here. Creates a sample graph in the
 		// DOM node with the specified ID. This function is invoked
 		// from the onLoad event handler of the document (see below).
 		function main(container, outline, toolbar, sidebar, status)
 		{
+			// 检查浏览器是否支持
 			// Checks if the browser is supported
 			if (!mxClient.isBrowserSupported())
 			{
+				// 如果浏览器不支持，显示错误信息
 				// Displays an error message if the browser is not supported.
 				mxUtils.error('Browser is not supported!', 200, false);
 			}
 			else
 			{
+				// 设置阴影的透明度、颜色和偏移量
 				// Specifies shadow opacity, color and offset
-				mxConstants.SHADOW_OPACITY = 0.5;
-				mxConstants.SHADOWCOLOR = '#C0C0C0';
-				mxConstants.SHADOW_OFFSET_X = 5;
-				mxConstants.SHADOW_OFFSET_Y = 6;
+				mxConstants.SHADOW_OPACITY = 0.5; // 阴影透明度
+				mxConstants.SHADOWCOLOR = '#C0C0C0'; // 阴影颜色
+				mxConstants.SHADOW_OFFSET_X = 5; // 阴影 X 轴偏移
+				mxConstants.SHADOW_OFFSET_Y = 6; // 阴影 Y 轴偏移
 				
+				// 设置泳道（表）的图标尺寸和位置
 				// Table icon dimensions and position
-				mxSwimlane.prototype.imageSize = 20;
-				mxSwimlane.prototype.imageDx = 16;
-				mxSwimlane.prototype.imageDy = 4;
+				mxSwimlane.prototype.imageSize = 20; // 图标大小
+				mxSwimlane.prototype.imageDx = 16; // 图标 X 轴偏移
+				mxSwimlane.prototype.imageDy = 4; // 图标 Y 轴偏移
 				
+				// 修改泳道图标的边界
 				// Changes swimlane icon bounds
 				mxSwimlane.prototype.getImageBounds = function(x, y, w, h)
 				{
+					// 返回新的矩形边界
 					return new mxRectangle(x + this.imageDx, y + this.imageDy, this.imageSize, this.imageSize);
 				};
 				
+				// 为连接处理程序定义创建新连接的图标，自动禁用源顶点高亮
 				// Defines an icon for creating new connections in the connection handler.
 				// This will automatically disable the highlighting of the source vertex.
 				mxConnectionHandler.prototype.connectImage = new mxImage('images/connector.gif', 16, 16);
 
+				// 预加载列中使用的所有图片，以避免自动布局问题
 				// Prefetches all images that appear in colums
 				// to avoid problems with the auto-layout
 				var keyImage = new Image();
-				keyImage.src = "images/key.png";
+				keyImage.src = "images/key.png"; // 主键图标
 
 				var plusImage = new Image();
-				plusImage.src = "images/plus.png";
+				plusImage.src = "images/plus.png"; // 自增图标
 
 				var checkImage = new Image();
-				checkImage.src = "images/check.png";
+				checkImage.src = "images/check.png"; // 唯一约束图标
 				
+				// 针对 Internet Explorer 忽略某些 CSS 指令的解决方法
 				// Workaround for Internet Explorer ignoring certain CSS directives
 				if (mxClient.IS_QUIRKS)
 				{
-					document.body.style.overflow = 'hidden';
-					new mxDivResizer(container);
-					new mxDivResizer(outline);
-					new mxDivResizer(toolbar);
-					new mxDivResizer(sidebar);
-					new mxDivResizer(status);
+					document.body.style.overflow = 'hidden'; // 隐藏溢出内容
+					new mxDivResizer(container); // 调整容器大小
+					new mxDivResizer(outline); // 调整大纲大小
+					new mxDivResizer(toolbar); // 调整工具栏大小
+					new mxDivResizer(sidebar); // 调整侧边栏大小
+					new mxDivResizer(status); // 调整状态栏大小
 				}
 				
+				// 在指定容器内创建图形。编辑器用于创建图形的某些功能，例如橡皮筋选择，但本示例中的大部分 UI 是自定义的
 				// Creates the graph inside the given container. The
 				// editor is used to create certain functionality for the
 				// graph, such as the rubberband selection, but most parts
 				// of the UI are custom in this example.
-				var editor = new mxEditor();
-				var graph = editor.graph;
-				var model = graph.model;
+				var editor = new mxEditor(); // 创建编辑器实例
+				var graph = editor.graph; // 获取图形对象
+				var model = graph.model; // 获取图形模型
 				
+				// 禁用一些全局功能
 				// Disables some global features
-				graph.setConnectable(true);
-				graph.setCellsDisconnectable(false);
-				graph.setCellsCloneable(false);
-				graph.swimlaneNesting = false;
-				graph.dropEnabled = true;
+				graph.setConnectable(true); // 允许连接
+				graph.setCellsDisconnectable(false); // 禁止断开连接
+				graph.setCellsCloneable(false); // 禁止克隆单元
+				graph.swimlaneNesting = false; // 禁止泳道嵌套
+				graph.dropEnabled = true; // 启用拖放功能
 
+				// 不允许悬空边
 				// Does not allow dangling edges
 				graph.setAllowDanglingEdges(false);
 				
+				// 强制在连接处理程序中使用默认边
 				// Forces use of default edge in mxConnectionHandler
 				graph.connectionHandler.factoryMethod = null;
 
+				// 只有表可以调整大小
 				// Only tables are resizable
 				graph.isCellResizable = function(cell)
 				{
-					return this.isSwimlane(cell);
+					return this.isSwimlane(cell); // 仅泳道（表）可调整大小
 				};
 				
+				// 只有表可以移动
 				// Only tables are movable
 				graph.isCellMovable = function(cell)
 				{
-					return this.isSwimlane(cell);
+					return this.isSwimlane(cell); // 仅泳道（表）可移动
 				};
 
+				// 设置图形容器并配置编辑器
 				// Sets the graph container and configures the editor
-				editor.setGraphContainer(container);
+				editor.setGraphContainer(container); // 设置图形容器
 				var config = mxUtils.load(
 					'editors/config/keyhandler-minimal.xml').
-						getDocumentElement();
-				editor.configure(config);
+						getDocumentElement(); // 加载键盘处理配置文件
+				editor.configure(config); // 配置编辑器
 
+				// 配置表的自动布局
 				// Configures the automatic layout for the table columns
-				editor.layoutSwimlanes = true;
+				editor.layoutSwimlanes = true; // 启用泳道布局
 				editor.createSwimlaneLayout = function ()
 				{
-					var layout = new mxStackLayout(this.graph, false);
-					layout.fill = true;
-					layout.resizeParent = true;
+					var layout = new mxStackLayout(this.graph, false); // 创建堆栈布局
+					layout.fill = true; // 填充容器
+					layout.resizeParent = true; // 调整父容器大小
 					
+					// 重写函数始终返回 true
 					// Overrides the function to always return true
 					layout.isVertexMovable = function(cell)
 					{
-						return true;
+						return true; // 顶点可移动
 					};
 					
-					return layout;
+					return layout; // 返回布局对象
 				};
 				
+				// 文本标签更改将存储到用户对象的名称字段中
 				// Text label changes will go into the name field of the user object
 				graph.model.valueForCellChanged = function(cell, value)
 				{
 					if (value.name != null)
 					{
-						return mxGraphModel.prototype.valueForCellChanged.apply(this, arguments);
+						return mxGraphModel.prototype.valueForCellChanged.apply(this, arguments); // 调用父类方法
 					}
 					else
 					{
-						var old = cell.value.name;
-						cell.value.name = value;
-						return old;
+						var old = cell.value.name; // 保存旧名称
+						cell.value.name = value; // 更新名称
+						return old; // 返回旧名称
 					}
 				};
 				
+				// 列是动态创建的 HTML 标签
 				// Columns are dynamically created HTML labels
 				graph.isHtmlLabel = function(cell)
 				{
 					return !this.isSwimlane(cell) &&
-						!this.model.isEdge(cell);
+						!this.model.isEdge(cell); // 非泳道且非边为 HTML 标签
 				};
 				
+				// 边不可编辑
 				// Edges are not editable
 				graph.isCellEditable = function(cell)
 				{
-					return !this.model.isEdge(cell);
+					return !this.model.isEdge(cell); // 仅非边可编辑
 				};
 				
+				// 返回用户对象的名称字段作为标签
 				// Returns the name field of the user object for the label
 				graph.convertValueToString = function(cell)
 				{
 					if (cell.value != null && cell.value.name != null)
 					{
-						return cell.value.name;
+						return cell.value.name; // 返回单元值的名称
 					}
 
-					return mxGraph.prototype.convertValueToString.apply(this, arguments); // "supercall"
+					return mxGraph.prototype.convertValueToString.apply(this, arguments); // 调用父类方法（超级调用）
 				};
 				
+				// 为列单元格返回类型作为工具提示
 				// Returns the type as the tooltip for column cells
 				graph.getTooltip = function(state)
 				{
 					if (this.isHtmlLabel(state.cell))
 					{
-						return 'Type: '+state.cell.value.type;
+						return 'Type: '+state.cell.value.type; // 返回列的类型
 					}
 					else if (this.model.isEdge(state.cell))
 					{
-						var source = this.model.getTerminal(state.cell, true);
-						var parent = this.model.getParent(source);
+						var source = this.model.getTerminal(state.cell, true); // 获取边的源节点
+						var parent = this.model.getParent(source); // 获取父节点
 						
-						return parent.value.name+'.'+source.value.name;
+						return parent.value.name+'.'+source.value.name; // 返回表名和列名
 					}
 					
-					return mxGraph.prototype.getTooltip.apply(this, arguments); // "supercall"
+					return mxGraph.prototype.getTooltip.apply(this, arguments); // 调用父类方法（超级调用）
 				};
 				
+				// 为列字段创建动态 HTML 标签
 				// Creates a dynamic HTML label for column fields
 				graph.getLabel = function(cell)
 				{
 					if (this.isHtmlLabel(cell))
 					{
-						var label = '';
+						var label = ''; // 初始化标签
 						
 						if (cell.value.primaryKey)
 						{
-							label += '<img title="Primary Key" src="images/key.png" width="16" height="16" align="top">&nbsp;';
+							label += '<img title="Primary Key" src="images/key.png" width="16" height="16" align="top"> '; // 主键图标
 						}
 						else
 						{
-							label += '<img src="images/spacer.gif" width="16" height="1">&nbsp;';
+							label += '<img src="images/spacer.gif" width="16" height="1"> '; // 占位符
 						}
 												
 						if (cell.value.autoIncrement)
 						{
-							label += '<img title="Auto Increment" src="images/plus.png" width="16" height="16" align="top">&nbsp;';
+							label += '<img title="Auto Increment" src="images/plus.png" width="16" height="16" align="top"> '; // 自增图标
 						}
 						else if (cell.value.unique)
 						{
-							label += '<img title="Unique" src="images/check.png" width="16" height="16" align="top">&nbsp;';
+							label += '<img title="Unique" src="images/check.png" width="16" height="16" align="top"> '; // 唯一约束图标
 						}
 						else
 						{
-							label += '<img src="images/spacer.gif" width="16" height="1">&nbsp;';
+							label += '<img src="images/spacer.gif" width="16" height="1"> '; // 占位符
 						}
 
 						return label + mxUtils.htmlEntities(cell.value.name, false) + ': ' +
-							mxUtils.htmlEntities(cell.value.type, false);
+							mxUtils.htmlEntities(cell.value.type, false); // 返回格式化标签
 					}
 					
-					return mxGraph.prototype.getLabel.apply(this, arguments); // "supercall"
+					return mxGraph.prototype.getLabel.apply(this, arguments); // 调用父类方法（超级调用）
 				};
 				
+				// 删除边时移除源顶点
 				// Removes the source vertex if edges are removed
 				graph.addListener(mxEvent.REMOVE_CELLS, function(sender, evt)
 				{
-					var cells = evt.getProperty('cells');
+					var cells = evt.getProperty('cells'); // 获取被删除的单元
 					
 					for (var i = 0; i < cells.length; i++)
 					{
@@ -235,456 +267,483 @@
 						
 						if (this.model.isEdge(cell))
 						{
-							var terminal = this.model.getTerminal(cell, true);
-							var parent = this.model.getParent(terminal);
-							this.model.remove(terminal);
+							var terminal = this.model.getTerminal(cell, true); // 获取边的源节点
+							var parent = this.model.getParent(terminal); // 获取父节点
+							this.model.remove(terminal); // 删除源节点
 						}
 					}
 				});
 
+				// 禁止拖放到非泳道的单元
 				// Disables drag-and-drop into non-swimlanes.
 				graph.isValidDropTarget = function(cell, cells, evt)
 				{
-					return this.isSwimlane(cell);
+					return this.isSwimlane(cell); // 仅泳道为有效投放目标
 				};
 
+				// 使用本地函数安装弹出菜单处理程序（见下文）
 				// Installs a popupmenu handler using local function (see below).
 				graph.popupMenuHandler.factoryMethod = function(menu, cell, evt)
 				{
-					createPopupMenu(editor, graph, menu, cell, evt);
+					createPopupMenu(editor, graph, menu, cell, evt); // 创建弹出菜单
 				};
 
+				// 为图形添加所有必需的样式（见下文）
 				// Adds all required styles to the graph (see below)
-				configureStylesheet(graph);
+				configureStylesheet(graph); // 配置样式表
 
+				// 为表对象添加侧边栏图标
 				// Adds sidebar icon for the table object
-				var tableObject = new Table('TABLENAME');
-				var table = new mxCell(tableObject, new mxGeometry(0, 0, 200, 28), 'table');
+				var tableObject = new Table('TABLENAME'); // 创建表对象
+				var table = new mxCell(tableObject, new mxGeometry(0, 0, 200, 28), 'table'); // 创建表单元
 				
-				table.setVertex(true);
-				addSidebarIcon(graph, sidebar, 	table, 'images/icons48/table.png');
+				table.setVertex(true); // 设置为顶点
+				addSidebarIcon(graph, sidebar, table, 'images/icons48/table.png'); // 添加侧边栏图标
 				
+				// 为列对象添加侧边栏图标
 				// Adds sidebar icon for the column object
-				var columnObject = new Column('COLUMNNAME');
-				var column = new mxCell(columnObject, new mxGeometry(0, 0, 0, 26));
+				var columnObject = new Column('COLUMNNAME'); // 创建列对象
+				var column = new mxCell(columnObject, new mxGeometry(0, 0, 0, 26)); // 创建列单元
 				
-				column.setVertex(true);
-				column.setConnectable(false);
+				column.setVertex(true); // 设置为顶点
+				column.setConnectable(false); // 禁止连接
 
-				addSidebarIcon(graph, sidebar, 	column, 'images/icons48/column.png');
+				addSidebarIcon(graph, sidebar, column, 'images/icons48/column.png'); // 添加侧边栏图标
 				
+				// 将主键字段添加到表中
 				// Adds primary key field into table
-				var firstColumn = column.clone();
+				var firstColumn = column.clone(); // 克隆列对象
 				
-				firstColumn.value.name = 'TABLENAME_ID';
-				firstColumn.value.type = 'INTEGER';
-				firstColumn.value.primaryKey = true;
-				firstColumn.value.autoIncrement = true;
+				firstColumn.value.name = 'TABLENAME_ID'; // 设置列名为表名加 _ID
+				firstColumn.value.type = 'INTEGER'; // 设置类型为 INTEGER
+				firstColumn.value.primaryKey = true; // 设置为主键
+				firstColumn.value.autoIncrement = true; // 设置为自增
 				
-				table.insert(firstColumn);
+				table.insert(firstColumn); // 将列插入表中
 
+				// 为表之间的连接添加子列
 				// Adds child columns for new connections between tables
 				graph.addEdge = function(edge, parent, source, target, index)
 				{
+					// 查找目标表的主键子节点
 					// Finds the primary key child of the target table
 					var primaryKey = null;
-					var childCount = this.model.getChildCount(target);
+					var childCount = this.model.getChildCount(target); // 获取子节点数量
 					
 					for (var i=0; i < childCount; i++)
 					{
-						var child = this.model.getChildAt(target, i);
+						var child = this.model.getChildAt(target, i); // 获取子节点
 						
 						if (child.value.primaryKey)
 						{
-							primaryKey = child;
+							primaryKey = child; // 找到主键
 							break;
 						}
 					}
 					
 					if (primaryKey == null)
 					{
-						mxUtils.alert('Target table must have a primary key');
+						mxUtils.alert('Target table must have a primary key'); // 目标表必须有主键
 						return;
 					}
 				
-					this.model.beginUpdate();
+					this.model.beginUpdate(); // 开始模型更新
 					try
 					{
-						var col1 = this.model.cloneCell(column);
-						col1.value.name = primaryKey.value.name;
-						col1.value.type = primaryKey.value.type;
+						var col1 = this.model.cloneCell(column); // 克隆列
+						col1.value.name = primaryKey.value.name; // 设置列名
+						col1.value.type = primaryKey.value.type; // 设置列类型
 					
-						this.addCell(col1, source);
-						source = col1;				
-						target = primaryKey;
+						this.addCell(col1, source); // 添加列到源表
+						source = col1; // 更新源节点
+						target = primaryKey; // 更新目标节点
 						
-						return mxGraph.prototype.addEdge.apply(this, arguments); // "supercall"
+						return mxGraph.prototype.addEdge.apply(this, arguments); // 调用父类方法（超级调用）
 					}
 					finally
 					{
-						this.model.endUpdate();
+						this.model.endUpdate(); // 结束模型更新
 					}
 					
 					return null;
 				};
 
+				// 显示一个半透明的小提示框，提供有用的操作提示
 				// Displays useful hints in a small semi-transparent box.
-				var hints = document.createElement('div');
-				hints.style.position = 'absolute';
-				hints.style.overflow = 'hidden';
-				hints.style.width = '230px';
-				hints.style.bottom = '56px';
-				hints.style.height = '86px';
-				hints.style.right = '20px';
+				var hints = document.createElement('div'); // 创建提示框
+				hints.style.position = 'absolute'; // 绝对定位
+				hints.style.overflow = 'hidden'; // 隐藏溢出
+				hints.style.width = '230px'; // 宽度
+				hints.style.bottom = '56px'; // 底部距离
+				hints.style.height = '86px'; // 高度
+				hints.style.right = '20px'; // 右侧距离
 				
-				hints.style.background = 'black';
-				hints.style.color = 'white';
-				hints.style.fontFamily = 'Arial';
-				hints.style.fontSize = '10px';
-				hints.style.padding = '4px';
+				hints.style.background = 'black'; // 背景颜色
+				hints.style.color = 'white'; // 字体颜色
+				hints.style.fontFamily = 'Arial'; // 字体
+				hints.style.fontSize = '10px'; // 字体大小
+				hints.style.padding = '4px'; // 内边距
 
-				mxUtils.setOpacity(hints, 50);
+				mxUtils.setOpacity(hints, 50); // 设置透明度
 				
-				mxUtils.writeln(hints, '- Drag an image from the sidebar to the graph');
-				mxUtils.writeln(hints, '- Doubleclick on a table or column to edit');
-				mxUtils.writeln(hints, '- Shift- or Rightclick and drag for panning');
-				mxUtils.writeln(hints, '- Move the mouse over a cell to see a tooltip');
-				mxUtils.writeln(hints, '- Click and drag a table to move and connect');
-				mxUtils.writeln(hints, '- Shift- or Rightclick to show a popup menu');
-				document.body.appendChild(hints);
+				mxUtils.writeln(hints, '- Drag an image from the sidebar to the graph'); // 从侧边栏拖动图片到图形
+				mxUtils.writeln(hints, '- Doubleclick on a table or column to edit'); // 双击表或列进行编辑
+				mxUtils.writeln(hints, '- Shift- or Rightclick and drag for panning'); // Shift 或右键拖动进行平移
+				mxUtils.writeln(hints, '- Move the mouse over a cell to see a tooltip'); // 鼠标悬停在单元格上查看工具提示
+				mxUtils.writeln(hints, '- Click and drag a table to move and connect'); // 点击并拖动表进行移动和连接
+				mxUtils.writeln(hints, '- Shift- or Rightclick to show a popup menu'); // Shift 或右键显示弹出菜单
+				document.body.appendChild(hints); // 将提示框添加到页面
 				
+				// 创建一个新的 DIV 作为工具栏并添加工具栏按钮
 				// Creates a new DIV that is used as a toolbar and adds
 				// toolbar buttons.
-				var spacer = document.createElement('div');
-				spacer.style.display = 'inline';
-				spacer.style.padding = '8px';
+				var spacer = document.createElement('div'); // 创建间隔元素
+				spacer.style.display = 'inline'; // 内联显示
+				spacer.style.padding = '8px'; // 内边距
 
-				addToolbarButton(editor, toolbar, 'properties', 'Properties', 'editors/images/properties.gif');
+				addToolbarButton(editor, toolbar, 'properties', 'Properties', 'editors/images/properties.gif'); // 添加属性按钮
 
+				// 定义新的导出动作
 				// Defines a new export action
 				editor.addAction('properties', function(editor, cell)
 				{
 					if (cell == null)
 					{
-						cell = graph.getSelectionCell();
+						cell = graph.getSelectionCell(); // 获取选中的单元
 					}
 					
 					if (graph.isHtmlLabel(cell))
 					{
-						showProperties(graph, cell);
+						showProperties(graph, cell); // 显示属性窗口
 					}
 				});
 
-				addToolbarButton(editor, toolbar, 'delete', 'Delete', 'images/delete2.png');
+				addToolbarButton(editor, toolbar, 'delete', 'Delete', 'images/delete2.png'); // 添加删除按钮
 
-				toolbar.appendChild(spacer.cloneNode(true));
+				toolbar.appendChild(spacer.cloneNode(true)); // 添加间隔
 				
-				addToolbarButton(editor, toolbar, 'undo', '', 'images/undo.png');
-				addToolbarButton(editor, toolbar, 'redo', '', 'images/redo.png');
+				addToolbarButton(editor, toolbar, 'undo', '', 'images/undo.png'); // 添加撤销按钮
+				addToolbarButton(editor, toolbar, 'redo', '', 'images/redo.png'); // 添加重做按钮
 				
-				toolbar.appendChild(spacer.cloneNode(true));
+				toolbar.appendChild(spacer.cloneNode(true)); // 添加间隔
 				
-				addToolbarButton(editor, toolbar, 'show', 'Show', 'images/camera.png');
-				addToolbarButton(editor, toolbar, 'print', 'Print', 'images/printer.png');
+				addToolbarButton(editor, toolbar, 'show', 'Show', 'images/camera.png'); // 添加显示按钮
+				addToolbarButton(editor, toolbar, 'print', 'Print', 'images/printer.png'); // 添加打印按钮
 				
-				toolbar.appendChild(spacer.cloneNode(true));
+				toolbar.appendChild(spacer.cloneNode(true)); // 添加间隔
 
+				// 定义创建 SQL 动作
 				// Defines a create SQK action
 				editor.addAction('showSql', function(editor, cell)
 				{
-					var sql = createSql(graph);
+					var sql = createSql(graph); // 生成 SQL
 					
 					if (sql.length > 0)
 					{
-						var textarea = document.createElement('textarea');
-						textarea.style.width = '400px';
-						textarea.style.height = '400px';
+						var textarea = document.createElement('textarea'); // 创建文本区域
+						textarea.style.width = '400px'; // 设置宽度
+						textarea.style.height = '400px'; // 设置高度
 						
-						textarea.value = sql;
-						showModalWindow('SQL', textarea, 410, 440);
+						textarea.value = sql; // 设置 SQL 内容
+						showModalWindow('SQL', textarea, 410, 440); // 显示模态窗口
 					}
 					else
 					{
-						mxUtils.alert('Schema is empty');
+						mxUtils.alert('Schema is empty'); // 提示架构为空
 					}
 				});
 
-				addToolbarButton(editor, toolbar, 'showSql', 'Show SQL', 'images/export1.png');
+				addToolbarButton(editor, toolbar, 'showSql', 'Show SQL', 'images/export1.png'); // 添加显示 SQL 按钮
 
+				// 定义导出 XML 动作
 				// Defines export XML action
 				editor.addAction('export', function(editor, cell)
 				{
-					var textarea = document.createElement('textarea');
-					textarea.style.width = '400px';
-					textarea.style.height = '400px';
-					var enc = new mxCodec(mxUtils.createXmlDocument());
-					var node = enc.encode(editor.graph.getModel());
-					textarea.value = mxUtils.getPrettyXml(node);
-					showModalWindow('XML', textarea, 410, 440);
+					var textarea = document.createElement('textarea'); // 创建文本区域
+					textarea.style.width = '400px'; // 设置宽度
+					textarea.style.height = '400px'; // 设置高度
+					var enc = new mxCodec(mxUtils.createXmlDocument()); // 创建 XML 编码器
+					var node = enc.encode(editor.graph.getModel()); // 编码图形模型
+					textarea.value = mxUtils.getPrettyXml(node); // 设置格式化 XML
+					showModalWindow('XML', textarea, 410, 440); // 显示模态窗口
 				});
 
-				addToolbarButton(editor, toolbar, 'export', 'Export XML', 'images/export1.png');
+				addToolbarButton(editor, toolbar, 'export', 'Export XML', 'images/export1.png'); // 添加导出 XML 按钮
 				
+				// 在窗口底部的状态栏中添加工具栏按钮
 				// Adds toolbar buttons into the status bar at the bottom
 				// of the window.
-				addToolbarButton(editor, status, 'collapseAll', 'Collapse All', 'images/navigate_minus.png', true);
-				addToolbarButton(editor, status, 'expandAll', 'Expand All', 'images/navigate_plus.png', true);
+				addToolbarButton(editor, status, 'collapseAll', 'Collapse All', 'images/navigate_minus.png', true); // 添加全部折叠按钮
+				addToolbarButton(editor, status, 'expandAll', 'Expand All', 'images/navigate_plus.png', true); // 添加全部展开按钮
 
-				status.appendChild(spacer.cloneNode(true));
+				status.appendChild(spacer.cloneNode(true)); // 添加间隔
 
-				addToolbarButton(editor, status, 'zoomIn', '', 'images/zoom_in.png', true);
-				addToolbarButton(editor, status, 'zoomOut', '', 'images/zoom_out.png', true);
-				addToolbarButton(editor, status, 'actualSize', '', 'images/view_1_1.png', true);
-				addToolbarButton(editor, status, 'fit', '', 'images/fit_to_size.png', true);
+				addToolbarButton(editor, status, 'zoomIn', '', 'images/zoom_in.png', true); // 添加放大按钮
+				addToolbarButton(editor, status, 'zoomOut', '', 'images/zoom_out.png', true); // 添加缩小按钮
+				addToolbarButton(editor, status, 'actualSize', '', 'images/view_1_1.png', true); // 添加实际大小按钮
+				addToolbarButton(editor, status, 'fit', '', 'images/fit_to_size.png', true); // 添加适应大小按钮
 				
+				// 在窗口右上角创建大纲（导航器，概览）以便在图形中移动
 				// Creates the outline (navigator, overview) for moving
 				// around the graph in the top, right corner of the window.
-				var outln = new mxOutline(graph, outline);
+				var outln = new mxOutline(graph, outline); // 创建大纲
 				
+				// 在 UI 加载后淡出启动画面
 				// Fades-out the splash screen after the UI has been loaded.
-				var splash = document.getElementById('splash');
+				var splash = document.getElementById('splash'); // 获取启动画面
 				if (splash != null)
 				{
 					try
 					{
-						mxEvent.release(splash);
-						mxEffects.fadeOut(splash, 100, true);
+						mxEvent.release(splash); // 释放事件
+						mxEffects.fadeOut(splash, 100, true); // 淡出效果
 					}
 					catch (e)
 					{
-					
+						// 如果 mxUtils 不可用（库未加载），直接移除启动画面
 						// mxUtils is not available (library not loaded)
-						splash.parentNode.removeChild(splash);
+						splash.parentNode.removeChild(splash); // 移除启动画面
 					}
 				}
 			}
 		}
 		
+		// 添加工具栏按钮的函数
 		function addToolbarButton(editor, toolbar, action, label, image, isTransparent)
 		{
-			var button = document.createElement('button');
-			button.style.fontSize = '10';
+			var button = document.createElement('button'); // 创建按钮
+			button.style.fontSize = '10'; // 设置字体大小
 			if (image != null)
 			{
-				var img = document.createElement('img');
-				img.setAttribute('src', image);
-				img.style.width = '16px';
-				img.style.height = '16px';
-				img.style.verticalAlign = 'middle';
-				img.style.marginRight = '2px';
-				button.appendChild(img);
+				var img = document.createElement('img'); // 创建图片
+				img.setAttribute('src', image); // 设置图片源
+				img.style.width = '16px'; // 设置宽度
+				img.style.height = '16px'; // 设置高度
+				img.style.verticalAlign = 'middle'; // 垂直居中
+				img.style.marginRight = '2px'; // 右边距
+				button.appendChild(img); // 添加图片到按钮
 			}
 			if (isTransparent)
 			{
-				button.style.background = 'transparent';
-				button.style.color = '#FFFFFF';
-				button.style.border = 'none';
+				button.style.background = 'transparent'; // 透明背景
+				button.style.color = '#FFFFFF'; // 白色字体
+				button.style.border = 'none'; // 无边框
 			}
 			mxEvent.addListener(button, 'click', function(evt)
 			{
-				editor.execute(action);
+				editor.execute(action); // 执行动作
 			});
-			mxUtils.write(button, label);
-			toolbar.appendChild(button);
+			mxUtils.write(button, label); // 设置按钮标签
+			toolbar.appendChild(button); // 添加按钮到工具栏
 		};
 
+		// 显示模态窗口的函数
 		function showModalWindow(title, content, width, height)
 		{
-			var background = document.createElement('div');
-			background.style.position = 'absolute';
-			background.style.left = '0px';
-			background.style.top = '0px';
-			background.style.right = '0px';
-			background.style.bottom = '0px';
-			background.style.background = 'black';
-			mxUtils.setOpacity(background, 50);
-			document.body.appendChild(background);
+			var background = document.createElement('div'); // 创建背景
+			background.style.position = 'absolute'; // 绝对定位
+			background.style.left = '0px'; // 左边距
+			background.style.top = '0px'; // 顶部距离
+			background.style.right = '0px'; // 右边距
+			background.style.bottom = '0px'; // 底部距离
+			background.style.background = 'black'; // 背景颜色
+			mxUtils.setOpacity(background, 50); // 设置透明度
+			document.body.appendChild(background); // 添加背景到页面
 			
 			if (mxClient.IS_QUIRKS)
 			{
-				new mxDivResizer(background);
+				new mxDivResizer(background); // 调整背景大小
 			}
 			
-			var x = Math.max(0, document.body.scrollWidth/2-width/2);
+			var x = Math.max(0, document.body.scrollWidth/2-width/2); // 计算 X 坐标
 			var y = Math.max(10, (document.body.scrollHeight ||
-						document.documentElement.scrollHeight)/2-height*2/3);
-			var wnd = new mxWindow(title, content, x, y, width, height, false, true);
-			wnd.setClosable(true);
+						document.documentElement.scrollHeight)/2-height*2/3); // 计算 Y 坐标
+			var wnd = new mxWindow(title, content, x, y, width, height, false, true); // 创建窗口
+			wnd.setClosable(true); // 设置可关闭
 						
+			// 窗口关闭后淡出背景
 			// Fades the background out after after the window has been closed
 			wnd.addListener(mxEvent.DESTROY, function(evt)
 			{
 				mxEffects.fadeOut(background, 50, true, 
-					10, 30, true);
+					10, 30, true); // 淡出背景
 			});
 
-			wnd.setVisible(true);
+			wnd.setVisible(true); // 设置窗口可见
 			
-			return wnd;
+			return wnd; // 返回窗口对象
 		};
 		
+		// 添加侧边栏图标的函数
 		function addSidebarIcon(graph, sidebar, prototype, image)
 		{
+			// 当图片被拖放到图形上时执行的函数，cell 参数指向鼠标指针下的单元（如果存在）
 			// Function that is executed when the image is dropped on
 			// the graph. The cell argument points to the cell under
 			// the mousepointer if there is one.
 			var funct = function(graph, evt, cell)
 			{
-				graph.stopEditing(false);
+				graph.stopEditing(false); // 停止编辑
 
-				var pt = graph.getPointForEvent(evt);
+				var pt = graph.getPointForEvent(evt); // 获取事件点坐标
 				
-				var parent = graph.getDefaultParent();
-				var model = graph.getModel();
+				var parent = graph.getDefaultParent(); // 获取默认父节点
+				var model = graph.getModel(); // 获取模型
 				
-				var isTable = graph.isSwimlane(prototype);
+				var isTable = graph.isSwimlane(prototype); // 检查是否为表
 				var name = null;				
 
 				if (!isTable)
 				{
-					parent = cell;
-					var pstate = graph.getView().getState(parent);
+					parent = cell; // 设置父节点为当前单元
+					var pstate = graph.getView().getState(parent); // 获取父节点状态
 					
 					if (parent == null || pstate == null)
 					{
-						mxUtils.alert('Drop target must be a table');
+						mxUtils.alert('Drop target must be a table'); // 提示投放目标必须为表
 						return;
 					}
 					
-					pt.x -= pstate.x;
-					pt.y -= pstate.y;
+					pt.x -= pstate.x; // 调整 X 坐标
+					pt.y -= pstate.y; // 调整 Y 坐标
 
-					var columnCount = graph.model.getChildCount(parent)+1;
-					name = mxUtils.prompt('Enter name for new column', 'COLUMN'+columnCount);
+					var columnCount = graph.model.getChildCount(parent)+1; // 计算列数
+					name = mxUtils.prompt('Enter name for new column', 'COLUMN'+columnCount); // 提示输入新列名
 				}
 				else
 				{
-					var tableCount = 0;
-					var childCount = graph.model.getChildCount(parent);
+					var tableCount = 0; // 表计数
+					var childCount = graph.model.getChildCount(parent); // 获取子节点数量
 					
 					for (var i=0; i<childCount; i++)
 					{
 						if (!graph.model.isEdge(graph.model.getChildAt(parent, i)))
 						{
-							tableCount++;
+							tableCount++; // 增加表计数
 						}
 					}
 					
-					var name = mxUtils.prompt('Enter name for new table', 'TABLE'+(tableCount+1));
+					var name = mxUtils.prompt('Enter name for new table', 'TABLE'+(tableCount+1)); // 提示输入新表名
 				}
 				
 				if (name != null)
 				{
-					var v1 = model.cloneCell(prototype);
+					var v1 = model.cloneCell(prototype); // 克隆原型单元
 					
-					model.beginUpdate();
+					model.beginUpdate(); // 开始模型更新
 					try
 					{
-						v1.value.name = name;
-						v1.geometry.x = pt.x;
-						v1.geometry.y = pt.y;
+						v1.value.name = name; // 设置名称
+						v1.geometry.x = pt.x; // 设置 X 坐标
+						v1.geometry.y = pt.y; // 设置 Y 坐标
 						
-						graph.addCell(v1, parent);
+						graph.addCell(v1, parent); // 添加单元到父节点
 						
 						if (isTable)
 						{
-							v1.geometry.alternateBounds = new mxRectangle(0, 0, v1.geometry.width, v1.geometry.height);
-							v1.children[0].value.name = name + '_ID';
+							v1.geometry.alternateBounds = new mxRectangle(0, 0, v1.geometry.width, v1.geometry.height); // 设置备用边界
+							v1.children[0].value.name = name + '_ID'; // 设置子节点名称
 						}
 					}
 					finally
 					{
-						model.endUpdate();
+						model.endUpdate(); // 结束模型更新
 					}
 					
-					graph.setSelectionCell(v1);
+					graph.setSelectionCell(v1); // 选中新单元
 				}
 			}
 			
+			// 创建用作侧边栏图标的图片（拖动源）
 			// Creates the image which is used as the sidebar icon (drag source)
-			var img = document.createElement('img');
-			img.setAttribute('src', image);
-			img.style.width = '48px';
-			img.style.height = '48px';
-			img.title = 'Drag this to the diagram to create a new vertex';
-			sidebar.appendChild(img);
+			var img = document.createElement('img'); // 创建图片
+			img.setAttribute('src', image); // 设置图片源
+			img.style.width = '48px'; // 设置宽度
+			img.style.height = '48px'; // 设置高度
+			img.title = 'Drag this to the diagram to create a new vertex'; // 设置提示
+			sidebar.appendChild(img); // 添加到侧边栏
 			  					
+			// 创建用作拖动图标的图片（预览）
 			// Creates the image which is used as the drag icon (preview)
-			var dragImage = img.cloneNode(true);
-			var ds = mxUtils.makeDraggable(img, graph, funct, dragImage);
+			var dragImage = img.cloneNode(true); // 克隆图片
+			var ds = mxUtils.makeDraggable(img, graph, funct, dragImage); // 使图片可拖动
 
+			// 为列高亮目标表
 			// Adds highlight of target tables for columns
-			ds.highlightDropTargets = true;
+			ds.highlightDropTargets = true; // 启用高亮投放目标
 			ds.getDropTarget = function(graph, x, y)
 			{
 				if (graph.isSwimlane(prototype))
 				{
-					return null;
+					return null; // 如果是表，返回 null
 				}
 				else
 				{
-					var cell = graph.getCellAt(x, y);
+					var cell = graph.getCellAt(x, y); // 获取坐标处的单元
 					
 					if (graph.isSwimlane(cell))
 					{
-						return cell;
+						return cell; // 如果是泳道，返回单元
 					}
 					else
 					{
-						var parent = graph.getModel().getParent(cell);
+						var parent = graph.getModel().getParent(cell); // 获取父节点
 						
 						if (graph.isSwimlane(parent))
 						{
-							return parent;
+							return parent; // 如果父节点是泳道，返回父节点
 						}
 					}
 				}
 			};
 		};
 		
+		// 配置图形样式表的函数
 		function configureStylesheet(graph)
 		{
-			var style = new Object();
-			style[mxConstants.STYLE_SHAPE] = mxConstants.SHAPE_RECTANGLE;
-			style[mxConstants.STYLE_PERIMETER] = mxPerimeter.RectanglePerimeter;
-			style[mxConstants.STYLE_ALIGN] = mxConstants.ALIGN_LEFT;
-			style[mxConstants.STYLE_VERTICAL_ALIGN] = mxConstants.ALIGN_MIDDLE;
-			style[mxConstants.STYLE_FONTCOLOR] = '#000000';
-			style[mxConstants.STYLE_FONTSIZE] = '11';
-			style[mxConstants.STYLE_FONTSTYLE] = 0;
-			style[mxConstants.STYLE_SPACING_LEFT] = '4';
-			style[mxConstants.STYLE_IMAGE_WIDTH] = '48';
-			style[mxConstants.STYLE_IMAGE_HEIGHT] = '48';
-			graph.getStylesheet().putDefaultVertexStyle(style);
+			var style = new Object(); // 创建默认顶点样式
+			style[mxConstants.STYLE_SHAPE] = mxConstants.SHAPE_RECTANGLE; // 矩形形状
+			style[mxConstants.STYLE_PERIMETER] = mxPerimeter.RectanglePerimeter; // 矩形边界
+			style[mxConstants.STYLE_ALIGN] = mxConstants.ALIGN_LEFT; // 左对齐
+			style[mxConstants.STYLE_VERTICAL_ALIGN] = mxConstants.ALIGN_MIDDLE; // 垂直居中
+			style[mxConstants.STYLE_FONTCOLOR] = '#000000'; // 字体颜色
+			style[mxConstants.STYLE_FONTSIZE] = '11'; // 字体大小
+			style[mxConstants.STYLE_FONTSTYLE] = 0; // 字体样式
+			style[mxConstants.STYLE_SPACING_LEFT] = '4'; // 左间距
+			style[mxConstants.STYLE_IMAGE_WIDTH] = '48'; // 图片宽度
+			style[mxConstants.STYLE_IMAGE_HEIGHT] = '48'; // 图片高度
+			graph.getStylesheet().putDefaultVertexStyle(style); // 设置默认顶点样式
 
-			style = new Object();
-			style[mxConstants.STYLE_SHAPE] = mxConstants.SHAPE_SWIMLANE;
-			style[mxConstants.STYLE_PERIMETER] = mxPerimeter.RectanglePerimeter;
-			style[mxConstants.STYLE_ALIGN] = mxConstants.ALIGN_CENTER;
-			style[mxConstants.STYLE_VERTICAL_ALIGN] = mxConstants.ALIGN_TOP;
-			style[mxConstants.STYLE_GRADIENTCOLOR] = '#41B9F5';
-			style[mxConstants.STYLE_FILLCOLOR] = '#8CCDF5';
-			style[mxConstants.STYLE_SWIMLANE_FILLCOLOR] = '#ffffff';
-			style[mxConstants.STYLE_STROKECOLOR] = '#1B78C8';
-			style[mxConstants.STYLE_FONTCOLOR] = '#000000';
-			style[mxConstants.STYLE_STROKEWIDTH] = '2';
-			style[mxConstants.STYLE_STARTSIZE] = '28';
-			style[mxConstants.STYLE_VERTICAL_ALIGN] = 'middle';
-			style[mxConstants.STYLE_FONTSIZE] = '12';
-			style[mxConstants.STYLE_FONTSTYLE] = 1;
-			style[mxConstants.STYLE_IMAGE] = 'images/icons48/table.png';
+			style = new Object(); // 创建表样式
+			style[mxConstants.STYLE_SHAPE] = mxConstants.SHAPE_SWIMLANE; // 泳道形状
+			style[mxConstants.STYLE_PERIMETER] = mxPerimeter.RectanglePerimeter; // 矩形边界
+			style[mxConstants.STYLE_ALIGN] = mxConstants.ALIGN_CENTER; // 居中对齐
+			style[mxConstants.STYLE_VERTICAL_ALIGN] = mxConstants.ALIGN_TOP; // 顶部对齐
+			style[mxConstants.STYLE_GRADIENTCOLOR] = '#41B9F5'; // 渐变颜色
+			style[mxConstants.STYLE_FILLCOLOR] = '#8CCDF5'; // 填充颜色
+			style[mxConstants.STYLE_SWIMLANE_FILLCOLOR] = '#ffffff'; // 泳道填充颜色
+			style[mxConstants.STYLE_STROKECOLOR] = '#1B78C8'; // 描边颜色
+			style[mxConstants.STYLE_FONTCOLOR] = '#000000'; // 字体颜色
+			style[mxConstants.STYLE_STROKEWIDTH] = '2'; // 描边宽度
+			style[mxConstants.STYLE_STARTSIZE] = '28'; // 起始大小
+			style[mxConstants.STYLE_VERTICAL_ALIGN] = 'middle'; // 垂直居中
+			style[mxConstants.STYLE_FONTSIZE] = '12'; // 字体大小
+			style[mxConstants.STYLE_FONTSTYLE] = 1; // 字体样式（粗体）
+			style[mxConstants.STYLE_IMAGE] = 'images/icons48/table.png'; // 表图标
+			// 如果启用了阴影，禁用透明度效果更好
 			// Looks better without opacity if shadow is enabled
 			//style[mxConstants.STYLE_OPACITY] = '80';
-			style[mxConstants.STYLE_SHADOW] = 1;
-			graph.getStylesheet().putCellStyle('table', style);
+			style[mxConstants.STYLE_SHADOW] = 1; // 启用阴影
+			graph.getStylesheet().putCellStyle('table', style); // 设置表样式
 
-			style = graph.stylesheet.getDefaultEdgeStyle();
-			style[mxConstants.STYLE_LABEL_BACKGROUNDCOLOR] = '#FFFFFF';
-			style[mxConstants.STYLE_STROKEWIDTH] = '2';
-			style[mxConstants.STYLE_ROUNDED] = true;
-			style[mxConstants.STYLE_EDGE] = mxEdgeStyle.EntityRelation;
+			style = graph.stylesheet.getDefaultEdgeStyle(); // 获取默认边样式
+			style[mxConstants.STYLE_LABEL_BACKGROUNDCOLOR] = '#FFFFFF'; // 标签背景颜色
+			style[mxConstants.STYLE_STROKEWIDTH] = '2'; // 描边宽度
+			style[mxConstants.STYLE_ROUNDED] = true; // 圆角边
+			style[mxConstants.STYLE_EDGE] = mxEdgeStyle.EntityRelation; // 实体关系边样式
 		};
 		
+		// 创建弹出菜单条目的函数
 		// Function to create the entries in the popupmenu
 		function createPopupMenu(editor, graph, menu, cell, evt)
 		{
@@ -694,199 +753,208 @@
 				{
 					menu.addItem('Properties', 'editors/images/properties.gif', function()
 					{
-						editor.execute('properties', cell);
+						editor.execute('properties', cell); // 执行属性动作
 					});
 			
-					menu.addSeparator();
+					menu.addSeparator(); // 添加分隔线
 				}
 
 				menu.addItem('Delete', 'images/delete2.png', function()
 				{
-					editor.execute('delete', cell);
+					editor.execute('delete', cell); // 执行删除动作
 				});
 			
-				menu.addSeparator();
+				menu.addSeparator(); // 添加分隔线
 			}
 
 			menu.addItem('Undo', 'images/undo.png', function()
 			{
-				editor.execute('undo', cell);
+				editor.execute('undo', cell); // 执行撤销动作
 			});
 			
 			menu.addItem('Redo', 'images/redo.png', function()
 			{
-				editor.execute('redo', cell);
+				editor.execute('redo', cell); // 执行重做动作
 			});
 			
-			menu.addSeparator();
+			menu.addSeparator(); // 添加分隔线
 			
 			
 			menu.addItem('Show SQL', 'images/export1.png', function()
 			{
-				editor.execute('showSql', cell);
+				editor.execute('showSql', cell); // 执行显示 SQL 动作
 			});	
 		};
 		
+		// 显示属性窗口的函数
 		function showProperties(graph, cell)
 		{
+			// 为单元内的用户对象创建表单
 			// Creates a form for the user object inside
 			// the cell
-			var form = new mxForm('properties');
+			var form = new mxForm('properties'); // 创建表单
 
+			// 添加列名字段
 			// Adds a field for the columnname
-			var nameField = form.addText('Name', cell.value.name);
-			var typeField = form.addText('Type', cell.value.type);
+			var nameField = form.addText('Name', cell.value.name); // 名称字段
+			var typeField = form.addText('Type', cell.value.type); // 类型字段
 			
-			var primaryKeyField = form.addCheckbox('Primary Key', cell.value.primaryKey);
-			var autoIncrementField = form.addCheckbox('Auto Increment', cell.value.autoIncrement);
-			var notNullField = form.addCheckbox('Not Null', cell.value.notNull);
-			var uniqueField = form.addCheckbox('Unique', cell.value.unique);
+			var primaryKeyField = form.addCheckbox('Primary Key', cell.value.primaryKey); // 主键复选框
+			var autoIncrementField = form.addCheckbox('Auto Increment', cell.value.autoIncrement); // 自增复选框
+			var notNullField = form.addCheckbox('Not Null', cell.value.notNull); // 非空复选框
+			var uniqueField = form.addCheckbox('Unique', cell.value.unique); // 唯一约束复选框
 			
-			var defaultField = form.addText('Default', cell.value.defaultValue || '');
-			var useDefaultField = form.addCheckbox('Use Default', (cell.value.defaultValue != null));
+			var defaultField = form.addText('Default', cell.value.defaultValue || ''); // 默认值字段
+			var useDefaultField = form.addCheckbox('Use Default', (cell.value.defaultValue != null)); // 使用默认值复选框
 
-			var wnd = null;
+			var wnd = null; // 初始化窗口变量
 
+			// 定义对话框中“确定”按钮按下时执行的函数
 			// Defines the function to be executed when the
 			// OK button is pressed in the dialog
 			var okFunction = function()
 			{
-				var clone = cell.value.clone();
+				var clone = cell.value.clone(); // 克隆单元值
 				
-				clone.name = nameField.value;
-				clone.type = typeField.value;
+				clone.name = nameField.value; // 更新名称
+				clone.type = typeField.value; // 更新类型
 
 				if (useDefaultField.checked)
 				{
-					clone.defaultValue = defaultField.value;
+					clone.defaultValue = defaultField.value; // 设置默认值
 				}
 				else
 				{
-					clone.defaultValue = null;
+					clone.defaultValue = null; // 清空默认值
 				}
 				
-				clone.primaryKey = primaryKeyField.checked;
-				clone.autoIncrement = autoIncrementField.checked;
-				clone.notNull = notNullField.checked;
-				clone.unique = uniqueField.checked;
+				clone.primaryKey = primaryKeyField.checked; // 更新主键
+				clone.autoIncrement = autoIncrementField.checked; // 更新自增
+				clone.notNull = notNullField.checked; // 更新非空
+				clone.unique = uniqueField.checked; // 更新唯一约束
 				
-				graph.model.setValue(cell, clone);
+				graph.model.setValue(cell, clone); // 设置单元值
 			
-				wnd.destroy();
+				wnd.destroy(); // 销毁窗口
 			}
 			
+			// 定义对话框中“取消”按钮按下时执行的函数
 			// Defines the function to be executed when the
 			// Cancel button is pressed in the dialog
 			var cancelFunction = function()
 			{
-				wnd.destroy();
+				wnd.destroy(); // 销毁窗口
 			}
-			form.addButtons(okFunction, cancelFunction);
+			form.addButtons(okFunction, cancelFunction); // 添加按钮
 
-			var parent = graph.model.getParent(cell);
-			var name = parent.value.name + '.' + cell.value.name;
-			wnd = showModalWindow(name, form.table, 240, 240);
+			var parent = graph.model.getParent(cell); // 获取父节点
+			var name = parent.value.name + '.' + cell.value.name; // 组合名称
+			wnd = showModalWindow(name, form.table, 240, 240); // 显示模态窗口
 		};
 		
+		// 生成 SQL 的函数
 		function createSql(graph)
 		{
-			var sql = [];
-			var parent = graph.getDefaultParent();
-			var childCount = graph.model.getChildCount(parent);
+			var sql = []; // 初始化 SQL 数组
+			var parent = graph.getDefaultParent(); // 获取默认父节点
+			var childCount = graph.model.getChildCount(parent); // 获取子节点数量
 
 			for (var i=0; i<childCount; i++)
 			{
-				var child = graph.model.getChildAt(parent, i);
+				var child = graph.model.getChildAt(parent, i); // 获取子节点
 				
 				if (!graph.model.isEdge(child))
 				{
-					sql.push('CREATE TABLE IF NOT EXISTS '+child.value.name+' (');
+					sql.push('CREATE TABLE IF NOT EXISTS '+child.value.name+' ('); // 创建表语句
 					
-					var columnCount = graph.model.getChildCount(child);
+					var columnCount = graph.model.getChildCount(child); // 获取列数
 
 					if (columnCount > 0)
 					{
 						for (var j=0; j<columnCount; j++)
 						{
-							var column = graph.model.getChildAt(child, j).value;
+							var column = graph.model.getChildAt(child, j).value; // 获取列值
 							
-							sql.push('\n    '+column.name+' '+column.type);
+							sql.push('\n    '+column.name+' '+column.type); // 添加列定义
 							
 							if (column.notNull)
 							{
-								sql.push(' NOT NULL');
+								sql.push(' NOT NULL'); // 添加非空约束
 							}
 													
 							if (column.primaryKey)
 							{
-								sql.push(' PRIMARY KEY');
+								sql.push(' PRIMARY KEY'); // 添加主键约束
 							}
 							
 							if (column.autoIncrement)
 							{
-								sql.push(' AUTOINCREMENT');
+								sql.push(' AUTOINCREMENT'); // 添加自增约束
 							}
 							
 							if (column.unique)
 							{
-								sql.push(' UNIQUE');
+								sql.push(' UNIQUE'); // 添加唯一约束
 							}
 	
 							if (column.defaultValue != null)
 							{
-								sql.push(' DEFAULT '+column.defaultValue);
+								sql.push(' DEFAULT '+column.defaultValue); // 添加默认值
 							}
 							
-							sql.push(',');
+							sql.push(','); // 添加逗号
 						}
 						
-						sql.splice(sql.length-1, 1);
-						sql.push('\n);');
+						sql.splice(sql.length-1, 1); // 移除最后一个逗号
+						sql.push('\n);'); // 结束表定义
 					}
 					
-					sql.push('\n');
+					sql.push('\n'); // 添加空行
 				}
 			}
 
-			return sql.join('');
+			return sql.join(''); // 合并 SQL 语句
 		};
 		
+		// 定义列用户对象
 		// Defines the column user object
 		function Column(name)
 		{
-			this.name = name;
+			this.name = name; // 设置列名
 		};
 
-		Column.prototype.type = 'TEXT';
+		Column.prototype.type = 'TEXT'; // 默认类型为 TEXT
 		
-		Column.prototype.defaultValue = null;
+		Column.prototype.defaultValue = null; // 默认值为空
 		
-		Column.prototype.primaryKey = false;
+		Column.prototype.primaryKey = false; // 默认非主键
 		
-		Column.prototype.autoIncrement = false;
+		Column.prototype.autoIncrement = false; // 默认非自增
 		
-		Column.prototype.notNull = false;
+		Column.prototype.notNull = false; // 默认允许空值
 		
-		Column.prototype.unique = false;
+		Column.prototype.unique = false; // 默认非唯一约束
 		
 		Column.prototype.clone = function()
 		{
-			return mxUtils.clone(this);
+			return mxUtils.clone(this); // 克隆列对象
 		};
 		
+		// 定义表用户对象
 		// Defines the table user object
 		function Table(name)
 		{
-			this.name = name;
+			this.name = name; // 设置表名
 		};
 		
 		Table.prototype.clone = function()
 		{
-			return mxUtils.clone(this);
+			return mxUtils.clone(this); // 克隆表对象
 		};
 	</script>
 </head>
 
+<!-- 页面将图形的容器传递给程序 -->
 <!-- Page passes the container for the graph to the program -->
 <body onload="main(document.getElementById('graphContainer'),
 			document.getElementById('outlineContainer'),
@@ -894,39 +962,45 @@
 			document.getElementById('sidebarContainer'),
 			document.getElementById('statusContainer'));">
 	
+	<!-- 创建启动画面的容器 -->
 	<!-- Creates a container for the splash screen -->
 	<div id="splash"
 		style="position:absolute;top:0px;left:0px;width:100%;height:100%;background:white;z-index:1;">
 		<center id="splash" style="padding-top:230px;">
-			<img src="editors/images/loading.gif">
+			<img src="editors/images/loading.gif"> <!-- 加载动画 -->
 		</center>
 	</div>
 	
+	<!-- 创建工具栏的容器 -->
 	<!-- Creates a container for the sidebar -->
 	<div id="toolbarContainer"
 		style="position:absolute;white-space:nowrap;overflow:hidden;top:0px;left:0px;max-height:24px;height:36px;right:0px;padding:6px;background-image:url('images/toolbar_bg.gif');">
 	</div>
 
+	<!-- 创建工具箱的容器 -->
 	<!-- Creates a container for the toolboox -->
 	<div id="sidebarContainer"
 		style="position:absolute;overflow:hidden;top:36px;left:0px;bottom:36px;max-width:52px;width:56px;padding-top:10px;padding-left:4px;background-image:url('images/sidebar_bg.gif');">
 	</div>
 
+	<!-- 创建图形的容器 -->
 	<!-- Creates a container for the graph -->
 	<div id="graphContainer"
 		style="position:absolute;overflow:hidden;top:36px;left:60px;bottom:36px;right:0px;">
 	</div>
 
+	<!-- 创建大纲的容器 -->
 	<!-- Creates a container for the outline -->
 	<div id="outlineContainer"
 		style="position:absolute;overflow:hidden;top:36px;right:0px;width:200px;height:140px;background:transparent;border-style:solid;border-color:black;">
 	</div>
 		
+	<!-- 创建状态栏的容器 -->
 	<!-- Creates a container for the sidebar -->
 	<div id="statusContainer"
 		style="text-align:right;position:absolute;overflow:hidden;bottom:0px;left:0px;max-height:24px;height:36px;right:0px;color:white;padding:6px;background-image:url('images/toolbar_bg.gif');">
 		<div style="font-size:10pt;float:left;">
-			Created with <a href="http://www.jgraph.com" target="_blank">mxGraph</a>
+			Created with <a href="http://www.jgraph.com" target="_blank">mxGraph</a> <!-- 使用 mxGraph 创建 -->
 		</div>
 	</div>
 </body>
