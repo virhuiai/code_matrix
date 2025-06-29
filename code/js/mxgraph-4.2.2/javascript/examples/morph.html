@@ -1,107 +1,149 @@
-<!--
-  Copyright (c) 2006-2013, JGraph Ltd
-  
-  Morph example for mxGraph. This example demonstrates using
-  mxMorphing for simple cell animations.
--->
+
 <html>
 <head>
-	<title>Hello, World! example for mxGraph</title>
+    <title>Hello, World! example for mxGraph</title>
+    <script type="text/javascript">
+       mxBasePath = '../src';
+       // 设置 mxGraph 库的基础路径，指向 'src' 目录。
+       // 这是 mxGraph 库加载其模块所必需的配置。
+    </script>
 
-	<!-- Sets the basepath for the library if not in same directory -->
-	<script type="text/javascript">
-		mxBasePath = '../src';
-	</script>
+    <script type="text/javascript" src="../src/js/mxClient.js"></script>
+    <script type="text/javascript">
+       // Program starts here. Creates a sample graph in the
+       // DOM node with the specified ID. This function is invoked
+       // from the onLoad event handler of the document (see below).
+       // 程序从这里开始执行。在具有指定 ID 的 DOM 节点中创建一个示例图。
+       // 此函数由文档的 onLoad 事件处理程序调用（见下方）。
+       function main(container)
+       {
+          // Checks if the browser is supported
+          // 检查浏览器是否受支持
+          if (!mxClient.isBrowserSupported())
+          {
+             // Displays an error message if the browser is not supported.
+             // 如果浏览器不受支持，则显示错误消息。
+             mxUtils.error('Browser is not supported!', 200, false);
+             // 调用 mxUtils.error 显示一个错误弹窗，提示浏览器不受支持。
+             // 200 是宽度，false 表示不显示堆栈跟踪。
+          }
+          else
+          {
+             // Disables the built-in context menu
+             // 禁用内置的上下文菜单
+             mxEvent.disableContextMenu(container);
+             // 禁用指定容器上的浏览器默认右键上下文菜单，以避免干扰图表操作。
 
-	<!-- Loads and initializes the library -->
-	<script type="text/javascript" src="../src/js/mxClient.js"></script>
+             // Creates the graph inside the given container
+             // 在给定容器内创建图表
+             var graph = new mxGraph(container);
+             // 创建一个新的 mxGraph 实例，并将其绑定到传入的 HTML 容器元素上。
+             // 这个 graph 对象是所有图表操作的核心。
 
-	<!-- Example code -->
-	<script type="text/javascript">
-		// Program starts here. Creates a sample graph in the
-		// DOM node with the specified ID. This function is invoked
-		// from the onLoad event handler of the document (see below).
-		function main(container)
-		{
-			// Checks if the browser is supported
-			if (!mxClient.isBrowserSupported())
-			{
-				// Displays an error message if the browser is not supported.
-				mxUtils.error('Browser is not supported!', 200, false);
-			}
-			else
-			{
-				// Disables the built-in context menu
-				mxEvent.disableContextMenu(container);
-				
-				// Creates the graph inside the given container
-				var graph = new mxGraph(container);
+             // Enables rubberband selection
+             // 启用橡皮筋选择
+             new mxRubberband(graph);
+             // 实例化 mxRubberband 类，为图表启用通过拖拽绘制矩形进行多选的功能。
 
-				// Enables rubberband selection
-				new mxRubberband(graph);
-				
-				// Gets the default parent for inserting new cells. This
-				// is normally the first child of the root (ie. layer 0).
-				var parent = graph.getDefaultParent();
-								
-				// Adds cells to the model in a single step
-				graph.getModel().beginUpdate();
-				var v1, v2;
-				try
-				{
-					v1 = graph.insertVertex(parent, null, 'Hello,', 20, 20, 80, 30);
-					var v2 = graph.insertVertex(parent, null, 'World!', 200, 150, 80, 30);
-					var e1 = graph.insertEdge(parent, null, '', v1, v2);
-				}
-				finally
-				{
-					// Updates the display
-					graph.getModel().endUpdate();
-				}
-				
-				var mult = 1;
-				
-				document.body.appendChild(mxUtils.button('Morph', function()
-				{
-					graph.clearSelection();
-					
-					graph.getModel().beginUpdate();
-					try
-					{
-						var geo = graph.getCellGeometry(v1);
-						geo = geo.clone();
-						geo.x += 180 * mult;
-						graph.getModel().setGeometry(v1, geo);
-						
-						var geo = graph.getCellGeometry(v2);
-						geo = geo.clone();
-						geo.x -= 180 * mult;
-						graph.getModel().setGeometry(v2, geo);
-					}
-					finally
-					{
-						// Arguments are number of steps, ease and delay
-						var morph = new mxMorphing(graph, 20, 1.2, 20);
-						morph.addListener(mxEvent.DONE, function()
-						{
-							graph.getModel().endUpdate();
-						});
-						morph.startAnimation();
-					}
-					
-					mult *= -1;
-				}));
-			}
-		};
-	</script>
+             // Gets the default parent for inserting new cells. This
+             // is normally the first child of the root (ie. layer 0).
+             // 获取用于插入新单元格的默认父级。这通常是根的第一个子级（即第0层）。
+             var parent = graph.getDefaultParent();
+             // 获取图表的默认父单元格。所有新添加的单元格（如顶点和边）如果未指定父级，
+             // 将会被插入到这个默认父级下，通常代表图表的顶层画布。
+
+             // Adds cells to the model in a single step
+             // 在一个步骤中将单元格添加到模型
+             graph.getModel().beginUpdate();
+             // 开启模型更新，这会暂停图表渲染，直到 endUpdate 被调用，
+             // 从而提高批量操作的性能并确保原子性。
+             var v1, v2;
+             // 声明两个变量 v1 和 v2，用于存储创建的顶点。
+             try
+             {
+                v1 = graph.insertVertex(parent, null, 'Hello,', 20, 20, 80, 30);
+                // 插入第一个顶点 (v1) 到默认父级。
+                // 参数依次是：父级、ID（null表示自动生成）、值（'Hello,'）、x坐标、y坐标、宽度、高度。
+                var v2 = graph.insertVertex(parent, null, 'World!', 200, 150, 80, 30);
+                // 插入第二个顶点 (v2) 到默认父级。
+                // 参数同上，值是 'World!'，坐标和大小不同。
+                var e1 = graph.insertEdge(parent, null, '', v1, v2);
+                // 插入一条边 (e1) 连接 v1 和 v2。
+                // 参数依次是：父级、ID（null）、值（空字符串）、源顶点 (v1)、目标顶点 (v2)。
+             }
+             finally
+             {
+                // Updates the display
+                // 更新显示
+                graph.getModel().endUpdate();
+                // 结束模型更新，触发图表重新渲染，显示之前批量添加的单元格。
+             }
+
+             var mult = 1;
+             // 初始化一个乘数变量 mult，用于控制变形方向。
+
+             document.body.appendChild(mxUtils.button('Morph', function()
+             // 在文档 body 中添加一个按钮。按钮文本为 'Morph' (变形)。
+             // 点击按钮时，将执行匿名函数中的逻辑。
+             {
+                graph.clearSelection();
+                // 清除图表中当前的所有选中单元格，确保变形操作不受选择状态影响。
+
+                graph.getModel().beginUpdate();
+                // 开启模型更新，准备进行单元格几何形状的修改。
+                try
+                {
+                   var geo = graph.getCellGeometry(v1);
+                   // 获取顶点 v1 的当前几何形状 (mxGeometry 对象)。
+                   geo = geo.clone();
+                   // 克隆几何形状对象。直接修改原始几何形状可能会导致意外行为，
+                   // 克隆可以确保在设置新几何形状时操作的是一个独立的副本。
+                   geo.x += 180 * mult;
+                   // 修改 v1 的 x 坐标，使其向右移动 180 * mult 个单位。
+                   graph.getModel().setGeometry(v1, geo);
+                   // 将修改后的几何形状应用回顶点 v1。
+
+                   var geo = graph.getCellGeometry(v2);
+                   // 获取顶点 v2 的当前几何形状。
+                   geo = geo.clone();
+                   // 克隆几何形状。
+                   geo.x -= 180 * mult;
+                   // 修改 v2 的 x 坐标，使其向左移动 180 * mult 个单位。
+                   graph.getModel().setGeometry(v2, geo);
+                   // 将修改后的几何形状应用回顶点 v2。
+                }
+                finally
+                {
+                   // Arguments are number of steps, ease and delay
+                   // 参数为步数、缓动和延迟
+                   var morph = new mxMorphing(graph, 20, 1.2, 20);
+                   // 创建一个 mxMorphing 实例，用于实现动画效果。
+                   // 参数依次是：图表实例、动画步数 (20)、缓动因子 (1.2)、每步延迟 (20毫秒)。
+                   morph.addListener(mxEvent.DONE, function()
+                   // 为 morph 对象添加一个事件监听器。当动画完成 (mxEvent.DONE) 时，
+                   // 将执行回调函数。
+                   {
+                      graph.getModel().endUpdate();
+                      // 在动画完成后，结束模型更新。这会触发最终的图表渲染，
+                      // 确保动画结束时的状态正确显示。
+                   });
+                   morph.startAnimation();
+                   // 启动动画。mxMorphing 将根据之前设置的几何形状差异，
+                   // 在指定步数和延迟下平滑地改变单元格位置。
+                }
+
+                mult *= -1;
+                // 将乘数 mult 反转（从 1 变为 -1，或从 -1 变为 1），
+                // 这样下次点击按钮时，顶点会向相反方向移动。
+             }));
+          }
+       };
+    </script>
 </head>
 
-<!-- Page passes the container for the graph to the program -->
 <body onload="main(document.getElementById('graphContainer'))">
-
-	<!-- Creates a container for the graph with a grid wallpaper -->
-	<div id="graphContainer"
-		style="position:relative;overflow:hidden;width:321px;height:241px;background:url('editors/images/grid.gif');cursor:default;">
-	</div>
+    <div id="graphContainer"
+       style="position:relative;overflow:hidden;width:321px;height:241px;background:url('editors/images/grid.gif');cursor:default;">
+       </div>
 </body>
 </html>
