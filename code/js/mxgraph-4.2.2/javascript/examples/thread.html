@@ -1,90 +1,115 @@
 <!--
+  版权声明 (Copyright)
   Copyright (c) 2006-2013, JGraph Ltd
   
-  Thread example for mxGraph. This example demonstrates setting
-  overlays in mxGraph from within a timed function.
+  线程示例 (Thread example)
+  此示例展示如何在定时函数中设置mxGraph的覆盖层
 -->
 <html>
 <head>
+	<!-- 页面标题 -->
 	<title>Thread example for mxGraph</title>
 
-	<!-- Sets the basepath for the library if not in same directory -->
+	<!-- 设置库的基础路径（如果不是在同一目录下） -->
 	<script type="text/javascript">
-		mxBasePath = '../src';
+		mxBasePath = '../src';  // 定义mxGraph库的基础路径
 	</script>
 
-	<!-- Loads and initializes the library -->
+	<!-- 加载并初始化mxGraph库 -->
 	<script type="text/javascript" src="../src/js/mxClient.js"></script>
-	<!-- Example code -->
-	<script type="text/javascript">
 
-		// Program starts here. Creates a sample graph in the
-		// DOM node with the specified ID. This function is invoked
-		// from the onLoad event handler of the document (see below).
+	<!-- 示例代码 -->
+	<script type="text/javascript">
+		/**
+		 * 主程序入口
+		 * 在指定ID的DOM节点中创建示例图形
+		 * 此函数由文档的onLoad事件处理程序调用
+		 * @param {HTMLElement} container - 图形容器元素
+		 */
 		function main(container)
 		{
-			// Checks if browser is supported
+			// 检查浏览器是否支持mxGraph
 			if (!mxClient.isBrowserSupported())
 			{
-				// Displays an error message if the browser is
-				// not supported.
+				// 显示浏览器不支持的错误信息
 				mxUtils.error('Browser is not supported!', 200, false);
 			}
 			else
 			{
-				// Creates the graph inside the given container
+				// 在容器中创建图形实例
 				var graph = new mxGraph(container);
 				
-				// Disables basic selection and cell handling
+				// 禁用图形的基本交互功能（选择/拖拽等）
 				graph.setEnabled(false);
 
-				// Gets the default parent for inserting new cells. This
-				// is normally the first child of the root (ie. layer 0).
+				// 获取默认的父级单元格（通常是根节点的第一个子节点，即第0层）
 				var parent = graph.getDefaultParent();
+				// 声明变量用于存储顶点和边
 				var v1, v2, e1;
 												
-				// Adds cells to the model in a single step
+				// 开始批量更新模型（提高性能）
 				graph.getModel().beginUpdate();
 				try
 				{
+					// 插入第一个顶点（位置：x=20, y=20, 宽=80, 高=30）
 					v1 = graph.insertVertex(parent, null, 'Hello,', 20, 20, 80, 30);
+					// 插入第二个顶点（位置：x=200, y=150, 宽=80, 高=30）
 					v2 = graph.insertVertex(parent, null, 'World!', 200, 150, 80, 30);
+					// 在两个顶点间插入边
 					e1 = graph.insertEdge(parent, null, '', v1, v2);
 				}
 				finally
 				{
-					// Updates the display
+					// 结束批量更新并刷新视图
 					graph.getModel().endUpdate();
 				}
 					
-				// Function to switch the overlay every 5 secs
-				var f = function()
+				/**
+				 * 定时切换覆盖层的函数
+				 * 每5秒在两个顶点间切换警告图标
+				 */
+				var toggleOverlay = function()
 				{
+					// 获取v1顶点上的覆盖层
 					var overlays = graph.getCellOverlays(v1);
 					
+					// 如果v1有覆盖层
 					if (overlays == null)
 					{
+						// 移除v2的覆盖层
 						graph.removeCellOverlays(v2);
+						// 在v1上设置警告图标（带工具提示）
 						graph.setCellWarning(v1, 'Tooltip');
 					}
 					else
 					{
+						// 移除v1的覆盖层
 						graph.removeCellOverlays(v1);
+						// 在v2上设置警告图标
 						graph.setCellWarning(v2, 'Tooltip');
 					}
 				};
 				
-				window.setInterval(f, 1000);
-				f();
+				// 设置定时器（每秒切换一次覆盖层）
+				window.setInterval(toggleOverlay, 1000);
+				// 立即执行一次初始化
+				toggleOverlay();
 			}
 		};
 	</script>
 </head>
 
-<!-- Page passes the container for the graph to the program -->
+<!-- 页面加载时将图形容器传递给main函数 -->
 <body onload="main(document.getElementById('graphContainer'))">
-
-	<!-- Creates a container for the graph with a grid wallpaper -->
+	<!--
+		图形容器定义
+		使用网格背景图，设置固定宽高并隐藏溢出
+		style说明:
+		  overflow:hidden - 隐藏溢出内容
+		  width:321px - 容器宽度
+		  height:241px - 容器高度
+		  background - 网格背景图
+	-->
 	<div id="graphContainer"
 		style="overflow:hidden;width:321px;height:241px;background:url('editors/images/grid.gif')">
 	</div>
