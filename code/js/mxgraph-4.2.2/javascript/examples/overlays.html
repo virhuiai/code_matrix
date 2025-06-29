@@ -1,20 +1,27 @@
+
 <!--
   Copyright (c) 2006-2013, JGraph Ltd
-  
+
   Overlays example for mxGraph. This example demonstrates cell
   highlighting, overlays and handling click and double click
   events. See also: events.html for more event handling.
+  // mxGraph的覆盖层示例。此示例展示了单元格高亮、覆盖层以及处理单击和双击事件。
+  // 另见：events.html 以获取更多事件处理信息。
 -->
 <html>
 <head>
 	<title>Overlays example for mxGraph</title>
+	<!-- mxGraph覆盖层示例 -->
 
-	<!-- Sets the basepath for the library if not in same directory -->
+	<!-- Sets the baseქ
+basepath for the library if not in same directory -->
+	<!-- 如果库不在同一目录下，设置库的基本路径 -->
 	<script type="text/javascript">
 		mxBasePath = '../src';
 	</script>
 
 	<!-- Loads and initializes the library -->
+	<!-- 加载并初始化mxGraph库 -->
 	<script type="text/javascript" src="../src/js/mxClient.js"></script>
 
 	<!-- Example code -->
@@ -23,87 +30,119 @@
 		// Program starts here. Creates a sample graph in the
 		// DOM node with the specified ID. This function is invoked
 		// from the onLoad event handler of the document (see below).
+		// 程序从这里开始。在指定的DOM节点ID中创建示例图形。
+		// 此函数由文档的onLoad事件处理程序调用（见下文）。
 		function main(container)
 		{
 			// Checks if browser is supported
+			// 检查浏览器是否受支持
 			if (!mxClient.isBrowserSupported())
 			{
 				// Displays an error message if the browser is
 				// not supported.
+				// 如果浏览器不受支持，显示错误消息
 				mxUtils.error('Browser is not supported!', 200, false);
 			}
 			else
 			{
 				// Creates the graph inside the given container
+				// 在指定容器内创建图形
 				var graph = new mxGraph(container);
-				
+
 				// Disables basic selection and cell handling
+				// 禁用基本的选择和单元格处理
 				graph.setEnabled(false);
-								
+
 				// Highlights the vertices when the mouse enters
+				// 当鼠标进入时高亮显示顶点
 				var highlight = new mxCellTracker(graph, '#00FF00');
-				
+
 				// Enables tooltips for the overlays
+				// 为覆盖层启用工具提示
 				graph.setTooltips(true);
 
 				// Installs a handler for click events in the graph
 				// that toggles the overlay for the respective cell
+				// 为图形的单击事件安装处理程序
+				// 用于切换相应单元格的覆盖层
 				graph.addListener(mxEvent.CLICK, function(sender, evt)
 				{
 					var cell = evt.getProperty('cell');
-					
+					// 获取被单击的单元格
+
 					if (cell != null)
 					{
 						var overlays = graph.getCellOverlays(cell);
-						
+						// 获取单元格的覆盖层
+
 						if (overlays == null)
 						{
 							// Creates a new overlay with an image and a tooltip
+							// 创建一个新的覆盖层，包含图像和工具提示
 							var overlay = new mxCellOverlay(
-								new mxImage('editors/images/overlays/check.png', 16, 16),
-								'Overlay tooltip');
+									new mxImage('editors/images/overlays/check.png', 16, 16),
+									'Overlay tooltip');
+							// 覆盖层的工具提示文本
 
-							// Installs a handler for clicks on the overlay							
+							// Installs a handler for clicks on the overlay
+							// 为覆盖层的单击事件安装处理程序
 							overlay.addListener(mxEvent.CLICK, function(sender, evt2)
 							{
 								mxUtils.alert('Overlay clicked');
+								// 覆盖层被单击时显示警告
 							});
-							
+
 							// Sets the overlay for the cell in the graph
+							// 为图形的单元格设置覆盖层
 							graph.addCellOverlay(cell, overlay);
 						}
 						else
 						{
+							// Removes all overlays from the cell
+							// 从单元格中移除所有覆盖层
 							graph.removeCellOverlays(cell);
 						}
 					}
 				});
-				
+
 				// Installs a handler for double click events in the graph
 				// that shows an alert box
+				// 为图形的双击事件安装处理程序，显示警告框
 				graph.addListener(mxEvent.DOUBLE_CLICK, function(sender, evt)
 				{
 					var cell = evt.getProperty('cell');
+					// 获取被双击的单元格
 					mxUtils.alert('Doubleclick: '+((cell != null) ? 'Cell' : 'Graph'));
+					// 显示双击警告：单元格或图形
 					evt.consume();
+					// 消耗事件以防止进一步处理
 				});
-				
+
 				// Gets the default parent for inserting new cells. This
 				// is normally the first child of the root (ie. layer 0).
+				// 获取用于插入新单元格的默认父节点
+				// 通常是根节点的第一个子节点（即第0层）
 				var parent = graph.getDefaultParent();
-								
+
 				// Adds cells to the model in a single step
+				// 在单一步骤中将单元格添加到模型
 				graph.getModel().beginUpdate();
+				// 开始更新模型
 				try
 				{
 					var v1 = graph.insertVertex(parent, null, 'Click,', 20, 20, 60, 40);
+					// 插入第一个顶点，标签为“Click”
 					var v2 = graph.insertVertex(parent, null, 'Doubleclick', 200, 150, 100, 40);
+					// 插入第二个顶点，标签为“Doubleclick”
 					var e1 = graph.insertEdge(parent, null, '', v1, v2);
+					// 插入连接两个顶点的边
 				}
 				finally
 				{
 					// Updates the display
+					// 更新显示
 					graph.getModel().endUpdate();
+					// 结束模型更新
 				}
 			}
 		};
@@ -111,11 +150,13 @@
 </head>
 
 <!-- Page passes the container for the graph to the program -->
+<!-- 页面将图形的容器传递给程序 -->
 <body onload="main(document.getElementById('graphContainer'))">
 
-	<!-- Creates a container for the graph with a grid wallpaper -->
-	<div id="graphContainer"
-		style="overflow:hidden;position:relative;width:321px;height:241px;background:url('editors/images/grid.gif')">
-	</div>
+<!-- Creates a container for the graph with a grid wallpaper -->
+<!-- 为图形创建一个带有网格壁纸的容器 -->
+<div id="graphContainer"
+	 style="overflow:hidden;position:relative;width:321px;height:241px;background:url('editors/images/grid.gif')">
+</div>
 </body>
 </html>

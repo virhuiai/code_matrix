@@ -1,172 +1,246 @@
+
 <!--
   Copyright (c) 2006-2013, JGraph Ltd
-  
+
   Pagebreaks example for mxGraph. This example demonstrates using the
   pageBreaksVisible and preferPageSize switches and adding headers and
   footers to print output.
+  // 此示例展示如何使用 mxGraph 的页面分割功能，演示了 pageBreaksVisible 和 preferPageSize 开关的使用，以及在打印输出中添加页眉和页脚。
 -->
 <html>
 <head>
 	<title>Pagebreaks example for mxGraph</title>
+	<!-- 设置页面标题为 mxGraph 的页面分割示例 -->
 
-	<!-- Sets the basepath for the library if not in same directory -->
+	<!-- Sets the basepath for the library if not髪 in same directory -->
+	<!-- 如果库文件不在同一目录下，设置 mxGraph 库的基本路径 -->
 	<script type="text/javascript">
 		mxBasePath = '../src';
 	</script>
 
 	<!-- Loads and initializes the library -->
+	<!-- 加载并初始化 mxGraph 库 -->
 	<script type="text/javascript" src="../src/js/mxClient.js"></script>
 
 	<!-- Example code -->
+	<!-- 示例代码 -->
 	<script type="text/javascript">
 		// Program starts here. Creates a sample graph in the
 		// DOM node with the specified ID. This function is invoked
 		// from the onLoad event handler of the document (see below).
+		// 程序从这里开始。在具有指定 ID 的 DOM 节点中创建一个示例图。此函数通过文档的 onLoad 事件处理程序调用（见下方）。
 		function main(container)
 		{
 			// Checks if the browser is supported
+			// 检查浏览器是否支持
 			if (!mxClient.isBrowserSupported())
 			{
 				// Displays an error message if the browser is not supported.
+				// 如果浏览器不支持，显示错误消息
 				mxUtils.error('Browser is not supported!', 200, false);
 			}
 			else
 			{
+				// 禁用容器的右键菜单
 				mxEvent.disableContextMenu(container);
-				
+
 				// Creates the graph inside the given container
+				// 在指定容器内创建图形
 				var graph = new mxGraph(container);
+				// 设置图形视图的缩放比例为 0.15
 				graph.view.setScale(0.15);
+				// 设置页面分割线可见
 				graph.pageBreaksVisible = true;
+				// 设置页面分割线为虚线
 				graph.pageBreakDashed = true;
+				// 设置优先使用页面大小
 				graph.preferPageSize = true;
+				// 禁用中心缩放
 				graph.centerZoom = false;
+				// 启用平移功能
 				graph.setPanning(true);
-				
+
 				// Account for the header and footer size in the page format
+				// 在页面格式中考虑页眉和页脚的大小
 				var headerSize = 100;
 				var footerSize = 100;
-				
+
 				// Removes header and footer from page height
- 				graph.pageFormat.height -= headerSize + footerSize;
+				// 从页面高度中减去页眉和页脚的高度
+				graph.pageFormat.height -= headerSize + footerSize;
 
 				// Takes zoom into account for moving cells
- 				graph.graphHandler.scaleGrid = true;
-				
+				// 在移动单元格时考虑缩放比例
+				graph.graphHandler.scaleGrid = true;
+
 				// Enables rubberband selection
+				// 启用橡皮筋选择功能
 				new mxRubberband(graph);
-				
+
 				// Gets the default parent for inserting new cells. This
 				// is normally the first child of the root (ie. layer 0).
+				// 获取用于插入新单元格的默认父节点，通常是根节点的第一个子节点（即第 0 层）。
 				var parent = graph.getDefaultParent();
-								
+
 				// Adds cells to the model in a single step
+				// 在单一步骤中向模型添加单元格
 				graph.getModel().beginUpdate();
 				try
 				{
+					// 插入第一个顶点，显示文本为 "Hello,"
 					var v1 = graph.insertVertex(parent, null, 'Hello,', 10, 10, 280, 330);
+					// 插入第二个顶点，显示文本为 "World!"，位置根据页面格式计算
 					var v2 = graph.insertVertex(parent, null, 'World!',
-						graph.pageFormat.width * graph.pageScale - 280 - 10,
-						graph.pageFormat.height * graph.pageScale - 330 - 10,
-						280, 330);
+							graph.pageFormat.width * graph.pageScale - 280 - 10,
+							graph.pageFormat.height * graph.pageScale - 330 - 10,
+							280, 330);
+					// 插入连接两个顶点的边
 					var e1 = graph.insertEdge(parent, null, '', v1, v2);
 				}
 				finally
 				{
 					// Updates the display
+					// 更新显示
 					graph.getModel().endUpdate();
 				}
 
+				// 添加“切换页面分割线”按钮
 				document.body.appendChild(mxUtils.button('Toggle Page Breaks',
-					function(evt)
-					{
-						graph.pageBreaksVisible = !graph.pageBreaksVisible;
-						graph.sizeDidChange();
-					}
-				));
-				
-				document.body.appendChild(mxUtils.button('Zoom In',
-					function(evt)
-					{
-					 	graph.zoomIn();
-					}
-				));
-
-				document.body.appendChild(mxUtils.button('Zoom Out',
-					function(evt)
-					{
-						graph.zoomOut();
-					}
-				));
-
-				document.body.appendChild(mxUtils.button('Print',
-					function(evt)
-					{
-						// Matches actual printer paper size and avoids blank pages
-						var scale = 0.5;
-
-						// Applies scale to page
-						var pf = mxRectangle.fromRectangle(graph.pageFormat || mxConstants.PAGE_FORMAT_A4_PORTRAIT);
-						pf.width = Math.round(pf.width * scale * graph.pageScale);
-						pf.height = Math.round(pf.height * scale * graph.pageScale);
-
-						// Finds top left corner of top left page
-						var bounds = mxRectangle.fromRectangle(graph.getGraphBounds());
-						bounds.x -= graph.view.translate.x * graph.view.scale;
-						bounds.y -= graph.view.translate.y * graph.view.scale;
-
-						var x0 = Math.floor(bounds.x / pf.width) * pf.width;
-						var y0 = Math.floor(bounds.y / pf.height) * pf.height;
-					
-				 		var preview = new mxPrintPreview(graph, scale, pf, 0, -x0, -y0);
-					 	preview.marginTop = headerSize * scale * graph.pageScale;
-					 	preview.marginBottom = footerSize * scale * graph.pageScale;
-					 	preview.autoOrigin = false;
-					 	
-						var oldRenderPage = preview.renderPage;
-						preview.renderPage = function(w, h, x, y, content, pageNumber)
+						function(evt)
 						{
-							var div = oldRenderPage.apply(this, arguments);
-
-							var header = document.createElement('div');
-							header.style.position = 'absolute';
-							header.style.boxSizing = 'border-box';
-							header.style.fontFamily = 'Arial,Helvetica';
-							header.style.height = (this.marginTop - 10) + 'px';
-							header.style.textAlign = 'center';
-							header.style.verticalAlign = 'middle';
-							header.style.marginTop = 'auto';
-							header.style.fontSize = '12px';
-							header.style.width = '100%';
-
-							// Vertical centering for text in header/footer
-							header.style.lineHeight = (this.marginTop - 10) + 'px';
-							
-							var footer = header.cloneNode(true);
-
-							mxUtils.write(header, 'Page ' + pageNumber + ' - Header');
-							header.style.borderBottom = '1px solid gray';
-							header.style.top = '0px';
-														
-							mxUtils.write(footer, 'Page ' + pageNumber + ' - Footer');
-							footer.style.borderTop = '1px solid gray';
-							footer.style.bottom = '0px';
-
-							div.firstChild.appendChild(footer);
-							div.firstChild.appendChild(header);
-							
-							return div;
-						};
-					 	
-					 	preview.open();
-					}
+							// 切换页面分割线的可见性
+							graph.pageBreaksVisible = !graph.pageBreaksVisible;
+							// 通知图形大小已更改
+							graph.sizeDidChange();
+						}
 				));
-				
+
+				// 添加“放大”按钮
+				document.body.appendChild(mxUtils.button('Zoom In',
+						function(evt)
+						{
+							// 执行放大操作
+							graph.zoomIn();
+						}
+				));
+
+				// 添加“缩小”按钮
+				document.body.appendChild(mxUtils.button('Zoom Out',
+						function(evt)
+						{
+							// 执行缩小操作
+							graph.zoomOut();
+						}
+				));
+
+				// 添加“打印”按钮
+				document.body.appendChild(mxUtils.button('Print',
+						function(evt)
+						{
+							// Matches actual printer paper size and avoids blank pages
+							// 匹配实际打印纸张大小，避免空白页面
+							var scale = 0.5;
+
+							// Applies scale to page
+							// 将缩放比例应用于页面
+							var pf = mxRectangle.fromRectangle(graph.pageFormat || mxConstants.PAGE_FORMAT_A4_PORTRAIT);
+							// 计算缩放后的页面宽度
+							pf.width = Math.round(pf.width * scale * graph.pageScale);
+							// 计算缩放后的页面高度
+							pf.height = Math.round(pf.height * scale * graph.pageScale);
+
+							// Finds top left corner of top left page
+							// 找到左上角页面的坐标
+							var bounds = mxRectangle.fromRectangle(graph.getGraphBounds());
+							// 调整边界以考虑视图的平移
+							bounds.x -= graph.view.translate.x * graph.view.scale;
+							bounds.y -= graph.view.translate.y * graph.view.scale;
+
+							// 计算页面左上角的 x 坐标
+							var x0 = Math.floor(bounds.x / pf.width) * pf.width;
+							// 计算页面左上角的 y 坐标
+							var y0 = Math.floor(bounds.y / pf.height) * pf.height;
+
+							// 创建打印预览对象
+							var preview = new mxPrintPreview(graph, scale, pf, 0, -x0, -y0);
+							// 设置页眉的边距
+							preview.marginTop = headerSize * scale * graph.pageScale;
+							// 设置页脚的边距
+							preview.marginBottom = footerSize * scale * graph.pageScale;
+							// 禁用自动原点
+							preview.autoOrigin = false;
+
+							// 保存原始的 renderPage 方法
+							var oldRenderPage = preview.renderPage;
+							// 重写 renderPage 方法以添加页眉和页脚
+							preview.renderPage = function(w, h, x, y, content, pageNumber)
+							{
+								// 调用原始的 renderPage 方法
+								var div = oldRenderPage.apply(this, arguments);
+
+								// 创建页眉的 div 元素
+								var header = document.createElement('div');
+								// 设置页眉的绝对定位
+								header.style.position = 'absolute';
+								// 设置盒模型为边框盒
+								header.style.boxSizing = 'border-box';
+								// 设置字体
+								header.style.fontFamily = 'Arial,Helvetica';
+								// 设置页眉高度
+								header.style.height = (this.marginTop - 10) + 'px';
+								// 设置文本居中对齐
+								header.style.textAlign = 'center';
+								// 设置垂直居中
+								header.style.verticalAlign = 'middle';
+								// 设置顶部边距为自动
+								header.style.marginTop = 'auto';
+								// 设置字体大小
+								header.style.fontSize = '12px';
+								// 设置宽度为 100%
+								header.style.width = '100%';
+
+								// Vertical centering for text in header/footer
+								// 设置页眉/页脚文本的垂直居中行高
+								header.style.lineHeight = (this.marginTop - 10) + 'px';
+
+								// 克隆页眉元素以创建页脚
+								var footer = header.cloneNode(true);
+
+								// 为页眉添加文本内容
+								mxUtils.write(header, 'Page ' + pageNumber + ' - Header');
+								// 设置页眉下边框
+								header.style.borderBottom = '1px solid gray';
+								// 设置页眉顶部位置
+								header.style.top = '0px';
+
+								// 为页脚添加文本内容
+								mxUtils.write(footer, 'Page ' + pageNumber + ' - Footer');
+								// 设置页脚上边框
+								footer.style.borderTop = '1px solid gray';
+								// 设置页脚底部位置
+								footer.style.bottom = '0px';
+
+								// 将页脚添加到 div 的第一个子节点
+								div.firstChild.appendChild(footer);
+								// 将页眉添加到 div 的第一个子节点
+								div.firstChild.appendChild(header);
+
+								// 返回修改后的 div
+								return div;
+							};
+
+							// 打开打印预览
+							preview.open();
+						}
+				));
+
+				// 添加“重置视图”按钮
 				document.body.appendChild(mxUtils.button('Reset View',
-					function(evt)
-					{
-						graph.view.scaleAndTranslate(0.15, 0, 0);
-					}
+						function(evt)
+						{
+							// 重置视图的缩放和平移
+							graph.view.scaleAndTranslate(0.15, 0, 0);
+						}
 				));
 			}
 		};
@@ -174,11 +248,13 @@
 </head>
 
 <!-- Page passes the container for the graph to the program -->
+<!-- 页面将图形容器传递给程序 -->
 <body onload="main(document.getElementById('graphContainer'))">
 
-	<!-- Creates a container for the graph with a grid wallpaper -->
-	<div id="graphContainer"
-		style="overflow:hidden;position:relative;width:641px;height:481px;background:url('editors/images/grid.gif');cursor:default;">
-	</div>
+<!-- Creates a container for the graph with a grid wallpaper -->
+<!-- 创建一个带有网格背景的图形容器 -->
+<div id="graphContainer"
+	 style="overflow:hidden;position:relative;width:641px;height:481px;background:url('editors/images/grid.gif');cursor:default;">
+</div>
 </body>
 </html>
