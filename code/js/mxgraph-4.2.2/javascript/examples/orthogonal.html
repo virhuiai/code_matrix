@@ -1,98 +1,131 @@
 <!--
   Copyright (c) 2006-2013, JGraph Ltd
-  
+
   Orthogonal example for mxGraph. This example demonstrates the use
   of port constraints and orthogonal edge styles and handlers.
+  // 此示例展示如何使用 mxGraph 的端口约束和正交边样式及处理程序。
 -->
 <html>
 <head>
 	<title>Orthogonal example for mxGraph</title>
+	<!-- 设置页面标题为 mxGraph 的正交示例 -->
 
 	<!-- Sets the basepath for the library if not in same directory -->
+	<!-- 如果库不在同一目录下，设置库的基本路径 -->
 	<script type="text/javascript">
 		mxBasePath = '../src';
 	</script>
 
 	<!-- Loads and initializes the library -->
+	<!-- 加载并初始化 mxGraph 库 -->
 	<script type="text/javascript" src="../src/js/mxClient.js"></script>
 
 	<!-- Example code -->
+	<!-- 示例代码 -->
 	<script type="text/javascript">
 		// Program starts here. Creates a sample graph in the
 		// DOM node with the specified ID. This function is invoked
 		// from the onLoad event handler of the document (see below).
+		// 程序从这里开始。在具有指定 ID 的 DOM 节点中创建示例图形。此函数由文档的 onLoad 事件处理程序调用（见下文）。
 		function main(container)
 		{
 			// Checks if the browser is supported
+			// 检查浏览器是否受支持
 			if (!mxClient.isBrowserSupported())
 			{
 				// Displays an error message if the browser is not supported.
+				// 如果浏览器不受支持，显示错误消息
 				mxUtils.error('Browser is not supported!', 200, false);
 			}
 			else
 			{
 				// Enables guides
+				// 启用辅助线
 				mxGraphHandler.prototype.guidesEnabled = true;
-				
+
 			    // Alt disables guides
+				// 按住 Alt 键禁用辅助线
 				mxGuide.prototype.isEnabledForEvent = function(evt)
 				{
 					return !mxEvent.isAltDown(evt);
 				};
-				
+
 				// Enables snapping waypoints to terminals
+				// 启用路径点吸附到终端
 				mxEdgeHandler.prototype.snapToTerminals = true;
-				
+
 				// Enables orthogonal connect preview in IE
+				// 在 IE 中启用正交连接预览
 				mxConnectionHandler.prototype.movePreviewAway = false;
-				
+
 				// Creates the graph inside the given container
+				// 在指定容器内创建图形
 				var graph = new mxGraph(container);
+				// 设置图形属性，禁止移动时断开连接
 				graph.disconnectOnMove = false;
+				// 禁止折叠功能
 				graph.foldingEnabled = false;
+				// 禁止单元格大小调整
 				graph.cellsResizable = false;
+				// 禁止扩展父节点
 				graph.extendParents = false;
+				// 允许连接
 				graph.setConnectable(true);
-				
+
 				// Implements perimeter-less connection points as fixed points (computed before the edge style).
+				// 实现无周界的连接点作为固定点（在边样式之前计算）。
 				graph.view.updateFixedTerminalPoint = function(edge, terminal, source, constraint)
 				{
+					// 调用父类的更新固定终端点方法
 					mxGraphView.prototype.updateFixedTerminalPoint.apply(this, arguments);
-					
+
+					// 获取边的绝对点
 					var pts = edge.absolutePoints;
+					// 根据源或目标选择起点或终点
 					var pt = pts[(source) ? 0 : pts.length - 1];
 
+					// 如果终端存在且点为空且无周界函数
 					if (terminal != null && pt == null && this.getPerimeterFunction(terminal) == null)
 					{
+						// 设置边的绝对终端点
 						edge.setAbsoluteTerminalPoint(new mxPoint(this.getRoutingCenterX(terminal),
 								this.getRoutingCenterY(terminal)), source)
 					}
 				};
-				
+
 				// Changes the default edge style
+				// 更改默认边样式
 				graph.getStylesheet().getDefaultEdgeStyle()['edgeStyle'] = 'orthogonalEdgeStyle';
+				// 删除默认边样式的结束箭头
 				delete graph.getStylesheet().getDefaultEdgeStyle()['endArrow'];
-				
+
 				// Implements the connect preview
+				// 实现连接预览
 				graph.connectionHandler.createEdgeState = function(me)
 				{
+					// 创建新边
 					var edge = graph.createEdge(null, null, null, null, null);
-					
+
+					// 返回边的单元状态
 					return new mxCellState(this.graph.view, edge, this.graph.getCellStyle(edge));
 				};
 
 				// Uncomment the following if you want the container
 				// to fit the size of the graph
+				// 如果希望容器适应图形大小，取消以下注释
 				//graph.setResizeContainer(true);
-				
+
 				// Enables rubberband selection
+				// 启用橡皮筋选择
 				new mxRubberband(graph);
-				
+
 				// Gets the default parent for inserting new cells. This
 				// is normally the first child of the root (ie. layer 0).
+				// 获取用于插入新单元的默认父节点，通常是根的第一个子节点（即第0层）。
 				var parent = graph.getDefaultParent();
-								
+
 				// Adds cells to the model in a single step
+				// 在单一步骤中向模型添加单元
 				graph.getModel().beginUpdate();
 				try
 				{
@@ -108,20 +141,22 @@
 					var v13 = graph.insertVertex(v1, null, '', 1, 0.5, 10, 10,
 							'portConstraint=east;shape=triangle;direction=east;perimeter=none;' +
 							'routingCenterX=0.5;routingCenterY=0;', true);
+					// 设置 v13 的偏移量
 					v13.geometry.offset = new mxPoint(0, -5);
-					
+
+					// 克隆并添加顶点 v2
 					var v2 = graph.addCell(graph.getModel().cloneCell(v1));
 					v2.geometry.x = 200;
 					v2.geometry.y = 60;
-					
+
 					var v3 = graph.addCell(graph.getModel().cloneCell(v1));
 					v3.geometry.x = 40;
 					v3.geometry.y = 150;
-					
+
 					var v4 = graph.addCell(graph.getModel().cloneCell(v1));
 					v4.geometry.x = 200;
 					v4.geometry.y = 170;
-					
+
 					graph.insertEdge(parent, null, '', v1.getChildAt(2), v2.getChildAt(1));
 					graph.insertEdge(parent, null, '', v2.getChildAt(2), v3.getChildAt(1));
 					graph.insertEdge(parent, null, '', v3.getChildAt(2), v4.getChildAt(1));
@@ -137,6 +172,7 @@
 </head>
 
 <!-- Page passes the container for the graph to the program -->
+<!-- 页面将图形容器传递给程序 -->
 <body onload="main(document.getElementById('graphContainer'))">
 
 	<!-- Creates a container for the graph with a grid wallpaper -->

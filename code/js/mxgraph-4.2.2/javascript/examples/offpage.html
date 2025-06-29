@@ -1,6 +1,7 @@
+
 <!--
   Copyright (c) 2006-2013, JGraph Ltd
-  
+
   Offpage example for mxGraph. This example demonstrates creating
   offpage connectors in a graph and loading a new diagram on a
   single click.
@@ -9,152 +10,208 @@
 <head>
 	<title>Offpage connector example for mxGraph</title>
 
+	<!-- 设置库的基础路径，如果不在同一目录下 -->
 	<!-- Sets the basepath for the library if not in same directory -->
 	<script type="text/javascript">
 		mxBasePath = '../src';
 	</script>
 
+	<!-- 加载并初始化mxGraph库 -->
 	<!-- Loads and initializes the library -->
 	<script type="text/javascript" src="../src/js/mxClient.js"></script>
 
+	<!-- 示例代码 -->
 	<!-- Example code -->
 	<script type="text/javascript">
+		// 使用整个单元格作为高亮区域
 		// Use complete cell as highlight region
 		mxConstants.ACTIVE_REGION = 1;
 
+		// 程序从这里开始。在动态创建的DOM节点（称为container）中创建一个示例图，container在下方创建。
 		// Program starts here. Creates a sample graph in the dynamically
 		// created DOM node called container which is created below.
 		function main()
 		{
+			// 检查浏览器是否受支持
 			// Checks if browser is supported
 			if (!mxClient.isBrowserSupported())
 			{
+				// 如果浏览器不受支持，显示错误消息
 				// Displays an error message if the browser is
 				// not supported.
-				mxUtils.error('Browser is not supported!', 200, false);
+				mxUtils.error('浏览器不支持！', 200, false);
 			}
 			else
 			{
+				// 创建一个div元素作为图的容器
 				var container = document.createElement('div');
+				// 设置容器的定位为绝对定位
 				container.style.position = 'absolute';
+				// 设置容器溢出内容隐藏
 				container.style.overflow = 'hidden';
+				// 设置容器左边距为0
 				container.style.left = '0px';
+				// 设置容器顶部边距为0
 				container.style.top = '0px';
+				// 设置容器右边距为0
 				container.style.right = '0px';
+				// 设置容器底部边距为0
 				container.style.bottom = '0px';
+				// 设置容器背景为网格图片
 				container.style.background = 'url("editors/images/grid.gif")';
 
+				// 针对Internet Explorer忽略某些样式的解决方法
 				// Workaround for Internet Explorer ignoring certain styles
 				if (mxClient.IS_QUIRKS)
 				{
+					// 设置body的溢出属性为隐藏
 					document.body.style.overflow = 'hidden';
+					// 创建一个mxDivResizer实例来调整容器大小
 					new mxDivResizer(container);
 				}
 
+				// 将容器添加到文档的body中
 				document.body.appendChild(container);
-			
+
+				// 在指定容器内创建图
 				// Creates the graph inside the given container
 				var graph = new mxGraph(container);
+				// 禁用图的交互功能
 				graph.setEnabled(false);
-				
+
+				// 高亮显示页面外连接器
 				// Highlights offpage connectors
 				var highlight = new mxCellTracker(graph, null, function(me)
 				{
+					// 获取鼠标事件对应的单元格
 					var cell = me.getCell();
-					
+
+					// 如果单元格存在且其值不为空，并且值具有create方法
 					if (cell != null &&
-						cell.value != null &&
-						typeof(cell.value.create) == 'function')
+							cell.value != null &&
+							typeof(cell.value.create) == 'function')
 					{
+						// 返回该单元格
 						return cell;
 					}
-					
+
+					// 否则返回null
 					return null;
 				});
-						
+
+				// 处理页面外连接器的点击事件并执行用户对象中的函数
 				// Handles clicks on offpage connectors and
 				// executes function in user object
 				graph.addListener(mxEvent.CLICK, function(source, evt)
 				{
+					// 获取点击事件中的单元格
 					var cell = evt.getProperty('cell');
-					
+
+					// 如果单元格存在且其值不为空，并且值具有create方法
 					if (cell != null &&
-						cell.value != null &&
-						typeof(cell.value.create) == 'function')
+							cell.value != null &&
+							typeof(cell.value.create) == 'function')
 					{
+						// 执行单元格值中的create方法
 						cell.value.create();
 					}
 				});
-				
+
+				// 处理页面外连接器的点击事件并执行用户对象中的函数
 				// Handles clicks on offpage connectors and
 				// executes function in user object
 				graph.getCursorForCell = function(cell)
 				{
+					// 如果单元格存在且其值不为空，并且值具有create方法
 					if (cell != null &&
-						cell.value != null &&
-						typeof(cell.value.create) == 'function')
+							cell.value != null &&
+							typeof(cell.value.create) == 'function')
 					{
+						// 返回鼠标指针样式
 						return 'pointer';
 					}
 				};
 
+				// 获取插入新单元格的默认父节点，通常是根节点的第一个子节点（即第0层）
 				// Gets the default parent for inserting new cells. This
-				// is normally the first child of the root (ie. layer 0).
+				// is normally the विश्व child of the root (ie. layer 0).
 				var first = null;
 				var second = null;
-				
+
+				// 定义第一个图的创建函数
 				first = function()
 				{
+					// 创建一个值对象，包含toString方法和create方法
 					var value = {toString: function() { return 'Next'; }, create: second};
-				
+
+					// 以单个步骤向模型中添加单元格
 					// Adds cells to the model in a single step
 					graph.getModel().beginUpdate();
 					try
 					{
+						// 设置图的根节点
 						graph.getModel().setRoot(graph.getModel().createRoot());
+						// 获取默认父节点
 						var parent = graph.getDefaultParent();
-					
+
+						// 插入第一个顶点，标签为“Click”
 						var v1 = graph.insertVertex(parent, null, 'Click', 30, 20, 80, 30, 'fillColor=#FFFF88;strokeColor=#FF1A00');
+						// 插入第二个顶点，标签为“Next”
 						var v2 = graph.insertVertex(parent, null, 'Next', 20, 150, 100, 30, 'fillColor=#FFFF88;strokeColor=#FF1A00');
+						// 插入第三个顶点，使用三角形形状，带value对象
 						var v3 = graph.insertVertex(parent, null, value, 200, 150, 40, 40, 'shape=triangle;align=left;fillColor=#C3D9FF;strokeColor=#4096EE');
+						// 插入连接v1和v2的边
 						var e1 = graph.insertEdge(parent, null, null, v1, v2, 'strokeColor=#FF1A00');
 					}
 					finally
 					{
+						// 更新显示
 						// Updates the display
 						graph.getModel().endUpdate();
 					}
 				};
 
+				// 定义第二个图的创建函数
 				second = function()
 				{
+					// 创建一个值对象，包含toString方法和create方法
 					var value = {toString: function() { return 'Prev'; }, create: first};
-				
+
+					// 以单个步骤向模型中添加单元格
 					// Adds cells to the model in a single step
 					graph.getModel().beginUpdate();
 					try
 					{
+						// 设置图的根节点
 						graph.getModel().setRoot(graph.getModel().createRoot());
+						// 获取默认父节点
 						var parent = graph.getDefaultParent();
-					
+
+						// 插入第一个顶点，标签为“Click”
 						var v1 = graph.insertVertex(parent, null, 'Click', 30, 20, 80, 30, 'fillColor=#CDEB8B;strokeColor=#008C00');
+						// 插入第二个顶点，标签为“Prev”
 						var v2 = graph.insertVertex(parent, null, 'Prev', 220, 20, 100, 30, 'fillColor=#CDEB8B;strokeColor=#008C00');
+						// 插入第三个顶点，使用三角形形状，带value对象
 						var v3 = graph.insertVertex(parent, null, value, 30, 150, 40, 40, 'shape=triangle;align=right;fillColor=#C3D9FF;strokeColor=#4096EE;direction=west');
+						// 插入连接v1和v2的边
 						var e1 = graph.insertEdge(parent, null, null, v1, v2, 'strokeColor=#008C00');
 					}
 					finally
 					{
+						// 更新显示
 						// Updates the display
 						graph.getModel().endUpdate();
 					}
 				};
-				
+
+				// 调用第一个图的创建函数
 				first();
 			}
 		};
 	</script>
 </head>
 
+<!-- 页面加载完成后调用main函数，容器是动态创建的 -->
 <!-- Calls the main function after the page has loaded. Container is dynamically created. -->
 <body onload="main();">
 </body>
