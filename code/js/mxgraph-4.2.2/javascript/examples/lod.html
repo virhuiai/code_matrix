@@ -1,82 +1,103 @@
-<!--
-  Copyright (c) 2006-2013, JGraph Ltd
-  
-  Level of detail example for mxGraph. This example demonstrates
-  implementing a level of detail per cell.
--->
 <html>
 <head>
 	<title>Level of detail example for mxGraph</title>
-
-	<!-- Sets the basepath for the library if not in same directory -->
 	<script type="text/javascript">
 		mxBasePath = '../src';
 	</script>
 
-	<!-- Loads and initializes the library -->
 	<script type="text/javascript" src="../src/js/mxClient.js"></script>
 
-	<!-- Example code -->
 	<script type="text/javascript">
 		// Program starts here. Creates a sample graph in the
 		// DOM node with the specified ID. This function is invoked
 		// from the onLoad event handler of the document (see below).
+		// 程序从这里开始。在具有指定ID的DOM节点中创建示例图。
+		// 此函数由文档的onLoad事件处理程序调用（见下文）。
 		function main(container)
 		{
 			// Checks if the browser is supported
+			// 检查浏览器是否受支持
 			if (!mxClient.isBrowserSupported())
 			{
 				// Displays an error message if the browser is not supported.
+				// 如果浏览器不受支持，则显示错误消息。
 				mxUtils.error('Browser is not supported!', 200, false);
 			}
 			else
 			{
 				// Creates the graph inside the given container
+				// 在给定容器内创建图
 				var graph = new mxGraph(container);
+				// 将图表中心缩放设置为false
 				graph.centerZoom = false;
 
 				// Links level of detail to zoom level but can be independent of zoom
+				// 将细节层次与缩放级别关联，但也可以独立于缩放级别
 				graph.isCellVisible = function(cell)
 				{
+					// 如果单元格的lod属性为null，或者lod除以2小于当前视图的缩放比例，则单元格可见
+					// cell.lod: 单元格的细节层次值。
+					// this.view.scale: 当前视图的缩放比例。
 					return cell.lod == null || cell.lod / 2 < this.view.scale;
 				};
-				
+
 				// Gets the default parent for inserting new cells. This
 				// is normally the first child of the root (ie. layer 0).
+				// 获取用于插入新单元格的默认父级。这通常是根的第一个子级（即第0层）。
 				var parent = graph.getDefaultParent();
-								
+
 				// Adds cells to the model in a single step
+				// 在一个步骤中将单元格添加到模型
 				graph.getModel().beginUpdate();
 				try
 				{
+					// 插入一个顶点（单元格），内容为'1'，位置(20, 20)，大小(80, 30)
 					var v1 = graph.insertVertex(parent, null, '1', 20, 20, 80, 30);
+					// 设置顶点v1的细节层次为1
 					v1.lod = 1;
+					// 插入一个顶点（单元格），内容为'1'，位置(200, 150)，大小(80, 30)
 					var v2 = graph.insertVertex(parent, null, '1', 200, 150, 80, 30);
+					// 设置顶点v2的细节层次为1
 					v2.lod = 1;
+					// 插入一个顶点（单元格），内容为'2'，位置(20, 150)，大小(40, 20)
 					var v3 = graph.insertVertex(parent, null, '2', 20, 150, 40, 20);
+					// 设置顶点v3的细节层次为2
 					v3.lod = 2;
+					// 插入一个顶点（单元格），内容为'3'，位置(200, 10)，大小(20, 20)
 					var v4 = graph.insertVertex(parent, null, '3', 200, 10, 20, 20);
+					// 设置顶点v4的细节层次为3
 					v4.lod = 3;
+					// 插入一条边，内容为'2'，连接v1和v2，样式为strokeWidth=2
 					var e1 = graph.insertEdge(parent, null, '2', v1, v2, 'strokeWidth=2');
+					// 设置边e1的细节层次为2
 					e1.lod = 2;
+					// 插入一条边，内容为'2'，连接v3和v4，样式为strokeWidth=2
 					var e2 = graph.insertEdge(parent, null, '2', v3, v4, 'strokeWidth=2');
+					// 设置边e2的细节层次为2
 					e2.lod = 2;
+					// 插入一条边，内容为'3'，连接v1和v4，样式为strokeWidth=1
 					var e2 = graph.insertEdge(parent, null, '3', v1, v4, 'strokeWidth=1');
+					// 设置边e2的细节层次为3
 					e2.lod = 3;
 				}
 				finally
 				{
 					// Updates the display
+					// 更新显示
 					graph.getModel().endUpdate();
 				}
-				
+
+				// 在文档body中添加一个名为'+'的按钮
 				document.body.appendChild(mxUtils.button('+', function()
 				{
+					// 点击按钮时放大图表
 					graph.zoomIn();
 				}));
-				
+
+				// 在文档body中添加一个名为'-'的按钮
 				document.body.appendChild(mxUtils.button('-', function()
 				{
+					// 点击按钮时缩小图表
 					graph.zoomOut();
 				}));
 			}
@@ -84,12 +105,10 @@
 	</script>
 </head>
 
-<!-- Page passes the container for the graph to the program -->
 <body onload="main(document.getElementById('graphContainer'))">
 
-	<!-- Creates a container for the graph with a grid wallpaper -->
-	<div id="graphContainer"
-		style="position:relative;overflow:hidden;width:621px;height:441px;background:url('editors/images/grid.gif');cursor:default;">
-	</div>
+<div id="graphContainer"
+	 style="position:relative;overflow:hidden;width:621px;height:441px;background:url('editors/images/grid.gif');cursor:default;">
+</div>
 </body>
 </html>

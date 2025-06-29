@@ -1,142 +1,215 @@
-<!--
-  Copyright (c) 2006-2013, JGraph Ltd
-
-  Labels example for mxGraph. This example demonstrates the use of wrapping
-  and clipping for HTML labels of vertices, truncating labels to fit the
-  size of a vertex, and manually placing vertex labels and relative children
-  that act as "sublabels".
--->
 <html>
 <head>
-	<title>Hello, World! example for mxGraph</title>
+    <title>Hello, World! example for mxGraph</title>
 
-	<!-- Sets the basepath for the library if not in same directory -->
-	<script type="text/javascript">
-		mxBasePath = '../src';
-	</script>
+    <script type="text/javascript">
+       mxBasePath = '../src';
+    </script>
+    <script type="text/javascript" src="../src/js/mxClient.js"></script>
+    <script type="text/javascript">
 
-	<!-- Loads and initializes the library -->
-	<script type="text/javascript" src="../src/js/mxClient.js"></script>
+       // Program starts here. Creates a sample graph in the
+       // DOM node with the specified ID. This function is invoked
+       // from the onLoad event handler of the document (see below).
+       function main(container)
+       {
+          // 程序从这里开始。在具有指定 ID 的 DOM 节点中创建一个示例图。
+          // 此函数由文档的 onLoad 事件处理程序调用（参见下方）。
+          // container: 绘图容器的 DOM 元素。
+          // Checks if the browser is supported
+          if (!mxClient.isBrowserSupported())
+          {
+             // 检查浏览器是否受支持。
+             // Displays an error message if the browser is not supported.
+             mxUtils.error('Browser is not supported!', 200, false);
+             // 如果浏览器不受支持，显示错误消息。
+             // mxUtils.error: mxGraph 工具类，用于显示错误信息。
+          }
+          else
+          {
+             // Creates the graph inside the given container
+             var graph = new mxGraph(container);
+             // 在给定容器内创建图表实例。
+             // graph: mxGraph 图表对象，负责渲染和管理图表元素。
+             graph.setTooltips(true);
+             // 启用工具提示。当鼠标悬停在图元上时会显示提示信息。
+             graph.htmlLabels = true;
+             // 允许使用 HTML 标签。这意味着标签内容可以包含 HTML 格式。
+             graph.vertexLabelsMovable = true;
+             // 允许顶点标签可移动。用户可以拖动顶点的标签来调整位置。
+             new mxRubberband(graph);
+             // 创建并启用橡皮筋选择功能。用户可以通过拖动鼠标进行区域选择。
+             // mxRubberband: mxGraph 的一个插件，用于实现框选功能。
+             new mxKeyHandler(graph);
+             // 创建并启用键盘事件处理器。允许通过键盘操作图表（如删除、复制等）。
+             // mxKeyHandler: mxGraph 的一个插件，用于处理键盘事件。
 
-	<!-- Example code -->
-	<script type="text/javascript">
+             // Do not allow removing labels from parents
+             graph.graphHandler.removeCellsFromParent = false;
+             // 不允许将标签从其父级中移除。确保标签始终附着在它们的父元素上。
+             // graph.graphHandler: 图形处理器，负责处理用户交互（如移动、调整大小）。
 
-		// Program starts here. Creates a sample graph in the
-		// DOM node with the specified ID. This function is invoked
-		// from the onLoad event handler of the document (see below).
-		function main(container)
-		{
-			// Checks if the browser is supported
-			if (!mxClient.isBrowserSupported())
-			{
-				// Displays an error message if the browser is not supported.
-				mxUtils.error('Browser is not supported!', 200, false);
-			}
-			else
-			{
-				// Creates the graph inside the given container
-				var graph = new mxGraph(container);
-				graph.setTooltips(true);
-				graph.htmlLabels = true;
-				graph.vertexLabelsMovable = true;
-				new mxRubberband(graph);
-				new mxKeyHandler(graph);
+             // Autosize labels on insert where autosize=1
+             graph.autoSizeCellsOnAdd = true;
+             // 在添加单元格时自动调整标签大小，前提是单元格的 autosize 属性为 1。
+             // autoSizeCellsOnAdd: 当新的单元格被添加到图表时，是否自动调整其大小以适应内容。
 
-				// Do not allow removing labels from parents
-				graph.graphHandler.removeCellsFromParent = false;
+             // Allows moving of relative cells
+             graph.isCellLocked = function(cell)
+             {
+                // 允许移动相对定位的单元格。
+                // isCellLocked: 重写此方法以控制单元格是否可锁定（不可移动）。
+                // cell: 当前要检查的单元格。
+                return this.isCellsLocked();
+                // 返回图表的全局锁定状态。如果整个图表被锁定，则所有单元格都锁定。
+             };
 
-				// Autosize labels on insert where autosize=1
-				graph.autoSizeCellsOnAdd = true;
+             graph.isCellResizable = function(cell)
+             {
+                // isCellResizable: 重写此方法以控制单元格是否可调整大小。
+                // cell: 当前要检查的单元格。
+                var geo = this.model.getGeometry(cell);
+                // 获取单元格的几何形状。
+                // geo: 单元格的 mxGeometry 对象，包含位置和大小信息。
 
-				// Allows moving of relative cells
-				graph.isCellLocked = function(cell)
-				{
-					return this.isCellsLocked();
-				};
+                return geo == null || !geo.relative;
+                // 如果几何形状为空或不是相对定位的，则允许调整大小。
+                // geo.relative: 如果为 true，表示单元格的位置是相对于其父级的。
+             };
 
-				graph.isCellResizable = function(cell)
-				{
-					var geo = this.model.getGeometry(cell);
+             // Truncates the label to the size of the vertex
+             graph.getLabel = function(cell)
+             {
+                // 将标签截断为顶点的大小。
+                // getLabel: 重写此方法以自定义获取单元格标签的方式。
+                // cell: 包含标签的单元格。
+                var label = (this.labelsVisible) ? this.convertValueToString(cell) : '';
+                // 如果标签可见，则将单元格的值转换为字符串作为标签，否则为空字符串。
+                // this.labelsVisible: 图表是否显示标签的标志。
+                // this.convertValueToString: 将单元格的值转换为可显示的字符串。
+                var geometry = this.model.getGeometry(cell);
+                // 获取单元格的几何形状。
 
-					return geo == null || !geo.relative;
-				};
+                if (!this.model.isCollapsed(cell) && geometry != null && (geometry.offset == null ||
+                   (geometry.offset.x == 0 && geometry.offset.y == 0)) && this.model.isVertex(cell) &&
+                   geometry.width >= 2)
+                {
+                   // 如果单元格未折叠，几何形状不为空，偏移量为空或为 (0,0)，是顶点，且宽度大于等于2。
+                   // this.model.isCollapsed: 检查单元格是否处于折叠状态。
+                   // geometry.offset: 标签相对于单元格的偏移量。
+                   // this.model.isVertex: 检查单元格是否为顶点。
+                   var style = this.getCellStyle(cell);
+                   // 获取单元格的样式。
+                   // style: 包含单元格样式属性的对象。
+                   var fontSize = style[mxConstants.STYLE_FONTSIZE] || mxConstants.DEFAULT_FONTSIZE;
+                   // 获取字体大小，如果未定义则使用默认字体大小。
+                   // mxConstants.STYLE_FONTSIZE: 字体大小样式键。
+                   // mxConstants.DEFAULT_FONTSIZE: 默认字体大小常量。
+                   var max = geometry.width / (fontSize * 0.625);
+                   // 根据顶点宽度和字体大小计算最大可显示的字符数。
+                   // 0.625 作为一个近似的字符宽度系数。
 
-				// Truncates the label to the size of the vertex
-				graph.getLabel = function(cell)
-				{
-					var label = (this.labelsVisible) ? this.convertValueToString(cell) : '';
-					var geometry = this.model.getGeometry(cell);
+                   if (max < label.length)
+                   {
+                      // 如果最大字符数小于标签的实际长度。
+                      return label.substring(0, max) + '...';
+                      // 截断标签并添加省略号。
+                   }
+                }
 
-					if (!this.model.isCollapsed(cell) && geometry != null && (geometry.offset == null ||
-						(geometry.offset.x == 0 && geometry.offset.y == 0)) && this.model.isVertex(cell) &&
-						geometry.width >= 2)
-					{
-						var style = this.getCellStyle(cell);
-						var fontSize = style[mxConstants.STYLE_FONTSIZE] || mxConstants.DEFAULT_FONTSIZE;
-						var max = geometry.width / (fontSize * 0.625);
+                return label;
+                // 返回原始标签或截断后的标签。
+             };
 
-						if (max < label.length)
-						{
-							return label.substring(0, max) + '...';
-						}
-					}
+             // Enables wrapping for vertex labels
+             graph.isWrapping = function(cell)
+             {
+                // 为顶点标签启用文本换行。
+                // isWrapping: 重写此方法以控制单元格标签是否应该换行。
+                // cell: 包含标签的单元格。
+                return this.model.isCollapsed(cell);
+                // 只有当单元格折叠时才启用换行。
+             };
 
-					return label;
-				};
+             // Enables clipping of vertex labels if no offset is defined
+             graph.isLabelClipped = function(cell)
+             {
+                // 如果未定义偏移量，则启用顶点标签剪裁。
+                // isLabelClipped: 重写此方法以控制单元格标签是否应该被剪裁。
+                // cell: 包含标签的单元格。
+                var geometry = this.model.getGeometry(cell);
+                // 获取单元格的几何形状。
 
-				// Enables wrapping for vertex labels
-				graph.isWrapping = function(cell)
-				{
-					return this.model.isCollapsed(cell);
-				};
+                return geometry != null && !geometry.relative && (geometry.offset == null ||
+                   (geometry.offset.x == 0 && geometry.offset.y == 0));
+                // 如果几何形状不为空，不是相对定位，并且偏移量为空或为 (0,0)，则启用剪裁。
+             };
 
-				// Enables clipping of vertex labels if no offset is defined
-				graph.isLabelClipped = function(cell)
-				{
-					var geometry = this.model.getGeometry(cell);
+             // Gets the default parent for inserting new cells. This
+             // is normally the first child of the root (ie. layer 0).
+             var parent = graph.getDefaultParent();
+             // 获取插入新单元格的默认父级。这通常是根的第一个子级（即第 0 层）。
+             // parent: 默认的父单元格，通常是图表的“背景”或主层。
 
-					return geometry != null && !geometry.relative && (geometry.offset == null ||
-						(geometry.offset.x == 0 && geometry.offset.y == 0));
-				};
+             // Adds cells to the model in a single step
+             graph.getModel().beginUpdate();
+             // 在一个步骤中将单元格添加到模型。
+             // beginUpdate: 开始对模型进行一系列修改，这些修改将在 endUpdate 时一次性提交，提高性能。
+             try
+             {
+                var v1 = graph.insertVertex(parent, null, 'vertexLabelsMovable', 20, 20, 80, 30);
+                // 插入一个顶点 v1。
+                // parent: 父单元格。
+                // null: 单元格 ID（自动生成）。
+                // 'vertexLabelsMovable': 标签内容。
+                // 20, 20: 顶点的 x, y 坐标。
+                // 80, 30: 顶点的宽度和高度。
 
-				// Gets the default parent for inserting new cells. This
-				// is normally the first child of the root (ie. layer 0).
-				var parent = graph.getDefaultParent();
+                // Places sublabels inside the vertex
+                var label11 = graph.insertVertex(v1, null, 'Label1', 0.5, 1, 0, 0, null, true);
+                // 在顶点 v1 内部放置子标签 Label1。
+                // v1: 父顶点。
+                // 0.5, 1: 相对于父顶点边界的 x, y 坐标（0.5 是中心，1 是底部）。
+                // 0, 0: 子标签的宽度和高度（这里为 0 表示自适应）。
+                // true: 表示这是一个相对定位的标签。
+                var label12 = graph.insertVertex(v1, null, 'Label2', 0.5, 0, 0, 0, null, true);
+                // 在顶点 v1 内部放置子标签 Label2。
+                // 0.5, 0: 相对于父顶点边界的 x, y 坐标（0.5 是中心，0 是顶部）。
 
-				// Adds cells to the model in a single step
-				graph.getModel().beginUpdate();
-				try
-				{
-					var v1 = graph.insertVertex(parent, null, 'vertexLabelsMovable', 20, 20, 80, 30);
+                var v2 = graph.insertVertex(parent, null, 'Wrapping and clipping is enabled only if the cell is collapsed, otherwise the label is truncated if there is no manual offset.', 200, 150, 80, 30);
+                // 插入另一个顶点 v2，其标签内容较长。
+                // 200, 150: 顶点的 x, y 坐标。
+                v2.geometry.alternateBounds = new mxRectangle(0, 0, 80, 30);
+                // 为 v2 设置备用边界，用于折叠状态下的显示。
+                // alternateBounds: 当单元格折叠时使用的备用几何形状。
+                // mxRectangle: mxGraph 中表示矩形的类。
+                var e1 = graph.insertEdge(parent, null, 'edgeLabelsMovable', v1, v2);
+                // 插入一条从 v1 到 v2 的边 e1。
+                // 'edgeLabelsMovable': 边的标签内容。
+                // v1, v2: 边的源顶点和目标顶点。
 
-					// Places sublabels inside the vertex
-					var label11 = graph.insertVertex(v1, null, 'Label1', 0.5, 1, 0, 0, null, true);
-					var label12 = graph.insertVertex(v1, null, 'Label2', 0.5, 0, 0, 0, null, true);
-
-					var v2 = graph.insertVertex(parent, null, 'Wrapping and clipping is enabled only if the cell is collapsed, otherwise the label is truncated if there is no manual offset.', 200, 150, 80, 30);
-					v2.geometry.alternateBounds = new mxRectangle(0, 0, 80, 30);
-					var e1 = graph.insertEdge(parent, null, 'edgeLabelsMovable', v1, v2);
-
-					// Places sublabels inside the vertex
-					var label21 = graph.insertVertex(v2, null, 'Label1', 0.5, 1, 0, 0, null, true);
-					var label22 = graph.insertVertex(v2, null, 'Label2', 0.5, 0, 0, 0, null, true);
-				}
-				finally
-				{
-					// Updates the display
-					graph.getModel().endUpdate();
-				}
-			}
-		};
-	</script>
+                // Places sublabels inside the vertex
+                var label21 = graph.insertVertex(v2, null, 'Label1', 0.5, 1, 0, 0, null, true);
+                // 在顶点 v2 内部放置子标签 Label1。
+                var label22 = graph.insertVertex(v2, null, 'Label2', 0.5, 0, 0, 0, null, true);
+                // 在顶点 v2 内部放置子标签 Label2。
+             }
+             finally
+             {
+                // Updates the display
+                graph.getModel().endUpdate();
+                // 更新显示。
+                // endUpdate: 结束一系列模型修改，并通知视图进行刷新。
+             }
+          }
+       };
+    </script>
 </head>
 
-<!-- Page passes the container for the graph to the program -->
 <body onload="main(document.getElementById('graphContainer'))">
 
-	<!-- Creates a container for the graph with a grid wallpaper -->
-	<div id="graphContainer"
-		style="position:absolute;top:0px;left:0px;overflow:hidden;width:100%;height:100%;background:url('editors/images/grid.gif')">
-	</div>
-</body>
+    <div id="graphContainer"
+       style="position:absolute;top:0px;left:0px;overflow:hidden;width:100%;height:100%;background:url('editors/images/grid.gif')">
+    </div>
+    </body>
 </html>

@@ -1,140 +1,190 @@
-<!--
-  Copyright (c) 2006-2013, JGraph Ltd
-  
-  Map example for mxGraph. This example demonstrates using
-  a graph container as a Google Maps overlay.
--->
 <html>
 <html>
 <head>
 	<title>Google maps example for mxGraph</title>
-    <meta charset="utf-8">
-    <title>Adding a Custom Overlay</title>
-    <style>
-      html, body, #map-canvas {
-        height: 100%;
-        margin: 0px;
-        padding: 0px
-      }
-    </style>
-    <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false"></script>
-    
-	<!-- Sets the basepath for the library if not in same directory -->
+	<meta charset="utf-8">
+	<title>Adding a Custom Overlay</title>
+	<style>
+		html, body, #map-canvas {
+			height: 100%;
+			margin: 0px;
+			padding: 0px
+		}
+	</style>
+	<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false"></script>
+
 	<script type="text/javascript">
 		mxBasePath = '../src';
+		// mxGraph 库的路径设置
 	</script>
 
-	<!-- Loads and initializes the library -->
 	<script type="text/javascript" src="../src/js/mxClient.js"></script>
 
-	<!-- Example code -->
 	<script type="text/javascript">
 		// Keeps the font sizes independent of the scale
+		// 保持字体大小独立于缩放比例
 		mxCellRenderer.prototype.getTextScale = function(state)
 		{
 			return 1;
+			// 返回固定的字体缩放比例1，确保字体大小不受图表缩放影响
 		};
-		
+
 		// This example creates a custom overlay called mxGraphOverlay, containing
 		// a mxGraph container.
+		// 这个例子创建了一个名为 mxGraphOverlay 的自定义覆盖层，其中包含一个 mxGraph 容器。
 
 		// Set the custom overlay object's prototype to a new instance
 		// of OverlayView. In effect, this will subclass the overlay class.
 		// Note that we set the prototype to an instance, rather than the
 		// parent class itself, because we do not wish to modify the parent class.
+		// 将自定义覆盖层对象（mxGraphOverlay）的原型设置为 OverlayView 的一个新实例。
+		// 实际上，这将使 mxGraphOverlay 成为 OverlayView 的子类。
+		// 注意，我们将原型设置为一个实例而不是父类本身，因为我们不希望修改父类。
 
 		var overlay;
+		// 声明一个变量用于存储覆盖层实例
 		mxGraphOverlay.prototype = new google.maps.OverlayView();
+		// 将 mxGraphOverlay 的原型设置为 Google Maps OverlayView 的新实例，实现继承
 
 		// Initialize the map and the custom overlay.
+		// 初始化地图和自定义覆盖层。
 		function initialize()
 		{
-		  var mapOptions = {
-		    zoom: 4,
-		    center: new google.maps.LatLng(34, -96),
-		    mapTypeId: google.maps.MapTypeId.ROADMAP,
-		    styles: [{featureType: "road", stylers: [{visibility: "off"}]},
-		      {"elementType": "labels", "stylers": [{"visibility": "off" }]}]
-		  };
+			var mapOptions = {
+				zoom: 4,
+				// 地图初始缩放级别
+				center: new google.maps.LatLng(34, -96),
+				// 地图中心点的经纬度坐标
+				mapTypeId: google.maps.MapTypeId.ROADMAP,
+				// 地图类型，这里设置为路线图
+				styles: [{featureType: "road", stylers: [{visibility: "off"}]},
+					{"elementType": "labels", "stylers": [{"visibility": "off" }]}]
+				// 地图样式设置，隐藏道路和标签
+			};
 
-		  var map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
+			var map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
+			// 创建一个新的 Google Map 实例，并将其绑定到 id 为 'map-canvas' 的 DOM 元素上，应用 mapOptions 中定义的配置
 
-		  var swBound = new google.maps.LatLng(18, -126);
-		  var neBound = new google.maps.LatLng(50, -65);
-		  var bounds = new google.maps.LatLngBounds(swBound, neBound);
+			var swBound = new google.maps.LatLng(18, -126);
+			// 定义地图西南角的经纬度边界
+			var neBound = new google.maps.LatLng(50, -65);
+			// 定义地图东北角的经纬度边界
+			var bounds = new google.maps.LatLngBounds(swBound, neBound);
+			// 创建一个 LatLngBounds 对象，表示地图的可见区域边界
 
-		  // The custom mxGraphOverlay object contains the graph,
-		  // the bounds of the graph, and a reference to the map.
-		  overlay = new mxGraphOverlay(bounds, map);
+			// The custom mxGraphOverlay object contains the graph,
+			// the bounds of the graph, and a reference to the map.
+			// 自定义的 mxGraphOverlay 对象包含图表、图表的边界以及对地图的引用。
+			overlay = new mxGraphOverlay(bounds, map);
+			// 创建 mxGraphOverlay 的新实例，传入边界和地图对象
 		}
 
 		function mxGraphOverlay(bounds, map)
 		{
-		  // Initialize all properties.
-		  this.bounds_ = bounds;
-		  this.map_ = map;
+			// Initialize all properties.
+			// 初始化所有属性。
+			this.bounds_ = bounds;
+			// 存储覆盖层的地理边界
+			this.map_ = map;
+			// 存储对 Google Map 对象的引用
 
-		  // Define a property to hold the graph's div. We'll
-		  // actually create this div upon receipt of the onAdd()
-		  // method so we'll leave it null for now.
-		  this.div_ = null;
+			// Define a property to hold the graph's div. We'll
+			// actually create this div upon receipt of the onAdd()
+			// method so we'll leave it null for now.
+			// 定义一个属性来保存图表的 div 元素。我们将在接收到 onAdd() 方法时实际创建这个 div，所以现在将其设为 null。
+			this.div_ = null;
+			// 初始化图表容器 div 为 null
 
-		  // Explicitly call setMap on this overlay.
-		  this.setMap(map);
+			// Explicitly call setMap on this overlay.
+			// 显式地在此覆盖层上调用 setMap 方法。
+			this.setMap(map);
+			// 将此覆盖层添加到指定的 Google Map 上
 		}
 
 		/**
 		 * onAdd is called when the map's panes are ready and the overlay has been
 		 * added to the map.
 		 */
+		// 当地图的 Pane（面板）准备就绪且覆盖层已添加到地图上时，将调用 onAdd 方法。
 		mxGraphOverlay.prototype.onAdd = function()
 		{
 			var div = document.createElement('div');
+			// 创建一个新的 div 元素作为 mxGraph 的容器
 			div.style.borderStyle = 'none';
+			// 设置 div 的边框样式为无
 			div.style.borderWidth = '0px';
+			// 设置 div 的边框宽度为0
 			div.style.overflow = 'visible';
+			// 设置 div 的溢出内容可见
 			div.style.position = 'absolute';
+			// 设置 div 的定位方式为绝对定位
 
 			// Allows labels to be rendered outside the container
+			// 允许标签在容器外部渲染
 			mxClient.NO_FO = true;
-			
+			// 设置 mxGraph 客户端配置，允许外来对象（Foreign Objects）不在容器内渲染，通常用于标签溢出显示
+
 			// Creates the graph inside the given container
+			// 在给定的容器内创建图表
 			var graph = new mxGraph(div);
+			// 使用新创建的 div 元素初始化 mxGraph
 			graph.setHtmlLabels(true);
+			// 允许使用 HTML 标签作为单元格的文本内容
 			graph.view.setTranslate(4, 4);
-			
+			// 设置图表视图的平移量，使内容从左上角偏移4像素
+
 			// Sets default vertex style
+			// 设置默认的顶点样式
 			var style = new Object();
+			// 创建一个空对象来定义样式
 			style[mxConstants.STYLE_SHAPE] = mxConstants.SHAPE_ELLIPSE;
+			// 设置形状为椭圆形
 			style[mxConstants.STYLE_PERIMETER] = mxPerimeter.EllipsePerimeter;
+			// 设置周长函数为椭圆周长
 			style[mxConstants.STYLE_FILLCOLOR] = '#8CCDF5';
+			// 设置填充颜色
 			style[mxConstants.STYLE_STROKECOLOR] = '#1B78C8';
+			// 设置边框颜色
 			style[mxConstants.STYLE_FONTCOLOR] = '#000000';
+			// 设置字体颜色
 			style[mxConstants.STYLE_OPACITY] = '50';
+			// 设置不透明度为50%
 			style[mxConstants.STYLE_FONTSIZE] = '16';
+			// 设置字体大小为16
 			graph.getStylesheet().putDefaultVertexStyle(style);
-			
+			// 将定义的样式设置为图表的默认顶点样式
+
 			// Gets label from custom user object
+			// 从自定义用户对象中获取标签
 			graph.convertValueToString = function(cell)
 			{
 				return (cell.value != null && cell.value.label != null) ? cell.value.label : mxGraph.prototype.convertValueToString.apply(this, arguments);
+				// 如果单元格的值（value）不为空且包含 label 属性，则返回 label 的值，否则调用默认的 convertValueToString 方法
 			};
-			
+
 			// Implements level of detail
+			// 实现细节层次（LOD）
 			graph.isCellVisible = function(cell)
 			{
 				return (cell.value != null && cell.value.minScale != null) ? cell.value.minScale <= this.view.scale : mxGraph.prototype.isCellVisible.apply(this, arguments);
+				// 如果单元格的值不为空且包含 minScale 属性，则判断当前视图的缩放比例是否大于等于 minScale，决定单元格是否可见，否则调用默认的 isCellVisible 方法
 			};
-			
+
 			// Enables rubberband selection
+			// 启用橡皮筋选择
 			new mxRubberband(graph);
-			
+			// 创建 mxRubberband 实例，为图表启用区域选择功能
+
 			// Gets the default parent for inserting new cells. This
 			// is normally the first child of the root (ie. layer 0).
+			// 获取用于插入新单元格的默认父级。这通常是根的第一个子级（即第0层）。
 			var parent = graph.getDefaultParent();
-							
+			// 获取图表的默认父容器，通常是图层0
+
 			// Adds cells to the model in a single step
+			// 在一个步骤中将单元格添加到模型
 			graph.getModel().beginUpdate();
+			// 开始对图表模型的更新，这会暂停图表的重绘，直到 endUpdate 被调用
 			try
 			{
 				var n1 = graph.insertVertex(parent, null, {label:'Seattle'}, 23, 23, 10, 10);
@@ -148,100 +198,138 @@
 				var n9 = graph.insertVertex(parent, null, {label:'Atlanta'}, 365.23, 188.51, 10, 10);
 				var n10 = graph.insertVertex(parent, null, {label:'New York'}, 458.83, 109.61, 10, 10);
 				var n11 = graph.insertVertex(parent, null, {label:'Washington'}, 432.93, 129.52, 10, 10);
-				
+				// 插入一系列带有标签的顶点（节点），指定父容器、值、坐标和大小
+
 				// This node and its connections are only visible for zoom 200% and above
+				// 此节点及其连接仅在缩放比例达到 200% 或更高时可见
 				var n12 = graph.insertVertex(parent, null, {label:'Columbus', minScale:2}, 380, 120, 10, 10);
-				
+				// 插入一个特殊节点，设置了 minScale 属性，使其在特定缩放级别下才可见
+
 				var estyle = 'strokeWidth=2;endArrow=none;labelBackgroundColor=white;';
+				// 定义边的样式，包括边框宽度、结束箭头类型和标签背景颜色
 				var e = [graph.insertEdge(parent, null, '', n1, n2, estyle),
-				         graph.insertEdge(parent, null, '', n2, n3, estyle),
-				         graph.insertEdge(parent, null, '', n1, n4, estyle),
-				         graph.insertEdge(parent, null, '', n2, n4, estyle),
-				         graph.insertEdge(parent, null, '', n3, n6, estyle),
-				         graph.insertEdge(parent, null, '', n4, n5, estyle),
-				         graph.insertEdge(parent, null, '', n5, n6, estyle),
-				         graph.insertEdge(parent, null, '', n5, n8, estyle),
-				         graph.insertEdge(parent, null, '', n6, n9, estyle),
-				         graph.insertEdge(parent, null, '', n8, n7, estyle),
-				         graph.insertEdge(parent, null, '', n7, n10, estyle),
-				         graph.insertEdge(parent, null, '', n9, n11, estyle),
-				         graph.insertEdge(parent, null, '', n10, n11, estyle),
-				         graph.insertEdge(parent, null, '', n8, n9, estyle),
-				         graph.insertEdge(parent, null, '', n8, n12, estyle),
-				         graph.insertEdge(parent, null, '', n12, n11, estyle)];
+					graph.insertEdge(parent, null, '', n2, n3, estyle),
+					graph.insertEdge(parent, null, '', n1, n4, estyle),
+					graph.insertEdge(parent, null, '', n2, n4, estyle),
+					graph.insertEdge(parent, null, '', n3, n6, estyle),
+					graph.insertEdge(parent, null, '', n4, n5, estyle),
+					graph.insertEdge(parent, null, '', n5, n6, estyle),
+					graph.insertEdge(parent, null, '', n5, n8, estyle),
+					graph.insertEdge(parent, null, '', n6, n9, estyle),
+					graph.insertEdge(parent, null, '', n8, n7, estyle),
+					graph.insertEdge(parent, null, '', n7, n10, estyle),
+					graph.insertEdge(parent, null, '', n9, n11, estyle),
+					graph.insertEdge(parent, null, '', n10, n11, estyle),
+					graph.insertEdge(parent, null, '', n8, n9, estyle),
+					graph.insertEdge(parent, null, '', n8, n12, estyle),
+					graph.insertEdge(parent, null, '', n12, n11, estyle)];
+				// 插入一系列连接不同顶点的边，应用定义的样式
 			}
 			finally
 			{
 				// Updates the display
+				// 更新显示
 				graph.getModel().endUpdate();
+				// 结束对图表模型的更新，触发图表的重绘
 			}
-			
+
 			// Writes some random numbers on the connections
+			// 在连接上写入一些随机数字
 			window.setInterval(function()
 			{
 				graph.getModel().beginUpdate();
+				// 开始模型更新
 				try
 				{
 					for (var i = 0; i < e.length; i++)
 					{
 						var rnd = Math.random();
+						// 生成一个0到1之间的随机数
 						graph.getModel().setValue(e[i], Math.round(rnd * 100));
+						// 将随机数（四舍五入到最近的整数，并乘以100）设置为边的值
 					}
 				}
 				finally
 				{
 					graph.getModel().endUpdate();
+					// 结束模型更新，触发图表重绘
 				}
 			}, 1000);
-			
+			// 每隔1000毫秒（1秒）执行一次函数，实现动态更新边的值
+
 			this.graph_ = graph;
+			// 将创建的 mxGraph 实例存储在当前覆盖层对象的属性中
 			this.div_ = div;
-			
+			// 将创建的 div 元素存储在当前覆盖层对象的属性中
+
 			// Add the element to the "overlayLayer" pane.
+			// 将元素添加到“overlayLayer”面板。
 			var panes = this.getPanes();
+			// 获取 Google Maps 覆盖层支持的各种面板
 			panes.overlayLayer.appendChild(div);
+			// 将图表容器 div 添加到 overlayLayer 面板中，使其显示在地图上方
 		};
 
 		mxGraphOverlay.prototype.draw = function()
 		{
-		  // We use the south-west and north-east
-		  // coordinates of the overlay to peg it to the correct position and size.
-		  // To do this, we need to retrieve the projection from the overlay.
-		  var overlayProjection = this.getProjection();
+			// We use the south-west and north-east
+			// coordinates of the overlay to peg it to the correct position and size.
+			// To do this, we need to retrieve the projection from the overlay.
+			// 我们使用覆盖层的西南和东北坐标来将其固定到正确的位置和大小。
+			// 为此，我们需要从覆盖层中检索投影。
+			var overlayProjection = this.getProjection();
+			// 获取当前覆盖层的投影对象，用于在地理坐标和像素坐标之间进行转换
 
-		  // Retrieve the south-west and north-east coordinates of this overlay
-		  // in LatLngs and convert them to pixel coordinates.
-		  // We'll use these coordinates to resize the div.
-		  var sw = overlayProjection.fromLatLngToDivPixel(this.bounds_.getSouthWest());
-		  var ne = overlayProjection.fromLatLngToDivPixel(this.bounds_.getNorthEast());
+			// Retrieve the south-west and north-east coordinates of this overlay
+			// in LatLngs and convert them to pixel coordinates.
+			// We'll use these coordinates to resize the div.
+			// 检索此覆盖层的西南和东北经纬度坐标，并将它们转换为像素坐标。
+			// 我们将使用这些坐标来调整 div 的大小。
+			var sw = overlayProjection.fromLatLngToDivPixel(this.bounds_.getSouthWest());
+			// 将覆盖层边界的西南角地理坐标转换为相对于地图 div 的像素坐标
+			var ne = overlayProjection.fromLatLngToDivPixel(this.bounds_.getNorthEast());
+			// 将覆盖层边界的东北角地理坐标转换为相对于地图 div 的像素坐标
 
-		  // Resize the graph's div to fit the indicated dimensions.
-		  var div = this.div_;
-		  div.style.left = sw.x + 'px';
-		  div.style.top = ne.y + 'px';
-		  var w = (ne.x - sw.x);
-		  var h = (sw.y - ne.y);
-		  div.style.width = w + 'px';
-		  div.style.height = h + 'px';
-		  
-		  // Sets the scale of the graph based on reference width
-		  this.graph_.view.setScale(w / 550);
+			// Resize the graph's div to fit the indicated dimensions.
+			// 调整图表 div 的大小以适应指示的尺寸。
+			var div = this.div_;
+			// 获取图表容器 div
+			div.style.left = sw.x + 'px';
+			// 设置 div 的左边位置为西南角的 x 坐标
+			div.style.top = ne.y + 'px';
+			// 设置 div 的顶部位置为东北角的 y 坐标
+			var w = (ne.x - sw.x);
+			// 计算 div 的宽度
+			var h = (sw.y - ne.y);
+			// 计算 div 的高度
+			div.style.width = w + 'px';
+			// 设置 div 的宽度
+			div.style.height = h + 'px';
+			// 设置 div 的高度
+
+			// Sets the scale of the graph based on reference width
+			// 根据参考宽度设置图表的缩放比例
+			this.graph_.view.setScale(w / 550);
+			// 根据计算出的 div 宽度和参考宽度 550 设置图表的缩放比例
 		};
 
 		// The onRemove() method will be called automatically from the API if
 		// we ever set the overlay's map property to 'null'.
+		// 如果我们将覆盖层的 map 属性设置为 'null'，API 将自动调用 onRemove() 方法。
 		mxGraphOverlay.prototype.onRemove = function()
 		{
-		  this.div_.parentNode.removeChild(this.div_);
-		  this.div_ = null;
+			this.div_.parentNode.removeChild(this.div_);
+			// 从父节点中移除图表容器 div
+			this.div_ = null;
+			// 将 div_ 属性设为 null，释放资源
 		};
 
 		google.maps.event.addDomListener(window, 'load', initialize);
+		// 在窗口加载完成时，添加 DOM 事件监听器，执行 initialize 函数
 	</script>
 </head>
 
-<!-- Page passes the container for the graph to the program -->
 <body>
-	<div id="map-canvas"></div>
+<div id="map-canvas"></div>
 </body>
 </html>

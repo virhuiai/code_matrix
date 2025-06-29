@@ -1,110 +1,161 @@
-<!--
-  Copyright (c) 2006-2013, JGraph Ltd
-  
-  Markers example for mxGraph. This example demonstrates creating
-  custom markers and customizing the built-in markers.
--->
 <html>
 <head>
 	<title>Markers example for mxGraph</title>
-
-	<!-- Sets the basepath for the library if not in same directory -->
 	<script type="text/javascript">
 		mxBasePath = '../src';
+		// mxBasePath 变量，用于指定 mxGraph 库的根目录。
 	</script>
 
-	<!-- Loads and initializes the library -->
 	<script type="text/javascript" src="../src/js/mxClient.js"></script>
 
-	<!-- Example code -->
 	<script type="text/javascript">
 		// Program starts here. Creates a sample graph in the
 		// DOM node with the specified ID. This function is invoked
 		// from the onLoad event handler of the document (see below).
+		// 程序从这里开始。在具有指定 ID 的 DOM 节点中创建一个示例图。
+		// 此函数从文档的 onLoad 事件处理程序（见下文）调用。
+		/**
+		 * main 函数是应用程序的入口点。
+		 * @param {HTMLElement} container - 图形将被渲染的 DOM 容器元素。
+		 */
 		function main(container)
 		{
 			// Checks if the browser is supported
+			// 检查浏览器是否受支持
 			if (!mxClient.isBrowserSupported())
 			{
 				// Displays an error message if the browser is not supported.
+				// 如果浏览器不受支持，则显示错误消息。
 				mxUtils.error('Browser is not supported!', 200, false);
 			}
 			else
 			{
 				// Enables guides
+				// 启用辅助线
 				mxGraphHandler.prototype.guidesEnabled = true;
+				// guidesEnabled: 启用或禁用在拖动时显示对齐辅助线。
 				mxEdgeHandler.prototype.snapToTerminals = true;
+				// snapToTerminals: 启用或禁用边缘手柄在连接到终端时自动吸附。
 
 				// Registers and defines the custom marker
+				// 注册并定义自定义标记
+				/**
+				 * 注册一个名为 'dash' 的自定义标记。
+				 * @param {mxCanvas} canvas - 绘图画布。
+				 * @param {mxShape} shape - 关联的形状。
+				 * @param {string} type - 标记类型（例如 'start', 'end'）。
+				 * @param {mxPoint} pe - 边缘的末端点。
+				 * @param {number} unitX - 单位向量的 X 分量。
+				 * @param {number} unitY - 单位向量的 Y 分量。
+				 * @param {number} size - 标记的大小。
+				 * @param {boolean} source - 如果是源标记则为 true。
+				 * @param {number} sw - 描边宽度。
+				 * @param {boolean} filled - 标记是否填充。
+				 */
 				mxMarker.addMarker('dash', function(canvas, shape, type, pe, unitX, unitY, size, source, sw, filled)
 				{
+					// 计算偏移量
 					var nx = unitX * (size + sw + 1);
 					var ny = unitY * (size + sw + 1);
 
 					return function()
 					{
+						// 开始绘制路径
 						canvas.begin();
+						// 移动到起始点
 						canvas.moveTo(pe.x - nx / 2 - ny / 2, pe.y - ny / 2 + nx / 2);
+						// 绘制到结束点
 						canvas.lineTo(pe.x + ny / 2 - 3 * nx / 2, pe.y - 3 * ny / 2 - nx / 2);
+						// 描边路径
 						canvas.stroke();
 					};
 				});
-				
+
 				// Defines custom message shape
+				// 定义自定义消息形状
+				/**
+				 * MessageShape 构造函数，继承自 mxCylinder。
+				 */
 				function MessageShape()
 				{
-					mxCylinder.call(this);
+					mxCylinder.call(this); // 调用父类构造函数
 				};
+				// 继承 mxCylinder 的原型方法
 				mxUtils.extend(MessageShape, mxCylinder);
+				/**
+				 * 重绘消息形状的路径。
+				 * @param {mxPath} path - 路径对象。
+				 * @param {number} x - 形状的 x 坐标。
+				 * @param {number} y - 形状的 y 坐标。
+				 * @param {number} w - 形状的宽度。
+				 * @param {number} h - 形状的高度。
+				 * @param {boolean} isForeground - 如果正在绘制前景则为 true。
+				 */
 				MessageShape.prototype.redrawPath = function(path, x, y, w, h, isForeground)
 				{
 					if (isForeground)
 					{
+						// 绘制前景路径（三角形部分）
 						path.moveTo(0, 0);
 						path.lineTo(w / 2, h / 2);
 						path.lineTo(w, 0);
 					}
 					else
 					{
+						// 绘制背景路径（矩形部分）
 						path.moveTo(0, 0);
 						path.lineTo(w, 0);
 						path.lineTo(w, h);
 						path.lineTo(0, h);
-						path.close();
+						path.close(); // 闭合路径
 					}
 				};
 
 				// Registers the message shape
+				// 注册消息形状
 				mxCellRenderer.registerShape('message', MessageShape);
-				
+
 				// Defines custom edge shape
+				// 定义自定义边形状
+				/**
+				 * LinkShape 构造函数，继承自 mxArrow。
+				 */
 				function LinkShape()
 				{
-					mxArrow.call(this);
+					mxArrow.call(this); // 调用父类构造函数
 				};
+				// 继承 mxArrow 的原型方法
 				mxUtils.extend(LinkShape, mxArrow);
+				/**
+				 * 绘制连接器（边）的形状。
+				 * @param {mxCanvas} c - 绘图画布。
+				 * @param {Array<mxPoint>} pts - 边的所有点。
+				 */
 				LinkShape.prototype.paintEdgeShape = function(c, pts)
 				{
-					var width = 10;
+					var width = 10; // 边的宽度
 
 					// Base vector (between end points)
-					var p0 = pts[0];
-					var pe = pts[pts.length - 1];
-					
-					var dx = pe.x - p0.x;
-					var dy = pe.y - p0.y;
-					var dist = Math.sqrt(dx * dx + dy * dy);
-					var length = dist;
-					
+					// 基向量（起点和终点之间）
+					var p0 = pts[0]; // 起点
+					var pe = pts[pts.length - 1]; // 终点
+
+					var dx = pe.x - p0.x; // x 方向距离
+					var dy = pe.y - p0.y; // y 方向距离
+					var dist = Math.sqrt(dx * dx + dy * dy); // 两点之间距离
+					var length = dist; // 长度
+
 					// Computes the norm and the inverse norm
-					var nx = dx / dist;
-					var ny = dy / dist;
-					var basex = length * nx;
-					var basey = length * ny;
-					var floorx = width * ny/3;
-					var floory = -width * nx/3;
-					
+					// 计算范数和逆范数
+					var nx = dx / dist; // 单位向量的 x 分量
+					var ny = dy / dist; // 单位向量的 y 分量
+					var basex = length * nx; // 基向量的 x 分量
+					var basey = length * ny; // 基向量的 y 分量
+					var floorx = width * ny/3; // 偏移量 x
+					var floory = -width * nx/3; // 偏移量 y
+
 					// Computes points
+					// 计算关键点
 					var p0x = p0.x - floorx / 2;
 					var p0y = p0.y - floory / 2;
 					var p1x = p0x + floorx;
@@ -113,76 +164,91 @@
 					var p2y = p1y + basey;
 					var p3x = p2x + floorx;
 					var p3y = p2y + floory;
-					// p4 not necessary
+					// p4 not necessary (p4 不需要)
 					var p5x = p3x - 3 * floorx;
 					var p5y = p3y - 3 * floory;
-					
+
+					// 开始绘制路径
 					c.begin();
-					c.moveTo(p1x, p1y);
-					c.lineTo(p2x, p2y);
-					c.moveTo(p5x + floorx, p5y + floory);
-					c.lineTo(p0x, p0y);
-					c.stroke();
+					c.moveTo(p1x, p1y); // 移动到点 p1
+					c.lineTo(p2x, p2y); // 绘制到点 p2
+					c.moveTo(p5x + floorx, p5y + floory); // 移动到点 p5 的偏移量
+					c.lineTo(p0x, p0y); // 绘制到点 p0
+					c.stroke(); // 描边路径
 				};
 
 				// Registers the link shape
+				// 注册连接器形状
 				mxCellRenderer.registerShape('link', LinkShape);
 
 				// Creates the graph
+				// 创建图表实例
 				var graph = new mxGraph(container);
-				
+
 				// Sets default styles
-				var style = graph.getStylesheet().getDefaultVertexStyle();
-				style['fillColor'] = '#FFFFFF';
-				style['strokeColor'] = '#000000';
-				style['fontColor'] = '#000000';
-				style['fontStyle'] = '1';
-				
-				style = graph.getStylesheet().getDefaultEdgeStyle();
-				style['strokeColor'] = '#000000';
-				style['fontColor'] = '#000000';
-				style['fontStyle'] = '0';
-				style['fontStyle'] = '0';
-				style['startSize'] = '8';
-				style['endSize'] = '8';
+				// 设置默认样式
+				var style = graph.getStylesheet().getDefaultVertexStyle(); // 获取默认节点样式
+				style['fillColor'] = '#FFFFFF'; // 填充颜色：白色
+				style['strokeColor'] = '#000000'; // 描边颜色：黑色
+				style['fontColor'] = '#000000'; // 字体颜色：黑色
+				style['fontStyle'] = '1'; // 字体样式：粗体
+
+				style = graph.getStylesheet().getDefaultEdgeStyle(); // 获取默认边样式
+				style['strokeColor'] = '#000000'; // 描边颜色：黑色
+				style['fontColor'] = '#000000'; // 字体颜色：黑色
+				style['fontStyle'] = '0'; // 字体样式：常规
+				style['fontStyle'] = '0'; // 字体样式：常规 (重复设置，实际以最后一次为准)
+				style['startSize'] = '8'; // 起点标记大小
+				style['endSize'] = '8'; // 终点标记大小
 
 				// Populates the graph
-				var parent = graph.getDefaultParent();
-								
-				graph.getModel().beginUpdate();
+				// 填充图表内容
+				var parent = graph.getDefaultParent(); // 获取默认父节点
+
+				graph.getModel().beginUpdate(); // 开始模型更新，批量操作
 				try
 				{
+					// 插入第一个顶点 v1
 					var v1 = graph.insertVertex(parent, null, 'v1', 20, 20, 80, 30);
+					// 插入第二个顶点 v2
 					var v2 = graph.insertVertex(parent, null, 'v2', 440, 20, 80, 30);
-					var e1 = graph.insertEdge(parent, null, '', v1, v2, 'dashed=1;'+
-						'startArrow=oval;endArrow=block;sourcePerimeterSpacing=4;startFill=0;endFill=0;');
+					// 插入第一条边 e1，连接 v1 和 v2
+					var e1 = graph.insertEdge(parent, null, '', v1, v2, 'dashed=1;'+ // dashed=1: 虚线
+							'startArrow=oval;endArrow=block;sourcePerimeterSpacing=4;startFill=0;endFill=0;'); // startArrow: 起点箭头样式为 oval；endArrow: 终点箭头样式为 block；sourcePerimeterSpacing: 源节点周围的间距；startFill: 起点不填充；endFill: 终点不填充。
+					// 插入一个标签节点 e11 作为 e1 的子节点
 					var e11 = graph.insertVertex(e1, null, 'Label', 0, 0, 20, 14,
-						'shape=message;labelBackgroundColor=#ffffff;labelPosition=left;spacingRight=2;align=right;fontStyle=0;');
-					e11.geometry.offset = new mxPoint(-10, -7);
-					e11.geometry.relative = true;
-					e11.connectable = false;
-					
-					var v3 = graph.insertVertex(parent, null, 'v3', 20, 120, 80, 30);
-					var v4 = graph.insertVertex(parent, null, 'v4', 440, 120, 80, 30);
-					var e2 = graph.insertEdge(parent, null, 'Label', v3, v4,
-						'startArrow=dash;startSize=12;endArrow=block;labelBackgroundColor=#FFFFFF;');
+							'shape=message;labelBackgroundColor=#ffffff;labelPosition=left;spacingRight=2;align=right;fontStyle=0;'); // shape=message: 使用自定义消息形状；labelBackgroundColor: 标签背景颜色为白色；labelPosition: 标签位置为左侧；spacingRight: 右侧间距为2；align: 对齐方式为右对齐；fontStyle: 字体样式为常规。
+					e11.geometry.offset = new mxPoint(-10, -7); // 设置标签的几何偏移量
+					e11.geometry.relative = true; // 设置标签的几何位置是相对的
+					e11.connectable = false; // 设置标签不可连接
 
-					var v5 = graph.insertVertex(parent, null, 'v5', 40, 220, 40, 40, 'shape=ellipse;perimeter=ellipsePerimeter;');
-					var v6 = graph.insertVertex(parent, null, 'v6', 460, 220, 40, 40, 'shape=doubleEllipse;perimeter=ellipsePerimeter;');
+					// 插入第三个顶点 v3
+					var v3 = graph.insertVertex(parent, null, 'v3', 20, 120, 80, 30);
+					// 插入第四个顶点 v4
+					var v4 = graph.insertVertex(parent, null, 'v4', 440, 120, 80, 30);
+					// 插入第二条边 e2，连接 v3 和 v4，带有标签 'Label'
+					var e2 = graph.insertEdge(parent, null, 'Label', v3, v4,
+							'startArrow=dash;startSize=12;endArrow=block;labelBackgroundColor=#FFFFFF;'); // startArrow: 起点箭头样式为自定义的 dash；startSize: 起点箭头大小为12；endArrow: 终点箭头样式为 block；labelBackgroundColor: 标签背景颜色为白色。
+
+					// 插入第五个顶点 v5，形状为椭圆形
+					var v5 = graph.insertVertex(parent, null, 'v5', 40, 220, 40, 40, 'shape=ellipse;perimeter=ellipsePerimeter;'); // shape=ellipse: 形状为椭圆形；perimeter=ellipsePerimeter: 使用椭圆形周长函数。
+					// 插入第六个顶点 v6，形状为双椭圆形
+					var v6 = graph.insertVertex(parent, null, 'v6', 460, 220, 40, 40, 'shape=doubleEllipse;perimeter=ellipsePerimeter;'); // shape=doubleEllipse: 形状为双椭圆形；perimeter=ellipsePerimeter: 使用椭圆形周长函数。
+					// 插入第三条边 e3，连接 v5 和 v6，带有标签 'Link'
 					var e3 = graph.insertEdge(parent, null, 'Link', v5, v6,
-						'shape=link;labelBackgroundColor=#FFFFFF;');
+							'shape=link;labelBackgroundColor=#FFFFFF;'); // shape=link: 使用自定义连接器形状；labelBackgroundColor: 标签背景颜色为白色。
 				}
 				finally
 				{
-					graph.getModel().endUpdate();
+					graph.getModel().endUpdate(); // 结束模型更新，触发视图刷新
 				}
 			}
 		};
 	</script>
 </head>
 <body onload="main(document.getElementById('graphContainer'))">
-	<div id="graphContainer"
-		style="overflow:hidden;position:relative;width:641px;height:381px;border:1px solid gray;cursor:default;">
-	</div>
+<div id="graphContainer"
+	 style="overflow:hidden;position:relative;width:641px;height:381px;border:1px solid gray;cursor:default;">
+</div>
 </body>
 </html>

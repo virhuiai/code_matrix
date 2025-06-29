@@ -1,98 +1,126 @@
-<!--
-  Copyright (c) 2006-2013, JGraph Ltd
-  
-  Layers example for mxGraph. This example demonstrates using
-  multiple layers to contain cells.
--->
 <html>
 <head>
 	<title>Layers example for mxGraph</title>
-
-	<!-- Sets the basepath for the library if not in same directory -->
 	<script type="text/javascript">
 		mxBasePath = '../src';
+		// 设置 mxGraph 库的基础路径，指向其源代码目录
 	</script>
 
-	<!-- Loads and initializes the library -->
 	<script type="text/javascript" src="../src/js/mxClient.js"></script>
-
-	<!-- Example code -->
 	<script type="text/javascript">
 
 		// Program starts here. Creates a sample graph in the
 		// DOM node with the specified ID. This function is invoked
 		// from the onLoad event handler of the document (see below).
+		// 程序从这里开始。在具有指定 ID 的 DOM 节点中创建示例图。
+		// 此函数由文档的 onLoad 事件处理程序（参见下方）调用。
+		/**
+		 * 主要函数，用于初始化并渲染 mxGraph 图形。
+		 * @param {HTMLElement} container - 图形将被渲染到的 HTML 容器元素。
+		 */
 		function main(container)
 		{
 			// Checks if the browser is supported
+			// 检查浏览器是否受支持
 			if (!mxClient.isBrowserSupported())
 			{
 				// Displays an error message if the browser is not supported.
+				// 如果浏览器不受支持，则显示错误消息。
 				mxUtils.error('Browser is not supported!', 200, false);
+				// 如果浏览器不受支持，则使用 mxUtils 工具显示错误消息，并终止程序。
 			}
 			else
 			{
 				// Creates the graph inside the given container using a model
 				// with a custom root and two layers. Layers can also be added
 				// dynamically using var layer = model.add(root, new mxCell()).
+				// 在给定容器内创建图，使用具有自定义根和两个图层的模型。
+				// 图层也可以使用 var layer = model.add(root, new mxCell()) 动态添加。
 				var root = new mxCell();
+				// 创建图的根单元格，所有图层都将添加到此根单元格下。
 				var layer0 = root.insert(new mxCell());
-				var layer1 = root.insert(new mxCell()); 
+				// 创建第一个图层 (layer0)，并将其作为子元素插入到根单元格中。
+				var layer1 = root.insert(new mxCell());
+				// 创建第二个图层 (layer1)，并将其作为子元素插入到根单元格中。
 				var model = new mxGraphModel(root);
+				// 使用自定义的根单元格创建 mxGraphModel，这是图的数据模型。
 
 				var graph = new mxGraph(container, model);
-				
+				// 在指定的 HTML 容器中创建 mxGraph 实例，并关联数据模型。
+
 				// Disables basic selection and cell handling
+				// 禁用基本的选择和单元格处理
 				graph.setEnabled(false);
-				
+				// 禁用图的基本交互功能，例如选择、移动和调整单元格大小。
+
 				// Gets the default parent for inserting new cells. This
 				// is normally the first child of the root (ie. layer 0).
+				// 获取用于插入新单元格的默认父级。这通常是根的第一个子级（即 layer 0）。
 				var parent = graph.getDefaultParent();
-								
+				// 获取图的默认父级，通常是第一个图层，用于方便地插入单元格。
+
 				// Adds cells to the model in a single step
+				// 在一个步骤中将单元格添加到模型中
 				model.beginUpdate();
+				// 开始模型更新，这将批量处理所有后续的模型修改，提高性能。
 				try
 				{
+					// 创建并插入第一个顶点 v1 到 layer1，位置 (20, 20)，大小 (80, 30)，填充颜色为灰色。
 					var v1 = graph.insertVertex(layer1, null, 'Hello,', 20, 20, 80, 30, 'fillColor=#C0C0C0');
+					// 创建并插入第二个顶点 v2 到 layer1，位置 (200, 20)，大小 (80, 30)，填充颜色为灰色。
 					var v2 = graph.insertVertex(layer1, null, 'Hello,', 200, 20, 80, 30, 'fillColor=#C0C0C0');
+					// 创建并插入第三个顶点 v3 到 layer0，位置 (110, 150)，大小 (80, 30)，无特殊样式。
 					var v3 = graph.insertVertex(layer0, null, 'World!', 110, 150, 80, 30);
+					// 创建并插入第一条边 e1，连接 v1 和 v3，位于 layer1，描边颜色为深灰色。
 					var e1 = graph.insertEdge(layer1, null, '', v1, v3, 'strokeColor=#0C0C0C');
 					e1.geometry.points = [new mxPoint(60, 165)];
+					// 设置边 e1 的几何点，使其在指定位置弯曲。
+					// 创建并插入第二条边 e2，连接 v2 和 v3，位于 layer0。
 					var e2 = graph.insertEdge(layer0, null, '', v2, v3);
 					e2.geometry.points = [new mxPoint(240, 165)];
+					// 设置边 e2 的几何点，使其在指定位置弯曲。
+					// 创建并插入第三条边 e3，连接 v1 和 v2，位于 layer0，使用 'topToBottomEdgeStyle' 样式。
 					var e3 = graph.insertEdge(layer0, null, '', v1, v2,
 							'edgeStyle=topToBottomEdgeStyle');
 					e3.geometry.points = [new mxPoint(150, 30)];
+					// 设置边 e3 的几何点，使其在指定位置弯曲。
+					// 创建并插入第四条边 e4，连接 v2 和 v1，位于 layer1，描边颜色为深灰色，使用 'topToBottomEdgeStyle' 样式。
 					var e4 = graph.insertEdge(layer1, null, '', v2, v1,
 							'strokeColor=#0C0C0C;edgeStyle=topToBottomEdgeStyle');
 					e4.geometry.points = [new mxPoint(150, 40)];
+					// 设置边 e4 的几何点，使其在指定位置弯曲。
 				}
 				finally
 				{
 					// Updates the display
+					// 更新显示
 					model.endUpdate();
+					// 结束模型更新，触发图的重新绘制以反映所有修改。
 				}
 
+				// Append a button to the document body to toggle visibility of Layer 0
+				// 向文档主体添加一个按钮，用于切换 Layer 0 的可见性
 				document.body.appendChild(mxUtils.button('Layer 0', function()
 				{
 					model.setVisible(layer0, !model.isVisible(layer0));
+					// 点击按钮时，切换 layer0 的可见性。
 				}));
-				
+
+				// Append a button to the document body to toggle visibility of Layer 1
+				// 向文档主体添加一个按钮，用于切换 Layer 1 的可见性
 				document.body.appendChild(mxUtils.button('Layer 1', function()
 				{
 					model.setVisible(layer1, !model.isVisible(layer1));
+					// 点击按钮时，切换 layer1 的可见性。
 				}));
 			}
 		};
 	</script>
 </head>
 
-<!-- Page passes the container for the graph to the program -->
 <body onload="main(document.getElementById('graphContainer'))">
-
-	<!-- Creates a container for the graph with a grid wallpaper -->
-	<div id="graphContainer"
-		style="overflow:hidden;position:relative;width:321px;height:241px;background:url('editors/images/grid.gif')">
-	</div>
+<div id="graphContainer"
+	 style="overflow:hidden;position:relative;width:321px;height:241px;background:url('editors/images/grid.gif')">
+</div>
 </body>
 </html>
