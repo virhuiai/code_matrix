@@ -3,12 +3,15 @@
   
   Showregion example for mxGraph. This example demonstrates using a custom
   rubberband handler to show the selected region in a new window.
+  // 展示mxGraph的区域选择示例。此示例演示如何使用自定义橡皮筋选择器在新窗口中显示选定区域。
 -->
 <html>
 <head>
 	<title>Showregion example for mxGraph</title>
+	<!-- 设置网页标题为mxGraph的区域选择示例 -->
 
 	<style type="text/css">
+		<!-- 定义弹出菜单的CSS样式 -->
 		body div.mxPopupMenu {
 			-webkit-box-shadow: 3px 3px 6px #C0C0C0;
 			-moz-box-shadow: 3px 3px 6px #C0C0C0;
@@ -17,124 +20,162 @@
 			position: absolute;
 			border: 3px solid #e7e7e7;
 			padding: 3px;
+			<!-- 设置弹出菜单的阴影、背景色、定位、边框和内边距 -->
 		}
 		body table.mxPopupMenu {
 			border-collapse: collapse;
 			margin: 0px;
+			<!-- 设置弹出菜单表格的边框合并和外边距 -->
 		}
 		body tr.mxPopupMenuItem {
 			color: black;
 			cursor: default;
+			<!-- 设置弹出菜单项的文本颜色和光标样式 -->
 		}
 		body td.mxPopupMenuItem {
 			padding: 6px 60px 6px 30px;
 			font-family: Arial;
 			font-size: 10pt;
+			<!-- 设置菜单项单元格的内边距、字体和字体大小 -->
 		}
 		body td.mxPopupMenuIcon {
 			background-color: white;
 			padding: 0px;
+			<!-- 设置菜单图标单元格的背景色和内边距 -->
 		}
 		body tr.mxPopupMenuItemHover {
 			background-color: #eeeeee;
 			color: black;
+			<!-- 设置鼠标悬停时菜单项的背景色和文本颜色 -->
 		}
 		table.mxPopupMenu hr {
 			border-top: solid 1px #cccccc;
+			<!-- 设置弹出菜单中分隔线的样式 -->
 		}
 		table.mxPopupMenu tr {
 			font-size: 4pt;
+			<!-- 设置弹出菜单中表格行的字体大小 -->
 		}
 	</style>
 
 	<!-- Sets the basepath for the library if not in same directory -->
+	<!-- 如果库不在同一目录下，设置库的基础路径 -->
 	<script type="text/javascript">
 		mxBasePath = '../src';
 	</script>
 
 	<!-- Loads and initializes the library -->
+	<!-- 加载并初始化mxGraph库 -->
 	<script type="text/javascript" src="../src/js/mxClient.js"></script>
 
 	<!-- Example code -->
+	<!-- 示例代码 -->
 	<script type="text/javascript">
 		// Program starts here. Creates a sample graph in the
 		// DOM node with the specified ID. This function is invoked
 		// from the onLoad event handler of the document (see below).
+		// 程序从这里开始。在指定ID的DOM节点中创建示例图形。此函数由文档的onLoad事件处理程序调用（见下方）。
 		function main(container)
 		{
 			// Checks if the browser is supported
+			// 检查浏览器是否受支持
 			if (!mxClient.isBrowserSupported())
 			{
 				// Displays an error message if the browser is not supported.
+				// 如果浏览器不受支持，显示错误消息
 				mxUtils.error('Browser is not supported!', 200, false);
 			}
 			else
 			{
 				// Disables built-in context menu
+				// 禁用内置右键菜单
 				mxEvent.disableContextMenu(document.body);
 				
 				// Changes some default colors
-				mxConstants.HANDLE_FILLCOLOR = '#99ccff';
-				mxConstants.HANDLE_STROKECOLOR = '#0088cf';
-				mxConstants.VERTEX_SELECTION_COLOR = '#00a8ff';
+				// 修改一些默认颜色
+				mxConstants.HANDLE_FILLCOLOR = '#99ccff'; // 设置选择手柄的填充颜色
+				mxConstants.HANDLE_STROKECOLOR = '#0088cf'; // 设置选择手柄的边框颜色
+				mxConstants.VERTEX_SELECTION_COLOR = '#00a8ff'; // 设置顶点选择颜色
 				
 				// Creates the graph inside the given container
+				// 在指定容器内创建图形
 				var graph = new mxGraph(container);
 
 				// Enables rubberband selection
+				// 启用橡皮筋选择功能
 				var rubberband = new mxRubberband(graph);
 				
+				// 重写橡皮筋选择的事件检查，添加弹出菜单触发条件
 				rubberband.isForceRubberbandEvent = function(me)
 				{
 					return mxRubberband.prototype.isForceRubberbandEvent.apply(this, arguments) || mxEvent.isPopupTrigger(me.getEvent()); 
 				}
 				
 				// Defines a new popup menu for region selection in the rubberband handler
+				// 为橡皮筋选择器定义新的弹出菜单，用于区域选择
 				rubberband.popupMenu = new mxPopupMenu(function(menu, cell, evt)
 				{
+					// 创建矩形区域，表示橡皮筋选择的范围
 					var rect = new mxRectangle(rubberband.x, rubberband.y, rubberband.width, rubberband.height);
 					
+					// 添加菜单项“Show this”以在新窗口显示选定区域
 					menu.addItem('Show this', null, function()
 				    {
+						// 隐藏弹出菜单
 						rubberband.popupMenu.hideMenu();
+						// 获取图形边界
 						var bounds = graph.getGraphBounds();
+						// 显示选定区域在新窗口中
 						mxUtils.show(graph, null, bounds.x - rubberband.x, bounds.y - rubberband.y, rubberband.width, rubberband.height);
 				    });
 				});
 				
+				// 保存原始的鼠标按下事件处理函数
 				var rubberbandMouseDown = rubberband.mouseDown;
+				// 重写鼠标按下事件，隐藏弹出菜单并调用原始处理
 				rubberband.mouseDown = function(sender, me)
 				{
 					this.popupMenu.hideMenu();
 					rubberbandMouseDown.apply(this, arguments);
 				};
 				
+				// 保存原始的鼠标释放事件处理函数
 				var rubberbandMouseUp = rubberband.mouseUp;
+				// 重写鼠标释放事件，处理弹出菜单显示或调用原始处理
 				rubberband.mouseUp = function(sender, me)
 				{
+					// 如果橡皮筋选择框存在且触发了弹出菜单事件
 					if (this.div != null && mxEvent.isPopupTrigger(me.getEvent()))
 					{
+						// 如果没有其他弹出菜单显示
 						if (!graph.popupMenuHandler.isMenuShowing())
 						{
+							// 获取滚动原点
 							var origin = mxUtils.getScrollOrigin();
+							// 显示弹出菜单
 							this.popupMenu.popup(me.getX() + origin.x + 1, me.getY() + origin.y + 1, null, me.getEvent());
+							// 重置橡皮筋选择
 							this.reset();
 						}
 					}
 					else
 					{
+						// 调用原始鼠标释放事件处理
 						rubberbandMouseUp.apply(this, arguments);
 					}
 				};
 				
 				// Gets the default parent for inserting new cells. This
 				// is normally the first child of the root (ie. layer 0).
+				// 获取插入新单元的默认父节点，通常是根节点的第一个子节点（即第0层）
 				var parent = graph.getDefaultParent();
 								
 				// Adds cells to the model in a single step
+				// 一次性向模型中添加单元
 				graph.getModel().beginUpdate();
 				try
 				{
+				    // 插入两个顶点和一条边
 					var v1 = graph.insertVertex(parent, null, 'Hello,', 20, 20, 80, 30);
 					var v2 = graph.insertVertex(parent, null, 'World!', 200, 150, 80, 30);
 					var e1 = graph.insertEdge(parent, null, '', v1, v2);
@@ -142,6 +183,7 @@
 				finally
 				{
 					// Updates the display
+					// 更新显示
 					graph.getModel().endUpdate();
 				}
 			}
@@ -150,12 +192,15 @@
 </head>
 
 <!-- Page passes the container for the graph to the program -->
+<!-- 页面将图形容器传递给程序 -->
 <body onload="main(document.getElementById('graphContainer'))">
 
 	<!-- Creates a container for the graph with a grid wallpaper -->
+	<!-- 创建带有网格背景的图形容器 -->
 	<div id="graphContainer"
 		style="overflow:hidden;width:321px;height:241px;background:url('editors/images/grid.gif');cursor:default;">
 	</div>
+	<!-- 使用右键选择图形区域并选择“Show this” -->
 	Use the right mouse button to select a region of the diagram and select <i>Show this</i>.
 </body>
 </html>

@@ -11,61 +11,77 @@
   
   To use IE7 standards mode in IE 7,8 and 9, replace IE=5 with IE=7.
 -->
+<!-- 中文注释：声明HTML文档类型，并为IE浏览器设置兼容模式 -->
 <html>
 <head>
+	<!-- 中文注释：设置页面标题为mxGraph的标准模式示例 -->
 	<title>Standardsmode example for mxGraph</title>
 
+	<!-- 中文注释：设置mxGraph库的基础路径，如果库文件不在同一目录下 -->
 	<!-- Sets the basepath for the library if not in same directory -->
 	<script type="text/javascript">
 		mxBasePath = '../src';
 	</script>
 
+	<!-- 中文注释：加载并初始化mxGraph库 -->
 	<!-- Loads and initializes the library -->
 	<script type="text/javascript" src="../src/js/mxClient.js"></script>
 
+	<!-- 中文注释：示例代码部分 -->
 	<!-- Example code -->
 	<script type="text/javascript">
+		// 中文注释：程序从这里开始，在指定的DOM节点中创建示例图形
 		// Program starts here. Creates a sample graph in the
 		// DOM node with the specified ID. This function is invoked
 		// from the onLoad event handler of the document (see below).
 		function main(container)
 		{
+			// 中文注释：检查浏览器是否支持mxGraph
 			// Checks if the browser is supported
 			if (!mxClient.isBrowserSupported())
 			{
+				// 中文注释：如果浏览器不支持，显示错误消息
 				// Displays an error message if the browser is not supported.
 				mxUtils.error('Browser is not supported!', 200, false);
 			}
 			else
 			{
+				// 中文注释：在指定容器内创建图形对象
 				// Creates the graph inside the given container
 				var graph = new mxGraph(container);
 
+				// 中文注释：取消注释以下代码可使容器适配图形大小
 				// Uncomment the following if you want the container
 				// to fit the size of the graph
 				//graph.setResizeContainer(true);
 				
+				// 中文注释：启用橡皮筋选择功能
 				// Enables rubberband selection
 				new mxRubberband(graph);
 				
+				// 中文注释：获取默认父节点，通常为根节点的第一个子节点（即层0）
 				// Gets the default parent for inserting new cells. This
 				// is normally the first child of the root (ie. layer 0).
 				var parent = graph.getDefaultParent();
 								
+				// 中文注释：以单一事务方式向模型添加单元
 				// Adds cells to the model in a single step
 				graph.getModel().beginUpdate();
 				try
 				{
+					// 中文注释：插入两个顶点和一条连接它们的边
 					var v1 = graph.insertVertex(parent, null, 'Hello,', 20, 20, 80, 30);
 					var v2 = graph.insertVertex(parent, null, 'World!', 200, 150, 80, 30);
 					var e1 = graph.insertEdge(parent, null, '', v1, v2);
 				}
 				finally
 				{
+					// 中文注释：更新图形显示
 					// Updates the display
 					graph.getModel().endUpdate();
 				}
 				
+				// 中文注释：打印当前渲染模式和使用的显示方言（VML或SVG）
 				// Prints the rendering mode and display dialect (VML or SVG) in use
 				// CSS1Compat means standard
 				mxLog.show();
@@ -77,14 +93,17 @@
 	</script>
 </head>
 
+<!-- 中文注释：页面将图形容器传递给程序 -->
 <!-- Page passes the container for the graph to the program -->
 <body onload="main(document.getElementById('graphContainer'))">
 
+	<!-- 中文注释：创建带有网格背景的图形容器 -->
 	<!-- Creates a container for the graph with a grid wallpaper -->
 	<div id="graphContainer"
 		style="overflow:hidden;width:321px;height:241px;background:url('editors/images/grid.gif');cursor:default;position:relative;">
 	</div>
 	<br>
+	<!-- 中文注释：提供相关参考链接 -->
 	See also:<br>
 	<a href="ie9svg.html">IE9SVG</a><br>
 	<a href="../../docs/known-issues.html#Doctypes">docs/known-issues.html#Doctypes</a><br>
