@@ -8,250 +8,315 @@
 <head>
 	<title>Permissions example for mxGraph</title>
 
-	<!-- Sets the basepath for the library if not in same directory -->
+	<!-- 设置库的基础路径，如果库不在同一目录下 -->
 	<script type="text/javascript">
+		// 定义 mxGraph 库的基础路径
 		mxBasePath = '../src';
 	</script>
 
-	<!-- Loads and initializes the library -->
+	<!-- 加载并初始化 mxGraph 库 -->
 	<script type="text/javascript" src="../src/js/mxClient.js"></script>
 
-	<!-- Example code -->
+	<!-- 示例代码 -->
 	<script type="text/javascript">
-		// Program starts here. Creates a sample graph in the
-		// DOM node with the specified ID. This function is invoked
-		// from the onLoad event handler of the document (see below).
+		// 程序从这里开始。在指定的 DOM 节点中创建一个示例图。
+		// 该函数在文档的 onLoad 事件处理程序中调用（见下方）。
 		function main()
 		{
-			// Checks if the browser is supported
+			// 检查浏览器是否受支持
 			if (!mxClient.isBrowserSupported())
 			{
-				// Displays an error message if the browser is not supported.
+				// 如果浏览器不受支持，显示错误消息
 				mxUtils.error('Browser is not supported!', 200, false);
 			}
 			else
 			{
-				// Defines an icon for creating new connections in the connection handler.
-				// This will automatically disable the highlighting of the source vertex.
+				// 为连接处理器定义一个图标，用于创建新连接
+				// 这将自动禁用源顶点的高亮显示
 				mxConnectionHandler.prototype.connectImage = new mxImage('images/connector.gif', 16, 16);
-			
-				// Creates the div for the graph
+
+				// 创建用于图表的 div 容器
 				var container = document.createElement('div');
+				// 设置容器为绝对定位
 				container.style.position = 'absolute';
+				// 设置容器溢出内容隐藏
 				container.style.overflow = 'hidden';
+				// 设置容器左边界
 				container.style.left = '00px';
+				// 设置容器上边界
 				container.style.top = '40px';
+				// 设置容器右边界
 				container.style.right = '0px';
+				// 设置容器下边界
 				container.style.bottom = '0px';
+				// 设置容器背景为网格图片
 				container.style.background = 'url("editors/images/grid.gif")';
-				
+
+				// 将容器添加到文档的 body 中
 				document.body.appendChild(container);
-				
-				// Workaround for Internet Explorer ignoring certain styles
+
+				// 解决 Internet Explorer 忽略某些样式的兼容性问题
 				if (mxClient.IS_QUIRKS)
 				{
+					// 设置 body 溢出内容隐藏
 					document.body.style.overflow = 'hidden';
+					// 创建一个 div 调整大小的实例
 					new mxDivResizer(container);
 				}
-				
-				// Creates the graph inside the given container
+
+				// 在指定容器中创建图表
 				var graph = new mxGraph(container);
-				
-				// Enable tooltips, disables mutligraphs, enable loops
+
+				// 启用工具提示，禁用多重图表，启用循环连接
 				graph.setMultigraph(false);
 				graph.setAllowLoops(true);
 
-				// Enables rubberband selection and key handling
+				// 启用橡皮筋选择和键盘处理
 				var rubberband = new mxRubberband(graph);
 				var keyHandler = new mxKeyHandler(graph);
-				
-				// Assigns the delete key
+
+				// 绑定删除键（Delete 键，键码 46）
 				keyHandler.bindKey(46, function(evt)
 				{
+					// 检查图表是否启用
 					if (graph.isEnabled())
 					{
+						// 删除选中的单元格
 						graph.removeCells();
 					}
 				});
-				
-				// Shared variable between child function scopes
-				// aka "private" variable
+
+				// 定义一个在子函数作用域间共享的变量
+				// 相当于“私有”变量
 				var currentPermission = null;
-				
+
+				// 定义应用权限的函数
 				var apply = function(permission)
 				{
+					// 清除当前选择
 					graph.clearSelection();
+					// 应用权限设置
 					permission.apply(graph);
+					// 启用图表
 					graph.setEnabled(true);
+					// 启用工具提示
 					graph.setTooltips(true);
-					
-					// Updates the icons on the shapes - rarely
-					// needed and very slow for large graphs
+
+					// 更新图形上的图标 - 很少需要，且对大型图形很慢
 					graph.refresh();
+					// 保存当前权限设置
 					currentPermission = permission;
 				};
-				
+
+				// 应用默认权限
 				apply(new Permission());
-				
+
+				// 创建“允许所有操作”按钮
 				var button = mxUtils.button('Allow All', function(evt)
 				{
+					// 应用允许所有操作的权限
 					apply(new Permission());
 				});
+				// 将按钮添加到文档的 body 中
 				document.body.appendChild(button);
-												
+
+				// 创建“仅允许连接”按钮
 				var button = mxUtils.button('Connect Only', function(evt)
 				{
+					// 应用仅允许创建连接的权限
 					apply(new Permission(false, true, false, false, true));
 				});
+				// 将按钮添加到文档的 body 中
 				document.body.appendChild(button);
-								
+
+				// 创建“仅编辑边”按钮
 				var button = mxUtils.button('Edges Only', function(evt)
 				{
+					// 应用仅允许编辑边的权限
 					apply(new Permission(false, false, true, false, false));
 				});
+				// 将按钮添加到文档的 body 中
 				document.body.appendChild(button);
-								
+
+				// 创建“仅编辑顶点”按钮
 				var button = mxUtils.button('Vertices Only', function(evt)
 				{
+					// 应用仅允许编辑顶点的权限
 					apply(new Permission(false, false, false, true, false));
 				});
+				// 将按钮添加到文档的 body 中
 				document.body.appendChild(button);
-				
+
+				// 创建“仅选择”按钮
 				var button = mxUtils.button('Select Only', function(evt)
 				{
+					// 应用仅允许选择的权限
 					apply(new Permission(false, false, false, false, false));
 				});
+				// 将按钮添加到文档的 body 中
 				document.body.appendChild(button);
-				
+
+				// 创建“锁定”按钮
 				var button = mxUtils.button('Locked', function(evt)
 				{
+					// 应用锁定状态的权限
 					apply(new Permission(true, false));
 				});
+				// 将按钮添加到文档的 body 中
 				document.body.appendChild(button);
-								
+
+				// 创建“禁用”按钮
 				var button = mxUtils.button('Disabled', function(evt)
 				{
+					// 清除当前选择
 					graph.clearSelection();
+					// 禁用图表
 					graph.setEnabled(false);
+					// 禁用工具提示
 					graph.setTooltips(false);
 				});
+				// 将按钮添加到文档的 body 中
 				document.body.appendChild(button);
-				
-				// Extends hook functions to use permission object. This could
-				// be done by assigning the respective switches (eg.
-				// setMovable), but this approach is more flexible, doesn't
-				// override any existing behaviour or settings, and allows for
-				// dynamic conditions to be used in the functions. See the
-				// specification for more functions to extend (eg.
-				// isSelectable).
+
+				// 扩展钩子函数以使用权限对象。这种方法更灵活，
+				// 不会覆盖现有行为或设置，并允许在函数中使用动态条件。
+				// 查看规范以获取更多可扩展的函数（例如 isSelectable）。
 				var oldDisconnectable = graph.isCellDisconnectable;
+				// 重写是否允许断开连接的函数
 				graph.isCellDisconnectable = function(cell, terminal, source)
 				{
+					// 检查原始函数结果和当前权限的编辑边设置
 					return oldDisconnectable.apply(this, arguments) &&
-						currentPermission.editEdges;
+							currentPermission.editEdges;
 				};
-				
+
 				var oldTerminalPointMovable = graph.isTerminalPointMovable;
+				// 重写是否允许移动终端点的函数
 				graph.isTerminalPointMovable = function(cell)
 				{
+					// 检查原始函数结果和当前权限的编辑边设置
 					return oldTerminalPointMovable.apply(this, arguments) &&
-						currentPermission.editEdges;
+							currentPermission.editEdges;
 				};
-				
+
 				var oldBendable = graph.isCellBendable;
+				// 重写是否允许弯曲单元格的函数
 				graph.isCellBendable = function(cell)
 				{
+					// 检查原始函数结果和当前权限的编辑边设置
 					return oldBendable.apply(this, arguments) &&
-						currentPermission.editEdges;
+							currentPermission.editEdges;
 				};
-				
+
 				var oldLabelMovable = graph.isLabelMovable;
+				// 重写是否允许移动标签的函数
 				graph.isLabelMovable = function(cell)
 				{
+					// 检查原始函数结果和当前权限的编辑边设置
 					return oldLabelMovable.apply(this, arguments) &&
-						currentPermission.editEdges;
+							currentPermission.editEdges;
 				};
-				
+
 				var oldMovable = graph.isCellMovable;
+				// 重写是否允许移动单元格的函数
 				graph.isCellMovable = function(cell)
 				{
+					// 检查原始函数结果和当前权限的编辑顶点设置
 					return oldMovable.apply(this, arguments) &&
-						currentPermission.editVertices;
+							currentPermission.editVertices;
 				};
-				
+
 				var oldResizable = graph.isCellResizable;
+				// 重写是否允许调整单元格大小的函数
 				graph.isCellResizable = function(cell)
 				{
+					// 检查原始函数结果和当前权限的编辑顶点设置
 					return oldResizable.apply(this, arguments) &&
-						currentPermission.editVertices;
+							currentPermission.editVertices;
 				};
-								
+
 				var oldEditable = graph.isCellEditable;
+				// 重写是否允许编辑单元格的函数
 				graph.isCellEditable = function(cell)
 				{
+					// 检查原始函数结果以及单元格类型和权限设置
 					return oldEditable.apply(this, arguments) &&
-						(this.getModel().isVertex(cell) &&
-						currentPermission.editVertices) ||
-						(this.getModel().isEdge(cell) &&
-						currentPermission.editEdges);
+							(this.getModel().isVertex(cell) &&
+									currentPermission.editVertices) ||
+							(this.getModel().isEdge(cell) &&
+									currentPermission.editEdges);
 				};
-				
+
 				var oldDeletable = graph.isCellDeletable;
+				// 重写是否允许删除单元格的函数
 				graph.isCellDeletable = function(cell)
 				{
+					// 检查原始函数结果以及单元格类型和权限设置
 					return oldDeletable.apply(this, arguments) &&
-						(this.getModel().isVertex(cell) &&
-						currentPermission.editVertices) ||
-						(this.getModel().isEdge(cell) &&
-						currentPermission.editEdges);
+							(this.getModel().isVertex(cell) &&
+									currentPermission.editVertices) ||
+							(this.getModel().isEdge(cell) &&
+									currentPermission.editEdges);
 				};
-				
+
 				var oldCloneable = graph.isCellCloneable;
+				// 重写是否允许克隆单元格的函数
 				graph.isCellCloneable = function(cell)
 				{
+					// 检查原始函数结果和当前权限的克隆单元格设置
 					return oldCloneable.apply(this, arguments) &&
-						currentPermission.cloneCells;
+							currentPermission.cloneCells;
 				};
-				
-				// Gets the default parent for inserting new cells. This
-				// is normally the first child of the root (ie. layer 0).
+
+				// 获取插入新单元格的默认父节点，通常是根节点的第一个子节点（即层 0）
 				var parent = graph.getDefaultParent();
-								
-				// Adds cells to the model in a single step
+
+				// 在一个步骤中向模型添加单元格
 				graph.getModel().beginUpdate();
 				try
 				{
+					// 插入顶点（节点）
 					var v1 = graph.insertVertex(parent, null, 'Hello,', 20, 20, 80, 30);
 					var v2 = graph.insertVertex(parent, null, 'Hello,', 200, 20, 80, 30);
 					var v3 = graph.insertVertex(parent, null, 'World!', 200, 150, 80, 30);
+					// 插入边（连接）
 					var e1 = graph.insertEdge(parent, null, 'Connection', v1, v3);
 				}
 				finally
 				{
-					// Updates the display
+					// 更新显示
 					graph.getModel().endUpdate();
 				}
 			}
 		};
-		
+
+		// 定义权限类
 		function Permission(locked, createEdges, editEdges, editVertices, cloneCells)
 		{
+			// 初始化锁定状态，默认为 false
 			this.locked = (locked != null) ? locked : false;
+			// 初始化是否允许创建边，默认为 true
 			this.createEdges = (createEdges != null) ? createEdges : true;
-			this.editEdges = (editEdges != null) ? editEdges : true;;
-			this.editVertices = (editVertices != null) ? editVertices : true;;
-			this.cloneCells = (cloneCells != null) ? cloneCells : true;;
+			// 初始化是否允许编辑边，默认为 true
+			this.editEdges = (editEdges != null) ? editEdges : true;
+			// 初始化是否允许编辑顶点，默认为 true
+			this.editVertices = (editVertices != null) ? editVertices : true;
+			// 初始化是否允许克隆单元格，默认为 true
+			this.cloneCells = (cloneCells != null) ? cloneCells : true;
 		};
-		
+
+		// 定义权限类的应用方法
 		Permission.prototype.apply = function(graph)
 		{
+			// 设置图表是否允许连接
 			graph.setConnectable(this.createEdges);
+			// 设置图表单元格是否锁定
 			graph.setCellsLocked(this.locked);
 		};
 	</script>
 </head>
 
-<!-- Page passes the container for the graph to the program -->
+<!-- 页面将图表的容器传递给程序 -->
 <body onload="main();">
 </body>
 </html>
