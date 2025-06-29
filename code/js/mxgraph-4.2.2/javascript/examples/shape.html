@@ -1,22 +1,28 @@
+
 <!--
   Copyright (c) 2006-2013, JGraph Ltd
   
   Shape example for mxGraph. This example demonstrates how to
   implement and use a custom shape.
+  这是一个mxGraph的形状示例，展示了如何实现和使用自定义形状。
 -->
 <html>
 <head>
 	<title>Shape example for mxGraph</title>
+	<!-- 设置页面标题为mxGraph的形状示例 -->
 
 	<!-- Sets the basepath for the library if not in same directory -->
+	<!-- 如果库不在同一目录下，设置库的基础路径 -->
 	<script type="text/javascript">
-		mxBasePath = '../src';
+		mxBasePath = '../src'; // 定义mxGraph库的基础路径
 	</script>
 
 	<!-- Loads and initializes the library -->
+	<!-- 加载并初始化mxGraph库 -->
 	<script type="text/javascript" src="../src/js/mxClient.js"></script>
 
 	<!-- Example custom shape -->
+	<!-- 自定义形状示例 -->
 	<script type="text/javascript">
 	
 		/*
@@ -29,21 +35,24 @@
 		                      
 		   	The code below defines the shape. The BoxShape function
 		   	it the constructor which creates a new object instance.
+		   	下面的代码定义了一个“3D盒子”形状。BoxShape函数是构造函数，用于创建新的对象实例。
 		*/
 		function BoxShape()
 		{
-			mxCylinder.call(this);
+			mxCylinder.call(this); // 调用mxCylinder的构造函数
 		};
 
 		/*
 		   	The next lines use an mxCylinder instance to augment the
 		   	prototype of the shape ("inheritance") and reset the
 		   	constructor to the topmost function of the c'tor chain.
+		   	接下来的代码使用mxCylinder实例来扩展形状的原型（实现“继承”），并将构造函数重置为构造函数链中最顶层的函数。
 		*/
-		mxUtils.extend(BoxShape, mxCylinder);
+		mxUtils.extend(BoxShape, mxCylinder); // 实现BoxShape对mxCylinder的继承
 		
 		// Defines the extrusion of the box as a "static class variable"
-		BoxShape.prototype.extrude = 10;
+		// 定义盒子的挤出距离，作为静态类变量
+		BoxShape.prototype.extrude = 10; // 设置挤出距离为10
 			
 		/*
 		   	Next, the mxCylinder's redrawPath method is "overridden".
@@ -61,89 +70,103 @@
 		                 /     | 
 		                 |     / 
 		                 |____/ 
+		   	接下来，重写mxCylinder的redrawPath方法。该方法有一个isForeground参数，用于区分前景路径和背景路径。
+		   	背景路径必须闭合且可能被填充，前景路径仅为描边。
 		*/
 		BoxShape.prototype.redrawPath = function(path, x, y, w, h, isForeground)
 		{
-			var dy = this.extrude * this.scale;
-			var dx = this.extrude * this.scale;
+			var dy = this.extrude * this.scale; // 计算y轴的挤出偏移量
+			var dx = this.extrude * this.scale; // 计算x轴的挤出偏移量
 
 			if (isForeground)
 			{
-				path.moveTo(0, dy);
-				path.lineTo(w - dx, dy);
-				path.lineTo(w, 0);
-				path.moveTo(w - dx, dy);
-				path.lineTo(w - dx, h);
+				path.moveTo(0, dy); // 移动到前景路径的起点
+				path.lineTo(w - dx, dy); // 绘制到右上角
+				path.lineTo(w, 0); // 绘制到顶部右端
+				path.moveTo(w - dx, dy); // 移动到右上角
+				path.lineTo(w - dx, h); // 绘制到右下角
 			}
 			else
 			{
-				path.moveTo(0, dy);
-				path.lineTo(dx, 0);
-				path.lineTo(w, 0);
-				path.lineTo(w, h - dy);
-				path.lineTo(w - dx, h);
-				path.lineTo(0, h);
-				path.lineTo(0, dy);
-				path.lineTo(dx, 0);
-				path.close();
+				path.moveTo(0, dy); // 移动到背景路径的起点
+				path.lineTo(dx, 0); // 绘制到左上角
+				path.lineTo(w, 0); // 绘制到顶部右端
+				path.lineTo(w, h - dy); // 绘制到右下角
+				path.lineTo(w - dx, h); // 绘制到底部右端
+				path.lineTo(0, h); // 绘制到底部左端
+				path.lineTo(0, dy); // 绘制到起点
+				path.lineTo(dx, 0); // 绘制到左上角
+				path.close(); // 闭合背景路径
 			}
 		};
 		
-		mxCellRenderer.registerShape('box', BoxShape);
+		mxCellRenderer.registerShape('box', BoxShape); // 注册自定义形状'box'
 	</script>
 
 	<!-- Example code -->
+	<!-- 示例代码 -->
 	<script type="text/javascript">
 
 		// Program starts here. Creates a sample graph in the
 		// DOM node with the specified ID. This function is invoked
 		// from the onLoad event handler of the document (see below).
+		// 程序从这里开始。在指定ID的DOM节点中创建一个示例图形。此函数由文档的onLoad事件处理程序调用（见下方）。
 		function main(container)
 		{
 			// Checks if browser is supported
+			// 检查浏览器是否支持
 			if (!mxClient.isBrowserSupported())
 			{
 				// Displays an error message if the browser is
 				// not supported.
+				// 如果浏览器不支持，显示错误消息
 				mxUtils.error('Browser is not supported!', 200, false);
 			}
 			else
 			{
 				// Creates the graph inside the DOM node.
+				// 在DOM节点内创建图形
 				var graph = new mxGraph(container);
 				
 				// Disables basic selection and cell handling
+				// 禁用基本的选择和单元格处理
 				graph.setEnabled(false);
 
 				// Changes the default style for vertices "in-place"
 				// to use the custom shape.
+				// 修改顶点的默认样式以使用自定义形状
 				var style = graph.getStylesheet().getDefaultVertexStyle();
-				style[mxConstants.STYLE_SHAPE] = 'box';
+				style[mxConstants.STYLE_SHAPE] = 'box'; // 设置形状为自定义的'box'
 				
 				// Adds a spacing for the label that matches the
 				// extrusion size
-				style[mxConstants.STYLE_SPACING_TOP] = BoxShape.prototype.extrude;
-				style[mxConstants.STYLE_SPACING_RIGHT] = BoxShape.prototype.extrude;
+				// 为标签添加与挤出大小匹配的间距
+				style[mxConstants.STYLE_SPACING_TOP] = BoxShape.prototype.extrude; // 设置顶部间距
+				style[mxConstants.STYLE_SPACING_RIGHT] = BoxShape.prototype.extrude; // 设置右侧间距
 				
 				// Adds a gradient and shadow to improve the user experience
-				style[mxConstants.STYLE_GRADIENTCOLOR] = '#FFFFFF';
-				style[mxConstants.STYLE_SHADOW] = true;
+				// 添加渐变和阴影以提升用户体验
+				style[mxConstants.STYLE_GRADIENTCOLOR] = '#FFFFFF'; // 设置渐变颜色为白色
+				style[mxConstants.STYLE_SHADOW] = true; // 启用阴影效果
 
 				// Gets the default parent for inserting new cells. This
 				// is normally the first child of the root (ie. layer 0).
+				// 获取用于插入新单元格的默认父节点，通常是根节点的第一个子节点（即第0层）
 				var parent = graph.getDefaultParent();
 								
 				// Adds cells to the model in a single step
+				// 在单一步骤中向模型添加单元格
 				graph.getModel().beginUpdate();
 				try
 				{
-					var v1 = graph.insertVertex(parent, null, 'Custom', 20, 20, 80, 60);
-					var v2 = graph.insertVertex(parent, null, 'Shape', 200, 150, 80, 60);
-					var e1 = graph.insertEdge(parent, null, '', v1, v2);
+					var v1 = graph.insertVertex(parent, null, 'Custom', 20, 20, 80, 60); // 插入第一个顶点
+					var v2 = graph.insertVertex(parent, null, 'Shape', 200, 150, 80, 60); // 插入第二个顶点
+					var e1 = graph.insertEdge(parent, null, '', v1, v2); // 插入连接两个顶点的边
 				}
 				finally
 				{
 					// Updates the display
+					// 更新显示
 					graph.getModel().endUpdate();
 				}
 			}
@@ -152,9 +175,11 @@
 </head>
 
 <!-- Page passes the container for the graph to the program -->
+<!-- 页面将图形的容器传递给程序 -->
 <body onload="main(document.getElementById('graphContainer'))">
 
 	<!-- Creates a container for the graph with a grid wallpaper -->
+	<!-- 创建一个带有网格壁纸的图形容器 -->
 	<div id="graphContainer"
 		style="overflow:hidden;width:321px;height:241px;background:url('editors/images/grid.gif')">
 	</div>
