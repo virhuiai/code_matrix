@@ -5,132 +5,203 @@
   a custom stylesheet and control points in edges, as well as
   overriding the getLabel and getTooltip function to return
   dynamic information, and making a supercall in JavaScript.
+  // 这是一个mxGraph的样式表示例。示例展示了如何使用自定义样式表和边的控制点，
+  // 以及重写getLabel和getTooltip函数以返回动态信息，并在JavaScript中进行超类调用。
 -->
 <html>
 <head>
 	<title>Stylesheet example for mxGraph</title>
+	<!-- mxGraph样式表示例的页面标题 -->
 
 	<!-- Sets the basepath for the library if not in same directory -->
+	<!-- 如果库文件不在同一目录下，设置库的基本路径 -->
 	<script type="text/javascript">
 		mxBasePath = '../src';
+		// 定义mxGraph库的基本路径为'../src'
 	</script>
 
 	<!-- Loads and initializes the library -->
+	<!-- 加载并初始化mxGraph库 -->
 	<script type="text/javascript" src="../src/js/mxClient.js"></script>
 
 	<!-- Example code -->
+	<!-- 示例代码 -->
 	<script type="text/javascript">
 
 		// Program starts here. Creates a sample graph in the
 		// DOM node with the specified ID. This function is invoked
 		// from the onLoad event handler of the document (see below).
+		// 程序从这里开始。在指定的DOM节点中创建示例图。此函数由文档的onLoad事件处理程序调用（见下方）。
 		function main(container)
 		{
 			// Checks if browser is supported
+			// 检查浏览器是否受支持
 			if (!mxClient.isBrowserSupported())
 			{
 				// Displays an error message if the browser is
 				// not supported.
+				// 如果浏览器不受支持，显示错误消息
 				mxUtils.error('Browser is not supported!', 200, false);
+				// 使用mxUtils显示浏览器不支持的错误消息，宽度200像素，不自动关闭
 			}
 			else
 			{
 				// Creates the graph inside the DOM node.
+				// 在DOM节点内创建图形
 				var graph = new mxGraph(container);
 			
 				// Disables basic selection and cell handling
+				// 禁用基本选择和单元格操作
 				graph.setEnabled(false);
-				
+				// 设置图形为不可交互状态，禁止选择和编辑单元格
+
 				// Returns a special label for edges. Note: This does
 				// a supercall to use the default implementation.
+				// 为边返回特殊标签。注意：这里通过超类调用使用默认实现。
 				graph.getLabel = function(cell)
 				{
 					var label = mxGraph.prototype.getLabel.apply(this, arguments);
-					
+					// 获取默认标签值，通过调用父类的getLabel方法
+
 					if (this.getModel().isEdge(cell))
 					{
 						return 'Transfer '+label;
+						// 如果是边，标签前添加"Transfer "前缀
 					}
 					else
 					{
 						return label;
+						// 如果不是边，返回原始标签
 					}
 				};
 								
 				// Installs a custom global tooltip
+				// 安装自定义全局工具提示
 				graph.setTooltips(true);
+				// 启用工具提示功能
 				graph.getTooltip = function(state)
 				{
 					var cell = state.cell;
+					// 获取当前单元格
 					var model = this.getModel();
-					
+					// 获取图形模型
+
 					if (model.isEdge(cell))
 					{
 						var source = this.getLabel(model.getTerminal(cell, true));
+						// 获取边的起点标签
 						var target = this.getLabel(model.getTerminal(cell, false));
-						
+						// 获取边的终点标签
+
 						return source+' -> '+target;
+						// 返回起点到终点的工具提示，格式为"起点 -> 终点"
 					}
 					else
 					{
 						return this.getLabel(cell);
+						// 如果不是边，返回单元格的标签作为工具提示
 					}
 				};
 				
 				// Creates the default style for vertices
+				// 创建顶点的默认样式
 				var style = [];
+				// 初始化样式数组
 				style[mxConstants.STYLE_SHAPE] = mxConstants.SHAPE_RECTANGLE;
+				// 设置顶点形状为矩形
 				style[mxConstants.STYLE_PERIMETER] = mxPerimeter.RectanglePerimeter;
+				// 设置顶点周长为矩形周长
 				style[mxConstants.STYLE_STROKECOLOR] = 'gray';
+				// 设置边框颜色为灰色
 				style[mxConstants.STYLE_ROUNDED] = true;
+				// 启用圆角效果
 				style[mxConstants.STYLE_FILLCOLOR] = '#EEEEEE';
+				// 设置填充颜色为浅灰色
 				style[mxConstants.STYLE_GRADIENTCOLOR] = 'white';
+				// 设置渐变颜色为白色
 				style[mxConstants.STYLE_FONTCOLOR] = '#774400';
+				// 设置字体颜色为深棕色
 				style[mxConstants.STYLE_ALIGN] = mxConstants.ALIGN_CENTER;
+				// 设置水平对齐为居中
 				style[mxConstants.STYLE_VERTICAL_ALIGN] = mxConstants.ALIGN_MIDDLE;
+				// 设置垂直对齐为居中
 				style[mxConstants.STYLE_FONTSIZE] = '12';
+				// 设置字体大小为12
 				style[mxConstants.STYLE_FONTSTYLE] = 1;
+				// 设置字体样式为粗体（1表示粗体）
 				graph.getStylesheet().putDefaultVertexStyle(style);
-		
+				// 将顶点样式应用到样式表中的默认顶点样式
+
 				// Creates the default style for edges
+				// 创建边的默认样式
 				style = [];
+				// 初始化新的样式数组
 				style[mxConstants.STYLE_SHAPE] = mxConstants.SHAPE_CONNECTOR;
+				// 设置边形状为连接线
 				style[mxConstants.STYLE_STROKECOLOR] = '#6482B9';
+				// 设置边框颜色为蓝色
 				style[mxConstants.STYLE_ALIGN] = mxConstants.ALIGN_CENTER;
+				// 设置水平对齐为居中
 				style[mxConstants.STYLE_VERTICAL_ALIGN] = mxConstants.ALIGN_MIDDLE;
+				// 设置垂直对齐为居中
 				style[mxConstants.STYLE_EDGE] = mxEdgeStyle.ElbowConnector;
+				// 设置边样式为折线连接器
 				style[mxConstants.STYLE_ENDARROW] = mxConstants.ARROW_CLASSIC;
+				// 设置边的终点箭头为经典箭头
 				style[mxConstants.STYLE_FONTSIZE] = '10';
+				// 设置字体大小为10
 				graph.getStylesheet().putDefaultEdgeStyle(style);
+				// 将边样式应用到样式表中的默认边样式
 
 				// Gets the default parent for inserting new cells. This
 				// is normally the first child of the root (ie. layer 0).
+				// 获取插入新单元格的默认父节点，通常是根节点的第一个子节点（即第0层）。
 				var parent = graph.getDefaultParent();
-								
+				// 获取默认父节点
+
 				// Adds cells to the model in a single step
+				// 在单一步骤中向模型添加单元格
 				graph.getModel().beginUpdate();
+				// 开始更新模型，批量操作以提高性能
 				try
 				{
 					var v1 = graph.insertVertex(parent, null, 'Interval 1', 20, 20, 180, 30);
+					// 插入顶点v1，标签为"Interval 1"，位置(20,20)，大小180x30
 					var v2 = graph.insertVertex(parent, null, 'Interval 2', 140, 80, 280, 30);
+					// 插入顶点v2，标签为"Interval 2"，位置(140,80)，大小280x30
 					var v3 = graph.insertVertex(parent, null, 'Interval 3', 200, 140, 360, 30);
+					// 插入顶点v3，标签为"Interval 3"，位置(200,140)，大小360x30
 					var v4 = graph.insertVertex(parent, null, 'Interval 4', 480, 200, 120, 30);
+					// 插入顶点v4，标签为"Interval 4"，位置(480,200)，大小120x30
 					var v5 = graph.insertVertex(parent, null, 'Interval 5', 60, 260, 400, 30);
+					// 插入顶点v5，标签为"Interval 5"，位置(60,260)，大小400x30
 					var e1 = graph.insertEdge(parent, null, '1', v1, v2);
+					// 插入边e1，连接v1到v2，标签为"1"
 					e1.getGeometry().points = [{x: 160, y: 60}];
+					// 设置边e1的控制点坐标为(160,60)
 					var e2 = graph.insertEdge(parent, null, '2', v1, v5);
+					// 插入边e2，连接v1到v5，标签为"2"
 					e2.getGeometry().points = [{x: 80, y: 60}];
+					// 设置边e2的控制点坐标为(80,60)
 					var e3 = graph.insertEdge(parent, null, '3', v2, v3);
+					// 插入边e3，连接v2到v3，标签为"3"
 					e3.getGeometry().points = [{x: 280, y: 120}];
+					// 设置边e3的控制点坐标为(280,120)
 					var e4 = graph.insertEdge(parent, null, '4', v3, v4);
+					// 插入边e4，连接v3到v4，标签为"4"
 					e4.getGeometry().points = [{x: 500, y: 180}];
+					// 设置边e4的控制点坐标为(500,180)
 					var e5 = graph.insertEdge(parent, null, '5', v3, v5);
+					// 插入边e5，连接v3到v5，标签为"5"
 					e5.getGeometry().points = [{x: 380, y: 180}];
+					// 设置边e5的控制点坐标为(380,180)
 				}
 				finally
 				{
 					// Updates the display
+					// 更新显示
 					graph.getModel().endUpdate();
+					// 结束模型更新，应用所有更改
 				}
 			}
 		};
@@ -138,11 +209,15 @@
 </head>
 
 <!-- Page passes the container for the graph to the program -->
+<!-- 页面将图形容器传递给程序 -->
 <body onload="main(document.getElementById('graphContainer'))">
- 
+	<!-- 在页面加载时调用main函数，传入ID为'graphContainer'的DOM元素 -->
+
 	<!-- Creates a container for the graph with a grid wallpaper -->
+	<!-- 为图形创建带有网格背景的容器 -->
 	<div id="graphContainer"
 		style="overflow:hidden;position:relative;width:621px;height:311px;cursor:default;">
+		<!-- 定义图形容器，设置溢出隐藏、相对定位、尺寸为621x311像素，默认光标 -->
 	</div>
 </body>
 </html>
