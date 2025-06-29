@@ -3,40 +3,50 @@
   
   Toolbar example for mxGraph. This example demonstrates using
   existing cells as templates for creating new cells.
+
+  mxGraph工具栏示例。此示例演示如何使用现有单元格作为创建新单元格的模板。
 -->
 <html>
 <head>
 	<title>Toolbar example for mxGraph</title>
 
 	<!-- Sets the basepath for the library if not in same directory -->
+	<!-- 如果库文件不在同一目录，设置基础路径 -->
 	<script type="text/javascript">
 		mxBasePath = '../src';
 	</script>
 
 	<!-- Loads and initializes the library -->
+	<!-- 加载并初始化mxGraph库 -->
 	<script type="text/javascript" src="../src/js/mxClient.js"></script>
 
 	<!-- Example code -->
+	<!-- 示例代码 -->
 	<script type="text/javascript">
 		// Program starts here. Creates a sample graph in the
 		// DOM node with the specified ID. This function is invoked
 		// from the onLoad event handler of the document (see below).
+		// 程序入口。在指定ID的DOM节点中创建示例图形。该函数由文档的onLoad事件处理器调用
 		function main()
 		{
 			// Defines an icon for creating new connections in the connection handler.
 			// This will automatically disable the highlighting of the source vertex.
+			// 为连接处理器定义创建新连接的图标，这将自动禁用源顶点的高亮显示
 			mxConnectionHandler.prototype.connectImage = new mxImage('images/connector.gif', 16, 16);
 		
 			// Checks if browser is supported
+			// 检查浏览器是否支持
 			if (!mxClient.isBrowserSupported())
 			{
 				// Displays an error message if the browser is
 				// not supported.
+				// 如果浏览器不支持，显示错误信息
 				mxUtils.error('Browser is not supported!', 200, false);
 			}
 			else
 			{
 				// Creates the div for the toolbar
+				// 创建工具栏的div容器
 				var tbContainer = document.createElement('div');
 				tbContainer.style.position = 'absolute';
 				tbContainer.style.overflow = 'hidden';
@@ -49,10 +59,12 @@
 				document.body.appendChild(tbContainer);
 			
 				// Creates new toolbar without event processing
+				// 创建没有事件处理的新工具栏
 				var toolbar = new mxToolbar(tbContainer);
 				toolbar.enabled = false
 				
 				// Creates the div for the graph
+				// 创建图形显示区域的div容器
 				container = document.createElement('div');
 				container.style.position = 'absolute';
 				container.style.overflow = 'hidden';
@@ -65,6 +77,7 @@
 				document.body.appendChild(container);
 				
 				// Workaround for Internet Explorer ignoring certain styles
+				// 针对IE浏览器忽略某些样式的解决方案
 				if (mxClient.IS_QUIRKS)
 				{
 					document.body.style.overflow = 'hidden';
@@ -74,11 +87,13 @@
 	
 				// Creates the model and the graph inside the container
 				// using the fastest rendering available on the browser
+				// 在容器内创建模型和图形，使用浏览器可用的最快渲染方式
 				var model = new mxGraphModel();
 				var graph = new mxGraph(container, model);
 				graph.dropEnabled = true;
 				
 				// Matches DnD inside the graph
+				// 匹配图形内部的拖放操作
 				mxDragSource.prototype.getDropTarget = function(graph, x, y)
 				{
 					var cell = graph.getCellAt(x, y);
@@ -92,13 +107,17 @@
 				};
 
 				// Enables new connections in the graph
+				// 启用图形中的新连接
 				graph.setConnectable(true);
 				graph.setMultigraph(false);
 
 				// Stops editing on enter or escape keypress
+				// 在按下回车或ESC键时停止编辑
 				var keyHandler = new mxKeyHandler(graph);
 				var rubberband = new mxRubberband(graph);
 				
+				// Helper function to add a vertex to the toolbar
+				// 辅助函数：向工具栏添加顶点
 				var addVertex = function(icon, w, h, style)
 				{
 					var vertex = new mxCell(null, new mxGeometry(0, 0, w, h), style);
@@ -107,6 +126,8 @@
 					addToolbarItem(graph, toolbar, vertex, icon);
 				};
 				
+				// Adds various vertex types to the toolbar
+				// 向工具栏添加各种顶点类型
 				addVertex('editors/images/swimlane.gif', 120, 160, 'shape=swimlane;startSize=20;');
 				addVertex('editors/images/rectangle.gif', 100, 40, '');
 				addVertex('editors/images/rounded.gif', 100, 40, 'shape=rounded');
@@ -117,17 +138,21 @@
 				addVertex('editors/images/actor.gif', 30, 40, 'shape=actor');
 				toolbar.addLine();
 				
+				// Adds a button to create toolbar entries from selection
+				// 添加按钮：从选择内容创建工具栏条目
 				var button = mxUtils.button('Create toolbar entry from selection', function(evt)
 				{
 					if (!graph.isSelectionEmpty())
 					{
 						// Creates a copy of the selection array to preserve its state
+						// 创建选择数组的副本以保留其状态
 						var cells = graph.getSelectionCells();
 						var bounds = graph.getView().getBounds(cells);
 						
 						// Function that is executed when the image is dropped on
 						// the graph. The cell argument points to the cell under
 						// the mousepointer if there is one.
+						// 当图像被拖放到图形上时执行的函数。cell参数指向鼠标指针下的单元格（如果有）
 						var funct = function(graph, evt, cell)
 						{
 							graph.stopEditing(false);
@@ -140,6 +165,7 @@
 						}
 			
 						// Creates the image which is used as the drag icon (preview)
+						// 创建用作拖动图标（预览）的图像
 						var img = toolbar.addMode(null, 'editors/images/outline.gif', funct);
 						mxUtils.makeDraggable(img, graph, funct);
 					}
@@ -153,11 +179,14 @@
 			}
 		}
 
+		// Adds an item to the toolbar for the given prototype cell
+		// 为给定的原型单元格向工具栏添加项目
 		function addToolbarItem(graph, toolbar, prototype, image)
 		{
 			// Function that is executed when the image is dropped on
 			// the graph. The cell argument points to the cell under
 			// the mousepointer if there is one.
+			// 当图像被拖放到图形上时执行的函数。cell参数指向鼠标指针下的单元格（如果有）
 			var funct = function(graph, evt, cell)
 			{
 				graph.stopEditing(false);
@@ -171,6 +200,7 @@
 			}
 
 			// Creates the image which is used as the drag icon (preview)
+			// 创建用作拖动图标（预览）的图像
 			var img = toolbar.addMode(null, image, funct);
 			mxUtils.makeDraggable(img, graph, funct);
 		}
@@ -179,6 +209,7 @@
 </head>
 
 <!-- Calls the main function after the page has loaded. Container is dynamically created. -->
+<!-- 页面加载完成后调用main函数。容器是动态创建的 -->
 <body onload="main();">
 </body>
 </html>
