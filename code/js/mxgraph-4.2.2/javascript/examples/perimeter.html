@@ -1,92 +1,119 @@
+
 <!--
   Copyright (c) 2006-2013, JGraph Ltd
-  
+
   Perimeter example for mxGraph. This example demonstrates how to
   avoid edge and label intersections.
+  // mxGraph的边界示例。此示例展示如何避免边和标签的交叉。
 -->
 <html>
 <head>
 	<title>Perimeter example for mxGraph</title>
+	<!-- mxGraph边界示例的页面标题 -->
 
 	<!-- Sets the basepath for the library if not in same directory -->
+	<!-- 如果库文件不在同一目录下，设置库的基础路径 -->
 	<script type="text/javascript">
 		mxBasePath = '../src';
 	</script>
 
 	<!-- Loads and initializes the library -->
+	<!-- 加载并初始化mxGraph库 -->
 	<script type="text/javascript" src="../src/js/mxClient.js"></script>
 
 	<!-- Example code -->
+	<!-- 示例代码 -->
 	<script type="text/javascript">
 		// Program starts here. Creates a sample graph in the
 		// DOM node with the specified ID. This function is invoked
 		// from the onLoad event handler of the document (see below).
+		// 程序从这里开始。在具有指定ID的DOM节点中创建一个示例图表。此函数由文档的onLoad事件处理程序调用（见下方）。
 		function main(container)
 		{
 			// Checks if the browser is supported
+			// 检查浏览器是否受支持
 			if (!mxClient.isBrowserSupported())
 			{
 				// Displays an error message if the browser is not supported.
+				// 如果浏览器不受支持，显示错误消息
 				mxUtils.error('Browser is not supported!', 200, false);
 			}
 			else
 			{
 				// Redirects the perimeter to the label bounds if intersection
 				// between edge and label is found
+				// 如果发现边和标签之间存在交叉，将边界重定向到标签边界
 				mxGraphViewGetPerimeterPoint = mxGraphView.prototype.getPerimeterPoint;
 				mxGraphView.prototype.getPerimeterPoint = function(terminal, next, orthogonal, border)
 				{
+					// 调用原始的getPerimeterPoint方法获取边界点
 					var point = mxGraphViewGetPerimeterPoint.apply(this, arguments);
-					
+
 					if (point != null)
 					{
+						// 获取终端的边界函数
 						var perimeter = this.getPerimeterFunction(terminal);
 
+						// 检查终端是否有文本及其边界框
 						if (terminal.text != null && terminal.text.boundingBox != null)
 						{
 							// Adds a small border to the label bounds
+							// 给标签边界添加一个小的边界扩展
 							var b = terminal.text.boundingBox.clone();
 							b.grow(3)
 
+							// 检查标签边界是否与从点到下一个点的线段相交
 							if (mxUtils.rectangleIntersectsSegment(b, point, next))
 							{
+								// 如果有交叉，使用边界函数重新计算点
 								point = perimeter(b, terminal, next, orthogonal);
 							}
 						}
 					}
-					
+
+					// 返回计算得到的边界点
 					return point;
 				};
-				
+
 				// Creates the graph inside the given container
+				// 在指定容器内创建图表
 				var graph = new mxGraph(container);
+				// 设置顶点标签为可移动
 				graph.setVertexLabelsMovable(true);
+				// 允许图表连接
 				graph.setConnectable(true);
 
 				// Uncomment the following if you want the container
 				// to fit the size of the graph
+				// 如果希望容器适应图表大小，取消以下注释
 				//graph.setResizeContainer(true);
-				
+
 				// Enables rubberband selection
+				// 启用橡皮筋选择功能
 				new mxRubberband(graph);
-				
+
 				// Gets the default parent for inserting new cells. This
 				// is normally the first child of the root (ie. layer 0).
+				// 获取用于插入新单元格的默认父节点，通常是根节点的第一个子节点（即第0层）
 				var parent = graph.getDefaultParent();
-								
+
 				// Adds cells to the model in a single step
+				// 在单一步骤中向模型添加单元格
 				graph.getModel().beginUpdate();
 				try
 				{
+					// 插入三个顶点，分别位于不同位置，标签位置设置为底部
 					var v1 = graph.insertVertex(parent, null, 'Label', 20, 20, 80, 30, 'verticalLabelPosition=bottom');
 					var v2 = graph.insertVertex(parent, null, 'Label', 200, 20, 80, 30, 'verticalLabelPosition=bottom');
 					var v3 = graph.insertVertex(parent, null, 'Label', 20, 150, 80, 30, 'verticalLabelPosition=bottom');
+					// 插入两条边，分别连接v1到v2和v1到v3
 					var e1 = graph.insertEdge(parent, null, '', v1, v2);
 					var e1 = graph.insertEdge(parent, null, '', v1, v3);
 				}
 				finally
 				{
 					// Updates the display
+					// 更新显示
 					graph.getModel().endUpdate();
 				}
 			}
@@ -95,11 +122,13 @@
 </head>
 
 <!-- Page passes the container for the graph to the program -->
+<!-- 页面将图表的容器传递给程序 -->
 <body onload="main(document.getElementById('graphContainer'))">
 
-	<!-- Creates a container for the graph with a grid wallpaper -->
-	<div id="graphContainer"
-		style="overflow:hidden;position:relative;width:321px;height:241px;background:url('editors/images/grid.gif');cursor:default;">
-	</div>
+<!-- Creates a container for the graph with a grid wallpaper -->
+<!-- 创建一个带有网格背景的图表容器 -->
+<div id="graphContainer"
+	 style="overflow:hidden;position:relative;width:321px;height:241px;background:url('editors/images/grid.gif');cursor:default;">
+</div>
 </body>
 </html>
