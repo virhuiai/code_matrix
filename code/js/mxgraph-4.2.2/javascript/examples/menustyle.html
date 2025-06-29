@@ -1,187 +1,255 @@
-<!--
-  Copyright (c) 2006-2013, JGraph Ltd
-  
-  Menustyle example for mxGraph. This example demonstrates using
-  CSS to style the mxPopupMenu.
--->
 <html>
 <head>
-	<title>Menustyle example for mxGraph</title>
+    <title>Menustyle example for mxGraph</title>
+    <style type="text/css">
+       /* 样式设置的详细说明：定义了 mxPopupMenu 及其内部元素的样式 */
+       body div.mxPopupMenu {
+          /* 为 mxPopupMenu 元素定义 CSS 样式 */
+          -webkit-box-shadow: 3px 3px 6px #C0C0C0;
+          /* Webkit 浏览器（如 Chrome, Safari）的盒子阴影效果 */
+          -moz-box-shadow: 3px 3px 6px #C0C0C0;
+          /* Firefox 浏览器的盒子阴影效果 */
+          box-shadow: 3px 3px 6px #C0C0C0;
+          /* 标准盒子阴影效果 */
+          background: white;
+          /* 背景颜色设置为白色 */
+          position: absolute;
+          /* 绝对定位 */
+          border: 3px solid #e7e7e7;
+          /* 边框样式：3px 实线，颜色为 #e7e7e7 */
+          padding: 3px;
+          /* 内边距为 3px */
+       }
+       body table.mxPopupMenu {
+          /* 为 mxPopupMenu 内部的表格元素定义 CSS 样式 */
+          border-collapse: collapse;
+          /* 边框合并，使单元格边框不显示间隙 */
+          margin: 0px;
+          /* 外边距为 0px */
+       }
+       body tr.mxPopupMenuItem {
+          /* 为 mxPopupMenuItem 行元素定义 CSS 样式 */
+          color: black;
+          /* 文本颜色设置为黑色 */
+          cursor: default;
+          /* 鼠标指针样式为默认箭头 */
+       }
+       body td.mxPopupMenuItem {
+          /* 为 mxPopupMenuItem 单元格元素定义 CSS 样式 */
+          padding: 6px 60px 6px 30px;
+          /* 内边距：上6px 右60px 下6px 左30px */
+          font-family: Arial;
+          /* 字体系列设置为 Arial */
+          font-size: 10pt;
+          /* 字体大小设置为 10pt */
+       }
+       body td.mxPopupMenuIcon {
+          /* 为 mxPopupMenuIcon 单元格元素定义 CSS 样式 */
+          background-color: white;
+          /* 背景颜色设置为白色 */
+          padding: 0px;
+          /* 内边距为 0px */
+       }
+       body tr.mxPopupMenuItemHover {
+          /* 为 mxPopupMenuItem 行在鼠标悬停时的样式 */
+          background-color: #eeeeee;
+          /* 背景颜色设置为浅灰色 */
+          color: black;
+          /* 文本颜色设置为黑色 */
+       }
+       table.mxPopupMenu hr {
+          /* 为 mxPopupMenu 内部的水平线元素定义 CSS 样式 */
+          border-top: solid 1px #cccccc;
+          /* 上边框样式：1px 实线，颜色为 #cccccc */
+       }
+       table.mxPopupMenu tr {
+          /* 为 mxPopupMenu 内部的行元素定义 CSS 样式 */
+          font-size: 4pt;
+          /* 字体大小设置为 4pt */
+       }
+    </style>
 
-	<style type="text/css">
-		body div.mxPopupMenu {
-			-webkit-box-shadow: 3px 3px 6px #C0C0C0;
-			-moz-box-shadow: 3px 3px 6px #C0C0C0;
-			box-shadow: 3px 3px 6px #C0C0C0;
-			background: white;
-			position: absolute;
-			border: 3px solid #e7e7e7;
-			padding: 3px;
-		}
-		body table.mxPopupMenu {
-			border-collapse: collapse;
-			margin: 0px;
-		}
-		body tr.mxPopupMenuItem {
-			color: black;
-			cursor: default;
-		}
-		body td.mxPopupMenuItem {
-			padding: 6px 60px 6px 30px;
-			font-family: Arial;
-			font-size: 10pt;
-		}
-		body td.mxPopupMenuIcon {
-			background-color: white;
-			padding: 0px;
-		}
-		body tr.mxPopupMenuItemHover {
-			background-color: #eeeeee;
-			color: black;
-		}
-		table.mxPopupMenu hr {
-			border-top: solid 1px #cccccc;
-		}
-		table.mxPopupMenu tr {
-			font-size: 4pt;
-		}
-	</style>
+    <script type="text/javascript">
+       mxBasePath = '../src';
+       // 关键变量用途说明：mxBasePath 是 mxGraph 库加载的根路径。
+    </script>
 
-	<!-- Sets the basepath for the library if not in same directory -->
-	<script type="text/javascript">
-		mxBasePath = '../src';
-	</script>
+    <script type="text/javascript" src="../src/js/mxClient.js"></script>
 
-	<!-- Loads and initializes the library -->
-	<script type="text/javascript" src="../src/js/mxClient.js"></script>
+    <script type="text/javascript">
+       // Program starts here. Creates a sample graph in the
+       // DOM node with the specified ID. This function is invoked
+       // from the onLoad event handler of the document (see below).
+       // 程序从这里开始。在具有指定 ID 的 DOM 节点中创建一个示例图。
+       // 此函数由文档的 onLoad 事件处理程序调用（参见下方）。
+       // 方法的目的说明：main 函数负责初始化 mxGraph 并添加示例内容。
+       function main(container)
+       {
+          // Checks if the browser is supported
+          // 检查浏览器是否受支持
+          if (!mxClient.isBrowserSupported())
+          {
+             // Displays an error message if the browser is not supported.
+             // 如果浏览器不受支持，则显示错误消息。
+             mxUtils.error('Browser is not supported!', 200, false);
+             // 特殊处理的注意事项：对于不支持的浏览器，会弹出错误提示。
+          }
+          else
+          {
+             // Disables built-in context menu
+             // 禁用浏览器内置的上下文菜单（右键菜单）
+             mxEvent.disableContextMenu(document.body);
 
-	<!-- Example code -->
-	<script type="text/javascript">
-		// Program starts here. Creates a sample graph in the
-		// DOM node with the specified ID. This function is invoked
-		// from the onLoad event handler of the document (see below).
-		function main(container)
-		{
-			// Checks if the browser is supported
-			if (!mxClient.isBrowserSupported())
-			{
-				// Displays an error message if the browser is not supported.
-				mxUtils.error('Browser is not supported!', 200, false);
-			}
-			else
-			{
-				// Disables built-in context menu
-				mxEvent.disableContextMenu(document.body);
-				
-				// Changes some default colors
-				mxConstants.HANDLE_FILLCOLOR = '#99ccff';
-				mxConstants.HANDLE_STROKECOLOR = '#0088cf';
-				mxConstants.VERTEX_SELECTION_COLOR = '#00a8ff';
-				
-				// Creates the graph inside the given container
-				var graph = new mxGraph(container);
-				graph.setTooltips(true);
+             // Changes some default colors
+             // 改变一些默认颜色配置
+             // 重要配置参数的解释：这些常量定义了图表中手柄、选中顶点等的颜色。
+             mxConstants.HANDLE_FILLCOLOR = '#99ccff';
+             // 选中手柄的填充颜色
+             mxConstants.HANDLE_STROKECOLOR = '#0088cf';
+             // 选中手柄的描边颜色
+             mxConstants.VERTEX_SELECTION_COLOR = '#00a8ff';
+             // 顶点选中时的颜色
 
-				// Enables rubberband selection
-				new mxRubberband(graph);
-				
-				// Gets the default parent for inserting new cells. This
-				// is normally the first child of the root (ie. layer 0).
-				var parent = graph.getDefaultParent();
-								
-				// Adds cells to the model in a single step
-				graph.getModel().beginUpdate();
-				try
-				{
-					var v1 = graph.insertVertex(parent, null, 'Hello,', 20, 20, 80, 30);
-					var v2 = graph.insertVertex(parent, null, 'World!', 200, 150, 80, 30);
-					var e1 = graph.insertEdge(parent, null, '', v1, v2);
-				}
-				finally
-				{
-					// Updates the display
-					graph.getModel().endUpdate();
-				}
-				
-				// Creates a new overlay with an image and a tooltip and makes it "transparent" to events
-				var overlay = new mxCellOverlay(new mxImage('editors/images/overlays/check.png', 16, 16), 'Overlay tooltip');
+             // Creates the graph inside the given container
+             // 在给定的容器内创建图表
+             var graph = new mxGraph(container);
+             // 关键变量用途说明：graph 是 mxGraph 的实例，代表了图表的画布和操作对象。
+             graph.setTooltips(true);
+             // 启用工具提示（鼠标悬停时显示提示信息）
 
-				var mxCellRendererInstallCellOverlayListeners = mxCellRenderer.prototype.installCellOverlayListeners;
-				mxCellRenderer.prototype.installCellOverlayListeners = function(state, overlay, shape)
-				{
-					mxCellRendererInstallCellOverlayListeners.apply(this, arguments);
-					var graph  = state.view.graph;
+             // Enables rubberband selection
+             // 启用橡皮筋选择功能
+             new mxRubberband(graph);
+             // 交互逻辑的解释：用户可以通过拖动鼠标来选择多个单元格。
 
-					mxEvent.addGestureListeners(shape.node,
-						function (evt)
-						{
-							graph.fireMouseEvent(mxEvent.MOUSE_DOWN, new mxMouseEvent(evt, state));
-						},
-						function (evt)
-						{
-							graph.fireMouseEvent(mxEvent.MOUSE_MOVE, new mxMouseEvent(evt, state));
-						},
-						function (evt)
-						{
-							if (mxClient.IS_QUIRKS)
-							{
-								graph.fireMouseEvent(mxEvent.MOUSE_UP, new mxMouseEvent(evt, state));
-							}
-						});
-					
-					if (!mxClient.IS_TOUCH)
-					{
-						mxEvent.addListener(shape.node, 'mouseup', function (evt)
-						{
-							overlay.fireEvent(new mxEventObject(mxEvent.CLICK,
-									'event', evt, 'cell', state.cell));
-						});
-					}
-				};
-				
-				// Sets the overlay for the cell in the graph
-				graph.addCellOverlay(v1, overlay);
-				
-				// Configures automatic expand on mouseover
-				graph.popupMenuHandler.autoExpand = true;
+             // Gets the default parent for inserting new cells. This
+             // is normally the first child of the root (ie. layer 0).
+             // 获取用于插入新单元格的默认父级。这通常是根的第一个子级（即第0层）。
+             var parent = graph.getDefaultParent();
+             // 关键变量用途说明：parent 是图表中的默认父容器，新插入的单元格将作为其子元素。
 
-			    // Installs context menu
-				graph.popupMenuHandler.factoryMethod = function(menu, cell, evt)
-				{
-					menu.addItem('Item 1', null, function()
-				    {
-						alert('Item 1');
-				    });
-					
-					menu.addItem('Item 2', null, function()
-				    {
-						alert('Item 2');
-				    });
+             // Adds cells to the model in a single step
+             // 在一个步骤中将单元格添加到模型
+             // 关键步骤说明：开始更新模型，以批量添加单元格，提高性能。
+             graph.getModel().beginUpdate();
+             try
+             {
+                var v1 = graph.insertVertex(parent, null, 'Hello,', 20, 20, 80, 30);
+                // 插入一个顶点 (v1)，内容为 'Hello,'，位于 (20, 20)，大小为 80x30
+                var v2 = graph.insertVertex(parent, null, 'World!', 200, 150, 80, 30);
+                // 插入一个顶点 (v2)，内容为 'World!'，位于 (200, 150)，大小为 80x30
+                var e1 = graph.insertEdge(parent, null, '', v1, v2);
+                // 插入一条边 (e1)，连接 v1 和 v2，不带标签
+             }
+             finally
+             {
+                // Updates the display
+                // 更新显示
+                // 关键步骤说明：结束模型更新，触发图表重新绘制，显示新添加的单元格。
+                graph.getModel().endUpdate();
+             }
 
-					menu.addSeparator();
-					
-					var submenu1 = menu.addItem('Submenu 1', null, null);
-					
-					menu.addItem('Subitem 1', null, function()
-				    {
-						alert('Subitem 1');
-				    }, submenu1);
-					menu.addItem('Subitem 1', null, function()
-				    {
-						alert('Subitem 2');
-				    }, submenu1);
-				};
-			}
-		};
-	</script>
+             // Creates a new overlay with an image and a tooltip and makes it "transparent" to events
+             // 创建一个新的覆盖层，带有一个图像和工具提示，并使其对事件“透明”
+             var overlay = new mxCellOverlay(new mxImage('editors/images/overlays/check.png', 16, 16), 'Overlay tooltip');
+             // 关键变量用途说明：overlay 是一个单元格覆盖层，用于在单元格上显示额外信息。
+
+             var mxCellRendererInstallCellOverlayListeners = mxCellRenderer.prototype.installCellOverlayListeners;
+             // 临时保存原始的 installCellOverlayListeners 方法
+             mxCellRenderer.prototype.installCellOverlayListeners = function(state, overlay, shape)
+             {
+                // 覆盖 mxCellRenderer 的 installCellOverlayListeners 方法
+                mxCellRendererInstallCellOverlayListeners.apply(this, arguments);
+                // 调用原始的监听器安装方法
+                var graph  = state.view.graph;
+                // 获取当前视图的图表实例
+
+                // 事件处理逻辑的说明：为覆盖层形状节点添加鼠标手势监听器。
+                mxEvent.addGestureListeners(shape.node,
+                   function (evt)
+                   {
+                      graph.fireMouseEvent(mxEvent.MOUSE_DOWN, new mxMouseEvent(evt, state));
+                      // 鼠标按下事件
+                   },
+                   function (evt)
+                   {
+                      graph.fireMouseEvent(mxEvent.MOUSE_MOVE, new mxMouseEvent(evt, state));
+                      // 鼠标移动事件
+                   },
+                   function (evt)
+                   {
+                      if (mxClient.IS_QUIRKS)
+                      {
+                         graph.fireMouseEvent(mxEvent.MOUSE_UP, new mxMouseEvent(evt, state));
+                         // 鼠标抬起事件（针对 quirks 模式）
+                      }
+                   });
+
+                if (!mxClient.IS_TOUCH)
+                {
+                   mxEvent.addListener(shape.node, 'mouseup', function (evt)
+                   {
+                      overlay.fireEvent(new mxEventObject(mxEvent.CLICK,
+                            'event', evt, 'cell', state.cell));
+                      // 为非触摸设备添加鼠标抬起监听器，触发覆盖层的点击事件
+                   });
+                }
+             };
+
+             // Sets the overlay for the cell in the graph
+             // 为图表中的单元格设置覆盖层
+             graph.addCellOverlay(v1, overlay);
+             // 将之前创建的 overlay 添加到 v1 顶点上。
+
+             // Configures automatic expand on mouseover
+             // 配置鼠标悬停时自动展开菜单
+             // 重要配置参数的解释：autoExpand 决定了鼠标悬停在菜单项上时是否自动展开子菜单。
+             graph.popupMenuHandler.autoExpand = true;
+
+              // Installs context menu
+             // 安装上下文菜单（右键菜单）
+             // 事件处理逻辑的说明：定义了右键菜单的工厂方法，用于生成菜单项。
+             graph.popupMenuHandler.factoryMethod = function(menu, cell, evt)
+             {
+                // 定义菜单项 "Item 1"
+                menu.addItem('Item 1', null, function()
+                 {
+                   alert('Item 1');
+                   // 点击 "Item 1" 时弹出提示
+                 });
+
+                // 定义菜单项 "Item 2"
+                menu.addItem('Item 2', null, function()
+                 {
+                   alert('Item 2');
+                   // 点击 "Item 2" 时弹出提示
+                 });
+
+                menu.addSeparator();
+                // 添加菜单分隔符
+
+                var submenu1 = menu.addItem('Submenu 1', null, null);
+                // 添加一个子菜单 "Submenu 1"
+
+                // 为 "Submenu 1" 添加子菜单项 "Subitem 1"
+                menu.addItem('Subitem 1', null, function()
+                 {
+                   alert('Subitem 1');
+                 }, submenu1);
+                // 为 "Submenu 1" 添加另一个子菜单项 "Subitem 2"
+                menu.addItem('Subitem 1', null, function()
+                 {
+                   alert('Subitem 2');
+                 }, submenu1);
+             };
+          }
+       };
+    </script>
 </head>
 
-<!-- Page passes the container for the graph to the program -->
 <body onload="main(document.getElementById('graphContainer'))">
-
-	<!-- Creates a container for the graph with a grid wallpaper -->
-	<div id="graphContainer"
-		style="overflow:hidden;width:321px;height:241px;background:url('editors/images/grid.gif');cursor:default;">
-	</div>
+    <div id="graphContainer"
+       style="overflow:hidden;width:321px;height:241px;background:url('editors/images/grid.gif');cursor:default;">
+       </div>
 </body>
 </html>
