@@ -1,3 +1,4 @@
+
 <!--
   Copyright (c) 2006-2013, JGraph Ltd
   
@@ -8,135 +9,173 @@
 <head>
 	<title>Second label example for mxGraph</title>
 
-	<!-- Sets the basepath for the library if not in same directory -->
+	<!-- 设置库的基础路径，如果库不在同一目录下 -->
 	<script type="text/javascript">
+		// 设置 mxGraph 库的基础路径
 		mxBasePath = '../src';
 	</script>
 
-	<!-- Loads and initializes the library -->
+	<!-- 加载并初始化 mxGraph 库 -->
 	<script type="text/javascript" src="../src/js/mxClient.js"></script>
 
-	<!-- Example code -->
+	<!-- 示例代码 -->
 	<script type="text/javascript">
 		
-		// Simple solution to add additional text to the rectangle shape definition:
+		// 为矩形形状定义添加额外文本的简单解决方案
 		(function()
 		{
+			// 保存原始的 isHtmlAllowed 方法
 			var mxRectangleShapeIsHtmlAllowed = mxRectangleShape.prototype.isHtmlAllowed;
+			// 重写 isHtmlAllowed 方法，检查状态是否为空
 			mxRectangleShape.prototype.isHtmlAllowed = function()
 			{
 				return mxRectangleShapeIsHtmlAllowed.apply(this, arguments) && this.state == null;
 			};
 			
+			// 保存原始的 paintForeground 方法
 			mxRectangleShapePaintForeground = mxRectangleShape.prototype.paintForeground;
+			// 重写 paintForeground 方法，绘制前景并添加额外文本
 			mxRectangleShape.prototype.paintForeground = function(c, x, y, w, h)
 			{
+				// 如果状态不为空且单元格几何非相对，绘制单元格 ID
 				if (this.state != null && this.state.cell.geometry != null && !this.state.cell.geometry.relative)
 				{
+					// 设置字体颜色为灰色
 					c.setFontColor('#a0a0a0');
+					// 在指定位置绘制单元格 ID 文本
 					c.text(x + 2, y, 0, 0, this.state.cell.id, 'left', 'top');
 				}
 				
+				// 调用原始的 paintForeground 方法
 				mxRectangleShapePaintForeground.apply(this, arguments);
 			};
 		})();
 
-		// Program starts here. Creates a sample graph in the
-		// DOM node with the specified ID. This function is invoked
-		// from the onLoad event handler of the document (see below).
+		// 程序从这里开始。在指定的 DOM 节点中创建示例图。
+		// 此函数由文档的 onLoad 事件处理程序调用（见下方）。
 		function main(container)
 		{
-			// Checks if the browser is supported
+			// 检查浏览器是否受支持
 			if (!mxClient.isBrowserSupported())
 			{
-				// Displays an error message if the browser is not supported.
+				// 如果浏览器不受支持，显示错误消息
 				mxUtils.error('Browser is not supported!', 200, false);
 			}
 			else
 			{
-				// Creates the graph inside the given container
+				// 在指定容器中创建图
 				var graph = new mxGraph(container);
 
-				// Disables the folding icon
+				// 禁用折叠图标
 				graph.isCellFoldable = function(cell)
 				{
 					return false;
 				}
 
+				// 控制第二个标签的可见性
 				var secondLabelVisible = true;
 
-				// Hook for returning shape number for a given cell
+				// 为给定单元格返回形状编号的钩子
 				graph.getSecondLabel = function(cell)
 				{
+					// 如果不是边，显示单元格 ID 信息
 					if (!this.model.isEdge(cell))
 					{
-						// Possible to return any string here
+						// 可以返回任何字符串
 						return 'The ID of this cell is ' + cell.id;
 					}
 
 					return null;
 				};
 
+				// 控制相对子顶点的可见性
 				var relativeChildVerticesVisible = true;
 
-				// Overrides method to hide relative child vertices
+				// 重写方法以隐藏相对子顶点
 				graph.isCellVisible = function(cell)
 				{
+					// 如果不是顶点或几何为空或非相对，返回可见
 					return !this.model.isVertex(cell) || cell.geometry == null ||
 						!cell.geometry.relative ||
 						cell.geometry.relative == relativeChildVerticesVisible;
 				};
 
-				// Creates the shape for the shape number and puts it into the draw pane
+				// 为形状编号创建形状并放入绘制面板
 				var redrawShape = graph.cellRenderer.redrawShape;
+				// 重写 redrawShape 方法，绘制形状并添加第二个标签
 				graph.cellRenderer.redrawShape = function(state, force, rendering)
 				{
+					// 调用原始的 redrawShape 方法
 					var result = redrawShape.apply(this, arguments);
 
+					// 如果结果有效、第二个标签可见、单元格几何非相对
 					if (result && secondLabelVisible && state.cell.geometry != null && !state.cell.geometry.relative)
 					{
+						// 获取第二个标签的内容
 						var secondLabel = graph.getSecondLabel(state.cell);
 	
+						// 如果标签存在且形状不为空，创建新标签
 						if (secondLabel != null && state.shape != null && state.secondLabel == null)
 						{
+							// 创建新的文本标签
 							state.secondLabel = new mxText(secondLabel, new mxRectangle(),
 									mxConstants.ALIGN_LEFT, mxConstants.ALIGN_BOTTOM);
 
-							// Styles the label
+							// 设置标签样式
 							state.secondLabel.color = 'black';
+							// 设置字体为 Verdana
 							state.secondLabel.family = 'Verdana';
+							// 设置字体大小为 8
 							state.secondLabel.size = 8;
+							// 设置字体为斜体
 							state.secondLabel.fontStyle = mxConstants.FONT_ITALIC;
+							// 设置背景颜色为黄色
 							state.secondLabel.background = 'yellow';
+							// 设置边框颜色为黑色
 							state.secondLabel.border = 'black';
+							// 设置垂直对齐为底部
 							state.secondLabel.valign = 'bottom';
+							// 设置标签的方言为严格 HTML
 							state.secondLabel.dialect = state.shape.dialect;
 							state.secondLabel.dialect = mxConstants.DIALECT_STRICTHTML;
+							// 允许标签换行
 							state.secondLabel.wrap = true;
+							// 初始化标签
 							graph.cellRenderer.initializeLabel(state, state.secondLabel);
 						}
 					}
 					
+					// 如果存在第二个标签，更新其位置和内容
 					if (state.secondLabel != null)
 					{
+						// 获取当前视图的缩放比例
 						var scale = graph.getView().getScale();
+						// 设置标签的边界框
 						var bounds = new mxRectangle(state.x + state.width - 8 * scale, state.y + 8 * scale, 35, 0);
+						// 关联标签的状态
 						state.secondLabel.state = state;
+						// 更新标签内容
 						state.secondLabel.value = graph.getSecondLabel(state.cell);
+						// 设置标签缩放
 						state.secondLabel.scale = scale;
+						// 设置标签边界
 						state.secondLabel.bounds = bounds;
+						// 重新绘制标签
 						state.secondLabel.redraw();
 					}
 					
 					return result;
 				};
 
-				// Destroys the shape number
+				// 销毁形状编号
 				var destroy = graph.cellRenderer.destroy;
+				// 重写 destroy 方法，销毁标签
 				graph.cellRenderer.destroy = function(state)
 				{
+					// 调用原始的 destroy 方法
 					destroy.apply(this, arguments);
 					
+					// 如果存在第二个标签，销毁它
 					if (state.secondLabel != null)
 					{
 						state.secondLabel.destroy();
@@ -144,54 +183,62 @@
 					}
 				};
 				
+				// 获取状态的形状列表
 				graph.cellRenderer.getShapesForState = function(state)
 				{
 					return [state.shape, state.text, state.secondLabel, state.control];
 				};
 				
-				// Gets the default parent for inserting new cells. This
-				// is normally the first child of the root (ie. layer 0).
+				// 获取插入新单元格的默认父节点，通常是根的第一个子节点（即第 0 层）
 				var parent = graph.getDefaultParent();
 								
-				// Adds cells to the model in a single step
+				// 在单个步骤中向模型添加单元格
 				graph.getModel().beginUpdate();
 				try
 				{
+					// 插入第一个顶点
 					var v1 = graph.insertVertex(parent, null, 'Hello,', 30, 40, 80, 30);
-					// Alternative solution of creating a second label by creating a realtive child vertex
-					// with size (0, 0). This will not be selectable and only the label colors can be used
-					// for coloring as the actual shape will have zero size.
+					// 通过创建相对子顶点添加第二个标签，尺寸为 (0, 0)
+					// 这种方法不可选择，仅使用标签颜色进行着色
 					var v11 = graph.insertVertex(v1, null, 'World', 1, 1, 0, 0, 'align=left;verticalAlign=top;labelBackgroundColor=red;labelBorderColor=black', true);
+					// 设置子顶点的偏移
 					v11.geometry.offset = new mxPoint(-8, -8);
+					// 插入第二个顶点
 					var v2 = graph.insertVertex(parent, null, 'World!', 200, 150, 80, 30);
-					// Another alternative solution of creating a second label as a relative child vertex
-					// but this time with an automatic size so that the cell is actually selectable and
-					// the background is painted as a shape.
+					// 另一种方法：创建自动尺寸的相对子顶点
+					// 这种方法可选择，并且背景作为形状绘制
 					var v21 = graph.insertVertex(v2, null, 'World', 1, 1, 0, 0, 'align=left;verticalAlign=top;fillColor=red;rounded=1;spacingLeft=4;spacingRight=4', true);
+					// 设置子顶点的偏移
 					v21.geometry.offset = new mxPoint(-8, -8);
+					// 更新子顶点尺寸
 					graph.updateCellSize(v21);
+					// 插入边连接两个顶点
 					var e1 = graph.insertEdge(parent, null, '', v1, v2);
 				}
 				finally
 				{
-					// Updates the display
+					// 更新显示
 					graph.getModel().endUpdate();
 				}
 
-				// Adds a button to execute the layout
+				// 添加按钮以切换子顶点的可见性
 				document.body.insertBefore(mxUtils.button('Toggle Child Vertices',
 					function(evt)
 					{
+						// 切换相对子顶点的可见性
 						relativeChildVerticesVisible = !relativeChildVerticesVisible;
+						// 刷新图
 						graph.refresh();
 					}
 				), document.body.firstChild);
 				
-				// Adds a button to execute the layout
+				// 添加按钮以切换 ID 的可见性
 				document.body.insertBefore(mxUtils.button('Toggle IDs',
 					function(evt)
 					{
+						// 切换第二个标签的可见性
 						secondLabelVisible = !secondLabelVisible;
+						// 刷新图
 						graph.refresh();
 					}
 				), document.body.firstChild);
@@ -200,10 +247,10 @@
 	</script>
 </head>
 
-<!-- Page passes the container for the graph to the program -->
+<!-- 页面将图的容器传递给程序 -->
 <body onload="main(document.getElementById('graphContainer'))">
 
-	<!-- Creates a container for the graph with a grid wallpaper -->
+	<!-- 创建图的容器，带有网格壁纸 -->
 	<div id="graphContainer"
 		style="position:relative;overflow:hidden;width:321px;height:241px;background:url('editors/images/grid.gif')">
 	</div>
