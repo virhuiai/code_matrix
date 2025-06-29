@@ -9,64 +9,71 @@
 <html>
 <head>
 	<title>Touch example for mxGraph</title>
+	<!-- 设置视口属性，适配移动设备 -->
 	<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalabale=no">
 
-	<!-- Increases size of popup menu entries. See menustyle.html for more styling options. -->
+	<!-- 增加弹出菜单项的尺寸。更多样式选项请参见menustyle.html -->
 	<style type="text/css">
+		/* 弹出菜单容器样式 */
 		body div.mxPopupMenu {
 			position: absolute;
 			padding: 3px;
 		}
+		/* 弹出菜单表格样式 */
 		body table.mxPopupMenu {
 			border-collapse: collapse;
 			margin: 0px;
 		}
+		/* 弹出菜单项行样式 */
 		body tr.mxPopupMenuItem {
 			cursor: default;
 		}
+		/* 弹出菜单项单元格样式 */
 		body td.mxPopupMenuItem {
 			padding: 10px 60px 10px 30px;
 			font-family: Arial;
 			font-size: 9pt;
 		}
+		/* 弹出菜单图标单元格样式 */
 		body td.mxPopupMenuIcon {
 			padding: 0px;
 		}
+		/* 弹出菜单分隔线样式 */
 		table.mxPopupMenu hr {
 			border-top: solid 1px #cccccc;
 		}
+		/* 弹出菜单行字体大小 */
 		table.mxPopupMenu tr {
 			font-size: 4pt;
 		}
 	</style>
 
-	<!-- Sets the basepath for the library if not in same directory -->
+	<!-- 如果库不在同一目录，设置基础路径 -->
 	<script type="text/javascript">
 		mxBasePath = '../src';
 	</script>
 
-	<!-- Loads and initializes the library -->
+	<!-- 加载并初始化mxGraph库 -->
 	<script type="text/javascript" src="../src/js/mxClient.js"></script>
 
-	<!-- Example code -->
+	<!-- 示例代码 -->
 	<script type="text/javascript">
-		// Program starts here. Creates a sample graph in the
-		// DOM node with the specified ID. This function is invoked
-		// from the onLoad event handler of the document (see below).
+		// 程序从这里开始。在指定ID的DOM节点中创建示例图形。
+		// 这个函数从文档的onLoad事件处理程序调用（见下方）
 		function main(container)
 		{
-			// Checks if the browser is supported
+			// 检查浏览器是否支持
 			if (!mxClient.isBrowserSupported())
 			{
-				// Displays an error message if the browser is not supported.
+				// 如果浏览器不支持，显示错误信息
 				mxUtils.error('Browser is not supported!', 200, false);
 			}
 			else
 			{
-				// To detect if touch events are actually supported, the following condition is recommended:
+				// 要检测是否真正支持触摸事件，推荐使用以下条件：
 				// mxClient.IS_TOUCH || navigator.maxTouchPoints > 0 || navigator.msMaxTouchPoints > 0
 				
-				// Disables built-in text selection and context menu while not editing text
+				// 在非编辑文本状态下禁用内置的文本选择和上下文菜单
 				var textEditing =  mxUtils.bind(this, function(evt)
 				{
 					return graph.isEditing();
@@ -75,6 +82,7 @@
 				container.onselectstart = textEditing;
 				container.onmousedown = textEditing;
 
+				// IE浏览器特殊处理
 				if (mxClient.IS_IE && (typeof(document.documentMode) === 'undefined' || document.documentMode < 9))
 				{
 					mxEvent.addListener(container, 'contextmenu', textEditing);
@@ -84,66 +92,76 @@
 					container.oncontextmenu = textEditing;
 				}
 
-				// Creates the graph inside the given container
+				// 在给定的容器中创建图形
 				var graph = new mxGraph(container);
-				graph.centerZoom = false;
-				graph.setConnectable(true);
-				graph.setPanning(true);
+				graph.centerZoom = false; // 禁用中心缩放
+				graph.setConnectable(true); // 启用连接功能
+				graph.setPanning(true); // 启用平移功能
 				
-				// Creates rubberband selection
+				// 创建橡皮筋选择工具
 			    var rubberband = new mxRubberband(graph);
 				
+				// 设置弹出菜单自动展开
 				graph.popupMenuHandler.autoExpand = true;
 				
+				// 定义在弹出菜单时是否选择单元格
 				graph.popupMenuHandler.isSelectOnPopup = function(me)
 				{
 					return mxEvent.isMouseEvent(me.getEvent());
 				};
 				
-			    // Installs context menu
+			    // 安装上下文菜单
 				graph.popupMenuHandler.factoryMethod = function(menu, cell, evt)
 				{
+					// 添加菜单项1
 					menu.addItem('Item 1', null, function()
 				    {
 						alert('Item 1');
 				    });
 
+					// 添加分隔线
 					menu.addSeparator();
 					
+					// 添加子菜单1
 					var submenu1 = menu.addItem('Submenu 1', null, null);
 					
+					// 在子菜单1下添加子项1
 					menu.addItem('Subitem 1', null, function()
 				    {
 						alert('Subitem 1');
 				    }, submenu1);
+					// 在子菜单1下添加子项2
 					menu.addItem('Subitem 1', null, function()
 				    {
 						alert('Subitem 2');
 				    }, submenu1);
 				};
 
-				// Context menu trigger implementation depending on current selection state
-				// combined with support for normal popup trigger.
-				var cellSelected = false;
-				var selectionEmpty = false;
-				var menuShowing = false;
+				// 上下文菜单触发实现，取决于当前选择状态
+				// 结合普通弹出菜单触发器的支持
+				var cellSelected = false; // 单元格是否被选中
+				var selectionEmpty = false; // 选择是否为空
+				var menuShowing = false; // 菜单是否显示
 				
+				// 重写鼠标事件处理
 				graph.fireMouseEvent = function(evtName, me, sender)
 				{
 					if (evtName == mxEvent.MOUSE_DOWN)
 					{
-						// For hit detection on edges
+						// 用于边缘的点击检测
 						me = this.updateMouseEvent(me);
 						
+						// 更新选择状态
 						cellSelected = this.isCellSelected(me.getCell());
 						selectionEmpty = this.isSelectionEmpty();
 						menuShowing = graph.popupMenuHandler.isMenuShowing();
 					}
 					
+					// 调用父类方法
 					mxGraph.prototype.fireMouseEvent.apply(this, arguments);
 				};
 				
-				// Shows popup menu if cell was selected or selection was empty and background was clicked
+				// 如果单元格被选中或选择为空且点击了背景，则显示弹出菜单
 				graph.popupMenuHandler.mouseUp = function(sender, me)
 				{
 					this.popupTrigger = !graph.isEditing() && (this.popupTrigger || (!menuShowing &&
@@ -153,94 +171,105 @@
 					mxPopupMenuHandler.prototype.mouseUp.apply(this, arguments);
 				};
 
-				// Tap and hold on background starts rubberband for multiple selected
-				// cells the cell associated with the event is deselected
+				// 在背景上长按会启动橡皮筋选择工具
+				// 对于多个选中的单元格，与事件关联的单元格会被取消选择
 				graph.addListener(mxEvent.TAP_AND_HOLD, function(sender, evt)
 				{
-					if (!mxEvent.isMultiTouchEvent(evt))
+					if (!mxEvent.isMultiTouchEvent(evt)) // 不是多点触控事件
 					{
 						var me = evt.getProperty('event');
 						var cell = evt.getProperty('cell');
 						
-						if (cell == null)
+						if (cell == null) // 点击的是背景
 						{
+							// 转换坐标并启动橡皮筋选择
 							var pt = mxUtils.convertPoint(this.container,
 									mxEvent.getClientX(me), mxEvent.getClientY(me));
 							rubberband.start(pt.x, pt.y);
 						}
 						else if (graph.getSelectionCount() > 1 && graph.isCellSelected(cell))
 						{
+							// 从选择中移除单元格
 							graph.removeSelectionCell(cell);
 						}
 						
-						// Blocks further processing of the event
+						// 阻止事件的进一步处理
 						evt.consume();
 					}
 				});
 				
-				// Adds mouse wheel handling for zoom
+				// 添加鼠标滚轮缩放处理
 				mxEvent.addMouseWheelListener(function(evt, up)
 				{
-					if (up)
+					if (up) // 滚轮向上
 					{
-						graph.zoomIn();
+						graph.zoomIn(); // 放大
 					}
-					else
+					else // 滚轮向下
 					{
-						graph.zoomOut();
+						graph.zoomOut(); // 缩小
 					}
 
+					// 阻止默认事件
 					mxEvent.consume(evt);
 				});
 
-				// Gets the default parent for inserting new cells. This
-				// is normally the first child of the root (ie. layer 0).
+				// 获取插入新单元格的默认父级
+				// 通常是根的第一个子级（即第0层）
 				var parent = graph.getDefaultParent();
 								
-				// Adds cells to the model in a single step
+				// 在单一步骤中向模型添加单元格
 				graph.getModel().beginUpdate();
 				try
 				{
+					// 插入顶点1
 					var v1 = graph.insertVertex(parent, null, 'Hello,', 20, 20, 80, 30);
+					// 插入顶点2
 					var v2 = graph.insertVertex(parent, null, 'World!', 200, 150, 80, 30);
+					// 插入边
 					var e1 = graph.insertEdge(parent, null, '', v1, v2);
 				}
 				finally
 				{
-					// Updates the display
+					// 更新显示
 					graph.getModel().endUpdate();
 				}
 
-				// Disables new connections via "hotspot"
+				// 禁用通过"热点"创建新连接
 				graph.connectionHandler.marker.isEnabled = function()
 				{
 					return this.graph.connectionHandler.first != null;
 				};
 
-				// Adds custom hit detection if native hit detection found no cell
+				// 如果原生点击检测未找到单元格，添加自定义点击检测
 				graph.updateMouseEvent = function(me)
 				{
 					var me = mxGraph.prototype.updateMouseEvent.apply(this, arguments);
 
-					if (me.getState() == null)
+					if (me.getState() == null) // 没有找到状态
 					{
+						// 获取当前位置的单元格
 						var cell = this.getCellAt(me.graphX, me.graphY);
 
+						// 如果是泳道且点击了泳道内容，则忽略
 						if (cell != null && this.isSwimlane(cell) && this.hitsSwimlaneContent(cell, me.graphX, me.graphY))
 						{
 							cell = null;
 						}
 						else
 						{
+							// 获取单元格状态
 							me.state = this.view.getState(cell);
 							
 							if (me.state != null && me.state.shape != null)
 							{
+								// 设置光标样式
 								this.container.style.cursor = me.state.shape.node.style.cursor;
 							}
 						}
 					}
 					
+					// 如果没有找到状态，设置默认光标
 					if (me.getState() == null)
 					{
 						this.container.style.cursor = 'default';
@@ -251,31 +280,32 @@
 			}
 		};
 		
+		// 立即执行函数，用于设置各种处理器的默认行为
 		(function()
 		{
-			// Enables rotation handle
+			// 启用旋转手柄
 			mxVertexHandler.prototype.rotationEnabled = true;
 			
-			// Enables managing of sizers
+			// 启用大小调整控制
 			mxVertexHandler.prototype.manageSizers = true;
 			
-			// Enables live preview
+			// 启用实时预览
 			mxVertexHandler.prototype.livePreview = true;
 	
-			// Sets constants for touch style
-			mxConstants.HANDLE_SIZE = 16;
-			mxConstants.LABEL_HANDLE_SIZE = 7;
+			// 设置触摸样式的常量
+			mxConstants.HANDLE_SIZE = 16; // 手柄大小
+			mxConstants.LABEL_HANDLE_SIZE = 7; // 标签手柄大小
 	
-			// Larger tolerance and grid for real touch devices
+			// 对于真正的触摸设备，设置更大的容差和网格
 			if (mxClient.IS_TOUCH || navigator.maxTouchPoints > 0 || navigator.msMaxTouchPoints > 0)
 			{
-				mxShape.prototype.svgStrokeTolerance = 18;
-				mxVertexHandler.prototype.tolerance = 12;
-				mxEdgeHandler.prototype.tolerance = 12;
-				mxGraph.prototype.tolerance = 12;
+				mxShape.prototype.svgStrokeTolerance = 18; // SVG笔触容差
+				mxVertexHandler.prototype.tolerance = 12; // 顶点处理器容差
+				mxEdgeHandler.prototype.tolerance = 12; // 边处理器容差
+				mxGraph.prototype.tolerance = 12; // 图形容差
 			}
 			
-			// One finger pans (no rubberband selection) must start regardless of mouse button
+			// 单指平移（无橡皮筋选择）必须无论鼠标按钮如何都能启动
 			mxPanningHandler.prototype.isPanningTrigger = function(me)
 			{
 				var evt = me.getEvent();
@@ -285,7 +315,7 @@
 			 		mxEvent.isControlDown(evt) || mxEvent.isShiftDown(evt)));
 			};
 	
-			// Don't clear selection if multiple cells selected
+			// 如果选择了多个单元格，不清除选择
 			var graphHandlerMouseDown = mxGraphHandler.prototype.mouseDown;
 			mxGraphHandler.prototype.mouseDown = function(sender, me)
 			{
@@ -297,7 +327,7 @@
 				}
 			};
 	
-			// On connect the target is selected and we clone the cell of the preview edge for insert
+			// 连接时选择目标，并为插入操作克隆预览边的单元格
 			mxConnectionHandler.prototype.selectCells = function(edge, target)
 			{
 				if (target != null)
@@ -310,12 +340,13 @@
 				}
 			};
 	
-			// Overrides double click handling to use the tolerance
+			// 重写双击处理以使用容差
 			var graphDblClick = mxGraph.prototype.dblClick;
 			mxGraph.prototype.dblClick = function(evt, cell)
 			{
 				if (cell == null)
 				{
+					// 转换坐标并获取当前位置的单元格
 					var pt = mxUtils.convertPoint(this.container,
 						mxEvent.getClientX(evt), mxEvent.getClientY(evt));
 					cell = this.getCellAt(pt.x, pt.y);
@@ -324,49 +355,54 @@
 				graphDblClick.call(this, evt, cell);
 			};
 	
-			// Rounded edge and vertex handles
+			// 圆角边和顶点手柄
 			var touchHandle = new mxImage('images/handle-main.png', 17, 17);
 			mxVertexHandler.prototype.handleImage = touchHandle;
 			mxEdgeHandler.prototype.handleImage = touchHandle;
 			mxOutline.prototype.sizerImage = touchHandle;
 			
-			// Pre-fetches touch handle
+			// 预加载触摸手柄图像
 			new Image().src = touchHandle.src;
 	
-			// Adds connect icon to selected vertex
+			// 向选定的顶点添加连接图标
 			var connectorSrc = 'images/handle-connect.png';
 	
+			// 保存原始初始化方法
 			var vertexHandlerInit = mxVertexHandler.prototype.init;
+			// 重写顶点处理器初始化方法
 			mxVertexHandler.prototype.init = function()
 			{
-				// TODO: Use 4 sizers, move outside of shape
+				// TODO: 使用4个大小调整器，移动到形状外部
 				//this.singleSizer = this.state.width < 30 && this.state.height < 30;
 				vertexHandlerInit.apply(this, arguments);
 	
-				// Only show connector image on one cell and do not show on containers
+				// 仅在一个单元格上显示连接器图像，不在容器上显示
 				if (this.graph.connectionHandler.isEnabled() &&
 					this.graph.isCellConnectable(this.state.cell) &&
 					this.graph.getSelectionCount() == 1)
 				{
+					// 创建连接器图像
 					this.connectorImg = mxUtils.createImage(connectorSrc);
 					this.connectorImg.style.cursor = 'pointer';
 					this.connectorImg.style.width = '29px';
 					this.connectorImg.style.height = '29px';
 					this.connectorImg.style.position = 'absolute';
 					
+					// 非触摸设备添加标题和鼠标事件重定向
 					if (!mxClient.IS_TOUCH)
 					{
 						this.connectorImg.setAttribute('title', mxResources.get('connect'));
 						mxEvent.redirectMouseEvents(this.connectorImg, this.graph, this.state);
 					}
 	
-					// Starts connecting on touch/mouse down
+					// 在触摸/鼠标按下时开始连接
 					mxEvent.addGestureListeners(this.connectorImg,
 						mxUtils.bind(this, function(evt)
 						{
 							this.graph.popupMenuHandler.hideMenu();
 							this.graph.stopEditing(false);
 							
+							// 转换坐标并开始连接
 							var pt = mxUtils.convertPoint(this.graph.container,
 									mxEvent.getClientX(evt), mxEvent.getClientY(evt));
 							this.graph.connectionHandler.start(this.state, pt.x, pt.y);
@@ -376,45 +412,56 @@
 						})
 					);
 	
+					// 将连接器图像添加到图形容器
 					this.graph.container.appendChild(this.connectorImg);
 				}
 	
+				// 重绘手柄
 				this.redrawHandles();
 			};
 			
+			// 保存原始隐藏大小调整器方法
 			var vertexHandlerHideSizers = mxVertexHandler.prototype.hideSizers;
+			// 重写隐藏大小调整器方法
 			mxVertexHandler.prototype.hideSizers = function()
 			{
 				vertexHandlerHideSizers.apply(this, arguments);
 				
+				// 隐藏连接器图像
 				if (this.connectorImg != null)
 				{
 					this.connectorImg.style.visibility = 'hidden';
 				}
 			};
 			
+			// 保存原始重置方法
 			var vertexHandlerReset = mxVertexHandler.prototype.reset;
+			// 重写重置方法
 			mxVertexHandler.prototype.reset = function()
 			{
 				vertexHandlerReset.apply(this, arguments);
 				
+				// 显示连接器图像
 				if (this.connectorImg != null)
 				{
 					this.connectorImg.style.visibility = '';
 				}
 			};
 			
+			// 保存原始重绘手柄方法
 			var vertexHandlerRedrawHandles = mxVertexHandler.prototype.redrawHandles;
+			// 重写重绘手柄方法
 			mxVertexHandler.prototype.redrawHandles = function()
 			{
 				vertexHandlerRedrawHandles.apply(this);
 	
+				// 如果状态和连接器图像存在，重新定位连接器图像
 				if (this.state != null && this.connectorImg != null)
 				{
 					var pt = new mxPoint();
 					var s = this.state;
 					
-					// Top right for single-sizer
+					// 单一大小时右上角位置
 					if (mxVertexHandler.prototype.singleSizer)
 					{
 						pt.x = s.x + s.width - this.connectorImg.offsetWidth / 2;
@@ -426,6 +473,7 @@
 						pt.y = s.y + s.height / 2;
 					}
 					
+					// 考虑旋转角度
 					var alpha = mxUtils.toRadians(mxUtils.getValue(s.style, mxConstants.STYLE_ROTATION, 0));
 					
 					if (alpha != 0)
@@ -437,16 +485,20 @@
 						pt = mxUtils.getRotatedPoint(pt, cos, sin, ct);
 					}
 					
+					// 设置连接器图像位置
 					this.connectorImg.style.left = (pt.x - this.connectorImg.offsetWidth / 2) + 'px';
 					this.connectorImg.style.top = (pt.y - this.connectorImg.offsetHeight / 2) + 'px';
 				}
 			};
 			
+			// 保存原始销毁方法
 			var vertexHandlerDestroy = mxVertexHandler.prototype.destroy;
+			// 重写销毁方法
 			mxVertexHandler.prototype.destroy = function(sender, me)
 			{
 				vertexHandlerDestroy.apply(this, arguments);
 	
+				// 移除连接器图像
 				if (this.connectorImg != null)
 				{
 					this.connectorImg.parentNode.removeChild(this.connectorImg);
@@ -454,16 +506,16 @@
 				}
 			};
 			
-			// Pre-fetches touch connector
+			// 预加载触摸连接器图像
 			new Image().src = connectorSrc;
 		})();
 	</script>
 </head>
 
-<!-- Page passes the container for the graph to the program -->
+<!-- 页面传递图形容器给程序 -->
 <body onload="main(document.getElementById('graphContainer'))">
 
-	<!-- Creates a container for the graph with a grid wallpaper -->
+	<!-- 创建带有网格背景的图形容器 -->
 	<div id="graphContainer"
 		style="position:relative;overflow:hidden;width:640px;height:480px;background:url('editors/images/grid.gif');cursor:default;">
 	</div>
