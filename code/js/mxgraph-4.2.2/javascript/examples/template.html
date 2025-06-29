@@ -7,41 +7,65 @@
   
   *** THIS FILE MUST BE DEPLOYED BY ONE OF THE BACKENDS! ***
 -->
+<!--
+  mxGraph模板示例。该HTML文件作为模板，
+  由后端用于展示如何将客户端部署到页面中，
+  并通过XML数据嵌入图形（参见onload处理程序中的graph变量）。
+
+  *** 此文件必须由后端部署! ***
+-->
 <html>
 <head>
-	<title>Hello, World!</title>
+	<title>Hello, World!</title> <!-- 页面标题 -->
 
 	<!-- Sets the basepath for the library if not in same directory -->
+	<!-- 设置库的基础路径（如果不在同一目录） -->
 	<script type="text/javascript">
-		mxBasePath = '/mxgraph/javascript/src';
+		mxBasePath = '/mxgraph/javascript/src'; // 定义mxGraph库的基础路径
 	</script>
 
 	<!-- Loads and initializes the library -->
+	<!-- 加载并初始化mxGraph库 -->
 	<script type="text/javascript" src="/mxgraph/javascript/src/js/mxClient.js"></script>
 
 	<!-- Example code -->
+	<!-- 示例代码 -->
 	<script type="text/javascript">
 		// Program starts here. Creates a sample graph in the
 		// DOM node with the specified ID. This function is invoked
 		// from the onLoad event handler of the document (see below).
+		// 程序入口点。在指定ID的DOM节点中创建示例图形
+		// 该函数由文档的onLoad事件处理程序调用（见下方）
 		function main(container, xml)
 		{
 			// Checks if the browser is supported
+			// 检查浏览器是否支持mxGraph
 			if (!mxClient.isBrowserSupported())
 			{
 				// Displays an error message if the browser is not supported.
+				// 如果浏览器不支持则显示错误信息
 				mxUtils.error('Browser is not supported!', 200, false);
 			}
 			else
 			{
 				// Creates the graph inside the given container
+				// 在给定的容器内创建图形实例
 				var graph = new mxGraph(container);
 				
 				// Adds rubberband selection to the graph
+				// 为图形添加橡皮筋选择功能（框选）
 				new mxRubberband(graph);
 				
+				// Parse the XML string into a document object
+				// 将XML字符串解析为文档对象
 				var doc = mxUtils.parseXml(xml);
+
+				// Create a codec for decoding the XML
+				// 创建用于解码XML的编解码器
 				var codec = new mxCodec(doc);
+
+				// Decode the XML into the graph model
+				// 将XML解码到图形模型中（渲染图形）
 				codec.decode(doc.documentElement, graph.getModel());
 			}
 		};
@@ -49,10 +73,27 @@
 </head>
 
 <!-- Page passes the container for the graph to the program -->
+<!-- 页面将图形容器传递给程序 -->
 <body onload="main(document.getElementById('graphContainer'), '%graph%');">
+	<!--
+		%graph% 是后端替换占位符，实际部署时会被XML数据替换
+		graphContainer: 图形显示容器
+	-->
 
 	<!-- Creates a container for the graph with a grid wallpaper -->
-	<div id="graphContainer" style="overflow:hidden;position:relative;width:321px;height:241px;background:url('/mxgraph/javascript/examples/editors/images/grid.gif');cursor:default;">
+	<!-- 创建带网格背景的图形容器 -->
+	<div id="graphContainer"
+		style="overflow:hidden;position:relative;width:321px;height:241px;
+		background:url('/mxgraph/javascript/examples/editors/images/grid.gif');
+		cursor:default;">
+		<!--
+			样式说明:
+			overflow:hidden - 隐藏溢出内容
+			position:relative - 相对定位
+			固定宽高: 321x241像素
+			背景: 网格图片
+			光标: 默认指针
+		-->
 	</div>
 </body>
 </html>
