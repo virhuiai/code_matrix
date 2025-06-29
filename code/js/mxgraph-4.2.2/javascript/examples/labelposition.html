@@ -4,74 +4,113 @@
   Label Position example for mxGraph. This example demonstrates the use of the
   label position styles to set the position of vertex labels.
 -->
+<!-- 中文注释：版权声明归JGraph Ltd所有；此示例展示如何使用mxGraph的标签位置样式设置顶点标签的位置 -->
 <html>
 <head>
 	<title>Label Position example for mxGraph</title>
+	<!-- 中文注释：设置页面标题为“mxGraph标签位置示例” -->
 
 	<!-- Sets the basepath for the library if not in same directory -->
+	<!-- 中文注释：设置mxGraph库的基础路径为'../src'，用于加载库文件 -->
 	<script type="text/javascript">
 		mxBasePath = '../src';
 	</script>
 
 	<!-- Loads and initializes the library -->
+	<!-- 中文注释：加载并初始化mxGraph库 -->
 	<script type="text/javascript" src="../src/js/mxClient.js"></script>
 
 	<!-- Example code -->
+	<!-- 中文注释：示例代码，展示标签位置样式的使用 -->
 	<script type="text/javascript">
 		// Program starts here.
+		// 中文注释：程序入口，定义主函数，接收容器参数
 		function main(container)
 		{
 			// Checks if the browser is supported
+			// 中文注释：检查浏览器是否支持mxGraph
 			if (!mxClient.isBrowserSupported())
 			{
 				// Displays an error message if the browser is not supported.
+				// 中文注释：如果浏览器不支持，显示错误消息，宽度200像素，不自动关闭
 				mxUtils.error('Browser is not supported!', 200, false);
 			}
 			else
 			{
 				// Creates the graph inside the given container
+				// 中文注释：创建mxGraph实例，将图形渲染到指定容器
 				var graph = new mxGraph(container);
+				// 中文注释：关键变量graph：mxGraph实例，用于管理图形和顶点
 
 				// Gets the default parent for inserting new cells. This
 				// is normally the first child of the root (ie. layer 0).
+				// 中文注释：获取默认父节点（通常为根节点的第一个子节点，层级0），用于插入新单元
 				var parent = graph.getDefaultParent();
+				// 中文注释：关键变量parent：默认父节点，用于组织新插入的顶点
 
 				// Defines the common part of all cell styles as a string-prefix
+				// 中文注释：定义所有单元样式的公共部分，使用字符串前缀指定图像形状和图标路径
 				var prefix = 'shape=image;image=images/icons48/keys.png;';
-								
+				// 中文注释：关键变量prefix：样式前缀，设置顶点为图像形状，引用keys.png图标
+				// 中文注释：重要配置参数：shape=image表示顶点显示为图像；image指定图标路径
+
 				// Adds cells to the model in a single step and set the vertex
 				// label positions using the label position styles. Vertical
 				// and horizontal label position styles can be combined.
 				// Note: Alternatively, vertex labels can be set be overriding
 				// mxCellRenderer.getLabelBounds.
+				// 中文注释：一次性向模型添加顶点，并通过标签位置样式设置标签位置；支持垂直和水平标签位置组合
+				// 中文注释：注意事项：可通过重写mxCellRenderer.getLabelBounds方法设置顶点标签
+				// 中文注释：交互逻辑：通过样式控制标签位置，提供可视化标签布局效果
 				graph.getModel().beginUpdate();
+				// 中文注释：开始批量更新模型，确保所有顶点添加操作作为一个事务处理
 				try
 				{
 					graph.insertVertex(parent, null, 'Bottom', 60, 60, 60, 60,
-						prefix+'verticalLabelPosition=bottom;verticalAlign=top');
+							prefix+'verticalLabelPosition=bottom;verticalAlign=top');
+					// 中文注释：插入顶点，标签显示在底部，垂直对齐顶部；参数说明：parent为父节点，null为id，'Bottom'为标签，60,60为位置，60,60为宽高，样式为前缀加底部标签和顶部对齐
+					// 中文注释：样式设置：verticalLabelPosition=bottom使标签位于顶点下方；verticalAlign=top使标签文本顶部对齐
+					// 可选值: top, middle, bottom (默认通常是 middle)
+
 					graph.insertVertex(parent, null, 'Top', 140, 60, 60, 60,
 							prefix+'verticalLabelPosition=top;verticalAlign=bottom');
+					// 中文注释：插入顶点，标签显示在顶部，垂直对齐底部；参数说明：parent为父节点，null为id，'Top'为标签，140,60为位置，60,60为宽高，样式为前缀加顶部标签和底部对齐
+					// 中文注释：样式设置：verticalLabelPosition=top使标签位于顶点上方；verticalAlign=bottom使标签文本底部对齐
+
 					graph.insertVertex(parent, null, 'Left', 60, 160, 60, 60,
 							prefix+'labelPosition=left;align=right');
+					// 中文注释：插入顶点，标签显示在左侧，水平对齐右边；参数说明：parent为父节点，null为id，'Left'为标签，60,160为位置，60,60为宽高，样式为前缀加左侧标签和右对齐
+					// 中文注释：样式设置：labelPosition=left使标签位于顶点左侧；align=right使标签文本右对齐
+					// left, center, right (默认通常是 center)
+
 					graph.insertVertex(parent, null, 'Right', 140, 160, 60, 60,
 							prefix+'labelPosition=right;align=left');
+					// 中文注释：插入顶点，标签显示在右侧，水平对齐左边；参数说明：parent为父节点，null为id，'Right'为标签，140,160为位置，60,60为宽高，样式为前缀加右侧标签和左对齐
+					// 中文注释：样式设置：labelPosition=right使标签位于顶点右侧；align=left使标签文本左对齐
 				}
 				finally
 				{
 					// Updates the display
+					// 中文注释：结束模型更新，刷新显示以应用所有更改
 					graph.getModel().endUpdate();
 				}
 			}
 		};
+		// 中文注释：方法目的：main函数初始化mxGraph，检查浏览器兼容性，创建图形并添加带不同标签位置的顶点
 	</script>
 </head>
 
 <!-- Page passes the container for the graph to the program -->
+<!-- 中文注释：页面通过onload事件将graphContainer传递给main函数 -->
 <body onload="main(document.getElementById('graphContainer'))">
+<!-- 中文注释：事件处理逻辑：页面加载时调用main函数，传入id为graphContainer的元素作为图形容器 -->
 
-	<!-- Creates a container for the graph with a grid wallpaper -->
-	<div id="graphContainer"
-		style="overflow:hidden;position:absolute;width:100%;height:100%;">
-	</div>
+<!-- Creates a container for the graph with a grid wallpaper -->
+<!-- 中文注释：创建图形容器，带有网格背景 -->
+<div id="graphContainer"
+	 style="overflow:hidden;position:absolute;width:100%;height:100%;">
+	<!-- 中文注释：样式设置：容器溢出隐藏，绝对定位，占满整个窗口 -->
+	<!-- 中文注释：关键变量graphContainer：HTML div元素，作为mxGraph的渲染容器 -->
+</div>
 </body>
 </html>
