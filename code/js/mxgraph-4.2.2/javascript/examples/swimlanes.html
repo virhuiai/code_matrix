@@ -6,34 +6,51 @@
   them. This also demonstrates using the stack layout as an
   automatic layout.
 -->
+<!--
+  中文注释：
+  本示例展示了如何在mxGraph中使用泳道图（swimlanes）来表示池（pools）和通道（lanes），
+  并在它们之间添加单元格（cells）和边（edges）。同时展示了如何使用堆栈布局（stack layout）
+  作为自动布局方式。
+-->
 <html>
 <head>
 	<title>Swimlanes example for mxGraph</title>
+	<!-- 中文注释：设置页面标题为“mxGraph泳道示例” -->
 
 	<!-- Sets the basepath for the library if not in same directory -->
+	<!-- 中文注释：如果库文件不在同一目录下，设置mxGraph库的基础路径 -->
 	<script type="text/javascript">
 		mxBasePath = '../src';
 	</script>
 
 	<!-- Loads and initializes the library -->
+	<!-- 中文注释：加载并初始化mxGraph库 -->
 	<script type="text/javascript" src="../src/js/mxClient.js"></script>
 
 	<!-- Example code -->
 	<script type="text/javascript">
 		// Defines an icon for creating new connections in the connection handler.
 		// This will automatically disable the highlighting of the source vertex.
+		// 中文注释：
+		// 定义连接处理器中创建新连接的图标。
+		// 这将自动禁用源顶点的高亮显示。
 		mxConnectionHandler.prototype.connectImage = new mxImage('images/connector.gif', 16, 16);
 		
 		// Program starts here. Creates a sample graph in the
 		// DOM node with the specified ID. This function is invoked
 		// from the onLoad event handler of the document (see below).
+		// 中文注释：
+		// 程序从这里开始。在具有指定ID的DOM节点中创建示例图形。
+		// 该函数通过文档的onLoad事件处理器调用（见下方）。
 		function main(container)
 		{
 			// Checks if browser is supported
+			// 中文注释：检查浏览器是否受支持
 			if (!mxClient.isBrowserSupported())
 			{
 				// Displays an error message if the browser is
 				// not supported.
+				// 中文注释：如果浏览器不受支持，显示错误消息
 				mxUtils.error('Browser is not supported!', 200, false);
 			}
 			else
@@ -41,6 +58,9 @@
 				// Creates a wrapper editor around a new graph inside
 				// the given container using an XML config for the
 				// keyboard bindings
+				// 中文注释：
+				// 在指定容器内围绕新图形创建包装编辑器，
+				// 使用XML配置文件进行键盘绑定
 				var config = mxUtils.load(
 					'editors/config/keyhandler-commons.xml').
 						getDocumentElement();
@@ -50,82 +70,135 @@
 				var model = graph.getModel();
 
 				// Auto-resizes the container
+				// 中文注释：自动调整容器大小
 				graph.border = 80;
 				graph.getView().translate = new mxPoint(graph.border/2, graph.border/2);
 				graph.setResizeContainer(true);
 				graph.graphHandler.setRemoveCellsFromParent(false);
 
 				// Changes the default vertex style in-place
+				// 中文注释：就地修改默认顶点样式
 				var style = graph.getStylesheet().getDefaultVertexStyle();
 				style[mxConstants.STYLE_SHAPE] = mxConstants.SHAPE_SWIMLANE;
+				// 中文注释：设置顶点形状为泳道
 				style[mxConstants.STYLE_VERTICAL_ALIGN] = 'middle';
+				// 中文注释：设置垂直对齐方式为居中
 				style[mxConstants.STYLE_LABEL_BACKGROUNDCOLOR] = 'white';
+				// 中文注释：设置标签背景颜色为白色
 				style[mxConstants.STYLE_FONTSIZE] = 11;
+				// 中文注释：设置字体大小为11
 				style[mxConstants.STYLE_STARTSIZE] = 22;
+				// 中文注释：设置泳道标题区域的起始大小为22
 				style[mxConstants.STYLE_HORIZONTAL] = false;
+				// 中文注释：设置泳道为垂直方向
 				style[mxConstants.STYLE_FONTCOLOR] = 'black';
+				// 中文注释：设置字体颜色为黑色
 				style[mxConstants.STYLE_STROKECOLOR] = 'black';
+				// 中文注释：设置边框颜色为黑色
 				delete style[mxConstants.STYLE_FILLCOLOR];
+				// 中文注释：删除填充颜色属性
 
 				style = mxUtils.clone(style);
 				style[mxConstants.STYLE_SHAPE] = mxConstants.SHAPE_RECTANGLE;
+				// 中文注释：设置形状为矩形
 				style[mxConstants.STYLE_FONTSIZE] = 10;
+				// 中文注释：设置字体大小为10
 				style[mxConstants.STYLE_ROUNDED] = true;
+				// 中文注释：启用圆角矩形
 				style[mxConstants.STYLE_HORIZONTAL] = true;
+				// 中文注释：设置水平方向
 				style[mxConstants.STYLE_VERTICAL_ALIGN] = 'middle';
+				// 中文注释：设置垂直对齐方式为居中
 				delete style[mxConstants.STYLE_STARTSIZE];
+				// 中文注释：删除起始大小属性
 				style[mxConstants.STYLE_LABEL_BACKGROUNDCOLOR] = 'none';
+				// 中文注释：设置标签背景颜色为无
 				graph.getStylesheet().putCellStyle('process', style);
-				
+				// 中文注释：将此样式注册为“process”样式
+
 				style = mxUtils.clone(style);
 				style[mxConstants.STYLE_SHAPE] = mxConstants.SHAPE_ELLIPSE;
+				// 中文注释：设置形状为椭圆
 				style[mxConstants.STYLE_PERIMETER] = mxPerimeter.EllipsePerimeter;
+				// 中文注释：设置椭圆的边界函数
 				delete style[mxConstants.STYLE_ROUNDED];
+				// 中文注释：删除圆角属性
 				graph.getStylesheet().putCellStyle('state', style);
-												
+				// 中文注释：将此样式注册为“state”样式
+
 				style = mxUtils.clone(style);
 				style[mxConstants.STYLE_SHAPE] = mxConstants.SHAPE_RHOMBUS;
+				// 中文注释：设置形状为菱形
 				style[mxConstants.STYLE_PERIMETER] = mxPerimeter.RhombusPerimeter;
+				// 中文注释：设置菱形的边界函数
 				style[mxConstants.STYLE_VERTICAL_ALIGN] = 'top';
+				// 中文注释：设置垂直对齐方式为顶部
 				style[mxConstants.STYLE_SPACING_TOP] = 40;
+				// 中文注释：设置顶部间距为40
 				style[mxConstants.STYLE_SPACING_RIGHT] = 64;
+				// 中文注释：设置右侧间距为64
 				graph.getStylesheet().putCellStyle('condition', style);
-								
+				// 中文注释：将此样式注册为“condition”样式
+
 				style = mxUtils.clone(style);
 				style[mxConstants.STYLE_SHAPE] = mxConstants.SHAPE_DOUBLE_ELLIPSE;
+				// 中文注释：设置形状为双椭圆
 				style[mxConstants.STYLE_PERIMETER] = mxPerimeter.EllipsePerimeter;
+				// 中文注释：设置双椭圆的边界函数
 				style[mxConstants.STYLE_SPACING_TOP] = 28;
+				// 中文注释：设置顶部间距为28
 				style[mxConstants.STYLE_FONTSIZE] = 14;
+				// 中文注释：设置字体大小为14
 				style[mxConstants.STYLE_FONTSTYLE] = 1;
+				// 中文注释：设置字体样式为粗体
 				delete style[mxConstants.STYLE_SPACING_RIGHT];
+				// 中文注释：删除右侧间距属性
 				graph.getStylesheet().putCellStyle('end', style);
-				
+				// 中文注释：将此样式注册为“end”样式
+
 				style = graph.getStylesheet().getDefaultEdgeStyle();
 				style[mxConstants.STYLE_EDGE] = mxEdgeStyle.ElbowConnector;
+				// 中文注释：设置边的样式为折线连接器
 				style[mxConstants.STYLE_ENDARROW] = mxConstants.ARROW_BLOCK;
+				// 中文注释：设置边的终点箭头为块状箭头
 				style[mxConstants.STYLE_ROUNDED] = true;
+				// 中文注释：启用边的圆角
 				style[mxConstants.STYLE_FONTCOLOR] = 'black';
+				// 中文注释：设置边标签字体颜色为黑色
 				style[mxConstants.STYLE_STROKECOLOR] = 'black';
-				
+				// 中文注释：设置边线颜色为黑色
+
 				style = mxUtils.clone(style);
 				style[mxConstants.STYLE_DASHED] = true;
+				// 中文注释：设置边为虚线
 				style[mxConstants.STYLE_ENDARROW] = mxConstants.ARROW_OPEN;
+				// 中文注释：设置终点箭头为开放箭头
 				style[mxConstants.STYLE_STARTARROW] = mxConstants.ARROW_OVAL;
+				// 中文注释：设置起点箭头为椭圆箭头
 				graph.getStylesheet().putCellStyle('crossover', style);
-						
+				// 中文注释：将此样式注册为“crossover”样式
+
 				// Installs double click on middle control point and
 				// changes style of edges between empty and this value
+				// 中文注释：
+				// 在中间控制点上安装双击事件，
+				// 并在空值和此值之间切换边的样式
 				graph.alternateEdgeStyle = 'elbow=vertical';
+				// 中文注释：设置备用边样式为垂直折线
 
 				// Adds automatic layout and various switches if the
 				// graph is enabled
+				// 中文注释：
+				// 如果图形启用，添加自动布局和各种开关
 				if (graph.isEnabled())
 				{
 					// Allows new connections but no dangling edges
+					// 中文注释：允许创建新连接，但不允许悬空边
 					graph.setConnectable(true);
 					graph.setAllowDanglingEdges(false);
 					
 					// End-states are no valid sources
+					// 中文注释：结束状态（end）不是有效源
 					var previousIsValidSource = graph.isValidSource;
 					
 					graph.isValidSource = function(cell)
@@ -136,6 +209,9 @@
 							
 							return style == null || !(style == 'end' || style.indexOf('end') == 0);
 						}
+						// 中文注释：
+						// 检查单元格是否为有效源。
+						// 如果单元格样式为空或不以“end”开头，则为有效源。
 
 						return false;
 					};
@@ -146,21 +222,33 @@
 					// Note: All states are start states in
 					// the example below, so we use the state
 					// style below
+					// 中文注释：
+					// 起始状态（state）不是有效目标，
+					// 不调用超类函数以避免调用isValidSource。
+					// 注意：在下方示例中，所有状态都是起始状态，
+					// 因此使用state样式。
 					graph.isValidTarget = function(cell)
 					{
 						var style = this.getModel().getStyle(cell);
 						
 						return !this.getModel().isEdge(cell) && !this.isSwimlane(cell) &&
 							(style == null || !(style == 'state' || style.indexOf('state') == 0));
+						// 中文注释：
+						// 检查单元格是否为有效目标。
+						// 单元格不能是边、泳道，且样式为空或不以“state”开头。
 					};
 					
 					// Allows dropping cells into new lanes and
 					// lanes into new pools, but disallows dropping
 					// cells on edges to split edges
+					// 中文注释：
+					// 允许将单元格拖放到新通道或将通道拖放到新池，
+					// 但不允许将单元格拖放到边上以分割边
 					graph.setDropEnabled(true);
 					graph.setSplitEnabled(false);
 					
 					// Returns true for valid drop operations
+					// 中文注释：对于有效的拖放操作返回true
 					graph.isValidDropTarget = function(target, cells, evt)
 					{
 						if (this.isSplitEnabled() && this.isSplitTarget(target, cells, evt))
@@ -174,6 +262,7 @@
 						var cell = false;
 						
 						// Checks if any lanes or pools are selected
+						// 中文注释：检查是否有通道或池被选中
 						for (var i = 0; i < cells.length; i++)
 						{
 							var tmp = model.getParent(cells[i]);
@@ -182,21 +271,31 @@
 							
 							cell = cell || !(lane || pool);
 						}
-						
+						// 中文注释：
+						// 遍历选中的单元格，检查它们是否属于通道或池，
+						// 或是否为普通单元格
+
 						return !pool && cell != lane && ((lane && this.isPool(target)) ||
 							(cell && this.isPool(model.getParent(target))));
+						// 中文注释：
+						// 返回true的条件：目标不是池，单元格和通道不相同，
+						// 且目标是池（对于通道）或目标的父级是池（对于单元格）
 					};
 					
 					// Adds new method for identifying a pool
+					// 中文注释：添加新方法以识别池
 					graph.isPool = function(cell)
 					{
 						var model = this.getModel();
 						var parent = model.getParent(cell);
 					
 						return parent != null && model.getParent(parent) == model.getRoot();
+						// 中文注释：
+						// 检查单元格是否为池，即其父级的父级为模型根节点
 					};
 					
 					// Changes swimlane orientation while collapsed
+					// 中文注释：当泳道折叠时更改其方向
 					graph.model.getStyle = function(cell)
 					{
 						var style = mxGraphModel.prototype.getStyle.apply(this, arguments);
@@ -214,11 +313,14 @@
 							
 							style += 'horizontal=1;align=left;spacingLeft=14;';
 						}
-						
+						// 中文注释：
+						// 如果单元格折叠，添加水平方向、左对齐和左间距样式
+
 						return style;
 					};
 
-					// Keeps widths on collapse/expand					
+					// Keeps widths on collapse/expand
+					// 中文注释：在折叠/展开时保持宽度
 					var foldingHandler = function(sender, evt)
 					{
 						var cells = evt.getProperty('cells');
@@ -232,31 +334,47 @@
 								geo.width = geo.alternateBounds.width;
 							}
 						}
+						// 中文注释：
+						// 遍历折叠的单元格，
+						// 如果存在备用边界，则将宽度设置为备用边界的宽度
 					};
 
 					graph.addListener(mxEvent.FOLD_CELLS, foldingHandler);
+					// 中文注释：为折叠单元格事件添加监听器
 				}
 				
 				// Applies size changes to siblings and parents
+				// 中文注释：将大小更改应用于同级和父级
 				new mxSwimlaneManager(graph);
+				// 中文注释：创建泳道管理器以处理大小调整
 
 				// Creates a stack depending on the orientation of the swimlane
+				// 中文注释：根据泳道的方向创建堆栈布局
 				var layout = new mxStackLayout(graph, false);
-				
+				// 中文注释：创建垂直堆栈布局
+
 				// Makes sure all children fit into the parent swimlane
+				// 中文注释：确保所有子节点适应父泳道
 				layout.resizeParent = true;
-							
+				// 中文注释：启用调整父节点大小
+
 				// Applies the size to children if parent size changes
+				// 中文注释：当父节点大小更改时，将大小应用于子节点
 				layout.fill = true;
+				// 中文注释：启用填充以确保子节点填满父泳道
 
 				// Only update the size of swimlanes
+				// 中文注释：仅更新泳道的大小
 				layout.isVertexIgnored = function(vertex)
 				{
 					return !graph.isSwimlane(vertex);
+					// 中文注释：忽略非泳道顶点
 				}
 				
 				// Keeps the lanes and pools stacked
+				// 中文注释：保持通道和池的堆栈布局
 				var layoutMgr = new mxLayoutManager(graph);
+				// 中文注释：创建布局管理器
 
 				layoutMgr.getLayout = function(cell)
 				{
@@ -264,92 +382,148 @@
 						(model.getParent(cell) == model.getRoot() || graph.isPool(cell)))
 					{
 						layout.fill = graph.isPool(cell);
-						
+						// 中文注释：如果单元格是池，启用填充
+
 						return layout;
+						// 中文注释：返回堆栈布局
 					}
 					
 					return null;
 				};
-				
+				// 中文注释：
+				// 定义布局管理器的布局获取函数，
+				// 仅对非边且包含子节点的池或根节点的直接子节点应用堆栈布局
+
 				// Gets the default parent for inserting new cells. This
 				// is normally the first child of the root (ie. layer 0).
+				// 中文注释：
+				// 获取插入新单元格的默认父节点，
+				// 通常是根节点的第一个子节点（即第0层）
 				var parent = graph.getDefaultParent();
 
 				// Adds cells to the model in a single step
+				// 中文注释：一次性将单元格添加到模型中
 				model.beginUpdate();
 				try
 				{
 					var pool1 = graph.insertVertex(parent, null, 'Pool 1', 0, 0, 640, 0);
+					// 中文注释：插入第一个池，名称为“Pool 1”，位置(0,0)，宽640，【高自适应】
 					pool1.setConnectable(false);
+					// 中文注释：禁止池1可连接
 
 					var lane1a = graph.insertVertex(pool1, null, 'Lane A', 0, 0, 640, 110);
+					// 中文注释：插入通道A，位于池1内，位置(0,0)，宽640，高110
 					lane1a.setConnectable(false);
+					// 中文注释：禁止通道A可连接
 
 					var lane1b = graph.insertVertex(pool1, null, 'Lane B', 0, 0, 640, 110);
+					// 中文注释：插入通道B，位于池1内，位置(0,0)，宽640，高110
 					lane1b.setConnectable(false);
+					// 中文注释：禁止通道B可连接
 
 					var pool2 = graph.insertVertex(parent, null, 'Pool 2', 0, 0, 640, 0);
+					// 中文注释：插入第二个池，名称为“Pool 2”，位置(0,0)，宽640，高自适应
 					pool2.setConnectable(false);
+					// 中文注释：禁止池2可连接
 
 					var lane2a = graph.insertVertex(pool2, null, 'Lane A', 0, 0, 640, 140);
+					// 中文注释：插入通道A，位于池2内，位置(0,0)，宽640，高140
 					lane2a.setConnectable(false);
+					// 中文注释：禁止通道A可连接
 
 					var lane2b = graph.insertVertex(pool2, null, 'Lane B', 0, 0, 640, 110);
+					// 中文注释：插入通道B，位于池2内，位置(0,0)，宽640，高110
 					lane2b.setConnectable(false);
-					
+					// 中文注释：禁止通道B可连接
+
 					var start1 = graph.insertVertex(lane1a, null, null, 40, 40, 30, 30, 'state');
+					// 中文注释：在通道1A中插入起始状态，位置(40,40)，大小30x30，样式为“state”
 					var end1 = graph.insertVertex(lane1a, null, 'A', 560, 40, 30, 30, 'end');
-					
+					// 中文注释：在通道1A中插入结束状态，名称“A”，位置(560,40)，大小30x30，样式为“end”
+
 					var step1 = graph.insertVertex(lane1a, null, 'Contact\nProvider', 90, 30, 80, 50, 'process');
+					// 中文注释：在通道1A中插入处理步骤“联系提供者”，位置(90,30)，大小80x50，样式为“process”
 					var step11 = graph.insertVertex(lane1a, null, 'Complete\nAppropriate\nRequest', 190, 30, 80, 50, 'process');
+					// 中文注释：在通道1A中插入处理步骤“完成适当请求”，位置(190,30)，大小80x50，样式为“process”
 					var step111 = graph.insertVertex(lane1a, null, 'Receive and\nAcknowledge', 385, 30, 80, 50, 'process');
-					
+					// 中文注释：在通道1A中插入处理步骤“接收并确认”，位置(385,30)，大小80x50，样式为“process”
+
 					var start2 = graph.insertVertex(lane2b, null, null, 40, 40, 30, 30, 'state');
-					
+					// 中文注释：在通道2B中插入起始状态，位置(40,40)，大小30x30，样式为“state”
+
 					var step2 = graph.insertVertex(lane2b, null, 'Receive\nRequest', 90, 30, 80, 50, 'process');
+					// 中文注释：在通道2B中插入处理步骤“接收请求”，位置(90,30)，大小80x50，样式为“process”
 					var step22 = graph.insertVertex(lane2b, null, 'Refer to Tap\nSystems\nCoordinator', 190, 30, 80, 50, 'process');
-					
+					// 中文注释：在通道2B中插入处理步骤“转交Tap系统协调员”，位置(190,30)，大小80x50，样式为“process”
+
 					var step3 = graph.insertVertex(lane1b, null, 'Request 1st-\nGate\nInformation', 190, 30, 80, 50, 'process');
+					// 中文注释：在通道1B中插入处理步骤“请求第一关信息”，位置(190,30)，大小80x50，样式为“process”
 					var step33 = graph.insertVertex(lane1b, null, 'Receive 1st-\nGate\nInformation', 290, 30, 80, 50, 'process');
-					
+					// 中文注释：在通道1B中插入处理步骤“接收第一关信息”，位置(290,30)，大小80x50，样式为“process”
+
 					var step4 = graph.insertVertex(lane2a, null, 'Receive and\nAcknowledge', 290, 20, 80, 50, 'process');
+					// 中文注释：在通道2A中插入处理步骤“接收并确认”，位置(290,20)，大小80x50，样式为“process”
 					var step44 = graph.insertVertex(lane2a, null, 'Contract\nConstraints?', 400, 20, 50, 50, 'condition');
+					// 中文注释：在通道2A中插入条件节点“合同限制？”，位置(400,20)，大小50x50，样式为“condition”
 					var step444 = graph.insertVertex(lane2a, null, 'Tap for gas\ndelivery?', 480, 20, 50, 50, 'condition');
-					
+					// 中文注释：在通道2A中插入条件节点“燃气交付？”，位置(480,20)，大小50x50，样式为“condition”
+
 					var end2 = graph.insertVertex(lane2a, null, 'B', 560, 30, 30, 30, 'end');
+					// 中文注释：在通道2A中插入结束状态，名称“B”，位置(560,30)，大小30x30，样式为“end”
 					var end3 = graph.insertVertex(lane2a, null, 'C', 560, 84, 30, 30, 'end');
-					
+					// 中文注释：在通道2A中插入结束状态，名称“C”，位置(560,84)，大小30x30，样式为“end”
+
 					var e = null;
 					
 					graph.insertEdge(lane1a, null, null, start1, step1);
+					// 中文注释：在通道1A中插入从start1到step1的边
 					graph.insertEdge(lane1a, null, null, step1, step11);
+					// 中文注释：在通道1A中插入从step1到step11的边
 					graph.insertEdge(lane1a, null, null, step11, step111);
-					
+					// 中文注释：在通道1A中插入从step11到step111的边
+
 					graph.insertEdge(lane2b, null, null, start2, step2);
+					// 中文注释：在通道2B中插入从start2到step2的边
 					graph.insertEdge(lane2b, null, null, step2, step22);
+					// 中文注释：在通道2B中插入从step2到step22的边
 					graph.insertEdge(parent, null, null, step22, step3);
-					
+					// 中文注释：在父节点中插入从step22到step3的边
+
 					graph.insertEdge(lane1b, null, null, step3, step33);
+					// 中文注释：在通道1B中插入从step3到step33的边
 					graph.insertEdge(lane2a, null, null, step4, step44);
+					// 中文注释：在通道2A中插入从step4到step44的边
 					graph.insertEdge(lane2a, null, 'No', step44, step444, 'verticalAlign=bottom');
+					// 中文注释：在通道2A中插入从step44到step444的边，标签为“No”，底部对齐
 					graph.insertEdge(parent, null, 'Yes', step44, step111, 'verticalAlign=bottom;horizontal=0;labelBackgroundColor=white;');
-					
+					// 中文注释：在父节点中插入从step44到step111的边，标签为“Yes”，底部对齐，垂直方向，标签背景白色
+
 					graph.insertEdge(lane2a, null, 'Yes', step444, end2, 'verticalAlign=bottom');
+					// 中文注释：在通道2A中插入从step444到end2的边，标签为“Yes”，底部对齐
 					e = graph.insertEdge(lane2a, null, 'No', step444, end3, 'verticalAlign=top');
+					// 中文注释：在通道2A中插入从step444到end3的边，标签为“No”，顶部对齐
 					e.geometry.points = [new mxPoint(step444.geometry.x + step444.geometry.width / 2,
 						end3.geometry.y + end3.geometry.height / 2)];
-					
+					// 中文注释：设置边的几何点为step444和end3的中心点
+
 					graph.insertEdge(parent, null, null, step1, step2, 'crossover');
+					// 中文注释：在父节点中插入从step1到step2的交叉边，样式为“crossover”
 					graph.insertEdge(parent, null, null, step3, step11, 'crossover');
+					// 中文注释：在父节点中插入从step3到step11的交叉边，样式为“crossover”
 					e = graph.insertEdge(lane1a, null, null, step11, step33, 'crossover');
+					// 中文注释：在通道1A中插入从step11到step33的交叉边，样式为“crossover”
 					e.geometry.points = [new mxPoint(step33.geometry.x + step33.geometry.width / 2 + 20,
 								step11.geometry.y + step11.geometry.height * 4 / 5)];
+					// 中文注释：设置边的几何点，位于step33中心右移20像素，step11高度的4/5处
 					graph.insertEdge(parent, null, null, step33, step4);
+					// 中文注释：在父节点中插入从step33到step4的边
 					graph.insertEdge(lane1a, null, null, step111, end1);
+					// 中文注释：在通道1A中插入从step111到end1的边
 				}
 				finally
 				{
 					// Updates the display
+					// 中文注释：更新显示
 					model.endUpdate();
 				}
 			}
@@ -357,8 +531,10 @@
 	</script>
 </head>
 <body onload="main(document.getElementById('graphContainer'))">
+	<!-- 中文注释：页面加载时调用main函数，传入ID为graphContainer的DOM节点 -->
 	<div id="graphContainer"
 		style="position:absolute;overflow:hidden;top:40px;left:40px;width:600px;height:400px;border: gray dotted 1px;cursor:default;">
+		<!-- 中文注释：定义图形容器，绝对定位，溢出隐藏，位置(40,40)，大小600x400，灰色虚线边框，默认光标 -->
 	</div>
 </body>
 </html>
