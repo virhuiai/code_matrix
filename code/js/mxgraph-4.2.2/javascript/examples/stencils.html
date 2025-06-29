@@ -1,3 +1,4 @@
+
 <!--
   Copyright (c) 2006-2013, JGraph Ltd
   
@@ -9,239 +10,321 @@
 <head>
 	<title>Stencils example for mxGraph</title>
 
-	<!-- Sets the basepath for the library if not in same directory -->
+	<!-- 设置库的基础路径，如果库不在同一目录下 -->
+	<!-- 设置 mxGraph 库的基础路径 -->
 	<script type="text/javascript">
 		mxBasePath = '../src';
 	</script>
 
-	<!-- Loads and initializes the library -->
+	<!-- 加载并初始化 mxGraph 库 -->
 	<script type="text/javascript" src="../src/js/mxClient.js"></script>
 
-	<!-- Example code -->
+	<!-- 示例代码 -->
 	<script type="text/javascript">
-		// Program starts here. Creates a sample graph in the
-		// DOM node with the specified ID. This function is invoked
-		// from the onLoad event handler of the document (see below).
+		// 程序从这里开始。在具有指定 ID 的 DOM 节点中创建示例图形。
+		// 此函数在文档的 onLoad 事件处理程序中被调用（见下方）。
+		// 主函数，用于初始化图形并在指定容器中绘制
 		function main(container)
 		{
-			// Checks if the browser is supported
+			// 检查浏览器是否受支持
 			if (!mxClient.isBrowserSupported())
 			{
-				// Displays an error message if the browser is not supported.
+				// 如果浏览器不受支持，显示错误消息
 				mxUtils.error('Browser is not supported!', 200, false);
 			}
 			else
 			{
-				// Sets the global shadow color
+				// 设置全局阴影颜色
 				mxConstants.SHADOWCOLOR = '#C0C0C0';
+				// 设置阴影透明度
 				mxConstants.SHADOW_OPACITY = 0.5;
+				// 设置阴影的水平偏移
 				mxConstants.SHADOW_OFFSET_X = 4;
+				// 设置阴影的垂直偏移
 				mxConstants.SHADOW_OFFSET_Y = 4;
+				// 设置控制柄的填充颜色
 				mxConstants.HANDLE_FILLCOLOR = '#99ccff';
+				// 设置控制柄的边框颜色
 				mxConstants.HANDLE_STROKECOLOR = '#0088cf';
+				// 设置顶点选中时的颜色
 				mxConstants.VERTEX_SELECTION_COLOR = '#00a8ff';
 				
-				// Enables connections along the outline
+				// 启用沿轮廓的连接
 				mxConnectionHandler.prototype.outlineConnect = true;
+				// 启用边标签的控制柄
 				mxEdgeHandler.prototype.manageLabelHandle = true;
+				// 启用边的轮廓连接
 				mxEdgeHandler.prototype.outlineConnect = true;
+				// 保持高亮显示在顶层
 				mxCellHighlight.prototype.keepOnTop = true;
 				
-				// Enable rotation handle
+				// 启用旋转控制柄
 				mxVertexHandler.prototype.rotationEnabled = true;
 				
-				// Uses the shape for resize previews
+				// 使用形状进行调整大小的预览
+				// 重写顶点处理器以创建选择形状
 				mxVertexHandler.prototype.createSelectionShape = function(bounds)
 				{
+					// 获取当前状态的形状样式
 					var key = this.state.style[mxConstants.STYLE_SHAPE];
+					// 从注册表中获取模板
 					var stencil = mxStencilRegistry.getStencil(key);
 					var shape = null;
 					
 					if (stencil != null)
 					{
+						// 如果模板存在，创建新形状
 						shape = new mxShape(stencil);
+						// 应用当前状态
 						shape.apply(this.state);
 					}
 					else
 					{
+						// 否则使用默认形状构造函数
 						shape = new this.state.shape.constructor();
 					}
 					
+					// 设置形状为轮廓模式
 					shape.outline = true;
+					// 设置形状的边界
 					shape.bounds = bounds;
+					// 设置边框颜色
 					shape.stroke = mxConstants.HANDLE_STROKECOLOR;
+					// 设置边框宽度
 					shape.strokewidth = this.getSelectionStrokeWidth();
+					// 设置是否为虚线
 					shape.isDashed = this.isSelectionDashed();
+					// 禁用阴影
 					shape.isShadow = false;
 				    
+					// 返回创建的形状
 					return shape;
 				};
 				
-				// Defines a custom stencil via the canvas API as defined here:
+				// 通过 canvas API 定义自定义形状，参考：
 				// http://jgraph.github.io/mxgraph/docs/js-api/files/util/mxXmlCanvas2D-js.html
+				// 定义一个自定义形状类
 				function CustomShape()
 				{
+					// 调用父类构造函数
 					mxShape.call(this);
 				};
+				// 继承 mxShape 类
 				mxUtils.extend(CustomShape, mxShape);
+				// 定义背景绘制方法
 				CustomShape.prototype.paintBackground = function(c, x, y, w, h)
 				{
+					// 平移画布坐标
 					c.translate(x, y);
 			
-					// Head
+					// 绘制头部（椭圆）
 					c.ellipse(w / 4, 0, w / 2, h / 4);
+					// 填充并描边
 					c.fillAndStroke();
 			
+					// 开始新的路径
 					c.begin();
+					// 绘制身体（从头部到底部）
 					c.moveTo(w / 2, h / 4);
 					c.lineTo(w / 2, 2 * h / 3);
 					
-					// Arms
+					// 绘制手臂
 					c.moveTo(w / 2, h / 3);
 					c.lineTo(0, h / 3);
 					c.moveTo(w / 2, h / 3);
 					c.lineTo(w, h / 3);
 					
-					// Legs
+					// 绘制腿部
 					c.moveTo(w / 2, 2 * h / 3);
 					c.lineTo(0, h);
 					c.moveTo(w / 2, 2 * h / 3);
 					c.lineTo(w, h);
+					// 结束路径
 					c.end();
 					
+					// 描边
 					c.stroke();
 				};
 
-				// Replaces existing actor shape
+				// 替换现有的 actor 形状
 				mxCellRenderer.registerShape('customShape', CustomShape);
 				
-				// Loads the stencils into the registry
+				// 加载模板到注册表
 				var req = mxUtils.load('stencils.xml');
+				// 获取 XML 文档的根元素
 				var root = req.getDocumentElement();
+				// 获取第一个子节点
 				var shape = root.firstChild;
 				
+				// 遍历所有形状节点
 				while (shape != null)
 				{
 					if (shape.nodeType == mxConstants.NODETYPE_ELEMENT)
 					{
+						// 将形状添加到模板注册表
 						mxStencilRegistry.addStencil(shape.getAttribute('name'), new mxStencil(shape));
 					}
 					
+					// 移动到下一个节点
 					shape = shape.nextSibling;
 				}
 				
+				// 禁用容器中的右键菜单
 				mxEvent.disableContextMenu(container);
 				
-				// Creates the graph inside the given container
+				// 在指定容器中创建图形
 				var graph = new mxGraph(container);
+				// 启用连接功能
 				graph.setConnectable(true);
+				// 启用工具提示
 				graph.setTooltips(true);
+				// 启用平移功能
 				graph.setPanning(true);
 				
+				// 重写工具提示获取方法
 				graph.getTooltipForCell = function(cell)
 				{
 					if (cell != null)
 					{
+						// 返回单元格的样式
 						return cell.style;
 					}
 					
 					return null;
 				};
 				
-				// Changes default styles
+				// 修改默认样式
 				var style = graph.getStylesheet().getDefaultEdgeStyle();
+				// 设置边的样式为正交样式
 				style[mxConstants.STYLE_EDGE] = 'orthogonalEdgeStyle';
+				// 获取默认顶点样式
 				style = graph.getStylesheet().getDefaultVertexStyle();
+				// 设置填充颜色
 				style[mxConstants.STYLE_FILLCOLOR] = '#adc5ff';
+				// 设置渐变颜色
 				style[mxConstants.STYLE_GRADIENTCOLOR] = '#7d85df';
+				// 启用阴影
 				style[mxConstants.STYLE_SHADOW] = '1';
 				
-				// Enables rubberband selection
+				// 启用橡皮筋选择
 				new mxRubberband(graph);
 				
-				// Gets the default parent for inserting new cells. This
-				// is normally the first child of the root (ie. layer 0).
+				// 获取默认父节点，用于插入新单元格
+				// 通常是根节点的第一个子节点（即第 0 层）
 				var parent = graph.getDefaultParent();
 								
-				// Adds cells to the model in a single step
+				// 在单一事务中添加单元格到模型
 				graph.getModel().beginUpdate();
 				try
 				{
+					// 插入顶点 A1
 					var v1 = graph.insertVertex(parent, null, 'A1', 20, 20, 40, 80, 'shape=and');
+					// 插入顶点 A2
 					var v2 = graph.insertVertex(parent, null, 'A2', 20, 220, 40, 80, 'shape=and');
+					// 插入顶点 X1
 					var v3 = graph.insertVertex(parent, null, 'X1', 160, 110, 80, 80, 'shape=xor');
+					// 插入边，连接 v1 和 v3
 					var e1 = graph.insertEdge(parent, null, '', v1, v3);
+					// 设置边的折点
 					e1.geometry.points = [new mxPoint(90, 60), new mxPoint(90, 130)];
+					// 插入边，连接 v2 和 v3
 					var e2 = graph.insertEdge(parent, null, '', v2, v3);
+					// 设置边的折点
 					e2.geometry.points = [new mxPoint(90, 260), new mxPoint(90, 170)];
 					
+					// 插入顶点 A3
 					var v4 = graph.insertVertex(parent, null, 'A3', 520, 20, 40, 80, 'shape=customShape;flipH=1');
+					// 插入顶点 A4
 					var v5 = graph.insertVertex(parent, null, 'A4', 520, 220, 40, 80, 'shape=and;flipH=1');
+					// 插入顶点 X2
 					var v6 = graph.insertVertex(parent, null, 'X2', 340, 110, 80, 80, 'shape=xor;flipH=1');
+					// 插入边，连接 v4 和 v6
 					var e3 = graph.insertEdge(parent, null, '', v4, v6);
+					// 设置边的折点
 					e3.geometry.points = [new mxPoint(490, 60), new mxPoint(130, 130)];
+					// 插入边，连接 v5 和 v6
 					var e4 = graph.insertEdge(parent, null, '', v5, v6);
+					// 设置边的折点
 					e4.geometry.points = [new mxPoint(490, 260), new mxPoint(130, 170)];
 					
+					// 插入顶点 O1
 					var v7 = graph.insertVertex(parent, null, 'O1', 250, 260, 80, 60, 'shape=or;direction=south');
+					// 插入边，连接 v6 和 v7
 					var e5 = graph.insertEdge(parent, null, '', v6, v7);
+					// 设置边的折点
 					e5.geometry.points = [new mxPoint(310, 150)];
+					// 插入边，连接 v3 和 v7
 					var e6 = graph.insertEdge(parent, null, '', v3, v7);
+					// 设置边的折点
 					e6.geometry.points = [new mxPoint(270, 150)];
 					
+					// 插入边，连接 v7 和 v5
 					var e7 = graph.insertEdge(parent, null, '', v7, v5);
+					// 设置边的折点
 					e7.geometry.points = [new mxPoint(290, 370)];
 				}
 				finally
 				{
-					// Updates the display
+					// 更新显示
 					graph.getModel().endUpdate();
 				}
 				
+				// 添加水平翻转按钮
 				document.body.appendChild(mxUtils.button('FlipH', function()
 				{
+					// 切换单元格的水平翻转样式
 					graph.toggleCellStyles(mxConstants.STYLE_FLIPH);
 				}));
 				
+				// 添加垂直翻转按钮
 				document.body.appendChild(mxUtils.button('FlipV', function()
 				{
+					// 切换单元格的垂直翻转样式
 					graph.toggleCellStyles(mxConstants.STYLE_FLIPV);
 				}));
 
+				// 添加空格
 				document.body.appendChild(document.createTextNode('\u00a0'));
 				document.body.appendChild(document.createTextNode('\u00a0'));
 				document.body.appendChild(document.createTextNode('\u00a0'));
 				document.body.appendChild(document.createTextNode('\u00a0'));
 
+				// 添加旋转按钮
 				document.body.appendChild(mxUtils.button('Rotate', function()
 				{
+					// 获取选中的单元格
 					var cell = graph.getSelectionCell();
 					
 					if (cell != null)
 					{
+						// 获取单元格的几何信息
 						var geo = graph.getCellGeometry(cell);
 	
 						if (geo != null)
 						{
+							// 开始更新模型
 							graph.getModel().beginUpdate();
 							try
 							{
-								// Rotates the size and position in the geometry
+								// 旋转几何尺寸和位置
 								geo = geo.clone();
 								geo.x += geo.width / 2 - geo.height / 2;
 								geo.y += geo.height / 2 - geo.width / 2;
 								var tmp = geo.width;
 								geo.width = geo.height;
 								geo.height = tmp;
+								// 设置新的几何信息
 								graph.getModel().setGeometry(cell, geo);
 								
-								// Reads the current direction and advances by 90 degrees
+								// 读取当前方向并顺时针旋转 90 度
 								var state = graph.view.getState(cell);
 								
 								if (state != null)
 								{
+									// 获取当前方向，默认为 'east'
 									var dir = state.style[mxConstants.STYLE_DIRECTION] || 'east'/*default*/;
 									
+									// 根据当前方向确定新的方向
 									if (dir == 'east')
 									{
 										dir = 'south';
@@ -259,61 +342,79 @@
 										dir = 'east';
 									}
 									
+									// 设置新的方向样式
 									graph.setCellStyles(mxConstants.STYLE_DIRECTION, dir, [cell]);
 								}
 							}
 							finally
 							{
+								// 结束模型更新
 								graph.getModel().endUpdate();
 							}
 						}
 					}
 				}));
 
+				// 添加空格
 				document.body.appendChild(document.createTextNode('\u00a0'));
 				document.body.appendChild(document.createTextNode('\u00a0'));
 				document.body.appendChild(document.createTextNode('\u00a0'));
 				document.body.appendChild(document.createTextNode('\u00a0'));
 				
+				// 添加“And”形状按钮
 				document.body.appendChild(mxUtils.button('And', function()
 				{
+					// 设置单元格形状为“and”
 					graph.setCellStyles(mxConstants.STYLE_SHAPE, 'and');
 				}));
+				// 添加“Or”形状按钮
 				document.body.appendChild(mxUtils.button('Or', function()
 				{
+					// 设置单元格形状为“or”
 					graph.setCellStyles(mxConstants.STYLE_SHAPE, 'or');
 				}));
+				// 添加“Xor”形状按钮
 				document.body.appendChild(mxUtils.button('Xor', function()
 				{
+					// 设置单元格形状为“xor”
 					graph.setCellStyles(mxConstants.STYLE_SHAPE, 'xor');
 				}));
 
+				// 添加空格
 				document.body.appendChild(document.createTextNode('\u00a0'));
 				document.body.appendChild(document.createTextNode('\u00a0'));
 				document.body.appendChild(document.createTextNode('\u00a0'));
 				document.body.appendChild(document.createTextNode('\u00a0'));
 				
+				// 添加样式编辑按钮
 				document.body.appendChild(mxUtils.button('Style', function()
 				{
+					// 获取选中的单元格
 					var cell = graph.getSelectionCell();
 					
 					if (cell != null)
 					{
+						// 弹出提示框以编辑样式
 						var style = mxUtils.prompt('Style', graph.getModel().getStyle(cell));
 						
 						if (style != null)
 						{
+							// 设置新的样式
 							graph.getModel().setStyle(cell, style);
 						}
 					}
 				}));
 				
+				// 添加放大按钮
 				document.body.appendChild(mxUtils.button('+', function()
 				{
+					// 放大图形
 					graph.zoomIn();
 				}));
+				// 添加缩小按钮
 				document.body.appendChild(mxUtils.button('-', function()
 				{
+					// 缩小图形
 					graph.zoomOut();
 				}));
 			}
@@ -321,10 +422,10 @@
 	</script>
 </head>
 
-<!-- Page passes the container for the graph to the program -->
+<!-- 页面将图形容器传递给程序 -->
 <body onload="main(document.getElementById('graphContainer'))">
 
-	<!-- Creates a container for the graph with a grid wallpaper -->
+	<!-- 创建一个带有网格背景的图形容器 -->
 	<div id="graphContainer"
 		style="position:relative;overflow:hidden;width:601px;height:401px;background:url('editors/images/grid.gif');cursor:default;">
 	</div>
