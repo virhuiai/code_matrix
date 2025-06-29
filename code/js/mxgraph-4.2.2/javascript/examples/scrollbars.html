@@ -1,13 +1,16 @@
+
 <!--
   Copyright (c) 2006-2015, JGraph Ltd
   
   Scrollbars example for mxGraph. This example demonstrates using
   a scrollable table with different sections in a cell label.
+  使用mxGraph的滚动条示例。此示例展示如何在单元格标签中使用具有不同部分的滚动表格。
 -->
 <html>
 <head>
 	<title>Scrollbars example for mxGraph</title>
-	
+	<!-- mxGraph滚动条示例的标题 -->
+
 	<style type="text/css" media="screen">
 		table.title {
 			border-color: black;
@@ -17,6 +20,8 @@
 			border-bottom-style: none;
 			color: black;
 		}
+		/* 定义标题表格的样式：黑色边框、合并边框、可拖动、光标样式、高度26像素、无底部边框、黑色文字 */
+
 		table.title th {
 			font-size: 10pt;
 			font-family: Verdana;
@@ -24,6 +29,8 @@
 			background: lightgray;
 			font-weight: bold;
 		}
+		/* 定义标题表格表头的样式：10pt字体、Verdana字体、不换行、浅灰色背景、加粗 */
+
 		table.erd {
 			font-size: 10pt;
 			font-family: Verdana;
@@ -33,40 +40,52 @@
 			cursor: move;
 			white-space: nowrap;
 		}
+		/* 定义ERD表格的样式：10pt字体、Verdana字体、黑色边框、合并边框、自动滚动、可拖动、不换行 */
+
 		table.erd td {
 			border-color: black;
 			text-align: left;
 			color: black;
 		}
+		/* 定义ERD表格单元格的样式：黑色边框、左对齐、黑色文字 */
+
 		button {
 			position:absolute;
 		}
+		/* 定义按钮的样式：绝对定位 */
 	</style>
-	
+
 	<!-- Sets the basepath for the library if not in same directory -->
+	<!-- 如果库不在同一目录下，设置库的基础路径 -->
 	<script type="text/javascript">
 		mxBasePath = '../src';
 	</script>
 
 	<!-- Loads and initializes the library -->
+	<!-- 加载并初始化mxGraph库 -->
 	<script type="text/javascript" src="../src/js/mxClient.js"></script>
 
 	<!-- Example code -->
+	<!-- 示例代码 -->
 	<script type="text/javascript">
 		// Program starts here. Creates a sample graph in the
 		// DOM node with the specified ID. This function is invoked
 		// from the onLoad event handler of the document (see below).
+		// 程序从这里开始。在具有指定ID的DOM节点中创建示例图。此函数由文档的onLoad事件处理程序调用（见下文）。
 		function main(container)
 		{
 			// Checks if the browser is supported
+			// 检查浏览器是否受支持
 			if (!mxClient.isBrowserSupported())
 			{
 				// Displays an error message if the browser is not supported.
+				// 如果浏览器不受支持，显示错误消息
 				mxUtils.error('Browser is not supported!', 200, false);
 			}
 			else
 			{
 				// Must be disabled to compute positions inside the DOM tree of the cell label.
+				// 必须禁用以在单元格标签的DOM树中计算位置
 				mxGraphView.prototype.optimizeVmlReflows = false;
 
 				// If connect preview is not moved away then getCellAt is used to detect the cell under
@@ -75,35 +94,46 @@
 				// not a problem here since the preview moves away from the mouse as soon as it connects
 				// to any given table row. This is because the edge connects to the outside of the row and
 				// is aligned to the grid during the preview.
+				// 如果连接预览未移开，则在IE中如果鼠标位于预览形状上方（无事件透明），使用getCellAt检测鼠标下的单元格，
+				// 即不会使用HTML文档的内置命中检测。在这里这不是问题，因为一旦连接到任何表格行，预览就会远离鼠标。
+				// 这是因为边连接到行的外部，并在预览期间对齐到网格。
 				mxConnectionHandler.prototype.movePreviewAway = false;
-				
+
 				// Disables foreignObjects
+				// 禁用foreignObjects
 				mxClient.NO_FO = true;
 
 				// Enables move preview in HTML to appear on top
+				// 启用HTML中的移动预览显示在顶部
 				mxGraphHandler.prototype.htmlPreview = true;
 
 				// Enables connect icons to appear on top of HTML
+				// 启用连接图标显示在HTML顶部
 				mxConnectionHandler.prototype.moveIconFront = true;
-				
+
 				// Defines an icon for creating new connections in the connection handler.
 				// This will automatically disable the highlighting of the source vertex.
+				// 在连接处理程序中定义用于创建新连接的图标。这将自动禁用源顶点的高亮显示。
 				mxConnectionHandler.prototype.connectImage = new mxImage('images/connector.gif', 16, 16);
-				
+
 				// Support for certain CSS styles in quirks mode
+				// 在怪异模式下支持某些CSS样式
 				if (mxClient.IS_QUIRKS)
 				{
 					new mxDivResizer(container);
 				}
-				
+
 				// Disables the context menu
+				// 禁用上下文菜单
 				mxEvent.disableContextMenu(container);
 
 				// Overrides target perimeter point for connection previews
+				// 重写连接预览的目标周界点
 				mxConnectionHandler.prototype.getTargetPerimeterPoint = function(state, me)
 				{
 					// Determines the y-coordinate of the target perimeter point
 					// by using the currentRowNode assigned in updateRow
+					// 通过使用updateRow中分配的currentRowNode确定目标周界点的y坐标
 					var y = me.getY();
 
 					if (this.currentRowNode != null)
@@ -112,17 +142,19 @@
 					}
 
 					// Checks on which side of the terminal to leave
+					// 检查终端的哪一侧离开
 					var x = state.x;
-					
+
 					if (this.previous.getCenterX() > state.getCenterX())
 					{
 						x += state.width;
 					}
-					
-					return new mxPoint(x, y); 
+
+					return new mxPoint(x, y);
 				};
 
 				// Overrides source perimeter point for connection previews
+				// 重写连接预览的源周界点
 				mxConnectionHandler.prototype.getSourcePerimeterPoint = function(state, next, me)
 				{
 					var y = me.getY();
@@ -133,8 +165,9 @@
 					}
 
 					// Checks on which side of the terminal to leave
+					// 检查终端的哪一侧离开
 					var x = state.x;
-					
+
 					if (next.x > state.getCenterX())
 					{
 						x += state.width;
@@ -144,15 +177,18 @@
 				};
 
 				// Disables connections to invalid rows
+				// 禁用与无效行的连接
 				mxConnectionHandler.prototype.isValidTarget = function(cell)
 				{
 					return this.currentRowNode != null;
 				};
-				
+
 				// Creates the graph inside the given container
+				// 在给定容器内创建图形
 				var graph = new mxGraph(container);
 
 				// Uses the entity perimeter (below) as default
+				// 使用实体周界（如下）作为默认值
 				graph.stylesheet.getDefaultVertexStyle()[mxConstants.STYLE_VERTICAL_ALIGN] = mxConstants.ALIGN_TOP;
 				graph.stylesheet.getDefaultVertexStyle()[mxConstants.STYLE_PERIMETER] =
 					mxPerimeter.EntityPerimeter;
@@ -160,43 +196,53 @@
 				graph.stylesheet.getDefaultVertexStyle()[mxConstants.STYLE_FILLCOLOR] = '#DDEAFF';
 				graph.stylesheet.getDefaultVertexStyle()[mxConstants.STYLE_GRADIENTCOLOR] = '#A9C4EB';
 				delete graph.stylesheet.getDefaultVertexStyle()[mxConstants.STYLE_STROKECOLOR];
+				// 设置默认顶点样式：顶部对齐、实体周界、启用阴影、填充颜色为#DDEAFF、渐变颜色为#A9C4EB、删除描边颜色
 
 				// Used for HTML labels that use up the complete vertex space (see
 				// graph.cellRenderer.redrawLabel below for syncing the size)
+				// 用于占用整个顶点空间的HTML标签（参见下面的graph.cellRenderer.redrawLabel以同步大小）
 				graph.stylesheet.getDefaultVertexStyle()[mxConstants.STYLE_OVERFLOW] = 'fill';
 
 				// Uses the entity edge style as default
+				// 使用实体边样式作为默认值
 				graph.stylesheet.getDefaultEdgeStyle()[mxConstants.STYLE_EDGE] =
 					mxEdgeStyle.EntityRelation;
 				graph.stylesheet.getDefaultEdgeStyle()[mxConstants.STYLE_STROKECOLOR] = 'black';
 				graph.stylesheet.getDefaultEdgeStyle()[mxConstants.STYLE_FONTCOLOR] = 'black';
+				// 设置默认边样式：实体关系样式、黑色描边、黑色字体
 
 				// Allows new connections to be made but do not allow existing
 				// connections to be changed for the sake of simplicity of this
 				// example
+				// 允许创建新连接，但为了简化示例，不允许更改现有连接
 				graph.setCellsDisconnectable(false);
 				graph.setAllowDanglingEdges(false);
 				graph.setCellsEditable(false);
 				graph.setConnectable(true);
 				graph.setPanning(true);
 				graph.centerZoom = false;
+				// 设置图形属性：禁用断开连接、禁用悬空边、禁用单元格编辑、允许连接、启用平移、禁用中心缩放
 
 				// Override folding to allow for tables
+				// 重写折叠以支持表格
 				graph.isCellFoldable = function(cell, collapse)
 				{
 					return this.getModel().isVertex(cell);
 				};
 
 				// Overrides connectable state
+				// 重写可连接状态
 				graph.isCellConnectable = function(cell)
 				{
 					return !this.isCellCollapsed(cell);
 				};
-				
+
 				// Enables HTML markup in all labels
+				// 在所有标签中启用HTML标记
 				graph.setHtmlLabels(true);
 
 				// Scroll events should not start moving the vertex
+				// 滚动事件不应启动顶点移动
 				graph.cellRenderer.isLabelEvent = function(state, evt)
 				{
 					var source = mxEvent.getSource(evt);
@@ -207,41 +253,48 @@
 
 				// Adds scrollbars to the outermost div and keeps the
 				// DIV position and size the same as the vertex
+				// 为最外层div添加滚动条，并保持DIV位置和大小与顶点相同
 				var oldRedrawLabel = graph.cellRenderer.redrawLabel;
 				graph.cellRenderer.redrawLabel = function(state)
 				{
 					oldRedrawLabel.apply(this, arguments); // "supercall"
+					// 调用原始的redrawLabel方法（超类调用）
 					var graph = state.view.graph;
 					var model = graph.model;
 
 					if (model.isVertex(state.cell) && state.text != null)
 					{
 						// Scrollbars are on the div
+						// 滚动条位于div上
 						var s = graph.view.scale;
 						state.text.node.style.overflow = 'hidden';
 						var div = state.text.node.getElementsByTagName('div')[0];
-						
+
 						if (div != null)
 						{
 							// Adds height of the title table cell
+							// 添加标题表格单元格的高度
 							var oh = 26;
 
 							div.style.display = 'block';
 							div.style.top = oh + 'px';
 							div.style.width = Math.max(1, Math.round(state.width / s)) + 'px';
 							div.style.height = Math.max(1, Math.round((state.height / s) - oh)) + 'px';
-							
+							// 设置div的样式：显示为块、顶部偏移、高度和宽度根据缩放调整
+
 							// Installs the handler for updating connected edges
+							// 安装处理程序以更新连接的边
 							if (div.scrollHandler == null)
 							{
 								div.scrollHandler = true;
-								
+
 								var updateEdges = mxUtils.bind(this, function()
 								{
 									var edgeCount = model.getEdgeCount(state.cell);
-									
+
 									// Only updates edges to avoid update in DOM order
 									// for text label which would reset the scrollbar
+									// 仅更新边以避免按DOM顺序更新文本标签，这会重置滚动条
 									for (var i = 0; i < edgeCount; i++)
 									{
 										var edge = model.getEdgeAt(state.cell, i);
@@ -249,9 +302,10 @@
 										graph.view.validate(edge);
 									}
 								});
-								
+
 								mxEvent.addListener(div, 'scroll', updateEdges);
 								mxEvent.addListener(div, 'mouseup', updateEdges);
+								// 为div添加滚动和鼠标释放事件监听器以更新边
 							}
 						}
 					}
@@ -259,20 +313,24 @@
 
 				// Adds a new function to update the currentRow based on the given event
 				// and return the DOM node for that row
+				// 添加新函数以根据给定事件更新currentRow并返回该行的DOM节点
 				graph.connectionHandler.updateRow = function(target)
 				{
 					while (target != null && target.nodeName != 'TR')
 					{
 						target = target.parentNode;
 					}
+					// 查找目标的TR节点
 
 					this.currentRow = null;
 
 					// Checks if we're dealing with a row in the correct table
+					// 检查我们是否处理的是正确表格中的行
 					if (target != null && target.parentNode.parentNode.className == 'erd')
 					{
 						// Stores the current row number in a property so that it can
 						// be retrieved to create the preview and final edge
+						// 将当前行号存储在属性中，以便检索以创建预览和最终边
 						var rowNumber = 0;
 						var current = target.parentNode.firstChild;
 
@@ -288,16 +346,17 @@
 					{
 						target = null;
 					}
-					
+
 					return target;
 				};
-				
+
 				// Adds placement of the connect icon based on the mouse event target (row)
+				// 根据鼠标事件目标（行）添加连接图标的放置
 				graph.connectionHandler.updateIcons = function(state, icons, me)
 				{
 					var target = me.getSource();
 					target = this.updateRow(target);
-					
+
 					if (target != null && this.currentRow != null)
 					{
 						var div = target.parentNode.parentNode.parentNode;
@@ -309,23 +368,26 @@
 						icons[0].bounds.y = state.y - this.icons[0].bounds.height / 2 + (target.offsetTop +
 								target.offsetHeight / 2 - div.scrollTop + div.offsetTop) * s;
 						icons[0].redraw();
+						// 设置连接图标的位置并使其可见
 
 						this.currentRowNode = target;
 					}
 					else
 					{
 						icons[0].node.style.visibility = 'hidden';
+						// 隐藏连接图标
 					}
 				};
 
 				// Updates the targetRow in the preview edge State
+				// 更新预览边状态中的targetRow
 				var oldMouseMove = graph.connectionHandler.mouseMove;
 				graph.connectionHandler.mouseMove = function(sender, me)
 				{
 					if (this.edgeState != null)
 					{
 						this.currentRowNode = this.updateRow(me.getSource());
-						
+
 						if (this.currentRow != null)
 						{
 							this.edgeState.cell.value.setAttribute('targetRow', this.currentRow);
@@ -334,33 +396,41 @@
 						{
 							this.edgeState.cell.value.setAttribute('targetRow', '0');
 						}
-						
+						// 更新边的targetRow属性
+
 						// Destroys icon to prevent event redirection via image in IE
+						// 销毁图标以防止在IE中通过图像进行事件重定向
 						this.destroyIcons();
 					}
-					
+
 					oldMouseMove.apply(this, arguments);
+					// 调用原始的mouseMove方法
 				};
 
 				// Creates the edge state that may be used for preview
+				// 创建可用于预览的边状态
 				graph.connectionHandler.createEdgeState = function(me)
 				{
 					var relation = doc.createElement('Relation');
 					relation.setAttribute('sourceRow', this.currentRow || '0');
 					relation.setAttribute('targetRow', '0');
+					// 创建Relation元素并设置sourceRow和targetRow属性
 
 					var edge = this.createEdge(relation);
 					var style = this.graph.getCellStyle(edge);
 					var state = new mxCellState(this.graph.view, edge, style);
+					// 创建边并获取其样式和状态
 
 					// Stores the source row in the handler
+					// 在处理程序中存储源行
 					this.sourceRowNode = this.currentRowNode;
-					
+
 					return state;
 				};
 
 				// Overrides getLabel to return empty labels for edges and
 				// short markup for collapsed cells.
+				// 重写getLabel以返回边的空标签和折叠单元格的简短标记
 				graph.getLabel = function(cell)
 				{
 					if (this.getModel().isVertex(cell))
@@ -370,6 +440,7 @@
 							return '<table style="overflow:hidden;" width="100%" height="100%" border="1" cellpadding="4" class="title" style="height:100%;">' +
 								'<tr><th>Customers</th></tr>' +
 								'</table>';
+							// 返回折叠单元格的标题表格
 						}
 						else
 						{
@@ -387,34 +458,43 @@
 								'<tr><td></td><td>streetAddress</td></tr><tr><td></td><td>city</td></tr>' +
 								'<tr><td></td><td>state</td></tr><tr><td></td><td>zip</td></tr>' +
 								'</table></div>';
+							// 返回展开单元格的完整表格，包括标题和ERD内容
 						}
 					}
 					else
 					{
 						return '';
+						// 返回空的边标签
 					}
 				};
 
 				// User objects (data) for the individual cells
+				// 为各个单元格创建用户对象（数据）
 				var doc = mxUtils.createXmlDocument();
 
 				// Same should be used to create the XML node for the table
 				// description and the rows (most probably as child nodes)
+				// 应使用相同方式创建用于表格描述和行的XML节点（很可能是子节点）
 				var relation = doc.createElement('Relation');
 				relation.setAttribute('sourceRow', '4');
 				relation.setAttribute('targetRow', '6');
-				
+				// 创建Relation元素并设置sourceRow和targetRow属性
+
 				// Enables rubberband selection
+				// 启用橡皮筋选择
 				new mxRubberband(graph);
 
 				// Enables key handling (eg. escape)
+				// 启用键盘处理（例如，Esc键）
 				new mxKeyHandler(graph);
-				
+
 				// Gets the default parent for inserting new cells. This
 				// is normally the first child of the root (ie. layer 0).
+				// 获取用于插入新单元格的默认父节点，通常是根的第一个子节点（即第0层）
 				var parent = graph.getDefaultParent();
-								
+
 				// Adds cells to the model in a single step
+				// 在单个步骤中将单元格添加到模型
 				var width = 160;
 				graph.getModel().beginUpdate();
 				try
@@ -422,49 +502,61 @@
 					var v1 = graph.insertVertex(parent, null, '', 20, 20, width, 0);
 					var v2 = graph.insertVertex(parent, null, '', 400, 150, width, 0);
 					var e1 = graph.insertEdge(parent, null, relation, v1, v2);
+					// 插入两个顶点和一条边
 
 					// Updates the height of the cell (override width
 					// for table width is set to 100%)
+					// 更新单元格高度（覆盖宽度，因为表格宽度设置为100%）
 					graph.updateCellSize(v1);
 					v1.geometry.width = width;
 					v1.geometry.alternateBounds = new mxRectangle(0, 0, width, 27);
+					// 更新第一个顶点的尺寸和备用边界
 
 					// Updates the height of the cell (override width
 					// for table width is set to 100%)
+					// 更新单元格高度（覆盖宽度，因为表格宽度设置为100%）
 					graph.updateCellSize(v2);
 					v2.geometry.width = width;
 					v2.geometry.alternateBounds = new mxRectangle(0, 0, width, 27);
+					// 更新第二个顶点的尺寸和备用边界
 				}
 				finally
 				{
 					// Updates the display
+					// 更新显示
 					graph.getModel().endUpdate();
 				}
-				
+
 				var btn1 = mxUtils.button('+', function()
 				{
 					graph.zoomIn();
 				});
 				btn1.style.marginLeft = '20px';
-				
+				// 创建放大按钮并设置左边距
+
 				document.body.appendChild(btn1);
 				document.body.appendChild(mxUtils.button('-', function()
 				{
 					graph.zoomOut();
 				}));
+				// 将放大和缩小按钮添加到页面
 			}
 		};
 
 		// Implements a special perimeter for table rows inside the table markup
+		// 实现表格标记内表格行的特殊周界
 		mxGraphView.prototype.updateFloatingTerminalPoint = function(edge, start, end, source)
 		{
 			var next = this.getNextPoint(edge, end, source);
 			var div = start.text.node.getElementsByTagName('div')[0];
-			
+			// 获取下一个点和div元素
+
 			var x = start.x;
 			var y = start.getCenterY();
-		
+			// 设置初始x和y坐标
+
 			// Checks on which side of the terminal to leave
+			// 检查终端的哪一侧离开
 			if (next.x > x + start.width / 2)
 			{
 				x += start.width;
@@ -473,18 +565,23 @@
 			if (div != null)
 			{
 				y = start.getCenterY() - div.scrollTop;
-				
+				// 调整y坐标以考虑滚动
+
 				if (mxUtils.isNode(edge.cell.value) && !this.graph.isCellCollapsed(start.cell))
 				{
 					var attr = (source) ? 'sourceRow' : 'targetRow';
 					var row = parseInt(edge.cell.value.getAttribute(attr));
-			
+					// 获取源或目标行号
+
 					// HTML labels contain an outer table which is built-in
+					// HTML标签包含内置的外层表格
 					var table = div.getElementsByTagName('table')[0];
 					var trs = table.getElementsByTagName('tr');
 					var tr = trs[Math.min(trs.length - 1, row - 1)];
-					
+					// 获取对应的表格行
+
 					// Gets vertical center of source or target row
+					// 获取源或目标行的垂直中心
 					if (tr != null)
 					{
 						y = getRowY(start, tr);
@@ -492,30 +589,35 @@
 				}
 
 				// Keeps vertical coordinate inside start
+				// 保持垂直坐标在起始范围内
 				var offsetTop = parseInt(div.style.top) * start.view.scale;
 				y = Math.min(start.y + start.height, Math.max(start.y + offsetTop, y));
 
 				// Updates the vertical position of the nearest point if we're not
 				// dealing with a connection preview, in which case either the
 				// edgeState or the absolutePoints are null
+				// 如果不是处理连接预览，更新最近点的垂直位置，在这种情况下edgeState或absolutePoints为null
 				if (edge != null && edge.absolutePoints != null)
 				{
 					next.y = y;
 				}
 			}
-		
+
 			edge.setAbsoluteTerminalPoint(new mxPoint(x, y), source);
-			
+			// 设置边的绝对终端点
+
 			// Routes multiple incoming edges along common waypoints if
 			// the edges have a common target row
+			// 如果边具有共同的目标行，则沿公共路径点路由多个传入边
 			if (source && mxUtils.isNode(edge.cell.value) && start != null && end != null)
 			{
 				var edges = this.graph.getEdgesBetween(start.cell, end.cell, true);
 				var tmp = [];
-		
+
 				// Filters the edges with the same source row
+				// 过滤具有相同源行的边
 				var row = edge.cell.value.getAttribute('targetRow');
-				
+
 				for (var i = 0; i < edges.length; i++)
 				{
 					if (mxUtils.isNode(edges[i].value) &&
@@ -524,25 +626,27 @@
 						tmp.push(edges[i]);
 					}
 				}
-		
+
 				edges = tmp;
 
 				if (edges.length > 1 && edge.cell == edges[edges.length - 1])
 				{
 					// Finds the vertical center
+					// 查找垂直中心
 					var states = [];
 					var y = 0;
-					
+
 					for (var i = 0; i < edges.length; i++)
 				    {
 						states[i] = this.getState(edges[i]);
-				   		y += states[i].absolutePoints[0].y;
-				    }
-				    
-				    y /= edges.length;
-					
-				    for (var i = 0; i < states.length; i++)
-				    {
+						y += states[i].absolutePoints[0].y;
+					}
+
+					y /= edges.length;
+					// 计算平均y坐标
+
+					for (var i = 0; i < states.length; i++)
+					{
 						var x = states[i].absolutePoints[1].x;
 
 						if (states[i].absolutePoints.length < 5)
@@ -553,18 +657,21 @@
 						{
 							states[i].absolutePoints[2] = new mxPoint(x, y);
 						}
-							
+						// 更新边的绝对点
+
 						// Must redraw the previous edges with the changed point
+						// 必须重绘具有更改点的先前边
 						if (i < states.length - 1)
 						{
 							this.graph.cellRenderer.redraw(states[i]);
 						}
-				    }
+					}
 				}
 			}
 		};
 
 		// Defines global helper function to get y-coordinate for a given cell state and row
+		// 定义全局辅助函数以获取给定单元格状态和行的y坐标
 		var getRowY = function(state, tr)
 		{
 			var s = state.view.scale;
@@ -572,16 +679,19 @@
 			var offsetTop = parseInt(div.style.top);
 			var y = state.y + (tr.offsetTop + tr.offsetHeight / 2 - div.scrollTop + offsetTop) * s;
 			y = Math.min(state.y + state.height, Math.max(state.y + offsetTop * s, y));
-			
+			// 计算行的y坐标并确保在有效范围内
+
 			return y;
 		};
 	</script>
 </head>
 
 <!-- Page passes the container for the graph to the program -->
+<!-- 页面将图形容器传递给程序 -->
 <body onload="main(document.getElementById('graphContainer'))">
 
 	<!-- Creates a container for the graph with a grid wallpaper. Width, height and cursor in the style are for IE only -->
+	<!-- 创建具有网格壁纸的图形容器。样式中的宽度、高度和光标仅适用于IE -->
 	<div id="graphContainer"
 		style="cursor:default;position:absolute;top:30px;left:0px;bottom:0px;right:0px;background:url('editors/images/grid.gif')">
 	</div>
