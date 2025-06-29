@@ -1,134 +1,193 @@
-<!--
-  Copyright (c) 2006-2013, JGraph Ltd
-  
-  Merge example for mxGraph. This example demonstrates using
-  the mergeChildren function to merge two graphs.
--->
+
 <html>
 <head>
-	<title>Merge example for mxGraph</title>
+    <title>Merge example for mxGraph</title>
+    <script type="text/javascript">
+       mxBasePath = '../src';
+       // 设置 mxGraph 库的基础路径，指向 src 目录。
+    </script>
 
-	<!-- Sets the basepath for the library if not in same directory -->
-	<script type="text/javascript">
-		mxBasePath = '../src';
-	</script>
+    <script type="text/javascript" src="../src/js/mxClient.js"></script>
+    <script type="text/javascript">
+       // Program starts here. Creates a sample graph in the
+       // DOM node with the specified ID. This function is invoked
+       // from the onLoad event handler of the document (see below).
+       // 程序从这里开始。在具有指定 ID 的 DOM 节点中创建一个示例图。
+       // 此函数从文档的 onLoad 事件处理程序中调用（见下方）。
+       function main(container)
+       {
+          // Checks if the browser is supported
+          // 检查浏览器是否受支持
+          if (!mxClient.isBrowserSupported())
+          {
+             // Displays an error message if the browser is not supported.
+             // 如果浏览器不受支持，则显示错误消息。
+             mxUtils.error('Browser is not supported!', 200, false);
+             // 调用 mxUtils.error 显示错误信息，提示浏览器不受支持。
+             // 200 是持续时间，false 表示不显示堆栈跟踪。
+          }
+          else
+          {
+             mxConstants.SHADOWCOLOR = '#c0c0c0';
+             // 设置阴影颜色为浅灰色。这是一个重要的配置参数，影响图形元素的视觉效果。
 
-	<!-- Loads and initializes the library -->
-	<script type="text/javascript" src="../src/js/mxClient.js"></script>
+             // Creates the graph inside the given container
+             // 在给定容器内创建图
+             var graph = new mxGraph(container);
+             // 创建一个新的 mxGraph 实例，并将其绑定到传入的 DOM 容器。
+             // 这是图形渲染的画布。
 
-	<!-- Example code -->
-	<script type="text/javascript">
-		// Program starts here. Creates a sample graph in the
-		// DOM node with the specified ID. This function is invoked
-		// from the onLoad event handler of the document (see below).
-		function main(container)
-		{
-			// Checks if the browser is supported
-			if (!mxClient.isBrowserSupported())
-			{
-				// Displays an error message if the browser is not supported.
-				mxUtils.error('Browser is not supported!', 200, false);
-			}
-			else
-			{
-				mxConstants.SHADOWCOLOR = '#c0c0c0';
-				
-				// Creates the graph inside the given container
-				var graph = new mxGraph(container);
+             // No size handles, please...
+             // 请不要显示大小调整手柄...
+             graph.setCellsResizable(false);
+             // 禁用单元格（节点）的大小调整功能，确保节点大小固定。
 
-				// No size handles, please...
-				graph.setCellsResizable(false);
+             // Makes all cells round with a white, bold label
+             // 使所有单元格呈圆形，并带有白色粗体标签
+             var style = graph.stylesheet.getDefaultVertexStyle();
+             // 获取默认的顶点样式表，用于后续修改所有顶点的外观。
+             style[mxConstants.STYLE_SHAPE] = mxConstants.SHAPE_ELLIPSE;
+             // 设置顶点的形状为椭圆形。
+             style[mxConstants.STYLE_PERIMETER] = mxPerimeter.EllipsePerimeter;
+             // 设置顶点的周长计算器为椭圆形周长，确保连接线在椭圆边界上。
+             style[mxConstants.STYLE_FONTCOLOR] = 'white';
+             // 设置顶点标签的字体颜色为白色。
+             style[mxConstants.STYLE_GRADIENTCOLOR] = 'white';
+             // 设置顶点的渐变颜色为白色。
+             style[mxConstants.STYLE_FONTSTYLE] = mxConstants.FONT_BOLD;
+             // 设置顶点标签的字体样式为粗体。
+             style[mxConstants.STYLE_FONTSIZE] = 14;
+             // 设置顶点标签的字体大小为 14 像素。
+             style[mxConstants.STYLE_SHADOW] = true;
+             // 为顶点添加阴影效果，增加视觉深度。
 
-				// Makes all cells round with a white, bold label
-				var style = graph.stylesheet.getDefaultVertexStyle();
-				style[mxConstants.STYLE_SHAPE] = mxConstants.SHAPE_ELLIPSE;
-				style[mxConstants.STYLE_PERIMETER] = mxPerimeter.EllipsePerimeter;
-				style[mxConstants.STYLE_FONTCOLOR] = 'white';
-				style[mxConstants.STYLE_GRADIENTCOLOR] = 'white';
-				style[mxConstants.STYLE_FONTSTYLE] = mxConstants.FONT_BOLD;
-				style[mxConstants.STYLE_FONTSIZE] = 14;
-				style[mxConstants.STYLE_SHADOW] = true;
+             // Makes all edge labels gray with a white background
+             // 使所有边标签呈灰色，背景为白色
+             style = graph.stylesheet.getDefaultEdgeStyle();
+             // 获取默认的边样式表，用于后续修改所有边的外观。
+             style[mxConstants.STYLE_FONTCOLOR] = 'gray';
+             // 设置边标签的字体颜色为灰色。
+             style[mxConstants.STYLE_FONTSTYLE] = mxConstants.FONT_BOLD;
+             // 设置边标签的字体样式为粗体。
+             style[mxConstants.STYLE_FONTCOLOR] = 'black';
+             // 重新设置边标签的字体颜色为黑色 (这里似乎有重复设置，会以最后一个为准)。
+             style[mxConstants.STYLE_STROKEWIDTH] = 2;
+             // 设置边的线条宽度为 2 像素。
 
-				// Makes all edge labels gray with a white background
-				style = graph.stylesheet.getDefaultEdgeStyle();
-				style[mxConstants.STYLE_FONTCOLOR] = 'gray';
-				style[mxConstants.STYLE_FONTSTYLE] = mxConstants.FONT_BOLD;
-				style[mxConstants.STYLE_FONTCOLOR] = 'black';
-				style[mxConstants.STYLE_STROKEWIDTH] = 2;
-				
-				// Enables rubberband selection
-				new mxRubberband(graph);
-				
-				// Gets the default parent for inserting new cells. This
-				// is normally the first child of the root (ie. layer 0).
-				var parent = graph.getDefaultParent();
-								
-				// Adds cells to the target model in a single step
-				// using custom ids for the vertices and edges
-				var w = 40;
-				var h = 40;
-				
-				graph.getModel().beginUpdate();
-				try
-				{
-					var a = graph.insertVertex(parent, 'a', 'A', 20, 20, w, h, 'fillColor=blue');
-					var b = graph.insertVertex(parent, 'b', 'B', 20, 200, w, h, 'fillColor=blue');
-					var c = graph.insertVertex(parent, 'c', 'C', 200, 20, w, h, 'fillColor=red');
-					var d = graph.insertVertex(parent, 'd', 'D', 200, 200, w, h, 'fillColor=red');
-					var ac = graph.insertEdge(parent, 'ac', 'ac', a, c, 'strokeColor=blue;verticalAlign=bottom');
-					var ad = graph.insertEdge(parent, 'ad', 'ad', a, d, 'strokeColor=blue;align=left;verticalAlign=bottom');
-					var bd = graph.insertEdge(parent, 'bd', 'bd', b, d, 'strokeColor=blue;verticalAlign=bottom');
-				}
-				finally
-				{
-					// Updates the display
-					graph.getModel().endUpdate();
-				}
+             // Enables rubberband selection
+             // 启用橡皮筋选择
+             new mxRubberband(graph);
+             // 创建一个新的 mxRubberband 实例，使其在图上启用通过拖拽绘制矩形进行多选的功能。
 
-				// Creates the second graph model (without a container)
-				var graph2 = new mxGraph();
-				
-				// Gets the default parent for inserting new cells. This
-				// is normally the first child of the root (ie. layer 0).
-				var parent2 = graph2.getDefaultParent();
-								
-				// Adds cells to the target model in a single step
-				// using custom ids for the vertices
-				graph2.getModel().beginUpdate();
-				try
-				{
-					var c = graph2.insertVertex(parent2, 'c', 'C', 200, 20, w, h, 'fillColor=green');
-					var d = graph2.insertVertex(parent2, 'd', 'D', 200, 200, w, h, 'fillColor=green');
-					var e = graph2.insertVertex(parent2, 'e', 'E', 400, 20, w, h, 'fillColor=green');
-					var f = graph2.insertVertex(parent2, 'f', 'F', 400, 200, w, h, 'fillColor=green');
-					var ce = graph2.insertEdge(parent2, 'ce', 'ce', c, e, 'strokeColor=green;verticalAlign=bottom');
-					var ed = graph2.insertEdge(parent2, 'ed', 'ed', e, d, 'strokeColor=green;align=right;verticalAlign=bottom');
-					var fd = graph2.insertEdge(parent2, 'bd', 'fd', f, d, 'strokeColor=green;verticalAlign=bottom');
-				}
-				finally
-				{
-					// Updates the display
-					graph2.getModel().endUpdate();
-				}
+             // Gets the default parent for inserting new cells. This
+             // is normally the first child of the root (ie. layer 0).
+             // 获取插入新单元格的默认父级。这通常是根的第一个子级（即第 0 层）。
+             var parent = graph.getDefaultParent();
+             // 获取图模型的默认父单元格。所有新添加的节点和边都将作为此父单元格的子级。
 
-				// Merges the model from the second graph into the model of
-				// the first graph. Note: If you add a false to the parameter
-				// list then _not_ all edges will be cloned, that is, the
-				// edges are assumed to have an identity, and hence the edge
-				// "bd" will be changed to point from f to d, as specified in
-				// the edge for the same id in the second graph.
-				graph.getModel().mergeChildren(parent2, parent/*, false*/);
-			}
-		};
-	</script>
+             // Adds cells to the target model in a single step
+             // using custom ids for the vertices and edges
+             // 使用自定义 ID 为顶点和边，一步将单元格添加到目标模型中
+             var w = 40; // 节点的宽度
+             var h = 40; // 节点的高度
+
+             graph.getModel().beginUpdate();
+             // 开始图模型的更新事务。这可以提高性能，因为在 endUpdate 之前不会触发视图更新。
+             try
+             {
+                var a = graph.insertVertex(parent, 'a', 'A', 20, 20, w, h, 'fillColor=blue');
+                // 插入一个顶点 'A'，ID 为 'a'，位置 (20, 20)，大小 (w, h)，填充颜色为蓝色。
+                var b = graph.insertVertex(parent, 'b', 'B', 20, 200, w, h, 'fillColor=blue');
+                // 插入一个顶点 'B'，ID 为 'b'，位置 (20, 200)，大小 (w, h)，填充颜色为蓝色。
+                var c = graph.insertVertex(parent, 'c', 'C', 200, 20, w, h, 'fillColor=red');
+                // 插入一个顶点 'C'，ID 为 'c'，位置 (200, 20)，大小 (w, h)，填充颜色为红色。
+                var d = graph.insertVertex(parent, 'd', 'D', 200, 200, w, h, 'fillColor=red');
+                // 插入一个顶点 'D'，ID 为 'd'，位置 (200, 200)，大小 (w, h)，填充颜色为红色。
+                var ac = graph.insertEdge(parent, 'ac', 'ac', a, c, 'strokeColor=blue;verticalAlign=bottom');
+                // 插入一条边，连接顶点 'a' 和 'c'，ID 为 'ac'，标签为 'ac'，线条颜色为蓝色，垂直对齐底部。
+                var ad = graph.insertEdge(parent, 'ad', 'ad', a, d, 'strokeColor=blue;align=left;verticalAlign=bottom');
+                // 插入一条边，连接顶点 'a' 和 'd'，ID 为 'ad'，标签为 'ad'，线条颜色为蓝色，水平对齐左边，垂直对齐底部。
+                var bd = graph.insertEdge(parent, 'bd', 'bd', b, d, 'strokeColor=blue;verticalAlign=bottom');
+                // 插入一条边，连接顶点 'b' 和 'd'，ID 为 'bd'，标签为 'bd'，线条颜色为蓝色，垂直对齐底部。
+             }
+             finally
+             {
+                // Updates the display
+                // 更新显示
+                graph.getModel().endUpdate();
+                // 结束图模型的更新事务，触发视图的重新绘制。
+             }
+
+             // Creates the second graph model (without a container)
+             // 创建第二个图模型（不带容器）
+             var graph2 = new mxGraph();
+             // 创建第二个 mxGraph 实例，不指定容器，仅用于其模型操作。
+
+             // Gets the default parent for inserting new cells. This
+             // is normally the first child of the root (ie. layer 0).
+             // 获取插入新单元格的默认父级。这通常是根的第一个子级（即第 0 层）。
+             var parent2 = graph2.getDefaultParent();
+             // 获取第二个图模型的默认父单元格。
+
+             // Adds cells to the target model in a single step
+             // using custom ids for the vertices
+             // 使用自定义 ID 为顶点，一步将单元格添加到目标模型中
+             graph2.getModel().beginUpdate();
+             // 开始第二个图模型的更新事务。
+             try
+             {
+                var c = graph2.insertVertex(parent2, 'c', 'C', 200, 20, w, h, 'fillColor=green');
+                // 在第二个图中插入顶点 'C'，ID 为 'c'，填充颜色为绿色。
+                // 注意：这里 ID 'c' 和 'd' 与第一个图中的 ID 重复，这在合并时会影响行为。
+                var d = graph2.insertVertex(parent2, 'd', 'D', 200, 200, w, h, 'fillColor=green');
+                // 在第二个图中插入顶点 'D'，ID 为 'd'，填充颜色为绿色。
+                var e = graph2.insertVertex(parent2, 'e', 'E', 400, 20, w, h, 'fillColor=green');
+                // 在第二个图中插入顶点 'E'，ID 为 'e'，填充颜色为绿色。
+                var f = graph2.insertVertex(parent2, 'f', 'F', 400, 200, w, h, 'fillColor=green');
+                // 在第二个图中插入顶点 'F'，ID 为 'f'，填充颜色为绿色。
+                var ce = graph2.insertEdge(parent2, 'ce', 'ce', c, e, 'strokeColor=green;verticalAlign=bottom');
+                // 插入一条边，连接顶点 'c' 和 'e'，ID 为 'ce'，线条颜色为绿色。
+                var ed = graph2.insertEdge(parent2, 'ed', 'ed', e, d, 'strokeColor=green;align=right;verticalAlign=bottom');
+                // 插入一条边，连接顶点 'e' 和 'd'，ID 为 'ed'，线条颜色为绿色。
+                var fd = graph2.insertEdge(parent2, 'bd', 'fd', f, d, 'strokeColor=green;verticalAlign=bottom');
+                // 插入一条边，连接顶点 'f' 和 'd'，ID 为 'bd' (注意这里ID与第一个图的'bd'重合)，线条颜色为绿色。
+                // 这个重合的 ID 是本示例合并操作的关键点。
+             }
+             finally
+             {
+                // Updates the display
+                // 更新显示
+                graph2.getModel().endUpdate();
+                // 结束第二个图模型的更新事务。
+             }
+
+             // Merges the model from the second graph into the model of
+             // the first graph. Note: If you add a false to the parameter
+             // list then _not_ all edges will be cloned, that is, the
+             // edges are assumed to have an identity, and hence the edge
+             // "bd" will be changed to point from f to d, as specified in
+             // the edge for the same id in the second graph.
+             // 将第二个图的模型合并到第一个图的模型中。
+             // 注意：如果您在参数列表中添加 false，则不会克隆所有边，
+             // 也就是说，边被假定具有标识，因此边“bd”将更改为从 f 指向 d，
+             // 如第二个图中相同 ID 的边所指定。
+             graph.getModel().mergeChildren(parent2, parent/*, false*/);
+             // 调用 mergeChildren 方法，将第二个图模型 (graph2) 中 parent2 下的子元素，
+             // 合并到第一个图模型 (graph) 中 parent 下。
+             // 关键点：如果第三个参数为 true (默认值)，则会克隆所有单元格；
+             // 如果为 false，则具有相同 ID 的单元格会被更新而不是克隆。
+             // 在此示例中，'c' 和 'd' 顶点以及 'bd' 边在两个图中都存在相同 ID。
+             // 当第三个参数为默认的 true 时，'c' 和 'd' 会被克隆（保持两个独立的 'c' 和 'd'），
+             // 'bd' 边也会被克隆。如果设置为 false，则 'c' 和 'd' 会被第二个图中的内容更新，
+             // 并且 'bd' 边会更新其连接点。
+          }
+       };
+    </script>
 </head>
 
-<!-- Page passes the container for the graph to the program -->
 <body onload="main(document.getElementById('graphContainer'))" style="overflow:hidden;">
-
-	<!-- Creates a container for the graph with a grid wallpaper -->
-	<div id="graphContainer"
-		style="position:absolute;overflow:hidden;width:100%;height:100%;">
-	</div>
-</body>
+    <div id="graphContainer"
+       style="position:absolute;overflow:hidden;width:100%;height:100%;">
+    </div>
+    </body>
 </html>

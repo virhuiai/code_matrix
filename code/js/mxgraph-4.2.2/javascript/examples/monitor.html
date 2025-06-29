@@ -1,296 +1,449 @@
-<!--
-  Copyright (c) 2006-2013, JGraph Ltd
-  
-  Monitor example for mxGraph. This eample demonstrates using a
-  graph to display the current state of a workflow.
--->
+
 <html>
 <head>
-	<title>mxGraph Workflow Monitor</title>
+    <title>mxGraph Workflow Monitor</title>
+    <script type="text/javascript">
+       mxBasePath = '../src';
+       // 设置 mxGraph 库的基础路径，指向 'src' 目录。
+       // 这是 mxGraph 库加载其模块所必需的配置。
+    </script>
 
-	<!-- Sets the basepath for the library if not in same directory -->
-	<script type="text/javascript">
-		mxBasePath = '../src';
-	</script>
+    <script type="text/javascript" src="../src/js/mxClient.js"></script>
+    <script type="text/javascript">
+       // Program starts here. Creates a sample graph in the
+       // DOM node with the specified ID. This function is invoked
+       // from the onLoad event handler of the document (see below).
+       // 程序从这里开始执行。在具有指定 ID 的 DOM 节点中创建一个示例图。
+       // 此函数由文档的 onLoad 事件处理程序调用（见下方）。
+       function main(container)
+       {
+          // Checks if the browser is supported
+          // 检查浏览器是否受支持
+          if (!mxClient.isBrowserSupported())
+          {
+             // Displays an error message if the browser is not supported.
+             // 如果浏览器不受支持，则显示错误消息。
+             mxUtils.error('Browser is not supported!', 200, false);
+             // 调用 mxUtils.error 显示一个错误弹窗，提示浏览器不受支持。
+             // 200 是弹窗宽度，false 表示不显示堆栈跟踪信息。
+          }
+          else
+          {
+             mxConstants.SHADOWCOLOR = '#e0e0e0';
+             // 设置 mxGraph 常量中的阴影颜色为浅灰色 #e0e0e0。
+             // 这将影响所有具有阴影的单元格。
 
-	<!-- Loads and initializes the library -->
-	<script type="text/javascript" src="../src/js/mxClient.js"></script>
+             // Creates the graph inside the given container
+             // 在给定容器内创建图表
+             var graph = createGraph(container);
+             // 调用 createGraph 函数，在传入的容器中创建一个 mxGraph 实例，并进行样式配置。
+             // 返回的 graph 对象是所有图表操作的核心。
 
-	<!-- Example code -->
-	<script type="text/javascript">
-		// Program starts here. Creates a sample graph in the
-		// DOM node with the specified ID. This function is invoked
-		// from the onLoad event handler of the document (see below).
-		function main(container)
-		{
-			// Checks if the browser is supported
-			if (!mxClient.isBrowserSupported())
-			{
-				// Displays an error message if the browser is not supported.
-				mxUtils.error('Browser is not supported!', 200, false);
-			}
-			else
-			{
-				mxConstants.SHADOWCOLOR = '#e0e0e0';
-				
-				// Creates the graph inside the given container
-				var graph = createGraph(container);
+             // Creates a process display using the activity names as IDs to refer to the elements
+             // 使用活动名称作为 ID 来引用元素，从而创建过程显示
+             var xml = '<mxGraphModel><root><mxCell id="0"/><mxCell id="1" parent="0"/>'+
+                '<mxCell id="2" value="Claim Handling Process" style="swimlane" vertex="1" parent="1"><mxGeometry x="1" width="850" height="400" as="geometry"/></mxCell>'+
+                '<mxCell id="3" value="Claim Manager" style="swimlane" vertex="1" parent="2"><mxGeometry x="30" width="820" height="200" as="geometry"/></mxCell>'+
+                '<mxCell id="5" value="" style="start" vertex="1" parent="3"><mxGeometry x="40" y="85" width="30" height="30" as="geometry"/></mxCell>'+
+                '<mxCell id="AuthorizeClaim" value="Authorize&#xa;Claim" vertex="1" parent="3"><mxGeometry x="90" y="80" width="100" height="40" as="geometry"/></mxCell>'+
+                '<mxCell id="6" value="X" style="step" vertex="1" parent="3"><mxGeometry x="210" y="85" width="30" height="30" as="geometry"/></mxCell>'+
+                '<mxCell id="ApproveClaim" value="Approve&#xa;Claim" vertex="1" parent="3"><mxGeometry x="260" y="80" width="100" height="40" as="geometry"/></mxCell>'+
+                '<mxCell id="7" value="X" style="step" vertex="1" parent="3"><mxGeometry x="380" y="85" width="30" height="30" as="geometry"/></mxCell>'+
+                '<mxCell id="8" value="" edge="1" parent="3" source="5" target="AuthorizeClaim"><mxGeometry relative="1" as="geometry"/></mxCell>'+
+                '<mxCell id="9" value="" edge="1" parent="3" source="AuthorizeClaim" target="6"><mxGeometry relative="1" as="geometry"/></mxCell>'+
+                '<mxCell id="10" value="" edge="1" parent="3" source="6" target="ApproveClaim"><mxGeometry relative="1" as="geometry"/></mxCell>'+
+                '<mxCell id="11" value="" edge="1" parent="3" source="ApproveClaim" target="7"><mxGeometry relative="1" as="geometry"/></mxCell>'+
+                '<mxCell id="12" value="" edge="1" parent="3" source="7" target="AuthorizeClaim"><mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="140" y="40"/></Array></mxGeometry></mxCell>'+
+                '<mxCell id="ReviewClaim" value="Review&#xa;Claim" vertex="1" parent="3"><mxGeometry x="480" y="80" width="100" height="40" as="geometry"/></mxCell>'+
+                '<mxCell id="22" value="X" style="step" vertex="1" parent="3"><mxGeometry x="600" y="85" width="30" height="30" as="geometry"/></mxCell>'+
+                '<mxCell id="23" value="" edge="1" parent="3" source="ReviewClaim" target="22"><mxGeometry relative="1" as="geometry"/></mxCell>'+
+                '<mxCell id="ApproveReviewedClaim" value="Approve Rev.&#xa;Claim" vertex="1" parent="3"><mxGeometry x="650" y="80" width="100" height="40" as="geometry"/></mxCell>'+
+                '<mxCell id="26" value="" edge="1" parent="3" source="22" target="ApproveReviewedClaim"><mxGeometry relative="1" as="geometry"/></mxCell>'+
+                '<mxCell id="27" value="X" style="step" vertex="1" parent="3"><mxGeometry x="770" y="85" width="30" height="30" as="geometry"/></mxCell>'+
+                '<mxCell id="28" value="" edge="1" target="27" parent="3" source="ApproveReviewedClaim"><mxGeometry relative="1" as="geometry"><mxPoint x="740" y="100" as="sourcePoint"/><mxPoint x="760" y="100" as="targetPoint"/></mxGeometry></mxCell>'+
+                '<mxCell id="32" value="" edge="1" parent="3" source="27" target="ReviewClaim"><mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="665" y="160"/></Array></mxGeometry></mxCell>'+
+                '<mxCell id="4" value="Accountant" style="swimlane" vertex="1" parent="2"><mxGeometry x="30" y="200" width="820" height="200" as="geometry"/></mxCell>'+
+                '<mxCell id="EnterAccountingData" value="Enter&#xa;Data" vertex="1" parent="4"><mxGeometry x="430" y="80" width="100" height="40" as="geometry"/></mxCell>'+
+                '<mxCell id="14" value="X" style="step" vertex="1" parent="4"><mxGeometry x="550" y="85" width="30" height="30" as="geometry"/></mxCell>'+
+                '<mxCell id="15" value="" edge="1" parent="4" source="EnterAccountingData" target="14"><mxGeometry relative="1" as="geometry"/></mxCell>'+
+                '<mxCell id="CheckAccountingData" value="Check&#xa;Data" vertex="1" parent="4"><mxGeometry x="600" y="80" width="100" height="40" as="geometry"/></mxCell>'+
+                '<mxCell id="16" value="" edge="1" parent="4" source="14" target="CheckAccountingData"><mxGeometry relative="1" as="geometry"/></mxCell>'+
+                '<mxCell id="17" value="X" style="step" vertex="1" parent="4"><mxGeometry x="720" y="85" width="30" height="30" as="geometry"/></mxCell>'+
+                '<mxCell id="18" value="" edge="1" parent="4" source="CheckAccountingData" target="17"><mxGeometry relative="1" as="geometry"/></mxCell>'+
+                '<mxCell id="19" value="" style="end" vertex="1" parent="4"><mxGeometry x="770" y="85" width="30" height="30" as="geometry"/></mxCell>'+
+                '<mxCell id="20" value="" edge="1" parent="4" source="17" target="19"><mxGeometry relative="1" as="geometry"/></mxCell>'+
+                '<mxCell id="31" value="" edge="1" parent="4" source="17" target="EnterAccountingData"><mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="625" y="160"/></Array></mxGeometry></mxCell>'+
+                '<mxCell id="13" value="" edge="1" parent="2" source="7" target="EnterAccountingData"><mxGeometry relative="1" as="geometry"/></mxCell>'+
+                '<mxCell id="24" value="" edge="1" parent="2" source="14" target="ReviewClaim" style="edgeStyle=none"><mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="595" y="180"/><mxPoint x="480" y="180"/><mxPoint x="480" y="100"/></Array></mxGeometry></mxCell>'+
+                '<mxCell id="29" value="" edge="1" parent="2" source="22" target="EnterAccountingData"><mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="469" y="40"/></Array></mxGeometryACCTNTP</mxCell>'+
+                '<mxCell id="30" value="" edge="1" parent="2" source="27" target="EnterAccountingData"><mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="469" y="40"/></Array></mxGeometry></mxCell>'+
+                '<mxCell id="33" value="" edge="1" parent="2" source="6" target="EnterAccountingData"><mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="255" y="200"/></Array></mxGeometry></mxCell>'+
+                '</root></mxGraphModel>';
+             // 这是一个包含 mxGraph 模型数据的 XML 字符串。
+             // 它定义了工作流图表的结构，包括：
+             // - <mxGraphModel>: 根元素。
+             // - <root>: 模型的根节点，包含图表的所有单元格。
+             // - <mxCell>: 表示图表中的一个单元格（顶点或边）。
+             //   - id: 单元格的唯一标识符。
+             //   - value: 单元格显示的文本。
+             //   - style: 单元格的样式名称（例如 swimlane, start, step 等）。
+             //   - vertex="1": 表示这是一个顶点。
+             //   - edge="1": 表示这是一个边。
+             //   - parent: 父单元格的 ID，用于构建层次结构。
+             //   - <mxGeometry>: 定义单元格的位置和大小。
+             //     - x, y: 单元格的坐标。
+             //     - width, height: 单元格的宽度和高度。
+             //     - as="geometry": 表示这是几何信息。
+             //   - source, target: 边的起点和终点单元格的 ID。
+             //   - <Array as="points">: 边的路由点，用于定义边的弯曲路径。
+             // 这个 XML 构建了一个复杂的声明处理工作流图，包含泳道、开始/结束节点和各种活动步骤。
+             var doc = mxUtils.parseXml(xml);
+             // 使用 mxUtils.parseXml 函数将上述 XML 字符串解析成一个 XML Document 对象。
+             // 这是加载 XML 数据的标准步骤。
+             var codec = new mxCodec(doc);
+             // 创建一个新的 mxCodec 实例。mxCodec 是 mxGraph 中用于编码和解码图表模型的类。
+             // 它能够将图表模型转换成 XML，反之亦然。
+             codec.decode(doc.documentElement, graph.getModel());
+             // 使用 codec 的 decode 方法将 XML Document 的根元素 (doc.documentElement) 解码，
+             // 并将其内容加载到 graph 的模型 (graph.getModel()) 中。
+             // 这将根据 XML 定义的结构在图表中创建所有的顶点和边。
+          }
 
-				// Creates a process display using the activity names as IDs to refer to the elements
-				var xml = '<mxGraphModel><root><mxCell id="0"/><mxCell id="1" parent="0"/>'+
-					'<mxCell id="2" value="Claim Handling Process" style="swimlane" vertex="1" parent="1"><mxGeometry x="1" width="850" height="400" as="geometry"/></mxCell>'+
-					'<mxCell id="3" value="Claim Manager" style="swimlane" vertex="1" parent="2"><mxGeometry x="30" width="820" height="200" as="geometry"/></mxCell>'+
-					'<mxCell id="5" value="" style="start" vertex="1" parent="3"><mxGeometry x="40" y="85" width="30" height="30" as="geometry"/></mxCell>'+
-					'<mxCell id="AuthorizeClaim" value="Authorize&#xa;Claim" vertex="1" parent="3"><mxGeometry x="90" y="80" width="100" height="40" as="geometry"/></mxCell>'+
-					'<mxCell id="6" value="X" style="step" vertex="1" parent="3"><mxGeometry x="210" y="85" width="30" height="30" as="geometry"/></mxCell>'+
-					'<mxCell id="ApproveClaim" value="Approve&#xa;Claim" vertex="1" parent="3"><mxGeometry x="260" y="80" width="100" height="40" as="geometry"/></mxCell>'+
-					'<mxCell id="7" value="X" style="step" vertex="1" parent="3"><mxGeometry x="380" y="85" width="30" height="30" as="geometry"/></mxCell>'+
-					'<mxCell id="8" value="" edge="1" parent="3" source="5" target="AuthorizeClaim"><mxGeometry relative="1" as="geometry"/></mxCell>'+
-					'<mxCell id="9" value="" edge="1" parent="3" source="AuthorizeClaim" target="6"><mxGeometry relative="1" as="geometry"/></mxCell>'+
-					'<mxCell id="10" value="" edge="1" parent="3" source="6" target="ApproveClaim"><mxGeometry relative="1" as="geometry"/></mxCell>'+
-					'<mxCell id="11" value="" edge="1" parent="3" source="ApproveClaim" target="7"><mxGeometry relative="1" as="geometry"/></mxCell>'+
-					'<mxCell id="12" value="" edge="1" parent="3" source="7" target="AuthorizeClaim"><mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="140" y="40"/></Array></mxGeometry></mxCell>'+
-					'<mxCell id="ReviewClaim" value="Review&#xa;Claim" vertex="1" parent="3"><mxGeometry x="480" y="80" width="100" height="40" as="geometry"/></mxCell>'+
-					'<mxCell id="22" value="X" style="step" vertex="1" parent="3"><mxGeometry x="600" y="85" width="30" height="30" as="geometry"/></mxCell>'+
-					'<mxCell id="23" value="" edge="1" parent="3" source="ReviewClaim" target="22"><mxGeometry relative="1" as="geometry"/></mxCell>'+
-					'<mxCell id="ApproveReviewedClaim" value="Approve Rev.&#xa;Claim" vertex="1" parent="3"><mxGeometry x="650" y="80" width="100" height="40" as="geometry"/></mxCell>'+
-					'<mxCell id="26" value="" edge="1" parent="3" source="22" target="ApproveReviewedClaim"><mxGeometry relative="1" as="geometry"/></mxCell>'+
-					'<mxCell id="27" value="X" style="step" vertex="1" parent="3"><mxGeometry x="770" y="85" width="30" height="30" as="geometry"/></mxCell>'+
-					'<mxCell id="28" value="" edge="1" target="27" parent="3" source="ApproveReviewedClaim"><mxGeometry relative="1" as="geometry"><mxPoint x="740" y="100" as="sourcePoint"/><mxPoint x="760" y="100" as="targetPoint"/></mxGeometry></mxCell>'+
-					'<mxCell id="32" value="" edge="1" parent="3" source="27" target="ReviewClaim"><mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="665" y="160"/></Array></mxGeometry></mxCell>'+
-					'<mxCell id="4" value="Accountant" style="swimlane" vertex="1" parent="2"><mxGeometry x="30" y="200" width="820" height="200" as="geometry"/></mxCell>'+
-					'<mxCell id="EnterAccountingData" value="Enter&#xa;Data" vertex="1" parent="4"><mxGeometry x="430" y="80" width="100" height="40" as="geometry"/></mxCell>'+
-					'<mxCell id="14" value="X" style="step" vertex="1" parent="4"><mxGeometry x="550" y="85" width="30" height="30" as="geometry"/></mxCell>'+
-					'<mxCell id="15" value="" edge="1" parent="4" source="EnterAccountingData" target="14"><mxGeometry relative="1" as="geometry"/></mxCell>'+
-					'<mxCell id="CheckAccountingData" value="Check&#xa;Data" vertex="1" parent="4"><mxGeometry x="600" y="80" width="100" height="40" as="geometry"/></mxCell>'+
-					'<mxCell id="16" value="" edge="1" parent="4" source="14" target="CheckAccountingData"><mxGeometry relative="1" as="geometry"/></mxCell>'+
-					'<mxCell id="17" value="X" style="step" vertex="1" parent="4"><mxGeometry x="720" y="85" width="30" height="30" as="geometry"/></mxCell>'+
-					'<mxCell id="18" value="" edge="1" parent="4" source="CheckAccountingData" target="17"><mxGeometry relative="1" as="geometry"/></mxCell>'+
-					'<mxCell id="19" value="" style="end" vertex="1" parent="4"><mxGeometry x="770" y="85" width="30" height="30" as="geometry"/></mxCell>'+
-					'<mxCell id="20" value="" edge="1" parent="4" source="17" target="19"><mxGeometry relative="1" as="geometry"/></mxCell>'+
-					'<mxCell id="31" value="" edge="1" parent="4" source="17" target="EnterAccountingData"><mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="625" y="160"/></Array></mxGeometry></mxCell>'+
-					'<mxCell id="13" value="" edge="1" parent="2" source="7" target="EnterAccountingData"><mxGeometry relative="1" as="geometry"/></mxCell>'+
-					'<mxCell id="24" value="" edge="1" parent="2" source="14" target="ReviewClaim" style="edgeStyle=none"><mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="595" y="180"/><mxPoint x="480" y="180"/><mxPoint x="480" y="100"/></Array></mxGeometry></mxCell>'+
-					'<mxCell id="29" value="" edge="1" parent="2" source="22" target="EnterAccountingData"><mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="469" y="40"/></Array></mxGeometry></mxCell>'+
-					'<mxCell id="30" value="" edge="1" parent="2" source="27" target="EnterAccountingData"><mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="469" y="40"/></Array></mxGeometry></mxCell>'+
-					'<mxCell id="33" value="" edge="1" parent="2" source="6" target="EnterAccountingData"><mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="255" y="200"/></Array></mxGeometry></mxCell>'+
-					'</root></mxGraphModel>';
-				var doc = mxUtils.parseXml(xml);
-				var codec = new mxCodec(doc);
-				codec.decode(doc.documentElement, graph.getModel());
-			}
-			
-			// Creates a button to invoke the refresh function
-			document.body.appendChild(mxUtils.button('Update', function(evt)
-			{
-				// XML is normally fetched from URL at server using mxUtils.get - this is a client-side
-				// string with randomized states to demonstrate the idea of the workflow monitor
-				var xml = '<process><update id="ApproveClaim" state="'+getState()+'"/><update id="AuthorizeClaim" state="'+getState()+'"/>'+
-					'<update id="CheckAccountingData" state="'+getState()+'"/><update id="ReviewClaim" state="'+getState()+'"/>'+
-					'<update id="ApproveReviewedClaim" state="'+getState()+'"/><update id="EnterAccountingData" state="'+getState()+'"/></process>';
-				update(graph, xml);
-			}));
-		};
+          // Creates a button to invoke the refresh function
+          // 创建一个按钮来调用刷新功能
+          document.body.appendChild(mxUtils.button('Update', function(evt)
+          // 在文档的 body 元素中添加一个按钮。
+          // 按钮的文本是 'Update'。
+          // 当按钮被点击时，将执行传入的匿名函数。
+          {
+             // XML is normally fetched from URL at server using mxUtils.get - this is a client-side
+             // string with randomized states to demonstrate the idea of the workflow monitor
+             // XML 通常通过 mxUtils.get 从服务器 URL 获取 - 这是一个客户端字符串，
+             // 带有随机化的状态，用于演示工作流监控器的概念
+             var xml = '<process><update id="ApproveClaim" state="'+getState()+'"/><update id="AuthorizeClaim" state="'+getState()+'"/>'+
+                '<update id="CheckAccountingData" state="'+getState()+'"/><update id="ReviewClaim" state="'+getState()+'"/>'+
+                '<update id="ApproveReviewedClaim" state="'+getState()+'"/><update id="EnterAccountingData" state="'+getState()+'"/></process>';
+             // 动态生成一个 XML 字符串，用于更新工作流中特定活动的状态。
+             // 每个 <update> 标签包含一个 'id' (活动名称) 和一个 'state' (随机生成的状态)。
+             // getState() 函数用于获取 'Init', 'Running', 'Waiting', 'Completed' 中的一个随机状态。
+             update(graph, xml);
+             // 调用 update 函数，将当前图表实例和包含随机状态的 XML 字符串传递过去。
+             // 这将根据 XML 中的状态信息更新图表单元格的显示。
+          }));
+       };
 
-		/**
-		 * Updates the display of the given graph using the XML data
-		 */
-		function update(graph, xml)
-		{
-			if (xml != null && xml.length > 0)
-			{
-				var doc = mxUtils.parseXml(xml);
-				
-				if (doc != null && doc.documentElement != null)
-				{
-					var model = graph.getModel();
-					var nodes = doc.documentElement.getElementsByTagName('update');
-					
-					if (nodes != null && nodes.length > 0)
-					{
-						model.beginUpdate();
+       /**
+        * Updates the display of the given graph using the XML data
+        * 使用 XML 数据更新给定图表的显示
+        */
+       function update(graph, xml)
+       {
+          // 检查传入的 XML 字符串是否有效且非空。
+          if (xml != null && xml.length > 0)
+          {
+             var doc = mxUtils.parseXml(xml);
+             // 将传入的 XML 字符串解析成 XML Document 对象。
 
-						try
-						{
-							for (var i = 0; i < nodes.length; i++)
-							{
-								// Processes the activity nodes inside the process node
-								var id = nodes[i].getAttribute('id');
-								var state = nodes[i].getAttribute('state');
-								
-								// Gets the cell for the given activity name from the model
-								var cell = model.getCell(id);
-								
-								// Updates the cell color and adds some tooltip information
-								if (cell != null)
-								{
-									// Resets the fillcolor and the overlay
-									graph.setCellStyles(mxConstants.STYLE_FILLCOLOR, 'white', [cell]);
-									graph.removeCellOverlays(cell);
-			
-									// Changes the cell color for the known states
-									if (state == 'Running')
-									{
-										graph.setCellStyles(mxConstants.STYLE_FILLCOLOR, '#f8cecc', [cell]);
-									}
-									else if (state == 'Waiting')
-									{
-										graph.setCellStyles(mxConstants.STYLE_FILLCOLOR, '#fff2cc', [cell]);
-									}
-									else if (state == 'Completed')
-									{
-										graph.setCellStyles(mxConstants.STYLE_FILLCOLOR, '#d4e1f5', [cell]);
-									}
-									
-									// Adds tooltip information using an overlay icon
-									if (state != 'Init')
-									{
-										// Sets the overlay for the cell in the graph
-										graph.addCellOverlay(cell, createOverlay(graph.warningImage, 'State: '+state));
-									}
-								}
-							} // for
-						}
-						finally
-						{
-							model.endUpdate();
-						}
-					}
-				}
-			}
-		};
-		
-		/**
-		 * Creates an overlay object using the given tooltip and text for the alert window
-		 * which is being displayed on click.
-		 */
-		function createOverlay(image, tooltip)
-		{
-			var overlay = new mxCellOverlay(image, tooltip);
+             // 检查解析后的 Document 对象及其根元素是否有效。
+             if (doc != null && doc.documentElement != null)
+             {
+                var model = graph.getModel();
+                // 获取当前图表的模型。模型包含了图表中的所有单元格数据。
+                var nodes = doc.documentElement.getElementsByTagName('update');
+                // 从 XML Document 的根元素中，获取所有标签名为 'update' 的元素。
+                // 这些 'update' 元素包含了需要更新的活动 ID 和状态。
 
-			// Installs a handler for clicks on the overlay
-			overlay.addListener(mxEvent.CLICK, function(sender, evt)
-			{
-				mxUtils.alert(tooltip + '\nLast update: ' + new Date());
-			});
-			
-			return overlay;
-		};
-		
-		/**
-		 * Creates and returns an empty graph inside the given container.
-		 */
-		function createGraph(container)
-		{
-			var graph = new mxGraph(container);
-			graph.setTooltips(true);
-			graph.setEnabled(false);
-			
-			// Disables folding
-			graph.isCellFoldable = function(cell, collapse)
-			{
-				return false;
-			};
+                // 检查是否找到了需要更新的节点。
+                if (nodes != null && nodes.length > 0)
+                {
+                   model.beginUpdate();
+                   // 开始模型更新。在批量修改模型时，这可以提高性能，并确保所有更改作为一个原子操作提交。
+                   // 图表在 beginUpdate 和 endUpdate 之间不会进行渲染。
 
-			// Creates the stylesheet for the process display
-			var style = graph.getStylesheet().getDefaultVertexStyle();
-			style[mxConstants.STYLE_FONTSIZE] = 11;
-			style[mxConstants.STYLE_FONTCOLOR] = 'black';
-			style[mxConstants.STYLE_STROKECOLOR] = '#808080';
-			style[mxConstants.STYLE_FILLCOLOR] = 'white';
-			style[mxConstants.STYLE_GRADIENTCOLOR] = 'white';
-			style[mxConstants.STYLE_GRADIENT_DIRECTION] = mxConstants.DIRECTION_EAST;
-			style[mxConstants.STYLE_ROUNDED] = true;
-			style[mxConstants.STYLE_SHADOW] = true;
-			style[mxConstants.STYLE_FONTSTYLE] = 1;
-			
-			style = graph.getStylesheet().getDefaultEdgeStyle();
-			style[mxConstants.STYLE_EDGE] = mxEdgeStyle.ElbowConnector;
-			style[mxConstants.STYLE_STROKECOLOR] = '#808080';
-			style[mxConstants.STYLE_ROUNDED] = true;
-			style[mxConstants.STYLE_SHADOW] = true;
-							
-			style = [];
-			style[mxConstants.STYLE_SHAPE] = mxConstants.SHAPE_SWIMLANE;
-			style[mxConstants.STYLE_PERIMETER] = mxPerimeter.RectanglePerimeter;
-			style[mxConstants.STYLE_STROKECOLOR] = '#a0a0a0';
-			style[mxConstants.STYLE_FONTCOLOR] = '#606060';
-			style[mxConstants.STYLE_FILLCOLOR] = '#E0E0DF';
-			style[mxConstants.STYLE_GRADIENTCOLOR] = 'white';
-			style[mxConstants.STYLE_STARTSIZE] = 30;
-			style[mxConstants.STYLE_ROUNDED] = false;
-			style[mxConstants.STYLE_FONTSIZE] = 12;
-			style[mxConstants.STYLE_FONTSTYLE] = 0;
-			style[mxConstants.STYLE_HORIZONTAL] = false;
-			// To improve text quality for vertical labels in some old IE versions...
-			style[mxConstants.STYLE_LABEL_BACKGROUNDCOLOR] = '#efefef';
+                   try
+                   {
+                      for (var i = 0; i < nodes.length; i++)
+                      {
+                         // Processes the activity nodes inside the process node
+                         // 处理过程节点中的活动节点
+                         var id = nodes[i].getAttribute('id');
+                         // 获取当前 'update' 元素的 'id' 属性值，这对应于图表中的单元格 ID（活动名称）。
+                         var state = nodes[i].getAttribute('state');
+                         // 获取当前 'update' 元素的 'state' 属性值，表示活动的新状态。
 
-			graph.getStylesheet().putCellStyle('swimlane', style);
-			
-			style = [];
-			style[mxConstants.STYLE_SHAPE] = mxConstants.SHAPE_RHOMBUS;
-			style[mxConstants.STYLE_PERIMETER] = mxPerimeter.RhombusPerimeter;
-			style[mxConstants.STYLE_STROKECOLOR] = '#91BCC0';
-			style[mxConstants.STYLE_FONTCOLOR] = 'gray';
-			style[mxConstants.STYLE_FILLCOLOR] = '#91BCC0';
-			style[mxConstants.STYLE_GRADIENTCOLOR] = 'white';
-			style[mxConstants.STYLE_ALIGN] = mxConstants.ALIGN_CENTER;
-			style[mxConstants.STYLE_VERTICAL_ALIGN] = mxConstants.ALIGN_MIDDLE;
-			style[mxConstants.STYLE_FONTSIZE] = 16;
-			graph.getStylesheet().putCellStyle('step', style);
-			
-			style = [];
-			style[mxConstants.STYLE_SHAPE] = mxConstants.SHAPE_ELLIPSE;
-			style[mxConstants.STYLE_PERIMETER] = mxPerimeter.EllipsePerimeter;
-			style[mxConstants.STYLE_FONTCOLOR] = 'gray';
-			style[mxConstants.STYLE_FILLCOLOR] = '#A0C88F';
-			style[mxConstants.STYLE_GRADIENTCOLOR] = 'white';
-			style[mxConstants.STYLE_STROKECOLOR] = '#A0C88F';
-			style[mxConstants.STYLE_ALIGN] = mxConstants.ALIGN_CENTER;
-			style[mxConstants.STYLE_VERTICAL_ALIGN] = mxConstants.ALIGN_MIDDLE;
-			style[mxConstants.STYLE_FONTSIZE] = 16;
-			graph.getStylesheet().putCellStyle('start', style);
-			
-			style = mxUtils.clone(style);
-			style[mxConstants.STYLE_FILLCOLOR] = '#DACCBC';
-			style[mxConstants.STYLE_STROKECOLOR] = '#AF7F73';
-			graph.getStylesheet().putCellStyle('end', style);
-			
-			return graph;
-		};
-		
-		/**
-		 * Returns a random state.
-		 */
-		function getState()
-		{
-			var state = 'Init';
-			var rnd = Math.random() * 4;
-			
-			if (rnd > 3)
-			{
-				state = 'Completed';
-			}
-			else if (rnd > 2)
-			{
-				state = 'Running';
-			}
-			else if (rnd > 1)
-			{
-				state = 'Waiting';
-			}
-			
-			return state;
-		};
-	</script>
+                         // Gets the cell for the given activity name from the model
+                         // 从模型中获取给定活动名称的单元格
+                         var cell = model.getCell(id);
+                         // 根据获取到的 ID，从图表模型中检索对应的单元格对象。
+
+                         // Updates the cell color and adds some tooltip information
+                         // 更新单元格颜色并添加一些工具提示信息
+                         if (cell != null)
+                         {
+                            // Resets the fillcolor and the overlay
+                            // 重置填充颜色和覆盖层
+                            graph.setCellStyles(mxConstants.STYLE_FILLCOLOR, 'white', [cell]);
+                            // 将当前单元格的填充颜色重置为白色。这是一个预设步骤，确保在应用新颜色之前清除旧颜色。
+                            graph.removeCellOverlays(cell);
+                            // 移除当前单元格上所有现有的覆盖层（例如，之前添加的状态图标）。
+
+                            // Changes the cell color for the known states
+                            // 更改已知状态的单元格颜色
+                            if (state == 'Running')
+                            {
+                               graph.setCellStyles(mxConstants.STYLE_FILLCOLOR, '#f8cecc', [cell]);
+                               // 如果状态是 'Running'，将单元格填充颜色设置为浅红色 (#f8cecc)。
+                            }
+                            else if (state == 'Waiting')
+                            {
+                               graph.setCellStyles(mxConstants.STYLE_FILLCOLOR, '#fff2cc', [cell]);
+                               // 如果状态是 'Waiting'，将单元格填充颜色设置为浅黄色 (#fff2cc)。
+                            }
+                            else if (state == 'Completed')
+                            {
+                               graph.setCellStyles(mxConstants.STYLE_FILLCOLOR, '#d4e1f5', [cell]);
+                               // 如果状态是 'Completed'，将单元格填充颜色设置为浅蓝色 (#d4e1f5)。
+                            }
+
+                            // Adds tooltip information using an overlay icon
+                            // 使用覆盖图标添加工具提示信息
+                            if (state != 'Init')
+                            {
+                               // Sets the overlay for the cell in the graph
+                               // 为图表中的单元格设置覆盖层
+                               graph.addCellOverlay(cell, createOverlay(graph.warningImage, 'State: '+state));
+                               // 如果状态不是 'Init'，则为单元格添加一个覆盖层。
+                               // 使用图表的警告图片 (graph.warningImage) 作为图标，
+                               // 并将 'State: ' 加上当前状态作为工具提示文本。
+                               // createOverlay 函数会创建一个 mxCellOverlay 对象。
+                            }
+                         }
+                      } // for
+                   }
+                   finally
+                   {
+                      model.endUpdate();
+                      // 结束模型更新，触发图表重新渲染，显示所有对单元格颜色和覆盖层的修改。
+                   }
+                }
+             }
+          }
+       };
+
+       /**
+        * Creates an overlay object using the given tooltip and text for the alert window
+        * which is being displayed on click.
+        * 使用给定的工具提示和警报窗口文本创建覆盖层对象，该警报窗口在点击时显示。
+        * @param {string} image - 覆盖层图标的路径。
+        * @param {string} tooltip - 鼠标悬停在覆盖层上时显示的工具提示文本。
+        */
+       function createOverlay(image, tooltip)
+       {
+          var overlay = new mxCellOverlay(image, tooltip);
+          // 创建一个新的 mxCellOverlay 实例。
+          // 参数 image 是覆盖层图标的路径，tooltip 是鼠标悬停时显示的文本。
+
+          // Installs a handler for clicks on the overlay
+          // 为覆盖层的点击安装处理程序
+          overlay.addListener(mxEvent.CLICK, function(sender, evt)
+          // 为这个覆盖层添加一个事件监听器，监听 'CLICK' 事件。
+          // 当用户点击覆盖层时，将执行此回调函数。
+          {
+             mxUtils.alert(tooltip + '\nLast update: ' + new Date());
+             // 在回调函数中，使用 mxUtils.alert 显示一个包含工具提示文本和当前更新时间的弹窗。
+          });
+
+          return overlay;
+          // 返回创建的 mxCellOverlay 对象。
+       };
+
+       /**
+        * Creates and returns an empty graph inside the given container.
+        * 在给定容器内创建并返回一个空图表。
+        * @param {HTMLElement} container - 用于承载图表的 HTML 元素。
+        * @returns {mxGraph} 创建的 mxGraph 实例。
+        */
+       function createGraph(container)
+       {
+          var graph = new mxGraph(container);
+          // 创建一个新的 mxGraph 实例，并将其绑定到传入的 HTML 容器元素上。
+          graph.setTooltips(true);
+          // 启用图表的工具提示功能。当鼠标悬停在单元格上时，会显示其工具提示。
+          graph.setEnabled(false);
+          // 禁用图表的交互功能，如拖拽、调整大小、连线等。
+          // 这使得图表只用于显示，而不是编辑。
+
+          // Disables folding
+          // 禁用折叠
+          graph.isCellFoldable = function(cell, collapse)
+          // 覆盖 graph 的 isCellFoldable 方法，使其始终返回 false。
+          // 这意味着图表中的任何单元格都不能被折叠或展开（例如，泳道或组）。
+          {
+             return false;
+          };
+
+          // Creates the stylesheet for the process display
+          // 为过程显示创建样式表
+          var style = graph.getStylesheet().getDefaultVertexStyle();
+          // 获取默认顶点样式。后续的样式修改将基于此默认样式。
+          style[mxConstants.STYLE_FONTSIZE] = 11;
+          // 设置字体大小为 11。
+          style[mxConstants.STYLE_FONTCOLOR] = 'black';
+          // 设置字体颜色为黑色。
+          style[mxConstants.STYLE_STROKECOLOR] = '#808080';
+          // 设置边框颜色为深灰色。
+          style[mxConstants.STYLE_FILLCOLOR] = 'white';
+          // 设置填充颜色为白色。
+          style[mxConstants.STYLE_GRADIENTCOLOR] = 'white';
+          // 设置渐变颜色为白色，与填充颜色相同，实际上消除了渐变效果。
+          style[mxConstants.STYLE_GRADIENT_DIRECTION] = mxConstants.DIRECTION_EAST;
+          // 设置渐变方向为东（右）。
+          style[mxConstants.STYLE_ROUNDED] = true;
+          // 设置顶点为圆角。
+          style[mxConstants.STYLE_SHADOW] = true;
+          // 启用顶点阴影。
+          style[mxConstants.STYLE_FONTSTYLE] = 1;
+          // 设置字体样式为粗体 (1)。
+
+          style = graph.getStylesheet().getDefaultEdgeStyle();
+          // 获取默认边样式。
+          style[mxConstants.STYLE_EDGE] = mxEdgeStyle.ElbowConnector;
+          // 设置边的路由样式为肘形连接器。这意味着边会以直角连接点。
+          style[mxConstants.STYLE_STROKECOLOR] = '#808080';
+          // 设置边的颜色为深灰色。
+          style[mxConstants.STYLE_ROUNDED] = true;
+          // 设置边为圆角。
+          style[mxConstants.STYLE_SHADOW] = true;
+          // 启用边阴影。
+
+          style = [];
+          // 初始化一个空数组来定义 'swimlane' 样式。
+          style[mxConstants.STYLE_SHAPE] = mxConstants.SHAPE_SWIMLANE;
+          // 设置形状为泳道。
+          style[mxConstants.STYLE_PERIMETER] = mxPerimeter.RectanglePerimeter;
+          // 设置周长为矩形周长。
+          style[mxConstants.STYLE_STROKECOLOR] = '#a0a0a0';
+          // 设置边框颜色为浅灰色。
+          style[mxConstants.STYLE_FONTCOLOR] = '#606060';
+          // 设置字体颜色为中灰色。
+          style[mxConstants.STYLE_FILLCOLOR] = '#E0E0DF';
+          // 设置填充颜色为非常浅的灰色。
+          style[mxConstants.STYLE_GRADIENTCOLOR] = 'white';
+          // 设置渐变颜色为白色。
+          style[mxConstants.STYLE_STARTSIZE] = 30;
+          // 设置泳道头部（标签区域）的起始大小为 30 像素。
+          style[mxConstants.STYLE_ROUNDED] = false;
+          // 设置泳道为直角（非圆角）。
+          style[mxConstants.STYLE_FONTSIZE] = 12;
+          // 设置字体大小为 12。
+          style[mxConstants.STYLE_FONTSTYLE] = 0;
+          // 设置字体样式为常规 (0)。
+          style[mxConstants.STYLE_HORIZONTAL] = false;
+          // 设置泳道文本方向为垂直。
+          // To improve text quality for vertical labels in some old IE versions...
+          // 为了提高某些旧版 IE 中垂直标签的文本质量...
+          style[mxConstants.STYLE_LABEL_BACKGROUNDCOLOR] = '#efefef';
+          // 设置标签背景颜色为非常浅的灰色。
+
+          graph.getStylesheet().putCellStyle('swimlane', style);
+          // 将定义的样式命名为 'swimlane' 并添加到图表的样式表中。
+
+          style = [];
+          // 初始化一个空数组来定义 'step' 样式。
+          style[mxConstants.STYLE_SHAPE] = mxConstants.SHAPE_RHOMBUS;
+          // 设置形状为菱形。
+          style[mxConstants.STYLE_PERIMETER] = mxPerimeter.RhombusPerimeter;
+          // 设置周长为菱形周长。
+          style[mxConstants.STYLE_STROKECOLOR] = '#91BCC0';
+          // 设置边框颜色为浅蓝绿色。
+          style[mxConstants.STYLE_FONTCOLOR] = 'gray';
+          // 设置字体颜色为灰色。
+          style[mxConstants.STYLE_FILLCOLOR] = '#91BCC0';
+          // 设置填充颜色为浅蓝绿色。
+          style[mxConstants.STYLE_GRADIENTCOLOR] = 'white';
+          // 设置渐变颜色为白色。
+          style[mxConstants.STYLE_ALIGN] = mxConstants.ALIGN_CENTER;
+          // 设置文本水平居中。
+          style[mxConstants.STYLE_VERTICAL_ALIGN] = mxConstants.ALIGN_MIDDLE;
+          // 设置文本垂直居中。
+          style[mxConstants.STYLE_FONTSIZE] = 16;
+          // 设置字体大小为 16。
+          graph.getStylesheet().putCellStyle('step', style);
+          // 将定义的样式命名为 'step' 并添加到图表的样式表中。
+
+          style = [];
+          // 初始化一个空数组来定义 'start' 样式。
+          style[mxConstants.STYLE_SHAPE] = mxConstants.SHAPE_ELLIPSE;
+          // 设置形状为椭圆形。
+          style[mxConstants.STYLE_PERIMETER] = mxPerimeter.EllipsePerimeter;
+          // 设置周长为椭圆形周长。
+          style[mxConstants.STYLE_FONTCOLOR] = 'gray';
+          // 设置字体颜色为灰色。
+          style[mxConstants.STYLE_FILLCOLOR] = '#A0C88F';
+          // 设置填充颜色为浅绿色。
+          style[mxConstants.STYLE_GRADIENTCOLOR] = 'white';
+          // 设置渐变颜色为白色。
+          style[mxConstants.STYLE_STROKECOLOR] = '#A0C88F';
+          // 设置边框颜色为浅绿色。
+          style[mxConstants.STYLE_ALIGN] = mxConstants.ALIGN_CENTER;
+          // 设置文本水平居中。
+          style[mxConstants.STYLE_VERTICAL_ALIGN] = mxConstants.ALIGN_MIDDLE;
+          // 设置文本垂直居中。
+          style[mxConstants.STYLE_FONTSIZE] = 16;
+          // 设置字体大小为 16。
+          graph.getStylesheet().putCellStyle('start', style);
+          // 将定义的样式命名为 'start' 并添加到图表的样式表中。
+
+          style = mxUtils.clone(style);
+          // 克隆 'start' 样式，以便在 'end' 样式中重用大部分属性。
+          style[mxConstants.STYLE_FILLCOLOR] = '#DACCBC';
+          // 覆盖填充颜色为浅棕色。
+          style[mxConstants.STYLE_STROKECOLOR] = '#AF7F73';
+          // 覆盖边框颜色为较深的棕色。
+          graph.getStylesheet().putCellStyle('end', style);
+          // 将定义的样式命名为 'end' 并添加到图表的样式表中。
+
+          return graph;
+          // 返回配置好的 mxGraph 实例。
+       };
+
+       /**
+        * Returns a random state.
+        * 返回一个随机状态。
+        * @returns {string} 随机生成的状态字符串 ('Init', 'Running', 'Waiting', 'Completed' 之一)。
+        */
+       function getState()
+       {
+          var state = 'Init';
+          // 默认状态初始化为 'Init'。
+          var rnd = Math.random() * 4;
+          // 生成一个 0 到 4 之间的随机浮点数。
+
+          if (rnd > 3)
+          {
+             state = 'Completed';
+             // 如果 rnd 大于 3，则状态设置为 'Completed'。
+          }
+          else if (rnd > 2)
+          {
+             state = 'Running';
+             // 如果 rnd 大于 2（但不大于 3），则状态设置为 'Running'。
+          }
+          else if (rnd > 1)
+          {
+             state = 'Waiting';
+             // 如果 rnd 大于 1（但不大于 2），则状态设置为 'Waiting'。
+          }
+
+          return state;
+          // 返回随机生成的状态。
+       };
+    </script>
 </head>
 
-<!-- Page passes the container and control to the main function -->
 <body onload="main(document.getElementById('graphContainer'));">
-
-	<!-- Acts as a container for the graph -->
-	<div id="graphContainer" style="overflow:hidden;position:relative;width:861px;height:406px;cursor:default;">
-	</div>
-	<br>
-</body>
+    <div id="graphContainer" style="overflow:hidden;position:relative;width:861px;height:406px;cursor:default;">
+    </div>
+    <br>
+    </body>
 </html>
