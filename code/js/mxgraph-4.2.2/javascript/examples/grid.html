@@ -6,211 +6,332 @@
   Grid example for mxGraph. This example demonstrates drawing
   a grid dynamically using HTML 5 canvas.
 -->
+<!-- 版权声明及示例说明 -->
+<!-- 此示例展示如何使用 HTML5 Canvas 动态绘制网格 -->
 <html>
 <head>
 	<title>Grid example for mxGraph</title>
-
+	<!-- 设置页面标题为 mxGraph 网格示例 -->
 	<!-- Sets the basepath for the library if not in same directory -->
+	<!-- 设置 mxGraph 库的基础路径，如果库文件不在同一目录下 -->
 	<script type="text/javascript">
 		mxBasePath = '../src';
+		// 设置 mxGraph 库的基础路径为 '../src'
 	</script>
 
 	<!-- Loads and initializes the library -->
+	<!-- 加载并初始化 mxGraph 库 -->
 	<script type="text/javascript" src="../src/js/mxClient.js"></script>
+	<!-- 引入 mxGraph 核心库文件 mxClient.js -->
 
 	<!-- Example code -->
+	<!-- 示例代码 -->
 	<script type="text/javascript">
 		// Program starts here. Creates a sample graph in the
 		// DOM node with the specified ID. This function is invoked
 		// from the onLoad event handler of the document (see below).
+		// 程序从这里开始。在指定 ID 的 DOM 节点中创建示例图形。此函数由文档的 onLoad 事件处理程序调用（见下文）。
 		function main(container)
 		{
+			// main 函数：初始化并创建图形
+			// 参数 container：指定用于渲染图形的 DOM 容器
 			// Checks if the browser is supported
+			// 检查浏览器是否受支持
 			if (!mxClient.isBrowserSupported())
 			{
 				// Displays an error message if the browser is not supported.
+				// 如果浏览器不受支持，显示错误消息
 				mxUtils.error('Browser is not supported!', 200, false);
+				// 调用 mxUtils.error 显示错误提示，参数：错误消息、宽度 200px、不自动关闭
 			}
 			else
 			{
 				mxEvent.disableContextMenu(document.body);
+				// 禁用页面右键上下文菜单
 
 				// Creates the graph inside the given container
+				// 在指定容器内创建图形对象
 				var graph = new mxGraph(container);
+				// 创建 mxGraph 实例，参数 container 为图形渲染的 DOM 元素
 				graph.graphHandler.scaleGrid = true;
+				// 启用网格缩放功能
 				graph.setPanning(true);
+				// 启用平移功能，允许用户拖动图形
 
 				// Enables rubberband selection
+				// 启用橡皮筋选择功能
 				new mxRubberband(graph);
+				// 创建 mxRubberband 实例以支持框选功能，参数为图形对象
 
 				// Create grid dynamically (requires canvas)
+				// 动态创建网格（需要 HTML5 Canvas 支持）
 				(function()
 				{
+					// 匿名函数：实现动态网格绘制
 					try
 					{
 						var canvas = document.createElement('canvas');
+						// 创建 Canvas 元素用于绘制网格
 						canvas.style.position = 'absolute';
+						// 设置 Canvas 为绝对定位
 						canvas.style.top = '0px';
+						// Canvas 顶部位置为 0
 						canvas.style.left = '0px';
+						// Canvas 左侧位置为 0
 						canvas.style.zIndex = -1;
+						// 设置 Canvas 层级低于图形内容
 						graph.container.appendChild(canvas);
-						
+						// 将 Canvas 添加到图形容器中
+
 						var ctx = canvas.getContext('2d');
-						
+						// 获取 Canvas 的 2D 绘图上下文
+
 						// Modify event filtering to accept canvas as container
+						// 修改事件过滤以接受 Canvas 作为容器
 						var mxGraphViewIsContainerEvent = mxGraphView.prototype.isContainerEvent;
+						// 保存原始 isContainerEvent 方法
 						mxGraphView.prototype.isContainerEvent = function(evt)
 						{
+							// 重定义 isContainerEvent 方法，扩展事件处理
+							// 参数 evt：鼠标或其他事件对象
 							return mxGraphViewIsContainerEvent.apply(this, arguments) ||
 								mxEvent.getSource(evt) == canvas;
+							// 检查事件源是否为 Canvas，若是则接受事件
 						};
 						
 						var s = 0;
+						// 变量 s：记录当前缩放比例
 						var gs = 0;
+						// 变量 gs：记录网格大小
 						var tr = new mxPoint();
+						// 变量 tr：记录图形平移坐标 (x, y)
 						var w = 0;
+						// 变量 w：记录 Canvas 宽度
 						var h = 0;
+						// 变量 h：记录 Canvas 高度
 
 						function repaintGrid()
 						{
+							// repaintGrid 函数：重绘网格
 							if (ctx != null)
 							{
+								// 确保 Canvas 上下文存在
 								var bounds = graph.getGraphBounds();
+								// 获取图形边界
 								var width = Math.max(bounds.x + bounds.width, graph.container.clientWidth);
+								// 计算 Canvas 宽度，取图形边界宽度与容器宽度的最大值
 								var height = Math.max(bounds.y + bounds.height, graph.container.clientHeight);
+								// 计算 Canvas 高度，取图形边界高度与容器高度的最大值
 								var sizeChanged = width != w || height != h;
-								
+								// 检查 Canvas 尺寸是否变化
+
 								if (graph.view.scale != s || graph.view.translate.x != tr.x || graph.view.translate.y != tr.y ||
 									gs != graph.gridSize || sizeChanged)
 								{
+									// 检查缩放、平移或网格大小是否变化
 									tr = graph.view.translate.clone();
+									// 更新平移坐标
 									s = graph.view.scale;
+									// 更新缩放比例
 									gs = graph.gridSize;
+									// 更新网格大小
 									w = width;
+									// 更新 Canvas 宽度
 									h = height;
-									
+									// 更新 Canvas 高度
+
 									// Clears the background if required
+									// 如果需要，清除 Canvas 背景
 									if (!sizeChanged)
 									{
 										ctx.clearRect(0, 0, w, h);
+										// 清除 Canvas 内容
 									}
 									else
 									{
 										canvas.setAttribute('width', w);
+										// 设置 Canvas 宽度
 										canvas.setAttribute('height', h);
+										// 设置 Canvas 高度
 									}
 	
 									var tx = tr.x * s;
+									// 计算水平平移量（考虑缩放）
 									var ty = tr.y * s;
-	
+									// 计算垂直平移量（考虑缩放）
+
 									// Sets the distance of the grid lines in pixels
+									// 设置网格线间距（像素）
 									var minStepping = graph.gridSize;
+									// 最小网格间距
 									var stepping = minStepping * s;
-	
+									// 根据缩放比例调整网格间距
+
 									if (stepping < minStepping)
 									{
+										// 如果间距过小，调整为合适的倍数
 										var count = Math.round(Math.ceil(minStepping / stepping) / 2) * 2;
+										// 计算调整后的间距倍数
 										stepping = count * stepping;
+										// 更新网格间距
 									}
 	
 									var xs = Math.floor((0 - tx) / stepping) * stepping + tx;
+									// 计算水平网格起始点
 									var xe = Math.ceil(w / stepping) * stepping;
+									// 计算水平网格结束点
 									var ys = Math.floor((0 - ty) / stepping) * stepping + ty;
+									// 计算垂直网格起始点
 									var ye = Math.ceil(h / stepping) * stepping;
-	
+									// 计算垂直网格结束点
+
 									xe += Math.ceil(stepping);
+									// 扩展结束点以确保覆盖
 									ye += Math.ceil(stepping);
-	
+									// 扩展结束点以确保覆盖
+
 									var ixs = Math.round(xs);
+									// 四舍五入水平起始点
 									var ixe = Math.round(xe);
+									// 四舍五入水平结束点
 									var iys = Math.round(ys);
+									// 四舍五入垂直起始点
 									var iye = Math.round(ye);
-	
+									// 四舍五入垂直结束点
+
 									// Draws the actual grid
+									// 绘制实际网格
 									ctx.strokeStyle = '#f6f6f6';
+									// 设置网格线颜色为浅灰色
 									ctx.beginPath();
-									
+									// 开始绘制路径
+
 									for (var x = xs; x <= xe; x += stepping)
 									{
+										// 循环绘制垂直网格线
 										x = Math.round((x - tx) / stepping) * stepping + tx;
+										// 计算调整后的 x 坐标
 										var ix = Math.round(x);
-										
+										// 四舍五入 x 坐标
+
 										ctx.moveTo(ix + 0.5, iys + 0.5);
+										// 设置垂直线起点
 										ctx.lineTo(ix + 0.5, iye + 0.5);
+										// 设置垂直线终点
 									}
 	
 									for (var y = ys; y <= ye; y += stepping)
 									{
+										// 循环绘制水平网格线
 										y = Math.round((y - ty) / stepping) * stepping + ty;
+										// 计算调整后的 y 坐标
 										var iy = Math.round(y);
-										
+										// 四舍五入 y 坐标
+
 										ctx.moveTo(ixs + 0.5, iy + 0.5);
+										// 设置水平线起点
 										ctx.lineTo(ixe + 0.5, iy + 0.5);
+										// 设置水平线终点
 									}
 	
 									ctx.closePath();
+									// 关闭绘制路径
 									ctx.stroke();
+									// 绘制网格线
 								}
 							}
 						};
+						// repaintGrid 函数：动态更新网格以适应缩放和平移
 					}
 					catch (e)
 					{
+						// 处理 Canvas 不可用的情况
 						mxLog.show();
+						// 显示日志窗口
 						mxLog.debug('Using background image');
-						
+						// 记录调试信息：使用背景图片
 						container.style.backgroundImage = 'url(\'editors/images/grid.gif\')';
+						// 设置容器背景为网格图片
+						// 注意事项：当浏览器不支持 Canvas 时，使用静态网格图片作为备用
 					}
 					
 					var mxGraphViewValidateBackground = mxGraphView.prototype.validateBackground;
+					// 保存原始 validateBackground 方法
 					mxGraphView.prototype.validateBackground = function()
 					{
+						// 重定义 validateBackground 方法，添加网格重绘
 						mxGraphViewValidateBackground.apply(this, arguments);
+						// 调用原始背景验证方法
 						repaintGrid();
+						// 调用网格重绘函数
 					};
 				})();
-				
+				// 匿名函数：初始化 Canvas 并设置动态网格绘制逻辑
+
 				
 				// Gets the default parent for inserting new cells. This
 				// is normally the first child of the root (ie. layer 0).
+				// 获取用于插入新单元的默认父节点，通常是根节点的第一个子节点（即第0层）
 				var parent = graph.getDefaultParent();
-								
+				// 获取默认父节点，用于添加图形元素
+
 				// Adds cells to the model in a single step
+				// 在单一步骤中向模型添加单元
 				graph.getModel().beginUpdate();
+				// 开始批量更新模型
 				try
 				{
 					var v1 = graph.insertVertex(parent, null, 'Hello,', 20, 20, 80, 30);
+					// 插入第一个顶点，显示文本 "Hello,"，位置 (20, 20)，大小 80x30
 					var v2 = graph.insertVertex(parent, null, 'World!', 200, 150, 80, 30);
+					// 插入第二个顶点，显示文本 "World!"，位置 (200, 150)，大小 80x30
 					var e1 = graph.insertEdge(parent, null, '', v1, v2);
+					// 插入边，连接 v1 和 v2，无标签
 				}
 				finally
 				{
 					// Updates the display
+					// 更新显示
 					graph.getModel().endUpdate();
+					// 结束批量更新，刷新图形
 				}
 
 				graph.centerZoom = false;
-				
+				// 禁用以图形中心为基准的缩放
+
 				document.body.appendChild(mxUtils.button('+', function()
 				{
+					// 创建放大按钮
+					// 按钮点击事件：调用 graph.zoomIn 放大图形
 					graph.zoomIn();
 				}));
-				
+				// 添加放大按钮到页面
+				// 交互逻辑：点击 '+' 按钮放大图形视图
+
 				document.body.appendChild(mxUtils.button('-', function()
 				{
+					// 创建缩小按钮
+					// 按钮点击事件：调用 graph.zoomOut 缩小图形
 					graph.zoomOut();
 				}));
+				// 添加缩小按钮到页面
+				// 交互逻辑：点击 '-' 按钮缩小图形视图
 			}
 		};
+		// main 函数：初始化 mxGraph、设置网格、添加示例图形和交互按钮
 	</script>
 </head>
 
 <!-- Page passes the container for the graph to the program -->
+<!-- 页面将图形容器传递给程序 -->
 <body onload="main(document.getElementById('graphContainer'))">
-
+	<!-- 页面加载时调用 main 函数，传入 graphContainer 元素 -->
 	<!-- Creates a container for the graph with a grid wallpaper -->
+	<!-- 创建图形容器，带有网格背景 -->
 	<div id="graphContainer"
 		style="overflow:hidden;width:641px;height:481px;cursor:default;">
+		<!-- 定义图形容器，ID 为 graphContainer -->
+		<!-- 样式说明：隐藏溢出内容，固定宽高为 641x481 像素，鼠标样式为默认 -->
 	</div>
 </body>
 </html>
