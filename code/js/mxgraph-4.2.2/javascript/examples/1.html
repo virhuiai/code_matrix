@@ -5,17 +5,22 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
     <!-- Sets the basepath for the library if not in same directory -->
+    <!-- 设置 mxGraph 库的基础路径，如果库文件不在同一目录下 -->
     <script type="text/javascript">
         mxBasePath = '../src';
+        // 定义 mxGraph 库的相对路径，确保正确加载库文件
     </script>
 
     <!-- Loads and initializes the library -->
+    <!-- 加载并初始化 mxGraph 库 -->
     <script type="text/javascript" src="../src/js/mxClient.js"></script>
+    <!-- 引入 mxGraph 的核心 JavaScript 文件以支持图形功能 -->
     <style>
         body {
             margin: 0;
             padding: 20px;
             font-family: Arial, sans-serif;
+            /* 设置页面无边距，内边距为20像素，使用 Arial 字体，确保页面整洁 */
         }
         #graphContainer {
             position: relative;
@@ -25,15 +30,18 @@
             background: #f5f5f5;
             border: 1px solid #ddd;
             cursor: default;
+            /* 定义图形容器的样式：相对定位，隐藏溢出内容，宽度100%，高度600像素，浅灰色背景，带1像素灰色边框，默认光标 */
         }
         .info {
             margin-bottom: 20px;
             padding: 10px;
             background: #e8f4f8;
             border-radius: 5px;
+            /* 信息面板样式：底部外边距20像素，内边距10像素，浅蓝色背景，圆角边框 */
         }
         h2 {
             margin-top: 0;
+            /* 标题样式：顶部无外边距，确保紧贴信息面板顶部 */
         }
     </style>
 </head>
@@ -45,135 +53,200 @@
         <li>点击节点可以隐藏/显示该节点的所有出边连接的节点</li>
         <li>连线出发点有收缩/展开图标</li>
         <li>Node 1 包含子节点，折叠时子节点保持可见</li>
+        <!-- 功能说明列表：描述交互功能，包括节点点击切换、折叠图标显示及子节点可见性 -->
     </ul>
 </div>
 <div id="graphContainer"></div>
 
 <script type="text/javascript">
     // 创建主函数
+    // 定义主函数，负责初始化 mxGraph 并创建图形
     function main(container) {
         // 检查浏览器支持
+        // 验证浏览器是否支持 mxGraph 库
         if (!mxClient.isBrowserSupported()) {
             mxUtils.error('浏览器不支持!', 200, false);
+            // 如果浏览器不支持，显示错误提示，宽度200像素，不自动关闭
             return;
         }
 
         // 创建图形编辑器
+        // 初始化 mxGraph 图形编辑器，绑定到指定容器
         var graph = new mxGraph(container);
         graph.setConnectable(false);
+        // 禁用节点连接功能，防止用户手动创建连接
         graph.setPanning(true);
+        // 启用平移功能，允许用户拖动画布
 
         // 启用折叠功能
+        // 开启节点折叠功能，允许节点显示/隐藏子节点或连接
         graph.foldingEnabled = true;
 
         // 自定义折叠图标
+        // 设置折叠和展开状态的图标
         graph.collapsedImage = new mxImage('https://jgraph.github.io/mxgraph/javascript/examples/images/collapsed.gif', 16, 16);
+        // 定义折叠状态图标，16x16像素
         graph.expandedImage = new mxImage('https://jgraph.github.io/mxgraph/javascript/examples/images/expanded.gif', 16, 16);
+        // 定义展开状态图标，16x16像素
 
         // 存储节点的折叠状态
+        // 定义对象用于记录每个节点的折叠/展开状态
         var nodeStates = {};
 
         // 自定义样式
+        // 配置默认节点样式
         var style = graph.getStylesheet().getDefaultVertexStyle();
         style[mxConstants.STYLE_SHAPE] = mxConstants.SHAPE_RECTANGLE;
+        // 设置节点形状为矩形
         style[mxConstants.STYLE_ROUNDED] = true;
+        // 启用圆角矩形
         style[mxConstants.STYLE_FILLCOLOR] = '#4a90e2';
+        // 设置填充颜色为蓝色
         style[mxConstants.STYLE_STROKECOLOR] = '#2e6da4';
+        // 设置边框颜色为深蓝色
         style[mxConstants.STYLE_FONTCOLOR] = '#ffffff';
+        // 设置字体颜色为白色
         style[mxConstants.STYLE_FONTSIZE] = 12;
+        // 设置字体大小为12像素
         style[mxConstants.STYLE_FONTSTYLE] = 1;
+        // 设置字体样式为粗体
 
         var edgeStyle = graph.getStylesheet().getDefaultEdgeStyle();
         edgeStyle[mxConstants.STYLE_STROKECOLOR] = '#666666';
+        // 设置边的颜色为灰色
         edgeStyle[mxConstants.STYLE_STROKEWIDTH] = 2;
+        // 设置边线宽度为2像素
         edgeStyle[mxConstants.STYLE_ROUNDED] = true;
+        // 启用边的圆角效果
         edgeStyle[mxConstants.STYLE_EDGE] = mxEdgeStyle.ElbowConnector;
+        // 设置边的样式为折线连接器
 
         // 子节点样式
+        // 定义子节点的专用样式
         var subNodeStyle = {};
         subNodeStyle[mxConstants.STYLE_SHAPE] = mxConstants.SHAPE_ELLIPSE;
+        // 设置子节点形状为椭圆
         subNodeStyle[mxConstants.STYLE_FILLCOLOR] = '#7cb342';
+        // 设置子节点填充颜色为绿色
         subNodeStyle[mxConstants.STYLE_STROKECOLOR] = '#558b2f';
+        // 设置子节点边框颜色为深绿色
         subNodeStyle[mxConstants.STYLE_FONTCOLOR] = '#ffffff';
+        // 设置子节点字体颜色为白色
         subNodeStyle[mxConstants.STYLE_FONTSIZE] = 11;
+        // 设置子节点字体大小为11像素
         graph.getStylesheet().putCellStyle('subNode', subNodeStyle);
+        // 注册子节点样式，名称为'subNode'
 
         // 开始更新
+        // 开始批量更新图形模型，以优化性能
         graph.getModel().beginUpdate();
 
         try {
             // 创建主节点
+            // 插入主节点到图形中
             var node1 = graph.insertVertex(graph.getDefaultParent(), null, 'Node 1', 50, 100, 120, 60);
+            // 创建节点1，位置(50,100)，大小120x60
             var node2 = graph.insertVertex(graph.getDefaultParent(), null, 'Node 2', 300, 100, 120, 60);
+            // 创建节点2，位置(300,100)，大小120x60
             var node3 = graph.insertVertex(graph.getDefaultParent(), null, 'Node 3', 550, 100, 120, 60);
+            // 创建节点3，位置(550,100)，大小120x60
 
             // 创建子节点（Node 1 的子节点）
+            // 在节点1内部插入子节点
             var subNode1 = graph.insertVertex(node1, null, 'SubNode 1', 10, 80, 80, 40, 'subNode');
+            // 创建子节点1，位于节点1内部，位置(10,80)，大小80x40，应用子节点样式
             var subNode2 = graph.insertVertex(node1, null, 'SubNode 2', 10, 140, 80, 40, 'subNode');
+            // 创建子节点2，位于节点1内部，位置(10,140)，大小80x40，应用子节点样式
+
+
+            var subNode4 = graph.insertVertex(node2, null, 'SubNode 4', 10, 140, 80, 40, 'subNode');
 
             // 创建边
+            // 插入连接节点之间的边
             var edge1 = graph.insertEdge(graph.getDefaultParent(), null, '', node1, node2);
+            // 创建从节点1到节点2的边
             var edge2 = graph.insertEdge(graph.getDefaultParent(), null, '', node2, node3);
+            // 创建从节点2到节点3的边
 
             // 初始化所有节点为展开状态
+            // 将所有主节点的折叠状态初始化为展开
             nodeStates[node1.id] = true;
             nodeStates[node2.id] = true;
             nodeStates[node3.id] = true;
 
         } finally {
+            // 结束更新
+            // 完成批量更新，确保图形刷新
             graph.getModel().endUpdate();
         }
 
         // 自定义折叠行为
+        // 重写判断节点是否可折叠的逻辑
         graph.isCellFoldable = function(cell) {
             // 只有包含子节点的单元格可以折叠
+            // 限制只有包含子节点的节点才可以折叠
             return this.model.getChildCount(cell) > 0;
         };
 
         // 重写折叠处理函数
+        // 自定义节点的折叠/展开逻辑
         var oldFoldCells = graph.foldCells;
         graph.foldCells = function(collapse, recurse, cells, checkFoldable, evt) {
             // 对于 Node 1，执行自定义折叠逻辑
+            // 针对节点1的特殊折叠处理
             if (cells && cells.length > 0 && cells[0].value === 'Node 1') {
                 this.model.beginUpdate();
+                // 开始模型更新
                 try {
                     // 获取所有从 Node 1 出发的边
+                    // 获取节点1的所有出边
                     var edges = this.model.getEdges(cells[0], false, true, false);
 
                     for (var i = 0; i < edges.length; i++) {
                         var edge = edges[i];
                         var target = this.model.getTerminal(edge, false);
+                        // 遍历每条边，获取目标节点
 
                         if (target) {
                             // 隐藏/显示目标节点和边
+                            // 根据折叠状态控制边的可见性
                             this.model.setVisible(edge, !collapse);
+                            // 设置边的可见性
                             this.model.setVisible(target, !collapse);
+                            // 设置目标节点的可见性
 
                             // 递归处理目标节点的出边
+                            // 递归处理目标节点的连接
                             if (collapse) {
                                 hideConnectedNodes(this, target);
+                                // 如果折叠，隐藏目标节点的连接
                             } else {
                                 showConnectedNodes(this, target);
+                                // 如果展开，显示目标节点的连接
                             }
                         }
                     }
 
                     // 更新折叠状态
+                    // 记录节点1的折叠状态
                     this.model.setCollapsed(cells[0], collapse);
                     nodeStates[cells[0].id] = !collapse;
 
                 } finally {
                     this.model.endUpdate();
+                    // 结束模型更新
                 }
 
                 return cells;
             } else {
                 // 其他节点使用默认折叠行为
+                // 对非节点1的节点使用原始折叠逻辑
                 return oldFoldCells.apply(this, arguments);
             }
         };
 
         // 隐藏连接的节点
+        // 定义函数，递归隐藏节点的出边及目标节点
         function hideConnectedNodes(graph, node) {
             var edges = graph.model.getEdges(node, false, true, false);
             for (var i = 0; i < edges.length; i++) {
@@ -181,13 +254,17 @@
                 var target = graph.model.getTerminal(edge, false);
                 if (target) {
                     graph.model.setVisible(edge, false);
+                    // 隐藏边
                     graph.model.setVisible(target, false);
+                    // 隐藏目标节点
                     hideConnectedNodes(graph, target);
+                    // 递归隐藏目标节点的连接
                 }
             }
         }
 
         // 显示连接的节点
+        // 定义函数，递归显示节点的出边及目标节点
         function showConnectedNodes(graph, node) {
             if (nodeStates[node.id]) {
                 var edges = graph.model.getEdges(node, false, true, false);
@@ -196,26 +273,34 @@
                     var target = graph.model.getTerminal(edge, false);
                     if (target) {
                         graph.model.setVisible(edge, true);
+                        // 显示边
                         graph.model.setVisible(target, true);
+                        // 显示目标节点
                         showConnectedNodes(graph, target);
+                        // 递归显示目标节点的连接
                     }
                 }
             }
         }
 
         // 添加点击事件处理
+        // 为图形添加点击事件监听器，处理节点交互
         graph.addListener(mxEvent.CLICK, function(sender, evt) {
             var cell = evt.getProperty('cell');
+            // 获取点击的单元格
 
             if (cell != null && graph.model.isVertex(cell) && !graph.model.isCollapsed(cell)) {
+                // 确保点击的是节点且未折叠
                 // 确保不是子节点
                 if (graph.model.getParent(cell) === graph.getDefaultParent()) {
                     graph.model.beginUpdate();
+                    // 开始模型更新
                     try {
                         var edges = graph.model.getEdges(cell, false, true, false);
                         var hasVisibleTargets = false;
 
                         // 检查是否有可见的目标节点
+                        // 遍历出边，检查目标节点是否可见
                         for (var i = 0; i < edges.length; i++) {
                             var target = graph.model.getTerminal(edges[i], false);
                             if (target && graph.model.isVisible(target)) {
@@ -225,39 +310,49 @@
                         }
 
                         // 切换显示/隐藏状态
+                        // 根据目标节点状态切换可见性
                         for (var i = 0; i < edges.length; i++) {
                             var edge = edges[i];
                             var target = graph.model.getTerminal(edge, false);
 
                             if (target) {
                                 graph.model.setVisible(edge, !hasVisibleTargets);
+                                // 设置边的可见性
                                 graph.model.setVisible(target, !hasVisibleTargets);
+                                // 设置目标节点的可见性
 
                                 if (hasVisibleTargets) {
                                     hideConnectedNodes(graph, target);
+                                    // 如果目标可见，隐藏连接
                                 } else {
                                     showConnectedNodes(graph, target);
+                                    // 如果目标不可见，显示连接
                                 }
                             }
                         }
 
                         // 更新节点状态
+                        // 记录节点的显示/隐藏状态
                         nodeStates[cell.id] = !hasVisibleTargets;
 
                     } finally {
                         graph.model.endUpdate();
+                        // 结束模型更新
                     }
                 }
             }
 
             evt.consume();
+            // 消费事件，防止进一步传播
         });
 
         // 自定义折叠图标渲染
+        // 重写折叠图标的渲染逻辑
         var oldGetFoldingImage = graph.getFoldingImage;
         graph.getFoldingImage = function(state) {
             if (state != null && state.cell.value === 'Node 1') {
                 // 检查 Node 1 的出边目标是否可见
+                // 检查节点1的出边目标节点的可见性
                 var edges = this.model.getEdges(state.cell, false, true, false);
                 var hasHiddenTargets = false;
 
@@ -270,20 +365,26 @@
                 }
 
                 return hasHiddenTargets ? this.collapsedImage : this.expandedImage;
+                // 根据目标节点可见性返回折叠或展开图标
             }
             return oldGetFoldingImage.apply(this, arguments);
+            // 其他节点使用默认图标逻辑
         };
 
         // 禁用右键菜单
+        // 禁用容器上的右键菜单，防止默认上下文菜单
         mxEvent.disableContextMenu(container);
 
         // 居中显示
+        // 将图形居中显示在容器内
         graph.center();
     }
 
     // 页面加载完成后初始化
+    // 在页面加载完成后调用主函数初始化图形
     window.onload = function() {
         main(document.getElementById('graphContainer'));
+        // 获取图形容器并传入主函数
     };
 </script>
 </body>
