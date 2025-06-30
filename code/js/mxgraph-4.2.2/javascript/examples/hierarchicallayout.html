@@ -1,3 +1,4 @@
+
 <!--
   Copyright (c) 2006-2013, JGraph Ltd
   
@@ -5,26 +6,37 @@
   use of the hierarchical and organic layouts. Note that the hierarchical
   layout requires another script tag in the head of the page.
 -->
+<!-- 版权声明和示例说明 -->
+<!-- 本示例展示了 mxGraph 的层次布局和有机布局的使用。注意，层次布局需要额外的脚本标签 -->
 <html>
 <head>
 	<title>Hierarchical Layout example for mxGraph</title>
+	<!-- 设置页面标题 -->
+	<!-- 页面标题设为“mxGraph 的层次布局示例” -->
 
 	<!-- Sets the basepath for the library if not in same directory -->
 	<script type="text/javascript">
 		mxBasePath = '../src';
 	</script>
+	<!-- 设置 mxGraph 库的基路径 -->
+	<!-- 如果库文件不在同一目录下，指定基路径为 '../src' -->
 
 	<!-- Loads and initializes the library -->
 	<script type="text/javascript" src="../src/js/mxClient.js"></script>
+	<!-- 加载并初始化 mxGraph 库 -->
+	<!-- 引入 mxClient.js 文件以加载 mxGraph 的核心功能 -->
 
 	<!-- Example code -->
 	<script type="text/javascript">
-
 		// Program starts here. Creates a sample graph in the
 		// DOM node with the specified ID. This function is invoked
 		// from the onLoad event handler of the document (see below).
 		function main(container)
 		{
+			// 主函数，程序入口，创建示例图形
+			// 在指定的 DOM 节点中创建图形，通过文档的 onLoad 事件调用
+			// 参数 container: 图形容器的 DOM 元素
+
 			// Checks if browser is supported
 			if (!mxClient.isBrowserSupported())
 			{
@@ -32,14 +44,21 @@
 				// not supported.
 				mxUtils.error('Browser is not supported!', 200, false);
 			}
+			// 检查浏览器是否支持
+			// 如果浏览器不支持，显示错误信息，宽度为 200px，不自动关闭
+
 			else
 			{
 				// Creates the graph inside the given container
 				var graph = new mxGraph(container);
-				
+				// 在指定容器中创建图形对象
+				// 使用 mxGraph 构造函数在传入的容器中初始化图形
+
 				// Adds rubberband selection
 				new mxRubberband(graph);
-				
+				// 添加橡皮筋选择功能
+				// 为图形启用框选功能，允许用户通过拖动鼠标选择多个节点
+
 				// Changes the default vertex style in-place
 				var style = graph.getStylesheet().getDefaultVertexStyle();
 				style[mxConstants.STYLE_PERIMETER] = mxPerimeter.RectanglePerimeter;
@@ -47,18 +66,28 @@
 				style[mxConstants.STYLE_PERIMETER_SPACING] = 6;
 				style[mxConstants.STYLE_ROUNDED] = true;
 				style[mxConstants.STYLE_SHADOW] = true;
-				
+				// 修改默认节点样式
+				// 获取默认节点样式并进行修改
+				// 设置节点边界为矩形，渐变色为白色，边界间距为 6px，启用圆角和阴影效果
+
 				style = graph.getStylesheet().getDefaultEdgeStyle();
 				style[mxConstants.STYLE_ROUNDED] = true;
+				// 修改默认边样式
+				// 获取默认边样式并启用圆角效果
 
 				// Creates a layout algorithm to be used
 				// with the graph
 				var layout = new mxHierarchicalLayout(graph);
 				var organic = new mxFastOrganicLayout(graph);
 				organic.forceConstant = 120;
-				
+				// 创建布局算法
+				// 初始化层次布局和快速有机布局
+				// 设置有机布局的力常数为 120，用于控制节点间的排斥力
+
 				var parent = graph.getDefaultParent();
-			
+				// 获取默认父节点
+				// 获取图形的默认父节点，用于插入节点和边
+
 				// Adds a button to execute the layout
 				var button = document.createElement('button');
 				mxUtils.write(button, 'Hierarchical');
@@ -67,20 +96,26 @@
 					layout.execute(parent);
 				});
 				document.body.appendChild(button);
+				// 添加执行层次布局的按钮
+				// 创建按钮，文本为“Hierarchical”，点击时执行层次布局
+				// 将按钮添加到页面 body 中
 
 				// Adds a button to execute the layout
 				var button = document.createElement('button');
 				mxUtils.write(button, 'Organic');
-				
 				mxEvent.addListener(button, 'click', function(evt)
 				{
 					organic.execute(parent);
 				});
-				
 				document.body.appendChild(button);
-				
+				// 添加执行有机布局的按钮
+				// 创建按钮，文本为“Organic”，点击时执行有机布局
+				// 将按钮添加到页面 body 中
+
 				// Load cells and layouts the graph
 				graph.getModel().beginUpdate();
+				// 开始更新图形模型
+				// 开启批量更新模式以提高性能，防止频繁重绘
 				try
 				{
 					var v1 = graph.insertVertex(parent, null, '1', 0, 0, 80, 30);
@@ -92,6 +127,8 @@
 					var v7 = graph.insertVertex(parent, null, '7', 0, 0, 80, 30);
 					var v8 = graph.insertVertex(parent, null, '8', 0, 0, 80, 30);
 					var v9 = graph.insertVertex(parent, null, '9', 0, 0, 80, 30);
+					// 插入节点
+					// 在默认父节点中插入 9 个节点，标签为 '1' 到 '9'，宽 80px，高 30px
 
 					var e1 = graph.insertEdge(parent, null, '', v1, v2);
 					var e2 = graph.insertEdge(parent, null, '', v1, v3);
@@ -106,14 +143,20 @@
 					var e11 = graph.insertEdge(parent, null, '', v7, v9);
 					var e12 = graph.insertEdge(parent, null, '', v7, v6);
 					var e13 = graph.insertEdge(parent, null, '', v7, v5);
-					
+					// 插入边
+					// 在默认父节点中插入 13 条边，连接指定节点，无标签
+
 					// Executes the layout
 					layout.execute(parent);
+					// 执行层次布局
+					// 对默认父节点应用层次布局算法，自动排列节点和边
 				}
 				finally
 				{
 					// Updates the display
 					graph.getModel().endUpdate();
+					// 结束模型更新
+					// 完成批量更新，刷新图形显示
 				}
 
 				if (mxClient.IS_QUIRKS)
@@ -121,6 +164,8 @@
 					document.body.style.overflow = 'hidden';
 					new mxDivResizer(container);
 				}
+				// 针对怪癖模式的特殊处理
+				// 如果浏览器处于怪癖模式，隐藏 body 溢出并添加容器大小调整器
 			}
 		};
 	</script>
@@ -128,11 +173,15 @@
 
 <!-- Page passes the container for the graph to the program -->
 <body onload="main(document.getElementById('graphContainer'))" style="margin:4px;">
+	<!-- 页面加载时调用 main 函数 -->
+	<!-- 在页面加载时调用 main 函数，传入 graphContainer 元素，设置 body 外边距为 4px -->
 
 	<!-- Creates a container for the graph with a grid wallpaper. Make sure to define the position
 		and overflow attributes! See comments on the adding of the size-listener on line 54 ff!  -->
 	<div id="graphContainer"
 		style="position:absolute;overflow:auto;top:36px;bottom:0px;left:0px;right:0px;border-top:gray 1px solid;">
 	</div>
+	<!-- 创建图形容器 -->
+	<!-- 创建一个带有网格背景的图形容器，设置绝对定位，自动溢出，顶部距离 36px，底部、左右贴边，顶部带 1px 灰色边框 -->
 </body>
 </html>

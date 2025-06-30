@@ -4,162 +4,237 @@
   Hoverstyle example for mxGraph. This example shows hot to change
   the style of a vertex on mouseover.
 -->
+<!-- mxGraph悬停样式示例，展示如何在鼠标悬停时更改顶点的样式 -->
 <html>
 <head>
 	<title>Hoverstyle example for mxGraph</title>
+	<!-- 设置页面标题为mxGraph悬停样式示例 -->
 
 	<!-- Sets the basepath for the library if not in same directory -->
+	<!-- 如果库文件不在同一目录下，设置mxGraph库的基础路径 -->
 	<script type="text/javascript">
 		mxBasePath = '../src';
+		// 定义mxGraph库的基础路径为'../src'
 	</script>
 
 	<!-- Loads and initializes the library -->
+	<!-- 加载并初始化mxGraph库 -->
 	<script type="text/javascript" src="../src/js/mxClient.js"></script>
+	<!-- 引入mxClient.js文件，用于加载mxGraph的核心功能 -->
 
 	<!-- Example code -->
+	<!-- 示例代码 -->
 	<script type="text/javascript">
 		// Program starts here. Creates a sample graph in the
 		// DOM node with the specified ID. This function is invoked
 		// from the onLoad event handler of the document (see below).
+		// 程序从这里开始，在指定ID的DOM节点中创建示例图形。此函数由文档的onLoad事件处理程序调用
 		function main(container)
 		{
+			// main函数：创建并初始化mxGraph图形，参数container为图形容器DOM元素
 			// Checks if the browser is supported
+			// 检查浏览器是否支持mxGraph
 			if (!mxClient.isBrowserSupported())
 			{
 				// Displays an error message if the browser is not supported.
+				// 如果浏览器不支持，显示错误消息
 				mxUtils.error('Browser is not supported!', 200, false);
+				// 使用mxUtils.error显示浏览器不支持的错误提示，宽度200px，不自动关闭
 			}
 			else
 			{
 				// Creates the graph inside the given container
+				// 在指定容器内创建mxGraph图形对象
 				var graph = new mxGraph(container);
-				
+				// 初始化mxGraph对象，参数为容器DOM元素
+
 				function updateStyle(state, hover)
 				{
+					// updateStyle函数：根据hover参数更新图形的样式
+					// 参数state表示图形单元的状态，hover为布尔值表示是否处于悬停状态
 					if (hover)
 					{
 						state.style[mxConstants.STYLE_FILLCOLOR] = '#ff0000';
+						// 当hover为true时，将填充颜色设置为红色
 					}
 					
 					// Sets rounded style for both cases since the rounded style
 					// is not set in the default style and is therefore inherited
 					// once it is set, whereas the above overrides the default value
+					// 为悬停和非悬停状态设置圆角样式，因默认样式未设置圆角，需显式设置
 					state.style[mxConstants.STYLE_ROUNDED] = (hover) ? '1' : '0';
+					// 设置圆角样式，hover时为1（启用），否则为0（禁用）
 					state.style[mxConstants.STYLE_STROKEWIDTH] = (hover) ? '4' : '1';
+					// 设置边框宽度，hover时为4px，否则为1px
 					state.style[mxConstants.STYLE_FONTSTYLE] = (hover) ? mxConstants.FONT_BOLD : '0';
+					// 设置字体样式，hover时为粗体，否则为正常
 				};
-				
+				// updateStyle函数用于动态修改图形单元的样式，增强交互效果
+
 				// Changes fill color to red on mouseover
+				// 在鼠标悬停时将填充颜色更改为红色
 				graph.addMouseListener(
 				{
+					// 为图形添加鼠标事件监听器，处理鼠标交互逻辑
 				    currentState: null,
+				    // currentState：存储当前鼠标悬停的图形单元状态，初始为null
 				    previousStyle: null,
+				    // previousStyle：存储图形单元的原始样式，初始为null
 				    mouseDown: function(sender, me)
 				    {
+				    	// mouseDown：处理鼠标按下事件
 				        if (this.currentState != null)
 				        {
 				        	this.dragLeave(me.getEvent(), this.currentState);
+				        	// 如果存在当前状态，触发dragLeave事件，恢复原始样式
 				        	this.currentState = null;
+				        	// 清空当前状态
 				        }
 				    },
+				    // mouseDown用于处理鼠标按下时清除悬停状态
 				    mouseMove: function(sender, me)
 				    {
+				    	// mouseMove：处理鼠标移动事件
 				        if (this.currentState != null && me.getState() == this.currentState)
 				        {
 				            return;
+				            // 如果鼠标仍在当前状态的单元上，直接返回，不重复处理
 				        }
 
 				        var tmp = graph.view.getState(me.getCell());
+				        // 获取鼠标当前所在单元的状态
 
 				        // Ignores everything but vertices
+				        // 仅处理顶点，忽略其他类型单元
 				        if (graph.isMouseDown || (tmp != null && !
 				            graph.getModel().isVertex(tmp.cell)))
 				        {
 				        	tmp = null;
+				        	// 如果鼠标按下或单元不是顶点，则忽略
 				        }
 
 				        if (tmp != this.currentState)
 				        {
+				        	// 如果当前单元状态与之前不同，更新状态
 				            if (this.currentState != null)
 				            {
 				                this.dragLeave(me.getEvent(), this.currentState);
+				                // 触发dragLeave事件，恢复之前单元的样式
 				            }
 
 				            this.currentState = tmp;
+				            // 更新currentState为当前单元状态
 
 				            if (this.currentState != null)
 				            {
 				                this.dragEnter(me.getEvent(), this.currentState);
+				                // 触发dragEnter事件，应用悬停样式
 				            }
 				        }
 				    },
+				    // mouseMove用于跟踪鼠标移动并触发样式更新，仅对顶点有效
 				    mouseUp: function(sender, me) { },
+				    // mouseUp：处理鼠标释放事件，此处为空实现
 				    dragEnter: function(evt, state)
 				    {
+				    	// dragEnter：处理鼠标进入顶点时的逻辑
 				        if (state != null)
 				        {
 				        	this.previousStyle = state.style;
+				        	// 保存当前单元的原始样式
 				        	state.style = mxUtils.clone(state.style);
+				        	// 克隆当前样式以避免直接修改
 				        	updateStyle(state, true);
+				        	// 应用悬停样式（红色填充、圆角、粗边框、粗体）
 				        	state.shape.apply(state);
+				        	// 应用样式到图形形状
 				        	state.shape.redraw();
-				        	
+				        	// 重绘图形以更新显示
+
 				        	if (state.text != null)
 				        	{
 				        		state.text.apply(state);
+				        		// 应用样式到文本
 				        		state.text.redraw();
+				        		// 重绘文本以更新显示
 				        	}
 				        }
 				    },
+				    // dragEnter用于在鼠标进入顶点时应用悬停样式并重绘
 				    dragLeave: function(evt, state)
 				    {
+				    	// dragLeave：处理鼠标离开顶点时的逻辑
 				        if (state != null)
 				        {
 				        	state.style = this.previousStyle;
+				        	// 恢复原始样式
 				        	updateStyle(state, false);
+				        	// 应用非悬停样式（默认填充、取消圆角、细边框、正常字体）
 				        	state.shape.apply(state);
+				        	// 应用样式到图形形状
 				        	state.shape.redraw();
-				        	
+				        	// 重绘图形以更新显示
+
 				        	if (state.text != null)
 				        	{
 				        		state.text.apply(state);
+				        		// 应用样式到文本
 				        		state.text.redraw();
+				        		// 重绘文本以更新显示
 				        	}
 				        }
 				    }
+				    // dragLeave用于在鼠标离开顶点时恢复原始样式并重绘
 				});
+				// 鼠标监听器实现交互逻辑，处理鼠标事件以动态更改顶点样式
 
 				// Enables rubberband selection
+				// 启用橡皮筋选择功能
 				new mxRubberband(graph);
-				
+				// 创建mxRubberband对象，支持框选功能
+
 				// Gets the default parent for inserting new cells. This
 				// is normally the first child of the root (ie. layer 0).
+				// 获取插入新单元的默认父节点，通常为根节点的第一个子节点（层0）
 				var parent = graph.getDefaultParent();
-								
+				// parent变量：存储默认父节点，用于插入新单元
+
 				// Adds cells to the model in a single step
+				// 以单一事务向模型添加单元
 				graph.getModel().beginUpdate();
+				// 开始模型更新事务，确保批量操作的原子性
 				try
 				{
 					var v1 = graph.insertVertex(parent, null, 'Hello,', 20, 20, 80, 30);
+					// 插入第一个顶点，显示文本'Hello,'，位置(20,20)，大小80x30
 					var v2 = graph.insertVertex(parent, null, 'World!', 200, 150, 80, 30);
+					// 插入第二个顶点，显示文本'World!'，位置(200,150)，大小80x30
 					var e1 = graph.insertEdge(parent, null, '', v1, v2);
+					// 插入边，连接v1和v2，无标签
 				}
 				finally
 				{
 					// Updates the display
+					// 更新显示
 					graph.getModel().endUpdate();
+					// 结束模型更新事务，提交更改并刷新图形
 				}
 			}
 		};
+		// main函数创建并初始化图形，添加顶点和边，实现交互功能
 	</script>
 </head>
 
 <!-- Page passes the container for the graph to the program -->
+<!-- 页面将图形容器传递给程序 -->
 <body onload="main(document.getElementById('graphContainer'))">
+<!-- 在页面加载时调用main函数，传入graphContainer元素 -->
 
 	<!-- Creates a container for the graph with a grid wallpaper -->
+	<!-- 创建图形容器，设置网格背景 -->
 	<div id="graphContainer"
 		style="position:relative;overflow:hidden;width:321px;height:241px;background:url('editors/images/grid.gif');cursor:default;">
+		<!-- 图层容器，相对定位，隐藏溢出，尺寸321x241px，网格背景，默认光标 -->
 	</div>
 </body>
 </html>

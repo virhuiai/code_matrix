@@ -4,153 +4,225 @@
   Hover icons example for mxGraph. This example demonstrates showing
   icons on vertices as mouse hovers over them.
 -->
+<!-- 中文注释：mxGraph的悬停图标示例，展示当鼠标悬停在顶点上时显示图标的功能 -->
+
 <html>
 <head>
 	<title>Hover icons example for mxGraph</title>
+	<!-- 中文注释：页面标题，说明这是一个mxGraph悬停图标示例 -->
 
 	<!-- Sets the basepath for the library if not in same directory -->
+	<!-- 中文注释：设置mxGraph库的基础路径，如果库文件不在同一目录下 -->
 	<script type="text/javascript">
 		mxBasePath = '../src';
+		// 中文注释：定义mxGraph库的基础路径为'../src'，用于加载库文件
 	</script>
 
 	<!-- Loads and initializes the library -->
+	<!-- 中文注释：加载并初始化mxGraph库 -->
 	<script type="text/javascript" src="../src/js/mxClient.js"></script>
+	<!-- 中文注释：引入mxGraph的核心库文件mxClient.js -->
 
 	<!-- Example code -->
+	<!-- 中文注释：示例代码，定义悬停图标的逻辑和交互 -->
 	<script type="text/javascript">
 		// Defines an icon for creating new connections in the connection handler.
 		// This will automatically disable the highlighting of the source vertex.
+		// 中文注释：为连接处理器定义一个用于创建新连接的图标，自动禁用源顶点的高亮
 		mxConnectionHandler.prototype.connectImage = new mxImage('images/connector.gif', 16, 16);
-		
+		// 中文注释：设置连接图标为'images/connector.gif'，尺寸为16x16像素
+
 		// Defines a new class for all icons
+		// 中文注释：定义一个新类mxIconSet，用于管理所有悬停图标
 		function mxIconSet(state)
 		{
+			// 中文注释：构造函数，接收状态对象，用于在顶点上显示图标
 			this.images = [];
+			// 中文注释：初始化一个空数组，用于存储图标DOM元素
 			var graph = state.view.graph;
-			
+			// 中文注释：获取mxGraph实例，用于操作图形
+
 			// Icon1
+			// 中文注释：第一个图标 - 复制图标
 			var img = mxUtils.createImage('images/copy.png');
+			// 中文注释：创建复制图标，路径为'images/copy.png'
 			img.setAttribute('title', 'Duplicate');
+			// 中文注释：设置图标的标题为“Duplicate”，用于鼠标悬停时的提示
 			img.style.position = 'absolute';
+			// 中文注释：设置图标为绝对定位，确保相对于顶点位置
 			img.style.cursor = 'pointer';
+			// 中文注释：设置鼠标悬停时显示指针光标，表示可点击
 			img.style.width = '16px';
+			// 中文注释：设置图标宽度为16像素
 			img.style.height = '16px';
+			// 中文注释：设置图标高度为16像素
 			img.style.left = (state.x + state.width) + 'px';
+			// 中文注释：设置图标的左边位置为顶点右边缘（x坐标+宽度）
 			img.style.top = (state.y + state.height) + 'px';
-			
+			// 中文注释：设置图标的顶部位置为顶点底边缘（y坐标+高度）
+
 			mxEvent.addGestureListeners(img,
 				mxUtils.bind(this, function(evt)
 				{
 					var s = graph.gridSize;
+					// 中文注释：获取图形的网格大小，用于确定复制时的偏移量
 					graph.setSelectionCells(graph.moveCells([state.cell], s, s, true));
+					// 中文注释：复制选中的单元格（顶点），向右下移动网格大小的距离，true表示克隆
 					mxEvent.consume(evt);
+					// 中文注释：阻止事件冒泡，防止其他默认行为
 					this.destroy();
+					// 中文注释：销毁图标，移除所有图标元素
 				})
 			);
-			
+			// 中文注释：为复制图标添加手势监听器，处理点击事件以复制顶点
+
 			state.view.graph.container.appendChild(img);
+			// 中文注释：将复制图标添加到图形的容器中
 			this.images.push(img);
-			
+			// 中文注释：将复制图标添加到images数组中进行管理
+
 			// Delete
+			// 中文注释：第二个图标 - 删除图标
 			var img = mxUtils.createImage('images/delete2.png');
+			// 中文注释：创建删除图标，路径为'images/delete2.png'
 			img.setAttribute('title', 'Delete');
+			// 中文注释：设置图标的标题为“Delete”，用于鼠标悬停时的提示
 			img.style.position = 'absolute';
+			// 中文注释：设置图标为绝对定位，确保相对于顶点位置
 			img.style.cursor = 'pointer';
+			// 中文注释：设置鼠标悬停时显示指针光标，表示可点击
 			img.style.width = '16px';
+			// 中文注释：设置图标宽度为16像素
 			img.style.height = '16px';
+			// 中文注释：设置图标高度为16像素
 			img.style.left = (state.x + state.width) + 'px';
+			// 中文注释：设置图标的左边位置为顶点右边缘（x坐标+宽度）
 			img.style.top = (state.y - 16) + 'px';
-			
+			// 中文注释：设置图标的顶部位置为顶点顶端上方16像素
+
 			mxEvent.addGestureListeners(img,
 				mxUtils.bind(this, function(evt)
 				{
 					// Disables dragging the image
 					mxEvent.consume(evt);
+					// 中文注释：阻止事件冒泡，禁用删除图标的拖动行为
 				})
 			);
-			
+			// 中文注释：为删除图标添加手势监听器，防止拖动行为
+
 			mxEvent.addListener(img, 'click',
 				mxUtils.bind(this, function(evt)
 				{
 					graph.removeCells([state.cell]);
+					// 中文注释：删除选中的单元格（顶点）
 					mxEvent.consume(evt);
+					// 中文注释：阻止事件冒泡，防止其他默认行为
 					this.destroy();
+					// 中文注释：销毁图标，移除所有图标元素
 				})
 			);
-			
+			// 中文注释：为删除图标添加点击事件监听器，处理删除顶点的逻辑
+
 			state.view.graph.container.appendChild(img);
+			// 中文注释：将删除图标添加到图形的容器中
 			this.images.push(img);
+			// 中文注释：将删除图标添加到images数组中进行管理
 		};
 
 		mxIconSet.prototype.destroy = function()
 		{
+			// 中文注释：销毁mxIconSet实例，清理所有图标
 			if (this.images != null)
 			{
 				for (var i = 0; i < this.images.length; i++)
 				{
 					var img = this.images[i];
 					img.parentNode.removeChild(img);
+					// 中文注释：从DOM中移除每个图标元素
 				}
 			}
 			
 			this.images = null;
+			// 中文注释：清空images数组，释放内存
 		};
 
 		// Program starts here. Creates a sample graph in the
 		// DOM node with the specified ID. This function is invoked
 		// from the onLoad event handler of the document (see below).
+		// 中文注释：程序入口，创建示例图形，渲染在指定ID的DOM节点中，通过页面加载事件调用
 		function main(container)
 		{
 			// Checks if the browser is supported
+			// 中文注释：检查浏览器是否支持mxGraph
 			if (!mxClient.isBrowserSupported())
 			{
 				// Displays an error message if the browser is not supported.
+				// 中文注释：如果浏览器不支持，显示错误消息
 				mxUtils.error('Browser is not supported!', 200, false);
+				// 中文注释：调用mxUtils.error显示错误提示，参数为错误消息、宽度200、不自动关闭
 			}
 			else
 			{
 				// Creates the graph inside the given container
+				// 中文注释：在指定容器中创建mxGraph实例
 				var graph = new mxGraph(container);
+				// 中文注释：初始化mxGraph对象，参数为DOM容器
 				graph.setConnectable(true);
-				
+				// 中文注释：启用图形的连接功能，允许创建边
+
 				// Defines the tolerance before removing the icons
 				var iconTolerance = 20;
+				// 中文注释：定义图标移除的容差距离，单位为像素
 
 				// Shows icons if the mouse is over a cell
+				// 中文注释：当鼠标悬停在单元格上时显示图标
 				graph.addMouseListener(
 				{
 				    currentState: null,
+				    // 中文注释：存储当前鼠标悬停的单元格状态，初始为null
 				    currentIconSet: null,
+				    // 中文注释：存储当前的图标集实例，初始为null
 				    mouseDown: function(sender, me)
 				    {
 				    	// Hides icons on mouse down
+				    	// 中文注释：鼠标按下时隐藏图标
 			        	if (this.currentState != null)
 			        	{
 			          		this.dragLeave(me.getEvent(), this.currentState);
+			          		// 中文注释：调用dragLeave方法，隐藏当前状态的图标
 			          		this.currentState = null;
+			          		// 中文注释：清空当前状态
 			        	}
 				    },
+				    // 中文注释：mouseDown事件处理函数，当鼠标按下时隐藏图标
 				    mouseMove: function(sender, me)
 				    {
+				    	// 中文注释：mouseMove事件处理函数，处理鼠标移动时的图标显示逻辑
 				    	if (this.currentState != null && (me.getState() == this.currentState ||
 				    		me.getState() == null))
 				    	{
 				    		var tol = iconTolerance;
+				    		// 中文注释：获取图标容差值
 				    		var tmp = new mxRectangle(me.getGraphX() - tol,
 				    			me.getGraphY() - tol, 2 * tol, 2 * tol);
+				    		// 中文注释：创建以鼠标位置为中心的矩形区域，用于检测是否仍在容差范围内
 
 				    		if (mxUtils.intersects(tmp, this.currentState))
 				    		{
 				    			return;
+				    			// 中文注释：如果鼠标仍在当前状态的容差矩形内，不更新状态
 				    		}
 				    	}
 				    	
 						var tmp = graph.view.getState(me.getCell());
-				    	
+				    	// 中文注释：获取鼠标当前所在单元格的状态
+
 				    	// Ignores everything but vertices
+						// 中文注释：忽略非顶点的单元格
 						if (graph.isMouseDown || (tmp != null && !graph.getModel().isVertex(tmp.cell)))
 						{
 							tmp = null;
+							// 中文注释：如果鼠标按下或单元格不是顶点，则清空状态
 						}
 
 				      	if (tmp != this.currentState)
@@ -158,53 +230,73 @@
 				        	if (this.currentState != null)
 				        	{
 				          		this.dragLeave(me.getEvent(), this.currentState);
+				          		// 中文注释：如果有当前状态，调用dragLeave隐藏图标
 				        	}
 				        
 			        		this.currentState = tmp;
-				        
+			        		// 中文注释：更新当前状态为新的单元格状态
+
 				        	if (this.currentState != null)
 				        	{
 				          		this.dragEnter(me.getEvent(), this.currentState);
+				          		// 中文注释：如果有新状态，调用dragEnter显示图标
 				        	}
 				      	}
 				    },
 				    mouseUp: function(sender, me) { },
+				    // 中文注释：mouseUp事件处理函数，当前为空，未实现具体逻辑
 				    dragEnter: function(evt, state)
 				    {
+				    	// 中文注释：当鼠标进入顶点时触发，显示图标
 				    	if (this.currentIconSet == null)
 				    	{
 			    			this.currentIconSet = new mxIconSet(state);
+			    			// 中文注释：创建新的mxIconSet实例，显示复制和删除图标
 				    	}
 				    },
 				    dragLeave: function(evt, state)
 				    {
+				    	// 中文注释：当鼠标离开顶点时触发，隐藏图标
 				    	if (this.currentIconSet != null)
 				    	{
 			    			this.currentIconSet.destroy();
+			    			// 中文注释：销毁当前图标集，移除所有图标
 			    			this.currentIconSet = null;
+			    			// 中文注释：清空当前图标集
 				    	}
 				    }
 				});
 				 
 				// Enables rubberband selection
+				// 中文注释：启用橡皮筋选择功能
 				new mxRubberband(graph);
-				
+				// 中文注释：为图形启用橡皮筋选择，允许框选多个单元格
+
 				// Gets the default parent for inserting new cells. This
 				// is normally the first child of the root (ie. layer 0).
+				// 中文注释：获取用于插入新单元格的默认父节点，通常是根节点的第一个子节点（层0）
 				var parent = graph.getDefaultParent();
-								
+				// 中文注释：存储默认父节点，用于后续插入顶点和边
+
 				// Adds cells to the model in a single step
+				// 中文注释：一次性向模型添加单元格
 				graph.getModel().beginUpdate();
+				// 中文注释：开始批量更新模型，优化性能
 				try
 				{
 					var v1 = graph.insertVertex(parent, null, 'Hello,', 20, 20, 80, 30);
+					// 中文注释：插入第一个顶点，标签为“Hello,”，位置为(20,20)，大小为80x30
 					var v2 = graph.insertVertex(parent, null, 'World!', 200, 150, 80, 30);
+					// 中文注释：插入第二个顶点，标签为“World!”，位置为(200,150)，大小为80x30
 					var e1 = graph.insertEdge(parent, null, '', v1, v2);
+					// 中文注释：插入一条边，连接v1和v2，无标签
 				}
 				finally
 				{
 					// Updates the display
+					// 中文注释：更新显示以反映模型变化
 					graph.getModel().endUpdate();
+					// 中文注释：结束批量更新，刷新图形
 				}
 			}
 		};
@@ -212,11 +304,15 @@
 </head>
 
 <!-- Page passes the container for the graph to the program -->
+<!-- 中文注释：页面将图形容器传递给程序 -->
 <body onload="main(document.getElementById('graphContainer'))">
+	<!-- 中文注释：页面加载时调用main函数，传入graphContainer元素 -->
 
 	<!-- Creates a container for the graph with a grid wallpaper -->
+	<!-- 中文注释：创建图形的容器，带有网格背景 -->
 	<div id="graphContainer"
 		style="overflow:hidden;width:321px;height:241px;background:url('editors/images/grid.gif');cursor:default;">
+		<!-- 中文注释：定义图形容器，ID为graphContainer，设置溢出隐藏、固定尺寸321x241像素、网格背景图、默认光标 -->
 	</div>
 </body>
 </html>
