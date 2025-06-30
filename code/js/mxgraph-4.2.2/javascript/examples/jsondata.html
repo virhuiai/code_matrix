@@ -4,16 +4,31 @@
   JSON data example for mxGraph. This example demonstrates using
   JSON to encode/decode parts of the graph model in mxCodec.
 -->
+<!--
+  // 中文注释：此示例展示了如何使用JSON格式对mxGraph的图形模型进行编码和解码。
+  // 主要功能：创建一个简单的图形，包含两个顶点和一条边，并支持查看图形的XML表示。
+-->
 <html>
 <head>
 	<title>JSON data example for mxGraph</title>
+	<!--
+	  // 中文注释：页面标题，表明这是一个mxGraph的JSON数据示例。
+	-->
 
 	<!-- Sets the basepath for the library if not in same directory -->
+	<!--
+	  // 中文注释：设置mxGraph库的基础路径，如果库文件不在同一目录下。
+	  // 关键参数说明：mxBasePath指定了mxGraph库的相对路径。
+	-->
 	<script type="text/javascript">
 		mxBasePath = '../src';
 	</script>
 
 	<!-- Loads and initializes the library -->
+	<!--
+	  // 中文注释：加载并初始化mxGraph库。
+	  // 说明：引入mxClient.js文件，包含mxGraph的核心功能。
+	-->
 	<script type="text/javascript" src="../src/js/mxClient.js"></script>
 
 	<!-- Example code -->
@@ -21,86 +36,155 @@
 		// Program starts here. Creates a sample graph in the
 		// DOM node with the specified ID. This function is invoked
 		// from the onLoad event handler of the document (see below).
+		//
+		// 中文注释：程序从这里开始，在指定ID的DOM节点中创建示例图形。
+		// 方法目的：main函数用于初始化图形并在指定容器中渲染。
+		// 参数说明：container为图形渲染的目标DOM元素。
 		function main(container)
 		{
 			// Checks if the browser is supported
+			//
+			// 中文注释：检查浏览器是否支持mxGraph库。
 			if (!mxClient.isBrowserSupported())
 			{
 				// Displays an error message if the browser is not supported.
+				//
+				// 中文注释：如果浏览器不支持，显示错误消息。
+				// 特殊处理说明：使用mxUtils.error显示错误提示，宽度200px，不自动关闭。
 				mxUtils.error('Browser is not supported!', 200, false);
 			}
 			else
 			{
 				// Disables the built-in context menu
+				//
+				// 中文注释：禁用容器的默认右键菜单。
+				// 事件处理说明：通过mxEvent.disableContextMenu阻止右键菜单的弹出。
 				mxEvent.disableContextMenu(container);
 				
 				// Creates the graph inside the given container
+				//
+				// 中文注释：在指定容器中创建mxGraph实例。
+				// 关键变量说明：graph是mxGraph的核心对象，用于管理图形。
 				var graph = new mxGraph(container);
 
 				// Enables rubberband selection
+				//
+				// 中文注释：启用橡皮筋选择功能，允许通过拖拽选择多个图形元素。
+				// 交互逻辑说明：mxRubberband为用户提供拖拽框选功能。
 				new mxRubberband(graph);
 				
 				// Gets the default parent for inserting new cells. This
 				// is normally the first child of the root (ie. layer 0).
+				//
+				// 中文注释：获取默认父节点，用于插入新的图形单元（通常为根节点的第一个子节点，即第0层）。
+				// 关键变量说明：parent是默认的图形容器层。
 				var parent = graph.getDefaultParent();
 								
 				// Adds cells to the model in a single step
+				//
+				// 中文注释：开始批量更新图形模型，以添加新的单元。
+				// 关键步骤说明：beginUpdate和endUpdate用于批量操作，避免频繁重绘。
 				graph.getModel().beginUpdate();
 				try
 				{
+					// 中文注释：插入第一个顶点，显示文本为“Hello,”，位置为(20,20)，大小为80x30。
+					// 参数说明：parent为父节点，null为ID，'Hello,'为顶点标签，20,20为坐标，80,30为宽高。
+					// 关键变量说明：v1为顶点对象，附加了自定义数据CustomData。
 					var v1 = graph.insertVertex(parent, null, 'Hello,', 20, 20, 80, 30);
 					v1.data = new CustomData('v1');
+					// 中文注释：插入第二个顶点，显示文本为“World!”，位置为(200,150)，大小为80x30。
 					var v2 = graph.insertVertex(parent, null, 'World!', 200, 150, 80, 30);
 					v2.data = new CustomData('v2');
+					// 中文注释：插入一条边，连接v1和v2，无标签。
+					// 参数说明：e1为边对象，连接v1和v2，null表示无标签。
 					var e1 = graph.insertEdge(parent, null, '', v1, v2);
 				}
 				finally
 				{
 					// Updates the display
+					//
+					// 中文注释：完成批量更新，刷新图形显示。
+					// 关键步骤说明：endUpdate确保所有更改一次性应用到视图。
 					graph.getModel().endUpdate();
 				}
 			}
 			
 			// Adds an option to view the XML of the graph
+			//
+			// 中文注释：添加一个按钮，点击后显示图形的XML表示。
+			// 交互逻辑说明：通过mxUtils.button创建按钮，点击触发XML编码和弹出窗口。
 			document.body.appendChild(mxUtils.button('View XML', function()
 			{
+				// 中文注释：创建mxCodec实例，用于编码图形模型。
+				// 关键变量说明：encoder为编码器对象，node为编码后的XML节点。
 				var encoder = new mxCodec();
 				var node = encoder.encode(graph.getModel());
+				// 中文注释：将编码后的XML显示在弹出窗口中。
+				// 参数说明：mxUtils.getXml将node转为XML字符串，true表示在新窗口中显示。
 				mxUtils.popup(mxUtils.getXml(node), true);
 			}));
 		};
 		
+		// 中文注释：定义CustomData类，用于存储顶点的自定义数据。
+		// 方法目的：为顶点附加JSON可序列化的数据。
+		// 参数说明：value为自定义数据的标识值。
 		function CustomData(value)
 		{
 			this.value = value;
 		}
 		
+		// 中文注释：创建mxObjectCodec实例，用于CustomData对象的编码和解码。
+		// 关键变量说明：codec为CustomData的编解码器。
 		var codec = new mxObjectCodec(new CustomData());
 
+		// 中文注释：重写encode方法，将CustomData对象编码为XML节点。
+		// 方法目的：将CustomData对象序列化为JSON字符串并存储在XML节点中。
+		// 参数说明：enc为编码器，obj为待编码的CustomData对象。
 		codec.encode = function(enc, obj)
 		{
+			// 中文注释：创建CustomData的XML节点。
 			var node = enc.document.createElement('CustomData');
+			// 中文注释：将CustomData对象序列化为JSON字符串并存储在节点中。
+			// 关键步骤说明：JSON.stringify将obj转为JSON字符串，mxUtils.setTextContent设置节点内容。
 			mxUtils.setTextContent(node, JSON.stringify(obj));
 		   
 			return node;
 		};
 		
+		// 中文注释：重写decode方法，将XML节点解码为CustomData对象。
+		// 方法目的：从XML节点中解析JSON字符串并还原为CustomData对象。
+		// 参数说明：dec为解码器，node为XML节点，into为目标对象（可选）。
 		codec.decode = function(dec, node, into)
 		{
+			// 中文注释：解析XML节点的JSON内容为对象。
+			// 关键步骤说明：mxUtils.getTextContent获取节点内容，JSON.parse解析为对象。
 			var obj = JSON.parse(mxUtils.getTextContent(node));
+			// 中文注释：设置对象的构造函数为CustomData，确保类型正确。
 			obj.constructor = CustomData;
 			
 			return obj;
 		};
 
+		// 中文注释：注册CustomData的编解码器到mxCodecRegistry。
+		// 关键步骤说明：使mxGraph能够正确处理CustomData对象的序列化和反序列化。
 		mxCodecRegistry.register(codec);
 	</script>
 </head>
 
 <!-- Page passes the container for the graph to the program -->
+<!--
+  // 中文注释：页面在加载时调用main函数，将graphContainer传递给程序。
+  // 事件处理说明：onload事件触发main函数，初始化图形。
+-->
 <body onload="main(document.getElementById('graphContainer'))">
 
 	<!-- Creates a container for the graph with a grid wallpaper -->
+	<!--
+	  // 中文注释：创建图形容器，设置网格背景和样式。
+	  // 样式设置说明：position:relative确保相对定位；overflow:hidden防止内容溢出；
+	  // width:321px;height:241px设置容器尺寸；background指定网格背景图片；
+	  // cursor:default设置默认鼠标样式。
+	-->
 	<div id="graphContainer"
 		style="position:relative;overflow:hidden;width:321px;height:241px;background:url('editors/images/grid.gif');cursor:default;">
 	</div>

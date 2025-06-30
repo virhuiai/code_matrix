@@ -7,7 +7,7 @@
 <html>
 <head>
 	<title>JQuery plugin for labels</title>
-	
+
 	<!-- Sets the basepath for the library if not in same directory -->
 	<script type="text/javascript">
 		mxBasePath = '../src';
@@ -35,17 +35,26 @@
 			else
 			{
 				// Fixes possible clipping issues in Chrome
+				// 修复Chrome中可能出现的剪裁问题
 				mxClient.NO_FO = true;
-				
+				// 这是一个mxGraph的配置，设置为 true 可以解决 Chrome 浏览器中与外部对象 (ForeignObject) 相关的剪裁或渲染问题，
+				// 确保图形元素能正确显示。
+
 				// Disables the built-in context menu
+				// 禁用内置的上下文菜单
 				mxEvent.disableContextMenu(container);
+				// 禁用容器上的默认浏览器右键菜单，防止其干扰mxGraph的自定义上下文菜单或交互。
 
 				// Creates the graph inside the given container
+				// 在给定容器内创建图
 				var graph = new mxGraph(container);
-				
+				// 实例化一个mxGraph对象，将其渲染到传入的 `container`（DOM元素）中。
+
 				// Adds custom HTML labels
+				// 添加自定义HTML标签
 				graph.setHtmlLabels(true);
-				
+				// 允许图表中的标签支持HTML内容，这意味着标签可以包含更复杂的结构，如本例中的Canvas元素。
+
 				var chartColors = {
 					red: 'rgb(255, 99, 132)',
 					orange: 'rgb(255, 159, 64)',
@@ -55,13 +64,16 @@
 					purple: 'rgb(153, 102, 255)',
 					grey: 'rgb(201, 203, 207)'
 				};
-				
+				// 定义了一组预设的颜色，用于Chart.js图表中的数据集颜色。
+
 				var randomScalingFactor = function()
 				{
 					return (Math.random() > 0.5 ? 1.0 : -1.0) * Math.round(Math.random() * 100);
 				};
-				
+				// 一个辅助函数，生成一个介于-100到100之间的随机整数，用于图表的数据填充。
+
 				var MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+				// 定义了一个包含月份名称的数组，但在此代码中并未直接使用，可能是Chart.js示例的遗留。
 		        var config = {
 		            type: 'line',
 		            data: {
@@ -128,60 +140,110 @@
 		                }
 		            }
 		        };
-			
+// Chart.js图表的配置对象。
+				// type: 定义图表类型为 'line' (折线图)。
+				// data: 定义图表的数据。
+				//   labels: x轴的标签，此处为月份。
+				//   datasets: 包含多个数据集。
+				//     每个数据集包含标签、背景色、边框色、数据数组和填充设置。
+				// options: 定义图表的选项。
+				//   responsive: true 使图表自适应容器大小。
+				//   title: 设置图表标题的显示和文本。
+				//   tooltips: 工具提示的配置，mode: 'index' 表示显示所有数据集在同一索引点的数据，intersect: false 表示不要求鼠标精确悬停在数据点上。
+				//   hover: 悬停效果配置，mode: 'nearest' 表示最近的数据点高亮，intersect: true 表示鼠标必须与元素相交。
+				//   scales: 轴的配置。
+				//     xAxes: x轴配置，display: true 显示x轴，scaleLabel: 显示x轴标签。
+				//     yAxes: y轴配置，display: true 显示y轴，scaleLabel: 显示y轴标签。
 				// Returns canvas with dynamic chart for vertex labels
+				// 为顶点标签返回带有动态图表的canvas
 				var graphConvertValueToString = graph.convertValueToString;
+				// 缓存原始的 convertValueToString 方法，以便在需要时调用默认行为。
 				graph.convertValueToString = function(cell)
 				{
+					// Overrides method to provide an HTML label
+					// 覆盖此方法以提供HTML标签
 					if (this.model.isVertex(cell))
 					{
+						// Checks if the cell is a vertex
+						// 检查单元格是否为顶点
 						var node = document.createElement('canvas');
+						// 创建一个新的Canvas元素，用于绘制Chart.js图表。
 						node.setAttribute('width', cell.geometry.width);
+						// 设置Canvas的宽度为顶点几何体的宽度。
 						node.setAttribute('height', cell.geometry.height);
-						
+						// 设置Canvas的高度为顶点几何体的高度。
+
 						// Document for empty output if not in DOM
+						// 如果不在DOM中，则为空白输出文档
 						document.body.appendChild(node);
-						
+						// 临时将Canvas元素添加到文档body中，这是Chart.js库的一个要求，
+						// 即使最终它会被嵌入到mxGraph的HTML标签中。
+
 						var ctx = node.getContext("2d");
+						// 获取Canvas的2D渲染上下文。
 						new Chart(ctx, config);
-						
+						// 使用Chart.js库在Canvas上创建一个新的图表，并应用之前定义的配置。
+
 						return node;
+						// 返回这个包含绘制图表的Canvas元素，它将作为顶点的HTML标签显示。
 					}
 					
 					return graphConvertValueToString.apply(this, arguments);
+					// 对于非顶点（如边），调用原始的 convertValueToString 方法，保持默认行为。
 				};
 				
 				// Enables rubberband selection
+				// 启用橡皮筋选择
 				new mxRubberband(graph);
-				
+				// 启用mxGraph的橡皮筋选择功能，用户可以通过拖动鼠标来选择多个单元格。
+
 				// Gets the default parent for inserting new cells. This
 				// is normally the first child of the root (ie. layer 0).
+				// 获取用于插入新单元格的默认父级。这通常是根的第一个子级（即第0层）。
 				var parent = graph.getDefaultParent();
+				// 获取图表的默认父容器，所有新添加的单元格都将放置在这个容器内。
 
 				// Adds cells to the model in a single step
+				// 在一个步骤中将单元格添加到模型
 				graph.getModel().beginUpdate();
+				// 开始图表模型的更新操作，这将批量处理后续的插入，提高性能。
 				try
 				{
 					var v1 = graph.insertVertex(parent, null, 'Hello,', 20, 20, 300, 240,
 						'overflow=fill;fillColor=none;fontColor=#000000;');
+					// 插入第一个顶点。
+					// 参数：父容器、ID（null表示自动生成）、标签内容（此处是Hello，但会被Chart.js覆盖）、x坐标、y坐标、宽度、高度、样式字符串。
+					// 样式说明：
+					//   overflow=fill: 允许内容填充整个单元格。
+					//   fillColor=none: 单元格无填充色。
+					//   fontColor=#000000: 字体颜色为黑色（此处对Chart.js内容无效）。
 					var v2 = graph.insertVertex(parent, null, 'Hello,', 480, 320, 300, 240,
 						'overflow=fill;fillColor=none;fontColor=#000000;');
+					// 插入第二个顶点，参数同v1。
 					var e1 = graph.insertEdge(parent, null, '', v1, v2);
+					// 插入一条边，连接v1和v2顶点。
+					// 参数：父容器、ID、标签（空字符串）、源顶点、目标顶点。
 				}
 				finally
 				{
 					// Updates the display
+					// 更新显示
 					graph.getModel().endUpdate();
+					// 结束图表模型的更新操作，触发图表的重新绘制，显示所有之前添加的单元格。
 				}
 				
 				document.body.appendChild(mxUtils.button('+', function()
 				{
 					graph.zoomIn();
+					// 放大图表。
 				}));
+				// 在文档body中添加一个“+”按钮，点击时调用 graph.zoomIn() 放大图表。
 				document.body.appendChild(mxUtils.button('-', function()
 				{
 					graph.zoomOut();
+					// 缩小图表。
 				}));
+				// 在文档body中添加一个“-”按钮，点击时调用 graph.zoomOut() 缩小图表。
 			}
 		};
 	</script>
