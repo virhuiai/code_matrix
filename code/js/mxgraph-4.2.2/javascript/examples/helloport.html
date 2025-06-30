@@ -4,119 +4,177 @@
   Hello, World! example for mxGraph. This example demonstrates using
   the isPort hook for visually connecting to another cell.
 -->
+<!--
+  中文注释：这是一个mxGraph的“Hello, World!”示例，展示如何使用isPort钩子实现单元格的视觉连接。
+-->
 <html>
 <head>
 	<title>Hello, World! example for mxGraph</title>
+	<!-- 中文注释：页面标题，表明这是一个mxGraph的示例 -->
 
 	<!-- Sets the basepath for the library if not in same directory -->
+	<!-- 中文注释：设置mxGraph库的基础路径，确保库文件正确加载 -->
 	<script type="text/javascript">
 		mxBasePath = '../src';
+		// 中文注释：mxBasePath指定mxGraph库的相对路径，位于../src目录
 	</script>
 
 	<!-- Loads and initializes the library -->
+	<!-- 中文注释：加载并初始化mxGraph库 -->
 	<script type="text/javascript" src="../src/js/mxClient.js"></script>
+	<!-- 中文注释：引入mxClient.js文件，包含mxGraph的核心功能 -->
 
 	<!-- Example code -->
+	<!-- 中文注释：以下是示例代码，展示mxGraph的基本用法 -->
 	<script type="text/javascript">
 		// Program starts here. Creates a sample graph in the
 		// DOM node with the specified ID. This function is invoked
 		// from the onLoad event handler of the document (see below).
+		// 中文注释：程序入口，创建示例图表，接收指定ID的DOM节点作为容器，页面加载时调用
 		function main(container)
 		{
+			// 中文注释：参数container是图表的DOM容器元素
 			// Checks if the browser is supported
+			// 中文注释：检查浏览器是否支持mxGraph
 			if (!mxClient.isBrowserSupported())
 			{
 				// Displays an error message if the browser is not supported.
+				// 中文注释：如果浏览器不支持，显示错误提示
 				mxUtils.error('Browser is not supported!', 200, false);
+				// 中文注释：调用mxUtils.error显示错误消息，参数：消息内容、宽度、不自动关闭
 			}
 			else
 			{
 				// Creates the graph inside the given container
+				// 中文注释：在指定容器中创建mxGraph图表实例
 				var graph = new mxGraph(container);
+				// 中文注释：graph是mxGraph对象，用于管理图表
 				graph.setConnectable(true);
+				// 中文注释：启用图表的连接功能，允许节点之间创建边
 				graph.setTooltips(true);
+				// 中文注释：启用鼠标悬停时的工具提示功能
 
 				// Sets the default edge style
+				// 中文注释：设置默认的边样式
 				var style = graph.getStylesheet().getDefaultEdgeStyle();
+				// 中文注释：获取图表的默认边样式对象
 				style[mxConstants.STYLE_EDGE] = mxEdgeStyle.ElbowConnector;
+				// 中文注释：设置边样式为ElbowConnector，创建弯折的连接线
 
 				// Ports are not used as terminals for edges, they are
 				// only used to compute the graphical connection point
+				// 中文注释：定义isPort方法，端口仅用于计算图形的连接点，而非边的终点
 				graph.isPort = function(cell)
 				{
 					var geo = this.getCellGeometry(cell);
-
+					// 中文注释：获取单元格的几何信息
 					return (geo != null) ? geo.relative : false;
+					// 中文注释：如果几何信息存在且为相对定位，返回true，否则返回false
 				};
 
 				// Implements a tooltip that shows the actual
 				// source and target of an edge
+				// 中文注释：重写getTooltipForCell方法，显示边的实际起点和终点
 				graph.getTooltipForCell = function(cell)
 				{
 					if (this.model.isEdge(cell))
 					{
+						// 中文注释：检查单元格是否为边
 						return this.convertValueToString(this.model.getTerminal(cell, true)) + ' => ' +
 							this.convertValueToString(this.model.getTerminal(cell, false))
+						// 中文注释：返回边的起点和终点值，用箭头连接显示
 					}
 
 					return mxGraph.prototype.getTooltipForCell.apply(this, arguments);
+					// 中文注释：对于非边单元格，调用默认的工具提示方法
 				};
 
 				// Removes the folding icon and disables any folding
+				// 中文注释：禁用单元格的折叠功能，移除折叠图标
 				graph.isCellFoldable = function(cell)
 				{
 					return false;
+					// 中文注释：始终返回false，禁止单元格折叠
 				};
 
 				// Enables rubberband selection
+				// 中文注释：启用橡皮筋选择功能，允许框选多个单元格
 				new mxRubberband(graph);
-				
+				// 中文注释：创建mxRubberband实例，绑定到图表对象
+
 				// Gets the default parent for inserting new cells. This
 				// is normally the first child of the root (ie. layer 0).
+				// 中文注释：获取插入新单元格的默认父节点，通常是根节点的第一个子节点（层0）
 				var parent = graph.getDefaultParent();
-								
+				// 中文注释：parent是默认的父节点，用于添加新单元格
+
 				// Adds cells to the model in a single step
+				// 中文注释：开始批量更新图表模型，避免频繁重绘
 				graph.getModel().beginUpdate();
 				try
 				{
 					var v1 = graph.insertVertex(parent, null, 'Hello', 20, 80, 80, 30);
+					// 中文注释：插入节点v1，标签为“Hello”，位置(20,80)，大小80x30
 					v1.setConnectable(false);
+					// 中文注释：禁用v1节点的直接连接功能
 					var v11 = graph.insertVertex(v1, null, '', 1, 1, 10, 10);
+					// 中文注释：插入子节点v11，空标签，初始位置(1,1)，大小10x10
 					v11.geometry.offset = new mxPoint(-5, -5);
+					// 中文注释：设置v11的偏移量为(-5,-5)，调整相对位置
 					v11.geometry.relative = true;
+					// 中文注释：设置v11为相对定位，位置相对于父节点
 					var v12 = graph.insertVertex(v1, null, '', 1, 0, 10, 10);
+					// 中文注释：插入子节点v12，空标签，初始位置(1,0)，大小10x10
 					v12.geometry.offset = new mxPoint(-5, -5);
+					// 中文注释：设置v12的偏移量为(-5,-5)，调整相对位置
 					v12.geometry.relative = true;
+					// 中文注释：设置v12为相对定位，位置相对于父节点
 					var v2 = graph.insertVertex(parent, null, 'World!', 200, 150, 80, 30);
+					// 中文注释：插入节点v2，标签为“World!”，位置(200,150)，大小80x30
 					var v3 = graph.insertVertex(parent, null, 'World2', 200, 20, 80, 30);
+					// 中文注释：插入节点v3，标签为“World2”，位置(200,20)，大小80x30
 					var e1 = graph.insertEdge(parent, null, '', v11, v2);
+					// 中文注释：插入边e1，连接v11到v2，无标签
 					var e1 = graph.insertEdge(parent, null, '', v12, v3);
+					// 中文注释：插入边e1，连接v12到v3，无标签
+					// 中文注释：注意：此处e1变量被重复定义，可能导致覆盖前一条边
 				}
 				finally
 				{
 					// Updates the display
+					// 中文注释：结束模型更新，刷新图表显示
 					graph.getModel().endUpdate();
 				}
 				
 				var button = mxUtils.button('View XML', function()
 				{
+					// 中文注释：创建“View XML”按钮，点击后显示图表模型的XML
 					var encoder = new mxCodec();
+					// 中文注释：创建mxCodec实例，用于编码图表模型
 					var node = encoder.encode(graph.getModel());
+					// 中文注释：将图表模型编码为XML格式
 					mxUtils.popup(mxUtils.getPrettyXml(node), true);
+					// 中文注释：弹出格式化的XML内容，true表示在新窗口显示
 				});
-				
+				// 中文注释：按钮的事件处理逻辑：点击后生成并显示图表的XML表示
+
 				document.body.insertBefore(button, container.nextSibling);
+				// 中文注释：将按钮插入到DOM中，位于容器元素的下一个兄弟节点之前
 			}
 		};
 	</script>
 </head>
 
 <!-- Page passes the container for the graph to the program -->
+<!-- 中文注释：页面通过onload事件将图表容器传递给main函数 -->
 <body onload="main(document.getElementById('graphContainer'))">
+	<!-- 中文注释：页面加载时调用main函数，传入ID为graphContainer的元素 -->
 
 	<!-- Creates a container for the graph with a grid wallpaper -->
+	<!-- 中文注释：创建图表容器，背景为网格图片 -->
 	<div id="graphContainer"
 		style="overflow:hidden;width:321px;height:241px;background:url('editors/images/grid.gif');cursor:default;">
+		<!-- 中文注释：容器样式说明：禁止溢出，固定宽321px高241px，背景为网格图片，默认鼠标样式 -->
 	</div>
 </body>
 </html>

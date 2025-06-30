@@ -4,17 +4,27 @@
   Hello, World! example for mxGraph. This example demonstrates using
   a DOM node to create a graph and adding vertices and edges.
 -->
+<!-- 中文注释：版权信息和示例说明 -->
+<!-- 中文注释：此为 mxGraph 的 Hello, World! 示例，展示如何使用 DOM 节点创建图形并添加顶点和边 -->
+
 <html>
 <head>
 	<title>Hello, World! example for mxGraph</title>
+	<!-- 中文注释：设置页面标题 -->
+	<!-- 中文注释：标题为 mxGraph 的 Hello, World! 示例 -->
 
 	<!-- Sets the basepath for the library if not in same directory -->
 	<script type="text/javascript">
 		mxBasePath = '../src';
 	</script>
+	<!-- 中文注释：设置 mxGraph 库的基础路径 -->
+	<!-- 中文注释：mxBasePath 指定库文件所在目录，当前设置为 '../src'，用于加载 mxGraph 相关资源 -->
+	<!-- 中文注释：重要配置参数：mxBasePath 确保库文件能够正确加载 -->
 
 	<!-- Loads and initializes the library -->
 	<script type="text/javascript" src="../src/js/mxClient.js"></script>
+	<!-- 中文注释：加载并初始化 mxGraph 库 -->
+	<!-- 中文注释：引入 mxClient.js 文件，包含 mxGraph 的核心功能 -->
 
 	<!-- Example code -->
 	<script type="text/javascript">
@@ -23,39 +33,76 @@
 		// from the onLoad event handler of the document (see below).
 		function main(container)
 		{
+			// 中文注释：主函数定义 -->
+			// 中文注释：main 函数的目的是在指定 DOM 节点中创建示例图形 -->
+			// 中文注释：参数 container：传入的 DOM 元素，用于渲染图形 -->
+			// 中文注释：函数在页面加载时通过 onLoad 事件触发（见下方 body 标签） -->
+
 			// Checks if the browser is supported
 			if (!mxClient.isBrowserSupported())
 			{
 				// Displays an error message if the browser is not supported.
 				mxUtils.error('Browser is not supported!', 200, false);
+				// 中文注释：检查浏览器是否支持 mxGraph -->
+				// 中文注释：mxClient.isBrowserSupported() 方法检测当前浏览器是否兼容 -->
+				// 中文注释：特殊处理：若浏览器不支持，调用 mxUtils.error 显示错误信息 -->
+				// 中文注释：错误信息参数：消息内容 'Browser is not supported!'，宽度 200 像素，是否自动关闭（false） -->
 			}
 			else
 			{
 				// Disables the built-in context menu
 				mxEvent.disableContextMenu(container);
-				
+				// 中文注释：禁用容器的默认右键菜单 -->
+				// 中文注释：mxEvent.disableContextMenu 防止右键菜单干扰图形交互 -->
+				// 中文注释：事件处理逻辑：禁用浏览器的上下文菜单以优化用户体验 -->
+
 				// Creates the graph inside the given container
 				var graph = new mxGraph(container);
+				// 中文注释：创建图形对象 -->
+				// 中文注释：graph 变量是 mxGraph 实例，用于在指定容器中渲染图形 -->
+				// 中文注释：参数 container 是承载图形的 DOM 元素 -->
 
 				// Enables rubberband selection
 				new mxRubberband(graph);
-				
+				// 中文注释：启用橡皮筋选择功能 -->
+				// 中文注释：mxRubberband 允许用户通过拖拽选择图形中的多个元素 -->
+				// 中文注释：交互逻辑：支持框选操作，增强用户与图形的交互体验 -->
+
 				// Gets the default parent for inserting new cells. This
 				// is normally the first child of the root (ie. layer 0).
 				var parent = graph.getDefaultParent();
-								
+				// 中文注释：获取插入新单元的默认父节点 -->
+				// 中文注释：parent 变量存储图形的默认层（通常为根节点的第一个子节点，即层 0） -->
+				// 中文注释：关键变量：parent 用于指定新顶点和边的父容器 -->
+
 				// Adds cells to the model in a single step
 				graph.getModel().beginUpdate();
+				// 中文注释：开始批量更新图形模型 -->
+				// 中文注释：beginUpdate 方法确保后续操作作为一个事务处理，提高性能 -->
 				try
 				{
 					var v1 = graph.insertVertex(parent, null, 'Hello,', 20, 20, 80, 30);
+					// 中文注释：插入第一个顶点 -->
+					// 中文注释：insertVertex 方法在 parent 中创建顶点，参数依次为：父节点、ID（null）、标签内容 'Hello,'、x 坐标 20、y 坐标 20、宽度 80、高度 30 -->
+					// 中文注释：关键变量 v1：表示图形中的第一个顶点，显示文本 'Hello,' -->
+
 					var v2 = graph.insertVertex(parent, null, 'World!', 200, 150, 80, 30);
+					// 中文注释：插入第二个顶点 -->
+					// 中文注释：insertVertex 方法在 parent 中创建顶点，参数依次为：父节点、ID（null）、标签内容 'World!'、x 坐标 200、y 坐标 150、宽度 80、高度 30 -->
+					// 中文注释：关键变量 v2：表示图形中的第二个顶点，显示文本 'World!' -->
+
 					var e1 = graph.insertEdge(parent, null, '', v1, v2);
+					// 中文注释：插入边 -->
+					// 中文注释：insertEdge 方法在 parent 中创建连接 v1 和 v2 的边，参数依次为：父节点、ID（null）、标签内容（空字符串）、起点顶点 v1、终点顶点 v2 -->
+					// 中文注释：关键变量 e1：表示连接 v1 和 v2 的边，无标签内容 -->
 				}
 				finally
 				{
 					// Updates the display
 					graph.getModel().endUpdate();
+					// 中文注释：结束批量更新并刷新显示 -->
+					// 中文注释：endUpdate 方法完成模型更新，触发图形重绘以显示所有更改 -->
+					// 中文注释：关键步骤：与 beginUpdate 配对，确保所有图形操作完成后统一更新 -->
 				}
 			}
 		};
@@ -64,10 +111,16 @@
 
 <!-- Page passes the container for the graph to the program -->
 <body onload="main(document.getElementById('graphContainer'))">
+	<!-- 中文注释：页面加载时调用 main 函数 -->
+	<!-- 中文注释：onload 事件处理逻辑：页面加载完成后，获取 ID 为 graphContainer 的 DOM 元素并传入 main 函数 -->
+	<!-- 中文注释：交互逻辑：通过 onload 事件自动触发图形初始化 -->
 
 	<!-- Creates a container for the graph with a grid wallpaper -->
 	<div id="graphContainer"
 		style="position:relative;overflow:hidden;width:321px;height:241px;background:url('editors/images/grid.gif');cursor:default;">
 	</div>
+	<!-- 中文注释：创建图形显示的容器 -->
+	<!-- 中文注释：div 元素（ID 为 graphContainer）作为 mxGraph 的渲染区域 -->
+	<!-- 中文注释：样式设置详细说明：position:relative 确保相对定位；overflow:hidden 隐藏超出内容；width:321px 和 height:241px 设置容器尺寸；background 设置网格背景图片；cursor:default 设置默认鼠标指针 -->
 </body>
 </html>

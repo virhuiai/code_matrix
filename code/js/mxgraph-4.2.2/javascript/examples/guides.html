@@ -7,54 +7,85 @@
   a canvas and installing a key handler for cursor keys is also
   demonstrated here, as well as snapping waypoints to terminals.
 -->
+<!--
+  版权信息：2006-2013 JGraph Ltd
+  示例说明：展示 mxGraph 的引导线功能，用于将当前选中的元素对齐到图中的现有顶点。
+  注意事项：该功能处于 RFC（请求评论）状态。还展示了使用 canvas 创建网格以及为光标键安装按键处理器，并支持路径点吸附到终端。
+-->
 <html>
 <head>
 	<title>Guides example for mxGraph</title>
+	<!-- 页面标题：mxGraph 引导线示例 -->
 
 	<!-- Sets the basepath for the library if not in same directory -->
+	<!-- 设置库的基础路径，如果库文件不在同一目录下 -->
 	<script type="text/javascript">
 		mxBasePath = '../src';
+		// 配置参数：mxBasePath 指定 mxGraph 库的相对路径，确保正确加载库文件
 	</script>
 
 	<!-- Loads and initializes the library -->
+	<!-- 加载并初始化 mxGraph 库 -->
 	<script type="text/javascript" src="../src/js/mxClient.js"></script>
+	<!-- 加载 mxClient.js 文件，用于初始化 mxGraph 的核心功能 -->
 
 	<!-- Example code -->
+	<!-- 示例代码 -->
 	<script type="text/javascript">
 		// Program starts here. Creates a sample graph in the
 		// DOM node with the specified ID. This function is invoked
 		// from the onLoad event handler of the document (see below).
+		// 程序从这里开始。在指定 ID 的 DOM 节点中创建示例图。此函数由文档的 onLoad 事件处理器调用（见下方）。
+		// 方法目的：main 函数用于初始化并创建 mxGraph 图表
 		function main(container)
 		{
 			// Checks if the browser is supported
+			// 检查浏览器是否受支持
 			if (!mxClient.isBrowserSupported())
 			{
 				// Displays an error message if the browser is not supported.
+				// 如果浏览器不受支持，显示错误消息
+				// 特殊处理：使用 mxUtils.error 显示错误提示，参数包括消息内容、宽度和是否自动关闭
 				mxUtils.error('Browser is not supported!', 200, false);
 			}
 			else
 			{
 				// Enables guides
+				// 启用引导线功能
+				// 配置参数：启用 mxGraphHandler 的引导线功能，辅助用户对齐图元素
 				mxGraphHandler.prototype.guidesEnabled = true;
 				
 			    // Alt disables guides
+			    // Alt 键禁用引导线
+			    // 方法目的：定义当按下 Alt 键时禁用引导线的事件处理逻辑
 			    mxGraphHandler.prototype.useGuidesForEvent = function(me)
 			    {
 			    	return !mxEvent.isAltDown(me.getEvent());
+			    	// 事件处理逻辑：检查事件中是否按下 Alt 键，若按下则禁用引导线
 			    };
 			    
 			    // Defines the guides to be red (default)
+			    // 定义引导线颜色为红色（默认）
+			    // 配置参数：设置 mxConstants.GUIDE_COLOR 为红色，用于引导线的显示
 				mxConstants.GUIDE_COLOR = '#FF0000';
 			    
 			    // Defines the guides to be 1 pixel (default)
+			    // 定义引导线宽度为 1 像素（默认）
+			    // 配置参数：设置 mxConstants.GUIDE_STROKEWIDTH 为 1 像素，控制引导线的粗细
 				mxConstants.GUIDE_STROKEWIDTH = 1;
 				
 				// Enables snapping waypoints to terminals
+				// 启用路径点吸附到终端
+				// 配置参数：mxEdgeHandler 的 snapToTerminals 属性设为 true，使边连接的路径点自动吸附到顶点的终端
 				mxEdgeHandler.prototype.snapToTerminals = true;
 				
 				// Creates the graph inside the given container
+				// 在指定容器内创建图表
+				// 关键变量：graph 为 mxGraph 实例，用于管理图表的功能和交互
 				var graph = new mxGraph(container);
+				// 配置参数：setConnectable(true) 允许用户通过拖动连接图元素
 				graph.setConnectable(true);
+				// 配置参数：gridSize 设置网格大小为 30 像素，用于对齐元素
 				graph.gridSize = 30;
 				
 				// Changes the default style for edges "in-place" and assigns
@@ -62,72 +93,104 @@
 				// when the user double clicks on the adjustment control point
 				// of the edge. The ElbowConnector edge style switches to TopToBottom
 				// if the horizontal style is true.
+				// 原地修改边的默认样式，并分配一个备用边样式，当用户双击边的调整控制点时应用。
+				// ElbowConnector 边样式在水平样式为 true 时切换为 TopToBottom。
+				// 样式设置：为边设置圆角和 ElbowConnector 样式，并定义备用样式为垂直布局
 				var style = graph.getStylesheet().getDefaultEdgeStyle();
 				style[mxConstants.STYLE_ROUNDED] = true;
+				// 配置参数：启用边的圆角效果
 				style[mxConstants.STYLE_EDGE] = mxEdgeStyle.ElbowConnector;
+				// 配置参数：设置边样式为 ElbowConnector，支持折线连接
 				graph.alternateEdgeStyle = 'elbow=vertical';
+				// 配置参数：备用边样式为垂直折线，应用于双击调整控制点时
 
 				// Enables rubberband selection
+				// 启用橡皮筋选择功能
+				// 交互逻辑：通过 mxRubberband 启用框选功能，允许用户拖动鼠标选择多个元素
 				new mxRubberband(graph);
 				
 				// Gets the default parent for inserting new cells. This
 				// is normally the first child of the root (ie. layer 0).
+				// 获取插入新单元的默认父节点，通常是根节点的第一个子节点（即第 0 层）。
+				// 关键变量：parent 表示图表的默认层，用于插入新元素
 				var parent = graph.getDefaultParent();
 								
 				// Adds cells to the model in a single step
+				// 在单一步骤中向模型添加单元
+				// 方法目的：beginUpdate 和 endUpdate 用于批量更新图表模型以提高性能
 				graph.getModel().beginUpdate();
 				var v1;
 				try
 				{
+					// 关键变量：v1 和 v2 为图表中的顶点，e1 为连接它们的边
 					v1 = graph.insertVertex(parent, null, 'Hello,', 20, 40, 80, 70);
+					// 方法目的：insertVertex 创建顶点，参数依次为父节点、ID、显示文本、x 坐标、y 坐标、宽度、高度
 					var v2 = graph.insertVertex(parent, null, 'World!', 200, 140, 80, 40);
 					var e1 = graph.insertEdge(parent, null, '', v1, v2);
+					// 方法目的：insertEdge 创建边，连接 v1 和 v2，参数依次为父节点、ID、显示文本、起点顶点、终点顶点
 				}
 				finally
 				{
 					// Updates the display
+					// 更新显示
+					// 方法目的：endUpdate 完成模型更新并刷新图表显示
 					graph.getModel().endUpdate();
 				}
 
 			    // Handles cursor keys
+			    // 处理光标键
+			    // 方法目的：nudge 函数处理方向键输入，移动选中的图表元素
 			    var nudge = function(keyCode)
 			    {
 			    	if (!graph.isSelectionEmpty())
 					{
+			    		// 关键变量：dx 和 dy 表示移动的水平和垂直偏移量
 			    		var dx = 0;
 			    		var dy = 0;
 			    		
 			    		if (keyCode == 37)
 						{
+			    			// 事件处理逻辑：左箭头键（37）向左移动 1 像素
 			    			dx = -1;
 						}
 			    		else if (keyCode == 38)
 			    		{
+			    			// 事件处理逻辑：上箭头键（38）向上移动 1 像素
 			    			dy = -1;
 			    		}
 			    		else if (keyCode == 39)
 			    		{
+			    			// 事件处理逻辑：右箭头键（39）向右移动 1 像素
 			    			dx = 1;
 			    		}
 			    		else if (keyCode == 40)
 			    		{
+			    			// 事件处理逻辑：下箭头键（40）向下移动 1 像素
 			    			dy = 1;
 			    		}
 			    		
+			    		// 方法目的：moveCells 移动选中的单元，参数为选中的单元数组及偏移量
 			    		graph.moveCells(graph.getSelectionCells(), dx, dy);
 					}
 			    };
 
 				// Transfer initial focus to graph container for keystroke handling
+				// 将初始焦点转移到图表容器以处理按键
+				// 交互逻辑：设置焦点到图表容器以捕获键盘事件
 				graph.container.focus();
 				    
 			    // Handles keystroke events
+			    // 处理按键事件
+			    // 关键变量：keyHandler 为 mxKeyHandler 实例，用于绑定键盘事件
 			    var keyHandler = new mxKeyHandler(graph);
 			    
 			    // Ignores enter keystroke. Remove this line if you want the
 			    // enter keystroke to stop editing
+			    // 忽略 Enter 键。如果需要 Enter 键停止编辑，移除此行
+			    // 特殊处理：禁用 Enter 键的默认编辑停止行为
 			    keyHandler.enter = function() {};
 			    
+			    // 事件处理逻辑：为方向键（37-40）绑定 nudge 函数，处理元素移动
 			    keyHandler.bindKey(37, function()
 				{
 					nudge(37);
@@ -153,9 +216,13 @@
 </head>
 
 <!-- Page passes the container for the graph to the program -->
+<!-- 页面将图表容器传递给程序 -->
 <body onload="main(document.getElementById('graphContainer'))">
+	<!-- 事件处理逻辑：页面加载时调用 main 函数，传入 graphContainer 元素 -->
 
 	<!-- Creates a container for the graph with a grid wallpaper -->
+	<!-- 创建带有网格背景的图表容器 -->
+	<!-- 样式设置：容器宽度 801px，高度 601px，背景为网格图片，禁用溢出，设置默认光标 -->
 	<div id="graphContainer"
 		style="overflow:hidden;width:801px;height:601px;background:url('editors/images/grid.gif');cursor:default;">
 	</div>

@@ -4,32 +4,48 @@
   Groups example for mxGraph. This example demonstrates using
   cells as parts of other cells.
 -->
+<!--
+  中文注释：此示例展示如何在mxGraph中使用单元格作为其他单元格的子部分，演示分组功能。
+-->
 <html>
 <head>
 	<title>Hello, World! example for mxGraph</title>
+	<!--
+	  中文注释：设置页面标题为mxGraph的“Hello, World!”示例。
+	-->
 
 	<!-- Sets the basepath for the library if not in same directory -->
+	<!--
+	  中文注释：设置mxGraph库的基础路径，如果库文件不在同一目录下，需指定路径为'../src'。
+	-->
 	<script type="text/javascript">
 		mxBasePath = '../src';
 	</script>
 
 	<!-- Loads and initializes the library -->
+	<!--
+	  中文注释：加载并初始化mxGraph库，引入mxClient.js核心文件。
+	-->
 	<script type="text/javascript" src="../src/js/mxClient.js"></script>
 
 	<!-- Example code -->
 	<script type="text/javascript">
 		// Overrides check for valid roots
+		// 中文注释：重写isValidRoot方法，禁用默认的根节点有效性检查。
 		mxGraph.prototype.isValidRoot = function()
 		{
 			return false;
 		};
 		
 		// Don't clear selection if multiple cells selected
+		// 中文注释：重写mouseDown方法，防止在多选单元格时清除已有选择。
 		var graphHandlerMouseDown = mxGraphHandler.prototype.mouseDown;
 		mxGraphHandler.prototype.mouseDown = function(sender, me)
 		{
+			// 中文注释：调用原始mouseDown方法，保持原有鼠标按下逻辑。
 			graphHandlerMouseDown.apply(this, arguments);
 	
+			// 中文注释：如果点击的单元格已被选中且有多个单元格被选中，则禁用延迟选择。
 			if (this.graph.isCellSelected(me.getCell()) && this.graph.getSelectionCount() > 1)
 			{
 				this.delayedSelection = false;
@@ -37,14 +53,18 @@
 		};
 		
 		// Selects descendants before children selection mode
+		// 中文注释：重写getInitialCellForEvent方法，优先选择子节点而非子节点的子节点。
 		var graphHandlerGetInitialCellForEvent = mxGraphHandler.prototype.getInitialCellForEvent;
 		mxGraphHandler.prototype.getInitialCellForEvent = function(me)
 		{
+			// 中文注释：获取图模型和当前选中的单元格的父节点。
 			var model = this.graph.getModel();
 			var psel = model.getParent(this.graph.getSelectionCell());
+			// 中文注释：调用原始方法获取初始点击的单元格。
 			var cell = graphHandlerGetInitialCellForEvent.apply(this, arguments);
 			var parent = model.getParent(cell);
 			
+			// 中文注释：如果没有选中父节点或父节点不符合特定条件，循环向上查找合适的父节点。
 			if (psel == null || (psel != cell && psel != parent))
 			{
 				while (!this.graph.isCellSelected(cell) && !this.graph.isCellSelected(parent) &&
@@ -55,18 +75,23 @@
 				}
 			}
 			
+			// 中文注释：返回最终选中的单元格。
 			return cell;
 		};
 		
 		// Selection is delayed to mouseup if child selected
+		// 中文注释：重写isDelayedSelection方法，延迟子节点选择直到鼠标释放。
 		var graphHandlerIsDelayedSelection = mxGraphHandler.prototype.isDelayedSelection;
 		mxGraphHandler.prototype.isDelayedSelection = function(cell)
 		{
+			// 中文注释：调用原始方法获取默认延迟选择状态。
 			var result = graphHandlerIsDelayedSelection.apply(this, arguments);
+			// 中文注释：获取图模型及当前选中的父节点。
 			var model = this.graph.getModel();
 			var psel = model.getParent(this.graph.getSelectionCell());
 			var parent = model.getParent(cell);
 			
+			// 中文注释：如果父节点未选中且为顶点且非有效根节点，则启用延迟选择。
 			if (psel == null || (psel != cell && psel != parent))
 			{
 				if (!this.graph.isCellSelected(cell) && model.isVertex(parent) && !this.graph.isValidRoot(parent))
@@ -75,12 +100,15 @@
 				}
 			}
 			
+			// 中文注释：返回延迟选择状态。
 			return result;
 		};
 		
 		// Delayed selection of parent group
+		// 中文注释：重写selectDelayed方法，处理延迟选择父分组的逻辑。
 		mxGraphHandler.prototype.selectDelayed = function(me)
 		{
+			// 中文注释：获取鼠标事件中的单元格，若无则使用当前单元格。
 			var cell = me.getCell();
 			
 			if (cell == null)
@@ -88,25 +116,31 @@
 				cell = this.cell;
 			}
 			
+			// 中文注释：获取图模型及当前单元格的父节点。
 			var model = this.graph.getModel();
 			var parent = model.getParent(cell);
 			
+			// 中文注释：循环向上查找，直到找到合适的父节点（顶点且非有效根节点）。
 			while (this.graph.isCellSelected(cell) && model.isVertex(parent) && !this.graph.isValidRoot(parent))
 			{
 				cell = parent;
 				parent = model.getParent(cell);
 			}
 			
+			// 中文注释：触发选择事件，选择最终确定的单元格。
 			this.graph.selectCellForEvent(cell, me.getEvent());
 		};
 	
 		// Returns last selected ancestor
+		// 中文注释：重写getCellForPopupEvent方法，返回最后选中的祖先节点。
 		mxPopupMenuHandler.prototype.getCellForPopupEvent = function(me)
 		{
+			// 中文注释：获取鼠标事件中的单元格及其父节点。
 			var cell = me.getCell();
 			var model = this.graph.getModel();
 			var parent = model.getParent(cell);
 			
+			// 中文注释：如果父节点是顶点且非有效根节点且已选中，则更新单元格为父节点。
 			while (model.isVertex(parent) && !this.graph.isValidRoot(parent))
 			{
 				if (this.graph.isCellSelected(parent))
@@ -117,24 +151,30 @@
 				parent = model.getParent(parent);
 			}
 			
+			// 中文注释：返回最终选中的单元格。
 			return cell;
 		};
 	
 		// Program starts here. Creates a sample graph in the
 		// DOM node with the specified ID. This function is invoked
 		// from the onLoad event handler of the document (see below).
+		// 中文注释：主函数，程序入口，在指定容器中创建示例图，页面加载时调用。
 		function main(container)
 		{
 			// Checks if the browser is supported
+			// 中文注释：检查浏览器是否支持mxGraph库。
 			if (!mxClient.isBrowserSupported())
 			{
 				// Displays an error message if the browser is not supported.
+				// 中文注释：如果浏览器不支持，显示错误消息，宽度200像素，不自动关闭。
 				mxUtils.error('Browser is not supported!', 200, false);
 			}
 			else
 			{
 				// Creates the graph inside the given container
+				// 中文注释：在指定容器中创建mxGraph实例。
 				var graph = new mxGraph(container);
+				// 中文注释：配置参数：禁用子节点约束、不扩展父节点、不在添加时扩展父节点。
 				graph.constrainChildren = false;
 				graph.extendParents = false;
 				graph.extendParentsOnAdd = false;
@@ -142,24 +182,31 @@
 				// Uncomment the following if you want the container
 				// to fit the size of the graph
 				//graph.setResizeContainer(true);
-				
+				// 中文注释：若取消注释，容器将自适应图的大小。
+
 				// Enables rubberband selection
+				// 中文注释：启用橡皮筋选择功能，允许框选多个单元格。
 				new mxRubberband(graph);
 				
 				// Gets the default parent for inserting new cells. This
 				// is normally the first child of the root (ie. layer 0).
+				// 中文注释：获取默认父节点（通常为根节点的第一个子节点，层0），用于插入新单元格。
 				var parent = graph.getDefaultParent();
 								
 				// Adds cells to the model in a single step
+				// 中文注释：开始批量更新模型，添加单元格。
 				graph.getModel().beginUpdate();
 				try
 				{
+					// 中文注释：插入顶点v1，文本为“Hello,”，位置(20,20)，大小120x60，父节点为默认父节点。
 					var v1 = graph.insertVertex(parent, null, 'Hello,', 20, 20, 120, 60);
+					// 中文注释：插入子顶点v2，文本为“World!”，位置(90,20)，大小60x20，父节点为v1。
 					var v2 = graph.insertVertex(v1, null, 'World!', 90, 20, 60, 20);
 				}
 				finally
 				{
 					// Updates the display
+					// 中文注释：结束批量更新，刷新显示。
 					graph.getModel().endUpdate();
 				}
 			}
@@ -168,9 +215,17 @@
 </head>
 
 <!-- Page passes the container for the graph to the program -->
+<!-- 中文注释：页面加载时调用main函数，将graphContainer传递给程序。 -->
 <body onload="main(document.getElementById('graphContainer'))">
 
 	<!-- Creates a container for the graph with a grid wallpaper -->
+	<!--
+	  中文注释：创建图的容器，ID为graphContainer，设置样式：
+	  - overflow:hidden：隐藏溢出内容
+	  - width:321px;height:241px：固定容器大小
+	  - background:url('editors/images/grid.gif')：使用网格背景图片
+	  - cursor:default：默认鼠标光标
+	-->
 	<div id="graphContainer"
 		style="overflow:hidden;width:321px;height:241px;background:url('editors/images/grid.gif');cursor:default;">
 	</div>

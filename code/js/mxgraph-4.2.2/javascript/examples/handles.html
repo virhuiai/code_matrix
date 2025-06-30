@@ -3,30 +3,44 @@
   
   Handles example for mxGraph. This example demonstrates using mxHandle to change custom styles interactively.
 -->
+<!--
+  中文注释：此文件为mxGraph的示例代码，展示如何使用mxHandle实现交互式修改自定义样式的功能。
+-->
 <html>
 <head>
 	<title>Handles example for mxGraph</title>
+	<!-- 中文注释：页面标题，表明这是一个mxGraph的示例，用于展示Handles功能 -->
 
 	<!-- Sets the basepath for the library if not in same directory -->
+	<!-- 中文注释：设置mxGraph库的基础路径，如果库文件不在同一目录下 -->
 	<script type="text/javascript">
 		mxBasePath = '../src';
+		// 中文注释：指定mxGraph库的路径为'../src'，确保正确加载库文件
 	</script>
 
 	<!-- Loads and initializes the library -->
+	<!-- 中文注释：加载并初始化mxGraph库 -->
 	<script type="text/javascript" src="../src/js/mxClient.js"></script>
+	<!-- 中文注释：引入mxClient.js文件，包含mxGraph的核心功能 -->
 
 	<!-- Example code -->
+	<!-- 中文注释：以下为示例代码，定义自定义形状和交互逻辑 -->
 	<script type="text/javascript">
 		function MyShape()
 		{
 			mxCylinder.call(this);
 		};
-	
+		// 中文注释：定义MyShape构造函数，继承自mxCylinder，用于创建自定义形状
+		// 中文注释：目的：创建一个可自定义样式的图形，基于mxGraph的圆柱体形状
+
 		mxUtils.extend(MyShape, mxCylinder);
+		// 中文注释：通过mxUtils.extend使MyShape继承mxCylinder的属性和方法
 
 		MyShape.prototype.defaultPos1 = 20;
 		MyShape.prototype.defaultPos2 = 60;
-		
+		// 中文注释：定义默认参数pos1和pos2，分别表示图形中两条分隔线的默认垂直位置
+		// 中文注释：重要配置参数：pos1和pos2控制标签区域的上下边界，单位为像素
+
 		MyShape.prototype.getLabelBounds = function(rect)
 		{
 		 	var pos1 = mxUtils.getValue(this.style, 'pos1', this.defaultPos1) * this.scale;
@@ -34,7 +48,12 @@
 
 		 	return new mxRectangle(rect.x, rect.y + pos1, rect.width, Math.min(rect.height, pos2) - Math.max(0, pos1));
 		};
-		
+		// 中文注释：重写getLabelBounds方法，用于定义图形标签的显示区域
+		// 中文注释：参数rect：图形的边界矩形，包含x、y、width、height
+		// 中文注释：功能：根据pos1和pos2计算标签区域的边界，确保标签在指定范围内显示
+		// 中文注释：注意事项：考虑缩放比例scale，确保标签区域随图形缩放调整
+		// 中文注释：返回值：mxRectangle对象，定义标签的x、y坐标、宽度和高度
+
 		MyShape.prototype.redrawPath = function(path, x, y, w, h, isForeground)
 		{
 		 	var pos1 = mxUtils.getValue(this.style, 'pos1', this.defaultPos1);
@@ -59,16 +78,30 @@
 				path.rect(0, 0, w, h);
 			}
 		};
+		// 中文注释：重写redrawPath方法，用于绘制自定义形状的路径
+		// 中文注释：参数说明：
+		//   - path：绘图路径对象，用于定义绘图指令
+		//   - x, y：图形左上角坐标
+		//   - w, h：图形宽度和高度
+		//   - isForeground：布尔值，true表示绘制前景（分隔线），false表示绘制背景（矩形）
+		// 中文注释：功能：根据isForeground参数绘制矩形背景或两条水平分隔线
+		// 中文注释：关键逻辑：前景绘制两条水平线（位于pos1和pos2），背景绘制整个矩形
+		// 中文注释：注意事项：确保pos1和pos2不超过图形高度h，避免绘制异常
 
 		mxCellRenderer.registerShape('myShape', MyShape);
-		
+		// 中文注释：注册自定义形状myShape到mxGraph的渲染器
+		// 中文注释：目的：使myShape可以在mxGraph中作为一种形状类型使用
+		// 中文注释：参数：'myShape'为形状名称，MyShape为形状构造函数
+
 		mxVertexHandler.prototype.createCustomHandles = function()
 		{
 			if (this.state.style['shape'] == 'myShape')
 			{
 				// Implements the handle for the first divider
+				// 中文注释：实现第一个分隔线的控制柄
 				var firstHandle = new mxHandle(this.state);
-				
+				// 中文注释：创建第一个控制柄，绑定到当前图形状态
+
 				firstHandle.getPosition = function(bounds)
 				{
 					var pos2 = Math.max(0, Math.min(bounds.height, parseFloat(mxUtils.getValue(this.state.style, 'pos2', MyShape.prototype.defaultPos2))));
@@ -76,24 +109,42 @@
 
 					return new mxPoint(bounds.getCenterX(), bounds.y + pos1);
 				};
-				
+				// 中文注释：定义第一个控制柄的位置
+				// 中文注释：参数bounds：图形的边界矩形
+				// 中文注释：功能：返回控制柄的坐标，位于图形水平中心和pos1的垂直位置
+				// 中文注释：逻辑：确保pos1在0到pos2之间，避免越界
+				// 中文注释：返回值：mxPoint对象，表示控制柄的x、y坐标
+
 				firstHandle.setPosition = function(bounds, pt)
 				{
 					var pos2 = Math.max(0, Math.min(bounds.height, parseFloat(mxUtils.getValue(this.state.style, 'pos2', MyShape.prototype.defaultPos2))));
 					
 					this.state.style['pos1'] = Math.round(Math.max(0, Math.min(pos2, pt.y - bounds.y)));
 				};
-				
+				// 中文注释：设置第一个控制柄的新位置
+				// 中文注释：参数：
+				//   - bounds：图形边界
+				//   - pt：鼠标点击的坐标点
+				// 中文注释：功能：更新pos1的值，确保其在0到pos2之间，并四舍五入到整数
+				// 中文注释：交互逻辑：用户拖动控制柄时，动态调整pos1以改变分隔线位置
+
 				firstHandle.execute = function()
 				{
 					this.copyStyle('pos1');
 				}
+				// 中文注释：执行第一个控制柄的操作
+				// 中文注释：功能：将pos1的值复制到图形样式中，更新图形显示
+				// 中文注释：目的：确保拖动控制柄后，图形样式实时更新
 
 				firstHandle.ignoreGrid = true;
-				
+				// 中文注释：设置第一个控制柄忽略网格对齐
+				// 中文注释：目的：允许控制柄自由移动，不受网格限制
+
 				// Implements the handle for the second divider
+				// 中文注释：实现第二个分隔线的控制柄
 				var secondHandle = new mxHandle(this.state);
-				
+				// 中文注释：创建第二个控制柄，绑定到当前图形状态
+
 				secondHandle.getPosition = function(bounds)
 				{
 					var pos1 = Math.max(0, Math.min(bounds.height, parseFloat(mxUtils.getValue(this.state.style, 'pos1', MyShape.prototype.defaultPos1))));
@@ -101,92 +152,169 @@
 					
 					return new mxPoint(bounds.getCenterX(), bounds.y + pos2);
 				};
-				
+				// 中文注释：定义第二个控制柄的位置
+				// 中文注释：功能：返回控制柄的坐标，位于图形水平中心和pos2的垂直位置
+				// 中文注释：逻辑：确保pos2在pos1到图形高度之间
+				// 中文注释：返回值：mxPoint对象，表示控制柄的x、y坐标
+
 				secondHandle.setPosition = function(bounds, pt)
 				{
 					var pos1 = Math.max(0, Math.min(bounds.height, parseFloat(mxUtils.getValue(this.state.style, 'pos1', MyShape.prototype.defaultPos1))));
 										
 					this.state.style['pos2'] = Math.round(Math.max(pos1, Math.min(bounds.height, pt.y - bounds.y)));
 				};
-				
+				// 中文注释：设置第二个控制柄的新位置
+				// 中文注释：功能：更新pos2的值，确保其在pos1到图形高度之间，并四舍五入到整数
+				// 中文注释：交互逻辑：用户拖动控制柄时，动态调整pos2以改变分隔线位置
+
 				secondHandle.execute = function()
 				{
 					this.copyStyle('pos2');
 				}
+				// 中文注释：执行第二个控制柄的操作
+				// 中文注释：功能：将pos2的值复制到图形样式中，更新图形显示
+				// 中文注释：目的：确保拖动控制柄后，图形样式实时更新
 
 				secondHandle.ignoreGrid = true;
+				// 中文注释：设置第二个控制柄忽略网格对齐
+				// 中文注释：目的：允许控制柄自由移动，不受网格限制
 
 				return [firstHandle, secondHandle];
+				// 中文注释：返回两个控制柄的数组
+				// 中文注释：目的：提供给mxVertexHandler用于管理图形的交互控制柄
 			}
 			
 			return null;
+			// 中文注释：如果图形不是myShape，返回null，表示没有自定义控制柄
 		};
-		
+		// 中文注释：重写createCustomHandles方法，为myShape图形创建两个控制柄
+		// 中文注释：功能：当图形为myShape时，创建并配置两个控制柄以调整pos1和pos2
+		// 中文注释：事件处理逻辑：通过控制柄的拖动事件，动态调整分隔线位置
+		// 中文注释：注意事项：确保pos1始终小于等于pos2，防止逻辑错误
+
 		mxVertexHandler.prototype.livePreview = true;
+		// 中文注释：启用mxVertexHandler的实时预览功能
+		// 中文注释：目的：拖动控制柄时，图形样式实时更新，增强用户体验
 		mxVertexHandler.prototype.rotationEnabled = true;
-		
+		// 中文注释：启用mxVertexHandler的旋转功能
+		// 中文注释：目的：允许用户通过交互旋转图形
+
 		// Program starts here. Creates a sample graph in the
 		// DOM node with the specified ID. This function is invoked
 		// from the onLoad event handler of the document (see below).
+		// 中文注释：程序从main函数开始，在指定ID的DOM节点中创建示例图形
 		function main(container)
 		{
 			// Checks if the browser is supported
+			// 中文注释：检查浏览器是否支持mxGraph
 			if (!mxClient.isBrowserSupported())
 			{
 				// Displays an error message if the browser is not supported.
+				// 中文注释：如果浏览器不支持，显示错误消息
 				mxUtils.error('Browser is not supported!', 200, false);
+				// 中文注释：调用mxUtils.error显示错误提示，参数：消息内容、宽度、是否自动关闭
 			}
 			else
 			{
 				// Disables the built-in context menu
+				// 中文注释：禁用容器的内置右键菜单
 				mxEvent.disableContextMenu(container);
-				
+				// 中文注释：功能：防止右键菜单干扰图形交互
+
 				// Creates the graph inside the given container
+				// 中文注释：在指定容器中创建mxGraph实例
 				var graph = new mxGraph(container);
+				// 中文注释：关键变量graph：mxGraph的核心对象，管理图形和交互
 				graph.setCellsCloneable(true);
+				// 中文注释：启用单元格克隆功能，允许复制图形
 				graph.setHtmlLabels(true);
+				// 中文注释：启用HTML标签支持，允许在图形中使用HTML内容
 				graph.setPanning(true);
+				// 中文注释：启用平移功能，允许通过拖动移动画布
 				graph.centerZoom = false;
+				// 中文注释：禁用居中缩放，缩放时不自动调整画布中心
+				// 中文注释：重要配置参数：以上设置定义了图形的交互行为和显示方式
 
 				// Enables rubberband selection
+				// 中文注释：启用橡皮筋选择功能
 				new mxRubberband(graph);
+				// 中文注释：功能：允许通过拖动鼠标框选多个图形单元
+				// 中文注释：交互逻辑：增强用户选择图形的便捷性
 
 				// Gets the default parent for inserting new cells. This
 				// is normally the first child of the root (ie. layer 0).
+				// 中文注释：获取插入新单元格的默认父节点，通常为根节点的第一个子节点（层0）
 				var parent = graph.getDefaultParent();
-								
+				// 中文注释：关键变量parent：用于插入新图形的默认容器
+
 				// Adds cells to the model in a single step
+				// 中文注释：一次性向模型中添加单元格
 				graph.getModel().beginUpdate();
+				// 中文注释：开始更新模型，批量操作以提高性能
 				try
 				{
 					var v1 = graph.insertVertex(parent, null, 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
 						20, 20, 240, 120, 'shape=myShape;whiteSpace=wrap;overflow=hidden;pos1=30;pos2=80;');
+					// 中文注释：插入一个顶点（图形）到父节点
+					// 中文注释：参数说明：
+					//   - parent：父节点
+					//   - null：顶点ID（此处无ID）
+					//   - 文本内容：顶点显示的文本
+					//   - 20, 20：顶点左上角坐标
+					//   - 240, 120：顶点宽度和高度
+					//   - 样式：指定形状为myShape，设置文本换行、隐藏溢出内容、pos1=30、pos2=80
+					// 中文注释：样式设置说明：
+					//   - shape=myShape：使用自定义形状
+					//   - whiteSpace=wrap：文本自动换行
+					//   - overflow=hidden：溢出内容隐藏
+					//   - pos1=30, pos2=80：设置分隔线位置
 				}
 				finally
 				{
 					// Updates the display
+					// 中文注释：更新显示，应用所有更改
 					graph.getModel().endUpdate();
+					// 中文注释：结束模型更新，确保图形渲染
 				}
 
 				document.body.appendChild(mxUtils.button('+', function()
 				{
 					graph.zoomIn();
 				}));
+				// 中文注释：添加放大按钮
+				// 中文注释：事件处理逻辑：点击“+”按钮调用graph.zoomIn()放大画布
+				// 中文注释：交互逻辑：提供用户放大视图的功能
 				document.body.appendChild(mxUtils.button('-', function()
 				{
 					graph.zoomOut();
 				}));
+				// 中文注释：添加缩小按钮
+				// 中文注释：事件处理逻辑：点击“-”按钮调用graph.zoomOut()缩小画布
+				// 中文注释：交互逻辑：提供用户缩小视图的功能
 			}
 		};
+		// 中文注释：main函数，程序入口，初始化mxGraph并创建示例图形
+		// 中文注释：参数container：DOM容器，用于渲染图形
+		// 中文注释：目的：设置图形环境，添加交互功能，插入示例图形
 	</script>
 </head>
 
 <!-- Page passes the container for the graph to the program -->
+<!-- 中文注释：页面通过onload事件将图形容器传递给main函数 -->
 <body onload="main(document.getElementById('graphContainer'))">
+	<!-- 中文注释：当页面加载完成后，调用main函数并传入graphContainer元素 -->
 
 	<!-- Creates a container for the graph with a grid wallpaper -->
+	<!-- 中文注释：创建图形容器，带有网格背景 -->
 	<div id="graphContainer"
 		style="position:relative;overflow:hidden;width:621px;height:441px;background:url('editors/images/grid.gif');cursor:default;">
+		<!-- 中文注释：定义图形容器div，ID为graphContainer -->
+		<!-- 中文注释：样式设置说明：
+			 - position:relative：相对定位，便于内部元素布局
+			 - overflow:hidden：溢出内容隐藏
+			 - width:621px, height:441px：固定容器尺寸
+			 - background:url('editors/images/grid.gif')：设置网格背景图片
+			 - cursor:default：设置默认鼠标光标 -->
 	</div>
 </body>
 </html>
