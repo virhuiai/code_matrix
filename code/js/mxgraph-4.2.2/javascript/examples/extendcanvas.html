@@ -3,42 +3,59 @@
   
   Extend canvas example for mxGraph. This example demonstrates implementing
   an infinite canvas with scrollbars.
+  // 此示例展示如何使用mxGraph实现带有滚动条的无限画布
 -->
 <html>
 <head>
 	<title>Extend canvas example for mxGraph</title>
+	<!-- 设置页面标题为mxGraph扩展画布示例 -->
 
 	<!-- Sets the basepath for the library if not in same directory -->
+	<!-- 如果库文件不在同一目录，设置mxGraph库的基础路径 -->
 	<script type="text/javascript">
 		mxBasePath = '../src';
+		// 配置mxGraph库的基础路径为'../src'
 	</script>
 
 	<!-- Loads and initializes the library -->
+	<!-- 加载并初始化mxGraph库 -->
 	<script type="text/javascript" src="../src/js/mxClient.js"></script>
 
 	<!-- Example code -->
+	<!-- 示例代码 -->
 	<script type="text/javascript">
 		// Program starts here. Creates a sample graph in the
 		// DOM node with the specified ID. This function is invoked
 		// from the onLoad event handler of the document (see below).
+		// 程序从这里开始。在指定的DOM节点中创建示例图形。此函数通过文档的onLoad事件处理程序调用。
+		// 主函数，用于初始化图形并在指定容器中创建示例图形
 		function main(container)
 		{
 			// Checks if the browser is supported
+			// 检查浏览器是否受支持
 			if (!mxClient.isBrowserSupported())
 			{
 				// Displays an error message if the browser is not supported.
+				// 如果浏览器不受支持，显示错误消息
 				mxUtils.error('Browser is not supported!', 200, false);
+				// 调用mxUtils.error显示错误提示，宽度200像素，不自动关闭
 			}
 			else
 			{
 				// Disables the built-in context menu
+				// 禁用内置的右键上下文菜单
 				mxEvent.disableContextMenu(container);
-				
+				// 禁止容器上的右键菜单，防止干扰图形交互
+
 				// Creates the graph inside the given container
+				// 在指定容器内创建图形对象
 				var graph = new mxGraph(container);
+				// 初始化mxGraph对象，将图形渲染到指定容器
 				graph.panningHandler.ignoreCell = true;
+				// 设置平移处理器忽略单元格，避免在平移时选中单元格
 				graph.setPanning(true);
-				
+				// 启用图形平移功能，允许用户拖动画布
+
 				/**
 				 * Specifies the size of the size for "tiles" to be used for a graph with
 				 * scrollbars but no visible background page. A good value is large
@@ -46,24 +63,33 @@
 				 * translation, which depends on this value, and small enough to give
 				 * a small empty buffer around the graph. Default is 400x400.
 				 */
+				// 指定用于带有滚动条但无可见背景页的图形的“瓦片”大小。值应足够大以减少自动平移导致的重绘次数，同时足够小以在图形周围提供小的空白缓冲区。默认值为400x400。
+				// 配置图形的瓦片大小，用于优化滚动条和自动平移的性能
 				graph.scrollTileSize = new mxRectangle(0, 0, 400, 400);
-				
+				// 设置瓦片大小为400x400像素，用于无背景页的无限画布
+
 				/**
 				 * Returns the padding for pages in page view with scrollbars.
 				 */
+				// 返回带有滚动条的页面视图的页面内边距
+				// 定义获取页面内边距的方法，用于页面视图模式
 				graph.getPagePadding = function()
 				{
 					return new mxPoint(Math.max(0, Math.round(graph.container.offsetWidth - 34)),
 							Math.max(0, Math.round(graph.container.offsetHeight - 34)));
+					// 计算并返回页面内边距，基于容器尺寸减去固定值34像素
 				};
 				
 				/**
 				 * Returns the size of the page format scaled with the page size.
 				 */
+				// 返回按页面比例缩放的页面格式大小
+				// 定义获取页面大小的方法，考虑页面可见性和缩放比例
 				graph.getPageSize = function()
 				{
 					return (this.pageVisible) ? new mxRectangle(0, 0, this.pageFormat.width * this.pageScale,
 							this.pageFormat.height * this.pageScale) : this.scrollTileSize;
+					// 如果页面可见，返回按页面比例缩放的页面大小，否则返回瓦片大小
 				};
 				
 				/**
@@ -72,50 +98,68 @@
 				 * left page and width and height are the vertical and horizontal
 				 * page count.
 				 */
+				// 返回描述背景页面位置和数量的矩形，其中x和y是顶部左侧页面的位置，宽度和高度是垂直和水平页面计数
+				// 定义获取页面布局的方法，用于计算背景页面的位置和数量
 				graph.getPageLayout = function()
 				{
 					var size = (this.pageVisible) ? this.getPageSize() : this.scrollTileSize;
+					// 获取页面大小，基于页面是否可见
 					var bounds = this.getGraphBounds();
+					// 获取图形的边界
 
 					if (bounds.width == 0 || bounds.height == 0)
 					{
 						return new mxRectangle(0, 0, 1, 1);
+						// 如果图形边界为空，返回默认1x1矩形
 					}
 					else
 					{
 						// Computes untransformed graph bounds
+						// 计算未变换的图形边界
 						var x = Math.ceil(bounds.x / this.view.scale - this.view.translate.x);
 						var y = Math.ceil(bounds.y / this.view.scale - this.view.translate.y);
 						var w = Math.floor(bounds.width / this.view.scale);
 						var h = Math.floor(bounds.height / this.view.scale);
-						
+						// 计算图形边界的未缩放坐标和尺寸
+
 						var x0 = Math.floor(x / size.width);
 						var y0 = Math.floor(y / size.height);
 						var w0 = Math.ceil((x + w) / size.width) - x0;
 						var h0 = Math.ceil((y + h) / size.height) - y0;
-						
+						// 计算页面布局的起点坐标和页面数量
+
 						return new mxRectangle(x0, y0, w0, h0);
+						// 返回表示页面布局的矩形，包含起点坐标和页面计数
 					}
 				};
 
 				// Fits the number of background pages to the graph
+				// 调整背景页面数量以适应图形
+				// 定义获取背景页面边界的方法，基于页面布局和缩放
 				graph.view.getBackgroundPageBounds = function()
 				{
 					var layout = this.graph.getPageLayout();
+					// 获取页面布局
 					var page = this.graph.getPageSize();
-					
+					// 获取页面大小
+
 					return new mxRectangle(this.scale * (this.translate.x + layout.x * page.width),
 							this.scale * (this.translate.y + layout.y * page.height),
 							this.scale * layout.width * page.width,
 							this.scale * layout.height * page.height);
+					// 返回缩放后的背景页面边界，基于页面布局和页面大小
 				};
 				
+				// 定义获取首选页面大小的方法，用于调整图形显示
 				graph.getPreferredPageSize = function(bounds, width, height)
 				{
 					var pages = this.getPageLayout();
+					// 获取页面布局
 					var size = this.getPageSize();
-					
+					// 获取页面大小
+
 					return new mxRectangle(0, 0, pages.width * size.width, pages.height * size.height);
+					// 返回首选页面大小，基于页面数量和单页尺寸
 				};
 				
 				/**
@@ -123,116 +167,164 @@
 				 * Works if only the scale of the graph changes or if pages
 				 * are visible and the visible pages do not change.
 				 */
+				// 猜测autoTranslate以避免再次重绘（见下文）。适用于图形比例变化或页面可见且可见页面不变的情况
+				// 重...: 覆盖视图验证方法，优化自动平移逻辑
 				var graphViewValidate = graph.view.validate;
 				graph.view.validate = function()
 				{
 					if (this.graph.container != null && mxUtils.hasScrollbars(this.graph.container))
 					{
 						var pad = this.graph.getPagePadding();
+						// 获取页面内边距
 						var size = this.graph.getPageSize();
-						
-						// Updating scrollbars here causes flickering in quirks and is not needed
+						// 获取页面大小
+
+						// Updating scrollbars here causes flickering in quirks mode and product is not needed
 						// if zoom method is always used to set the current scale on the graph.
+						// 在此处更新滚动条会导致怪异模式下闪烁，如果始终使用缩放方法设置图形比例，则不需要
+						// 保存当前平移坐标
 						var tx = this.translate.x;
 						var ty = this.translate.y;
+						// 更新平移坐标，考虑内边距和页面大小
 						this.translate.x = pad.x / this.scale - (this.x0 || 0) * size.width;
 						this.translate.y = pad.y / this.scale - (this.y0 || 0) * size.height;
 					}
 					
 					graphViewValidate.apply(this, arguments);
+					// 调用原始验证方法，执行视图更新
 				};
 				
+				// 定义图形大小变化的处理逻辑
 				var graphSizeDidChange = graph.sizeDidChange;
 				graph.sizeDidChange = function()
 				{
 					if (this.container != null && mxUtils.hasScrollbars(this.container))
 					{
 						var pages = this.getPageLayout();
+						// 获取页面布局
 						var pad = this.getPagePadding();
+						// 获取页面内边距
 						var size = this.getPageSize();
-						
+						// 获取页面大小
+
 						// Updates the minimum graph size
+						// 更新最小图形大小
 						var minw = Math.ceil(2 * pad.x / this.view.scale + pages.width * size.width);
 						var minh = Math.ceil(2 * pad.y / this.view.scale + pages.height * size.height);
-						
+						// 计算最小图形宽度和高度，考虑内边距和页面数量
+
 						var min = graph.minimumGraphSize;
-						
+						// 获取当前最小图形大小
+
 						// LATER: Fix flicker of scrollbar size in IE quirks mode
 						// after delayed call in window.resize event handler
+						// 稍后：修复IE怪异模式下滚动条大小闪烁问题，在窗口调整大小事件处理程序延迟调用后
+						// 更新最小图形大小
 						if (min == null || min.width != minw || min.height != minh)
 						{
 							graph.minimumGraphSize = new mxRectangle(0, 0, minw, minh);
+							// 如果最小尺寸变化，更新为新值
 						}
 						
 						// Updates auto-translate to include padding and graph size
+						// 更新自动平移以包含内边距和图形大小
 						var dx = pad.x / this.view.scale - pages.x * size.width;
 						var dy = pad.y / this.view.scale - pages.y * size.height;
-						
+						// 计算平移偏移量
+
 						if (!this.autoTranslate && (this.view.translate.x != dx || this.view.translate.y != dy))
 						{
 							this.autoTranslate = true;
+							// 启用自动平移
 							this.view.x0 = pages.x;
 							this.view.y0 = pages.y;
+							// 记录当前页面起点坐标
 
 							// NOTE: THIS INVOKES THIS METHOD AGAIN. UNFORTUNATELY THERE IS NO WAY AROUND THIS SINCE THE
 							// BOUNDS ARE KNOWN AFTER THE VALIDATION AND SETTING THE TRANSLATE TRIGGERS A REVALIDATION.
 							// SHOULD MOVE TRANSLATE/SCALE TO VIEW.
+							// 注意：这会再次调用此方法。遗憾的是无法避免，因为边界在验证后才知道，设置平移会触发重新验证。
+							// 应将平移/缩放移动到视图中
+							// 更新视图平移并调整滚动条位置
 							var tx = graph.view.translate.x;
 							var ty = graph.view.translate.y;
 
 							graph.view.setTranslate(dx, dy);
+							// 设置新的平移值
 							graph.container.scrollLeft += (dx - tx) * graph.view.scale;
 							graph.container.scrollTop += (dy - ty) * graph.view.scale;
+							// 调整容器滚动条位置以匹配平移变化
 
 							this.autoTranslate = false;
+							// 禁用自动平移
 							return;
 						}
 
 						graphSizeDidChange.apply(this, arguments);
+						// 调用原始大小变化方法，完成更新
 					}
 				};
 
 				// Enables rubberband selection
+				// 启用橡皮筋选择功能
 				new mxRubberband(graph);
-				
+				// 初始化橡皮筋选择，允许用户通过拖动选择多个单元格
+
 				// Gets the default parent for inserting new cells. This
 				// is normally the first child of the root (ie. layer 0).
+				// 获取插入新单元格的默认父节点，通常是根节点的第一个子节点（即第0层）
 				var parent = graph.getDefaultParent();
-								
+				// 获取默认父节点，用于插入新单元格
+
 				// Adds cells to the model in a single step
+				// 在单一步骤中向模型添加单元格
+				// 开始更新模型以批量添加单元格
 				graph.getModel().beginUpdate();
 				try
 				{
 					var v1 = graph.insertVertex(parent, null, 'Hello,', 20, 20, 80, 30);
+					// 插入第一个顶点，标签为'Hello,'，位置(20,20)，大小80x30
 					var v2 = graph.insertVertex(parent, null, 'World!', 200, 150, 80, 30);
+					// 插入第二个顶点，标签为'World!'，位置(200,150)，大小80x30
 					var e1 = graph.insertEdge(parent, null, '', v1, v2);
+					// 插入连接v1和v2的边，无标签
 				}
 				finally
 				{
 					// Updates the display
+					// 更新显示
+					// 完成模型更新，刷新图形显示
 					graph.getModel().endUpdate();
 				}
 				
 				// Sets initial scrollbar positions
+				// 设置初始滚动条位置
+				// 在窗口加载后调整滚动条以居中显示图形
 				window.setTimeout(function()
 				{
 					var bounds = graph.getGraphBounds();
+					// 获取图形边界
 					var width = Math.max(bounds.width, graph.scrollTileSize.width * graph.view.scale);
 					var height = Math.max(bounds.height, graph.scrollTileSize.height * graph.view.scale);
+					// 计算图形的最小显示宽度和高度，考虑缩放比例
 					graph.container.scrollTop = Math.floor(Math.max(0, bounds.y - Math.max(20, (graph.container.clientHeight - height) / 4)));
 					graph.container.scrollLeft = Math.floor(Math.max(0, bounds.x - Math.max(0, (graph.container.clientWidth - width) / 2)));
+					// 设置滚动条位置，使图形居中显示，留有适当边距
 				}, 0);
 			}
 		};
 	</script>
 </head>
 
-<!-- Page passes the container for the graph to the program -->
+<!--amir: <!-- Page passes the container for the graph to the program -->
+<!-- 页面将图形容器传递给程序 -->
 <body onload="main(document.getElementById('graphContainer'))">
-
+	<!-- 在页面加载时调用main函数，初始化图形 -->
 	<!-- Creates a container for the graph with a grid wallpaper -->
+	<!-- 创建图形的容器，带有网格背景 -->
 	<div id="graphContainer"
 		style="position:relative;overflow:auto;width:321px;height:241px;background:url('editors/images/grid.gif');cursor:default;">
+		<!-- 图形的容器，设置相对定位，启用滚动条，尺寸为321x241像素，背景为网格图片，默认光标 -->
 	</div>
 </body>
 </html>

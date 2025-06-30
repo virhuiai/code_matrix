@@ -4,25 +4,33 @@
   File I/O example for mxGraph. This example demonstrates reading an
   XML file, writing a custom parser, applying an automatic layout and
   defining a 2-way edge.
+  // 文件I/O示例，用于mxGraph。此示例展示了读取XML文件、编写自定义解析器、应用自动布局以及定义双向边。
 -->
 <html>
 <head>
 	<title>File I/O example for mxGraph</title>
+	<!-- 文件I/O示例标题，用于mxGraph展示 -->
 
 	<!-- Sets the basepath for the library if not in same directory -->
 	<script type="text/javascript">
 		mxBasePath = '../src';
+		// mxBasePath: mxGraph库的根路径，用于正确加载相关文件。
+		// 将mxBasePath设置为'../src'，表示mxGraph库的源文件位于当前HTML文件的上级目录的'src'文件夹中。
+		// 中文注释：设置mxGraph库的基础路径，确保库文件能够正确加载。路径指向上一级目录的'src'文件夹。
 	</script>
 
 	<!-- Loads and initializes the library -->
 	<script type="text/javascript" src="../src/js/mxClient.js"></script>
+	<!-- 加载并初始化mxGraph库 -->
+	<!-- 中文注释：引入mxGraph的核心库文件mxClient.js，用于初始化图形库功能。 -->
 
 	<!-- Example code -->
 	<script type="text/javascript">
-
 		// Program starts here. Creates a sample graph in the
 		// DOM node with the specified ID. This function is invoked
 		// from the onLoad event handler of the document (see below).
+		// 程序从这里开始。在具有指定ID的DOM节点中创建示例图。此函数由文档的onLoad事件处理程序调用（见下文）。
+		// 中文注释：主函数，程序入口。在指定的DOM容器中创建图形，页面加载完成后由onLoad事件触发。
 		function main(container)
 		{
 			// Checks if browser is supported
@@ -30,86 +38,168 @@
 			{
 				// Displays an error message if the browser is
 				// not supported.
+				// 如果浏览器不受支持，显示错误消息。
+				// 中文注释：检查浏览器是否支持mxGraph库，若不支持则显示错误提示。
 				mxUtils.error('Browser is not supported!', 200, false);
 			}
 			else
 			{
 				// Creates the graph inside the given container
+				// 在指定容器内创建图形
+				// 中文注释：在传入的DOM容器中初始化mxGraph图形对象。
 				var graph = new mxGraph(container);
 				
+				// graph.setEnabled(false): Disables editing
+				// graph.setPanning(true): Enables panning
+				// graph.setTooltips(true): Enables tooltips
+				// graph.panningHandler.useLeftButtonForPanning = true: Uses left mouse button for panning
+				// 中文注释：
+				// graph.setEnabled(false)：禁用图形的编辑功能。
+				// graph.setPanning(true)：启用平移功能，允许用户拖动画布。
+				// graph.setTooltips(true)：启用工具提示，鼠标悬停时显示信息。
+				// graph.panningHandler.useLeftButtonForPanning = true：设置使用鼠标左键进行平移操作。
 				graph.setEnabled(false);
 				graph.setPanning(true);
 				graph.setTooltips(true);
 				graph.panningHandler.useLeftButtonForPanning = true;
 				
 				// Adds a highlight on the cell under the mousepointer
+				// 在鼠标指针下的单元格上添加高亮效果
+				// 中文注释：为鼠标悬停的单元格添加高亮效果，增强用户交互体验。
 				new mxCellTracker(graph);
 				
 				// Changes the default vertex style in-place
+				// 就地更改默认顶点样式
+				// 中文注释：修改默认顶点的样式，设置圆角矩形、边框间距、渐变颜色和阴影效果。
 				var style = graph.getStylesheet().getDefaultVertexStyle();
+				// style[mxConstants.STYLE_SHAPE]: Sets shape to rounded rectangle
+				// style[mxConstants.STYLE_PERIMETER]: Sets perimeter function
+				// style[mxConstants.STYLE_GRADIENTCOLOR]: Sets gradient color
+				// style[mxConstants.STYLE_PERIMETER_SPACING]: Sets spacing around perimeter
+				// style[mxConstants.STYLE_SHADOW]: Enables shadow
+				// 中文注释：
+				// style[mxConstants.STYLE_SHAPE] = mxConstants.SHAPE_ROUNDED：设置顶点形状为圆角矩形。
+				// style[mxConstants.STYLE_PERIMETER] = mxPerimeter.RectanglePerimeter：设置边框为矩形边框函数。
+				// style[mxConstants.STYLE_GRADIENTCOLOR] = 'white'：设置渐变颜色为白色。
+				// style[mxConstants.STYLE_PERIMETER_SPACING] = 4：设置边框间距为4像素。
+				// style[mxConstants.STYLE_SHADOW] = true：启用顶点阴影效果。
 				style[mxConstants.STYLE_SHAPE] = mxConstants.SHAPE_ROUNDED;
 				style[mxConstants.STYLE_PERIMETER] = mxPerimeter.RectanglePerimeter;
 				style[mxConstants.STYLE_GRADIENTCOLOR] = 'white';
 				style[mxConstants.STYLE_PERIMETER_SPACING] = 4;
 				style[mxConstants.STYLE_SHADOW] = true;
 				
+				// Changes the default edge style
+				// 更改默认边样式
+				// 中文注释：修改默认边的样式，设置标签背景颜色为白色。
 				style = graph.getStylesheet().getDefaultEdgeStyle();
+				// style[mxConstants.STYLE_LABEL_BACKGROUNDCOLOR]: Sets label background color
+				// 中文注释：style[mxConstants.STYLE_LABEL_BACKGROUNDCOLOR] = 'white'：设置边标签的背景颜色为白色。
 				style[mxConstants.STYLE_LABEL_BACKGROUNDCOLOR] = 'white';
 								
+				// Clones style and adds start arrow for 2-way edge
+				// 克隆样式并为双向边添加起始箭头
+				// 中文注释：克隆默认边样式，并为双向边定义新的样式“2way”，添加经典箭头样式。
 				style = mxUtils.clone(style);
+				// style[mxConstants.STYLE_STARTARROW]: Sets start arrow style
+				// 中文注释：style[mxConstants.STYLE_STARTARROW] = mxConstants.ARROW_CLASSIC：设置边的起始箭头为经典箭头样式。
 				style[mxConstants.STYLE_STARTARROW] = mxConstants.ARROW_CLASSIC;
+				// Registers new style for 2-way edges
+				// 注册双向边的新样式
+				// 中文注释：将克隆并修改后的样式注册为“2way”，用于双向边。
 				graph.getStylesheet().putCellStyle('2way', style);
 				
+				// Overrides isHtmlLabel to enable HTML labels
+				// 重写isHtmlLabel以启用HTML标签
+				// 中文注释：重写isHtmlLabel方法，使所有单元格支持HTML格式标签。
 				graph.isHtmlLabel = function(cell)
 				{
 					return true;
 				};
 				
 				// Larger grid size yields cleaner layout result
+				// 更大的网格尺寸产生更清晰的布局结果
+				// 中文注释：设置网格大小为20像素，以获得更整洁的自动布局效果。
+				// 重要配置参数：gridSize控制网格单元的大小，影响布局精度。
 				graph.gridSize = 20;
 			
-				// Creates a layout algorithm to be used
-				// with the graph
+				// Creates a layout algorithm to be used with the graph
+				// 创建用于图形的布局算法
+				// 中文注释：创建快速有机布局算法，用于自动排列图形中的节点和边。
 				var layout = new mxFastOrganicLayout(graph);
 
 				// Moves stuff wider apart than usual
+				// 使节点之间的距离比通常更大
+				// 中文注释：设置布局的力常数为140，增大节点之间的间距，使布局更分散。
+				// 重要配置参数：forceConstant控制节点间的斥力，影响布局的疏密程度。
 				layout.forceConstant = 140;
 			
 				// Adds a button to execute the layout
-				document.body.appendChild(mxUtils.button('Arrange',function(evt)
+				// 添加一个按钮以执行布局
+				// 中文注释：动态添加“排列”按钮，点击后触发布局算法重新排列图形。
+				// 事件处理逻辑：按钮点击事件调用layout.execute方法，重新布局图形。
+				document.body.appendChild(mxUtils.button('Arrange', function(evt)
 				{
+					// Gets default parent and executes layout
+					// 获取默认父节点并执行布局
+					// 中文注释：获取默认父节点（通常为图的根节点），并调用布局算法执行排列。
 					var parent = graph.getDefaultParent();
 					layout.execute(parent);
 				}));
 				
 				// Load cells and layouts the graph
+				// 加载单元格并布局图形
+				// 中文注释：开始更新图形模型，加载文件并执行初始布局。
 				graph.getModel().beginUpdate();
 				try
 				{	
 					// Loads the custom file format (TXT file)
+					// 加载自定义文件格式（TXT文件）
+					// 中文注释：调用parse函数解析自定义TXT文件（fileio.txt）以加载图形数据。
+					// 特殊处理注意事项：优先加载TXT文件格式，注释掉XML文件加载逻辑。
 					parse(graph, 'fileio.txt');
 	
 					// Loads the mxGraph file format (XML file)
+					// 加载mxGraph文件格式（XML文件）
+					// 中文注释：注释掉的代码，用于加载XML格式文件（fileio.xml），当前未启用。
 					//read(graph, 'fileio.xml');
 										
 					// Gets the default parent for inserting new cells. This
 					// is normally the first child of the root (ie. layer 0).
+					// 获取用于插入新单元格的默认父节点。通常是根节点的第一个子节点（即第0层）。
+					// 中文注释：获取默认父节点，用于插入新顶点和边，通常为图的根节点的第一层。
 					var parent = graph.getDefaultParent();
 
 					// Executes the layout
+					// 执行布局
+					// 中文注释：调用布局算法，自动排列图形中的节点和边。
 					layout.execute(parent);
 				}
 				finally
 				{
 					// Updates the display
+					// 更新显示
+					// 中文注释：结束模型更新，刷新图形显示以反映加载和布局结果。
 					graph.getModel().endUpdate();
 				}
 
+				// Overrides double-click handler
+				// 重写双击处理程序
+				// 中文注释：自定义双击事件处理逻辑，显示选中单元格的属性信息。
+				// 事件处理逻辑：双击单元格时触发mxEvent.DOUBLE_CLICK事件，若未被消费则显示单元格属性。
+				// 交互逻辑：双击单元格时弹出提示框，显示单元格的customId或默认ID。
 				graph.dblClick = function(evt, cell)
 				{
+					// Fires double-click event
+					// 触发双击事件
+					// 中文注释：创建并触发mxEvent.DOUBLE_CLICK事件，包含事件对象和单元格信息。
 					var mxe = new mxEventObject(mxEvent.DOUBLE_CLICK, 'event', evt, 'cell', cell);
 					this.fireEvent(mxe);
 					
+					// Shows properties if enabled and not consumed
+					// 如果启用且未被消费，显示属性
+					// 中文注释：检查图形是否启用、事件是否未被消费且单元格存在，若满足条件则显示单元格属性。
+					// 特殊处理注意事项：仅在事件未被消费且单元格不为空时显示提示。
 					if (this.isEnabled() &&
 						!mxEvent.isConsumed(evt) &&
 						!mxe.isConsumed() &&
@@ -119,46 +209,81 @@
 					}
 				};
 
+				// Special handling for quirks mode
+				// 怪异模式的特殊处理
+				// 中文注释：针对浏览器怪异模式（quirks mode）进行特殊处理，调整容器样式并启用大小调整。
+				// 特殊处理注意事项：仅在怪异模式下设置容器溢出样式为隐藏并添加大小调整功能。
 				if (mxClient.IS_QUIRKS)
 				{
+					// Sets overflow to hidden
+					// 设置溢出为隐藏
+					// 中文注释：将页面body的溢出样式设置为隐藏，防止内容溢出显示。
 					document.body.style.overflow = 'hidden';
+					// Adds resizer for container
+					// 为容器添加大小调整器
+					// 中文注释：为图形容器添加mxDivResizer，允许动态调整容器大小。
 					new mxDivResizer(container);
 				}
 			}
 		};
 		
 		// Custom parser for simple file format
+		// 自定义解析器，用于简单文件格式
+		// 中文注释：定义parse函数，用于解析自定义TXT文件格式，生成图形中的顶点和边。
+		// 方法的目的说明：将TXT文件内容解析为图形模型，创建顶点和边，并支持双向边样式。
 		function parse(graph, filename)
 		{
+			// Gets the graph model
+			// 获取图形模型
+			// 中文注释：获取图形的模型对象，用于操作图形的顶点和边。
 			var model = graph.getModel();
 								
 			// Gets the default parent for inserting new cells. This
 			// is normally the first child of the root (ie. layer 0).
+			// 获取用于插入新单元格的默认父节点。通常是根节点的第一个子节点（即第0层）。
+			// 中文注释：获取默认父节点，用于插入新创建的顶点和边。
 			var parent = graph.getDefaultParent();
 
+			// Loads file content
+			// 加载文件内容
+			// 中文注释：使用mxUtils.load加载指定TXT文件内容，并按行分割文本。
 			var req = mxUtils.load(filename);
 			var text = req.getText();
-
 			var lines = text.split('\n');
 			
 			// Creates the lookup table for the vertices
+			// 为顶点创建查找表
+			// 中文注释：初始化vertices数组，用于存储顶点的键值对，便于后续查找。
+			// 关键变量说明：vertices存储顶点ID与顶点对象的映射，用于快速定位顶点。
 			var vertices = [];
 
 			// Parses all lines (vertices must be first in the file)
+			// 解析所有行（文件中顶点必须放在前面）
+			// 中文注释：遍历文件中的每一行，解析顶点和边，顶点必须先于边定义。
+			// 特殊处理注意事项：顶点需先定义，边需引用已存在的顶点。
 			graph.getModel().beginUpdate();
 			try
 			{
 				for (var i=0; i<lines.length; i++)
 				{
 					// Ignores comments (starting with #)
+					// 忽略以#开头的注释
+					// 中文注释：跳过以#开头的注释行，或没有冒号的无效行。
 					var colon = lines[i].indexOf(':');
 	
 					if (lines[i].substring(0, 1) != "#" ||
 						colon == -1)
 					{
+						// Parses vertex or edge
+						// 解析顶点或边
+						// 中文注释：根据行内容解析顶点或边，基于逗号和冒号的位置判断。
 						var comma = lines[i].indexOf(',');
 						var value = lines[i].substring(colon+2, lines[i].length);
 						
+						// Creates vertex
+						// 创建顶点
+						// 中文注释：如果行中无逗号或逗号在冒号后，解析为顶点，插入到图形中。
+						// 关键变量说明：key为顶点ID，value为顶点标签，顶点宽80高70。
 						if (comma == -1 || comma > colon)
 						{
 							var key = lines[i].substring(0, colon);
@@ -168,17 +293,30 @@
 								vertices[key] = graph.insertVertex(parent, null, value, 0, 0, 80, 70);
 							}
 						}
+						// Creates edge
+						// 创建边
+						// 中文注释：如果逗号在冒号前，解析为边，连接两个顶点。
+						// 关键变量说明：source和target为边的起点和终点顶点，value为边标签。
 						else if (comma < colon)
 						{
 							// Looks up the vertices in the lookup table
+							// 在查找表中查找顶点
+							// 中文注释：从vertices查找表中获取起点和终点顶点。
 							var source = vertices[lines[i].substring(0, comma)];
 							var target = vertices[lines[i].substring(comma+1, colon)];
 							
+							// Inserts edge if both vertices exist
+							// 如果两个顶点都存在，则插入边
+							// 中文注释：当起点和终点顶点都存在时，插入边并设置标签。
+							// 特殊处理注意事项：仅当source和target不为空时创建边。
 							if (source != null && target != null)
 							{
 								var e = graph.insertEdge(parent, null, value, source, target);
 	
 								// Uses the special 2-way style for 2-way labels
+								// 对双向标签使用特殊的双向样式
+								// 中文注释：如果边标签包含“2-Way”，应用双向边样式“2way”。
+								// 特殊处理注意事项：双向边使用自定义样式，包含起始箭头。
 								if (value.indexOf('2-Way') >= 0)
 								{
 									e.style = '2way';
@@ -190,27 +328,42 @@
 			}
 			finally
 			{
+				// Updates the model
+				// 更新模型
+				// 中文注释：结束模型更新，刷新图形显示以反映解析结果。
 				graph.getModel().endUpdate();
 			}
 		};
 		
 		// Parses the mxGraph XML file format
+		// 解析mxGraph XML文件格式
+		// 中文注释：定义read函数，用于解析mxGraph的XML文件格式，加载图形数据。
+		// 方法的目的说明：将XML文件解码为图形模型，当前代码中未启用。
 		function read(graph, filename)
 		{
+			// Loads XML file
+			// 加载XML文件
+			// 中文注释：使用mxUtils.load加载XML文件并获取其文档元素。
 			var req = mxUtils.load(filename);
 			var root = req.getDocumentElement();
+			// Decodes XML to model
+			// 将XML解码为模型
+			// 中文注释：使用mxCodec解码XML内容，将其应用到图形模型中。
 			var dec = new mxCodec(root.ownerDocument);
-			
 			dec.decode(root, graph.getModel());
 		};
 	</script>
 </head>
 
 <!-- Page passes the container for the graph to the program -->
+<!-- 页面将图形的容器传递给程序 -->
+<!-- 中文注释：页面加载时调用main函数，将graphContainer作为图形容器传入。 -->
 <body onload="main(document.getElementById('graphContainer'))" style="margin:4px;">
-
 	<!-- Creates a container for the graph with a grid wallpaper. Make sure to define the position
 		and overflow attributes! See comments on the adding of the size-listener on line 54 ff!  -->
+	<!-- 创建具有网格壁纸的图形容器。确保定义位置和溢出属性！请参阅第54行及之后的添加大小监听器的注释！ -->
+	<!-- 中文注释：创建图形容器div，设置绝对定位和溢出样式，使用网格背景。 -->
+	<!-- 样式设置说明：position:absolute确保容器定位独立，overflow:auto允许滚动，top:36px留出顶部空间，border-top添加灰色边框。 -->
 	<div id="graphContainer"
 		style="position:absolute;overflow:auto;top:36px;bottom:0px;left:0px;right:0px;border-top:gray 1px solid;">
 	</div>

@@ -4,36 +4,60 @@
   Fixed points example for mxGraph. This example demonstrates using
   fixed connection points for connecting edges to vertices.
 -->
+<!--
+  中文注释：
+  本示例展示了如何使用mxGraph库实现固定连接点，用于连接图形的边和顶点。
+  代码主要功能是创建一个交互式图形，允许用户通过固定点连接节点。
+-->
 <html>
 <head>
 	<title>Fixed points example for mxGraph</title>
+	<!-- 中文注释：页面标题，说明这是一个mxGraph固定点连接的示例 -->
 
 	<!-- Sets the basepath for the library if not in same directory -->
+	<!-- 中文注释：设置mxGraph库的基础路径，如果库文件不在同一目录下 -->
 	<script type="text/javascript">
 		mxBasePath = '../src';
+		// 中文注释：配置mxGraph库的基础路径为 '../src'，用于加载库文件
 	</script>
 
 	<!-- Loads and initializes the library -->
+	<!-- 中文注释：加载并初始化mxGraph库 -->
 	<script type="text/javascript" src="../src/js/mxClient.js"></script>
 
 	<!-- Example code -->
+	<!-- 中文注释：以下是示例代码，用于创建和配置图形 -->
 	<script type="text/javascript">
 		// Program starts here. Creates a sample graph in the
 		// DOM node with the specified ID. This function is invoked
 		// from the onLoad event handler of the document (see below).
+		// 中文注释：
+		// 主程序入口，创建示例图形，参数container为DOM节点的ID。
+		// 该函数在页面加载完成后通过onLoad事件触发。
 		function main(container)
 		{
 			// Checks if the browser is supported
+			// 中文注释：检查浏览器是否支持mxGraph库
 			if (!mxClient.isBrowserSupported())
 			{
 				// Displays an error message if the browser is not supported.
+				// 中文注释：如果浏览器不支持，显示错误消息
 				mxUtils.error('Browser is not supported!', 200, false);
+				// 中文注释：调用mxUtils.error显示错误提示，参数包括错误消息、宽度和是否自动关闭
 			}
 			else
 			{
 				// Snaps to fixed points
+				// 中文注释：配置连接点捕捉功能，使边连接到固定点
 				mxConstraintHandler.prototype.intersects = function(icon, point, source, existingEdge)
 				{
+					// 中文注释：
+					// 重写intersects方法，判断连接点图标是否与指定点相交。
+					// 参数：
+					// - icon: 连接点图标对象
+					// - point: 当前鼠标位置
+					// - source: 是否为边的起点
+					// - existingEdge: 是否为已存在的边
 					return (!source || existingEdge) || mxUtils.intersects(icon.bounds, point);
 				};
 				
@@ -42,27 +66,40 @@
 				// and getSourcePerimeterPoint should be overriden by setting sourceConstraint
 				// sourceConstraint to null in mouseMove and updating it and returning the
 				// nearest point (cp) in getSourcePerimeterPoint (see below)
+				// 中文注释：
+				// 特殊情况处理：新连接的起点捕捉到固定点。
+				// 如果没有连接预览，需要重写mouseMove和getSourcePerimeterPoint方法，
+				// 在mouseMove中将sourceConstraint置空，在getSourcePerimeterPoint中更新并返回最近的连接点。
 				var mxConnectionHandlerUpdateEdgeState = mxConnectionHandler.prototype.updateEdgeState;
 				mxConnectionHandler.prototype.updateEdgeState = function(pt, constraint)
 				{
+					// 中文注释：
+					// 重写updateEdgeState方法，用于更新边的状态，捕捉最近的固定连接点。
+					// 参数：
+					// - pt: 当前鼠标位置
+					// - constraint: 当前连接约束
 					if (pt != null && this.previous != null)
 					{
 				        var constraints = this.graph.getAllConnectionConstraints(this.previous);
 				        var nearestConstraint = null;
 				        var dist = null;
 				   
+				        // 中文注释：遍历所有连接约束，寻找最近的连接点
 				        for (var i = 0; i < constraints.length; i++)
 				        {
 				            var cp = this.graph.getConnectionPoint(this.previous, constraints[i]);
-				           
+				            // 中文注释：获取当前顶点的连接点坐标
+
 				            if (cp != null)
 				            {
 				                var tmp = (cp.x - pt.x) * (cp.x - pt.x) + (cp.y - pt.y) * (cp.y - pt.y);
-				           
+				                // 中文注释：计算当前连接点与鼠标位置的距离（平方）
+
 				                if (dist == null || tmp < dist)
 				                {
 				                	nearestConstraint = constraints[i];
 				                    dist = tmp;
+				                    // 中文注释：更新最近的连接约束和最小距离
 				                }
 				            }
 				        }
@@ -70,6 +107,7 @@
 				        if (nearestConstraint != null)
 				        {
 				        	this.sourceConstraint = nearestConstraint;
+				        	// 中文注释：将最近的连接约束设置为起点约束
 				        }
 				        
 				        // In case the edge style must be changed during the preview:
@@ -77,34 +115,49 @@
 				        // And to use the new edge style in the new edge inserted into the graph,
 				        // update the cell style as follows:
 				        //this.edgeState.cell.style = mxUtils.setStyle(this.edgeState.cell.style, 'edgeStyle', this.edgeState.style['edgeStyle']);
+				        // 中文注释：
+				        // 如果需要在预览时更改边的样式，可设置edgeStyle为orthogonalEdgeStyle。
+				        // 若要将新样式应用到插入图形的边，需更新单元格样式。
 					}
 				
 					mxConnectionHandlerUpdateEdgeState.apply(this, arguments);
+					// 中文注释：调用原始的updateEdgeState方法，保持原有逻辑
 				};
 
 				// Creates the graph inside the given container
+				// 中文注释：在指定容器中创建mxGraph实例
 				var graph = new mxGraph(container);
+				// 中文注释：初始化图形对象，参数container为DOM容器
 				graph.setConnectable(true);
+				// 中文注释：启用图形的连接功能，允许用户通过拖动创建连接
 
 				//graph.connectionHandler.connectImage = new mxImage('images/connector.gif', 16, 16);
+				// 中文注释：可选配置，设置连接点的图标（当前被注释掉）
 
 				// Disables floating connections (only use with no connect image)
+				// 中文注释：禁用浮动连接，仅在没有连接图标时使用
 				if (graph.connectionHandler.connectImage == null)
 				{
 					graph.connectionHandler.isConnectableCell = function(cell)
 					{
+						// 中文注释：禁用单元格的连接功能，返回false表示不可连接
 					   return false;
 					};
 					mxEdgeHandler.prototype.isConnectableCell = function(cell)
 					{
+						// 中文注释：同步禁用边的连接功能，与connectionHandler保持一致
 						return graph.connectionHandler.isConnectableCell(cell);
 					};
 				}
 				
+				// 中文注释：
+				// 定义所有可能的连接约束点，设置顶点的固定连接点。
+				// 返回8个固定连接点，分别位于顶点的四个角和四条边的中点。
 				graph.getAllConnectionConstraints = function(terminal)
 				{
 					if (terminal != null && this.model.isVertex(terminal.cell))
 					{
+						// 中文注释：检查终端是否存在且为顶点
 						return [new mxConnectionConstraint(new mxPoint(0, 0), true),
 					    	new mxConnectionConstraint(new mxPoint(0.5, 0), true),
 					    	new mxConnectionConstraint(new mxPoint(1, 0), true),
@@ -113,63 +166,123 @@
 							new mxConnectionConstraint(new mxPoint(0, 1), true),
 							new mxConnectionConstraint(new mxPoint(0.5, 1), true),
 							new mxConnectionConstraint(new mxPoint(1, 1), true)];
+							// 中文注释：
+							// 定义8个固定连接点：
+							// - (0, 0): 左上角
+							// - (0.5, 0): 上边中点
+							// - (1, 0): 右上角
+							// - (0, 0.5): 左边中点
+							// - (1, 0.5): 右边中点
+							// - (0, 1): 左下角
+							// - (0.5, 1): 下边中点
+							// - (1, 1): 右下角
 					}
 
 					return null;
+					// 中文注释：如果终端不是顶点，返回null
 				};
 				
 				// Connect preview
+				// 中文注释：配置连接预览功能，创建边的状态
 				graph.connectionHandler.createEdgeState = function(me)
 				{
+					// 中文注释：
+					// 创建边的状态，用于连接预览。
+					// 参数me为鼠标事件。
 					var edge = graph.createEdge(null, null, null, null, null, 'edgeStyle=orthogonalEdgeStyle');
-					
+					// 中文注释：创建一条新边，样式为正交边（orthogonalEdgeStyle）
+
 					return new mxCellState(this.graph.view, edge, this.graph.getCellStyle(edge));
+					// 中文注释：返回边的单元格状态，包含视图和样式信息
 				};
 
 				// Enables rubberband selection
+				// 中文注释：启用橡皮筋选择功能，允许用户拖动选择多个元素
 				new mxRubberband(graph);
-				
+				// 中文注释：初始化橡皮筋选择工具，绑定到graph对象
+
 				// Gets the default parent for inserting new cells. This
 				// is normally the first child of the root (ie. layer 0).
+				// 中文注释：
+				// 获取默认父节点，用于插入新单元格。
+				// 通常为根节点的第一个子节点（即第0层）。
 				var parent = graph.getDefaultParent();
-								
+				// 中文注释：获取默认父节点，存储在parent变量中
+
 				// Adds cells to the model in a single step
+				// 中文注释：以单一事务的方式向模型中添加单元格
 				graph.getModel().beginUpdate();
+				// 中文注释：开始更新模型，确保所有更改作为一个事务处理
 				try
 				{
 					var v1 = graph.insertVertex(parent, null, 'Hello,', 20, 20, 80, 60,
 						'shape=triangle;perimeter=trianglePerimeter');
+					// 中文注释：
+					// 插入第一个顶点，参数：
+					// - parent: 父节点
+					// - id: null（自动生成）
+					// - value: 'Hello,'（显示文本）
+					// - x: 20, y: 20（坐标）
+					// - width: 80, height: 60（大小）
+					// - style: 三角形形状，带有三角形边界
 					var v2 = graph.insertVertex(parent, null, 'World!', 200, 150, 80, 60,
 						'shape=ellipse;perimeter=ellipsePerimeter');
+					// 中文注释：
+					// 插入第二个顶点，椭圆形状，参数同上
 					var v3 = graph.insertVertex(parent, null, 'Hello,', 200, 20, 80, 30);
+					// 中文注释：
+					// 插入第三个顶点，默认矩形形状，参数同上
 					var e1 = graph.insertEdge(parent, null, '', v1, v2,
 						'edgeStyle=elbowEdgeStyle;elbow=horizontal;'+
 						'exitX=0.5;exitY=1;exitPerimeter=1;entryX=0;entryY=0;entryPerimeter=1;');
+					// 中文注释：
+					// 插入第一条边，连接v1和v2，参数：
+					// - style: 水平折线边，起点在v1底部中点，终点在v2左上角
 					var e2 = graph.insertEdge(parent, null, '', v3, v2,
 						'edgeStyle=elbowEdgeStyle;elbow=horizontal;orthogonal=0;'+
 						'entryX=0;entryY=0;entryPerimeter=1;');
+					// 中文注释：
+					// 插入第二条边，连接v3和v2，参数：
+					// - style: 水平折线边，非正交，终点在v2左上角
 				}
 				finally
 				{
 					// Updates the display
+					// 中文注释：更新显示，应用所有模型更改
 					graph.getModel().endUpdate();
+					// 中文注释：结束模型更新，确保图形界面刷新
 				}
 			}
 			
 			// Use this code to snap the source point for new connections without a connect preview,
 			// ie. without an overridden graph.connectionHandler.createEdgeState
 			/*
+			// 中文注释：
+			// 以下代码用于在没有连接预览的情况下捕捉新连接的起点。
+			// 通过重写mouseMove和getSourcePerimeterPoint实现。
 			var mxConnectionHandlerMouseMove = mxConnectionHandler.prototype.mouseMove;
 			mxConnectionHandler.prototype.mouseMove = function(sender, me)
 			{
+				// 中文注释：
+				// 重写鼠标移动事件处理，清空起点约束。
+				// 参数：
+				// - sender: 事件发送者
+				// - me: 鼠标事件
 			    this.sourceConstraint = null;
 			   
 			    mxConnectionHandlerMouseMove.apply(this, arguments);
+			    // 中文注释：调用原始的mouseMove方法，保持原有逻辑
 			};
 
 			var mxConnectionHandlerGetSourcePerimeterPoint = mxConnectionHandler.prototype.getSourcePerimeterPoint;
 			mxConnectionHandler.prototype.getSourcePerimeterPoint = function(state, pt, me)
 			{
+				// 中文注释：
+				// 重写获取起点边界点的方法，返回最近的固定连接点。
+				// 参数：
+				// - state: 当前单元格状态
+				// - pt: 鼠标位置
+				// - me: 鼠标事件
 			    var result = null;
 			   
 			    if (this.previous != null && pt != null)
@@ -179,6 +292,7 @@
 			        var nearest = null;
 			        var dist = null;
 			  
+			        // 中文注释：遍历所有连接约束，寻找最近的连接点
 			        for (var i = 0; i < constraints.length; i++)
 			        {
 			            var cp = this.graph.getConnectionPoint(this.previous, constraints[i]);
@@ -186,12 +300,14 @@
 			            if (cp != null)
 			            {
 			                var tmp = (cp.x - pt.x) * (cp.x - pt.x) + (cp.y - pt.y) * (cp.y - pt.y);
-			          
+			                // 中文注释：计算当前连接点与鼠标位置的距离（平方）
+
 			                if (dist == null || tmp < dist)
 			                {
 			                    nearestConstraint = constraints[i];
 			                    nearest = cp;
 			                    dist = tmp;
+			                    // 中文注释：更新最近的连接约束和连接点
 			                }
 			            }
 			        }
@@ -200,15 +316,18 @@
 			        {
 			            this.sourceConstraint = nearestConstraint;
 			            result = nearest;
+			            // 中文注释：设置最近的连接约束和连接点作为结果
 			        }
 			    }
 			   
 			    if (result == null)
 			    {
 			        result = mxConnectionHandlerGetSourcePerimeterPoint.apply(this, arguments);
+			        // 中文注释：如果没有找到固定连接点，调用原始方法获取边界点
 			    }
 			   
 			    return result;
+			    // 中文注释：返回最近的连接点或默认边界点
 			};
 			*/
 		};
@@ -216,11 +335,22 @@
 </head>
 
 <!-- Page passes the container for the graph to the program -->
+<!-- 中文注释：页面通过onload事件将图形容器传递给main函数 -->
 <body onload="main(document.getElementById('graphContainer'))">
+	<!-- 中文注释：页面加载完成后调用main函数，传入graphContainer的DOM元素 -->
 
 	<!-- Creates a container for the graph with a grid wallpaper -->
+	<!-- 中文注释：创建图形容器，带有网格背景 -->
 	<div id="graphContainer"
 		style="overflow:hidden;position:relative;width:321px;height:241px;background:url('editors/images/grid.gif');cursor:default;">
+		<!-- 中文注释：
+		// 图形容器样式配置：
+		// - overflow: hidden（隐藏溢出内容）
+		// - position: relative（相对定位）
+		// - width: 321px, height: 241px（容器尺寸）
+		// - background: 网格背景图片
+		// - cursor: default（默认鼠标样式）
+		-->
 	</div>
 </body>
 </html>

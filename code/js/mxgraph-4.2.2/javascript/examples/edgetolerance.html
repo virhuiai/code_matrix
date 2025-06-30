@@ -4,61 +4,82 @@
   Edge tolerance example for mxGraph. This example demonstrates increasing
   the tolerance for hit detection on edges.
 -->
+<!-- 中文注释：这是一个mxGraph的边缘容差示例，展示如何增加边缘的命中检测容差。 -->
+
 <html>
 <head>
 	<title>Edge tolerance example for mxGraph</title>
+	<!-- 中文注释：页面标题，描述这是一个mxGraph边缘容差的示例。 -->
 
 	<!-- Sets the basepath for the library if not in same directory -->
+	<!-- 中文注释：设置mxGraph库的基础路径，如果库文件不在同一目录下，需要指定路径。 -->
 	<script type="text/javascript">
 		mxBasePath = '../src';
+		// 中文注释：将mxGraph库的基础路径设置为'../src'，用于加载库文件。
 	</script>
 
 	<!-- Loads and initializes the library -->
+	<!-- 中文注释：加载并初始化mxGraph库。 -->
 	<script type="text/javascript" src="../src/js/mxClient.js"></script>
+	<!-- 中文注释：引入mxGraph的核心库文件mxClient.js，用于提供图形操作功能。 -->
 
 	<!-- Example code -->
+	<!-- 中文注释：以下是示例代码，用于实现边缘容差的功能。 -->
 	<script type="text/javascript">
 		// Program starts here. Creates a sample graph in the
 		// DOM node with the specified ID. This function is invoked
 		// from the onLoad event handler of the document (see below).
+		// 中文注释：程序从这里开始，在指定ID的DOM节点中创建一个示例图形。此函数在文档的onLoad事件处理程序中被调用。
 		function main(container)
 		{
 			// Checks if the browser is supported
+			// 中文注释：检查浏览器是否支持mxGraph库。
 			if (!mxClient.isBrowserSupported())
 			{
 				// Displays an error message if the browser is not supported.
+				// 中文注释：如果浏览器不支持，显示错误消息。
 				mxUtils.error('Browser is not supported!', 200, false);
+				// 中文注释：调用mxUtils.error显示错误提示，参数为错误消息、对话框宽度和是否自动关闭。
 			}
 			else
 			{
 				// Overrides the mouse event dispatching mechanism to update the
 				// cell which is associated with the event in case the native hit
 				// detection did not return anything.
+				// 中文注释：重写鼠标事件分发机制，以便在原生命中检测未返回任何内容时更新与事件关联的单元。
 				var mxGraphFireMouseEvent = mxGraph.prototype.fireMouseEvent;
+				// 中文注释：保存原始的fireMouseEvent方法，以便在重写后调用。
 				mxGraph.prototype.fireMouseEvent = function(evtName, me, sender)
 				{
 					// Checks if native hit detection did not return anything
+					// 中文注释：检查原生命中检测是否未返回任何内容。
 					if (me.getState() == null)
 					{
 						// Updates the graph coordinates in the event since we need
 						// them here. Storing them in the event means the overridden
 						// method doesn't have to do this again.
+						// 中文注释：更新事件中的图形坐标，因为在这里需要这些坐标。将坐标存储在事件中意味着重写的方法无需再次计算。
 						if (me.graphX == null || me.graphY == null)
 						{
 							var pt = mxUtils.convertPoint(this.container, me.getX(), me.getY());
-							
+							// 中文注释：将鼠标事件的客户端坐标转换为图形容器内的坐标。
+
 							me.graphX = pt.x;
 							me.graphY = pt.y;
+							// 中文注释：将转换后的x和y坐标存储到事件对象中。
 						}
 						
 						var cell = this.getCellAt(me.graphX, me.graphY);
-						
+						// 中文注释：根据坐标获取图形中的单元（可能是节点或边缘）。
+
 						if (this.getModel().isEdge(cell))
 						{
+							// 中文注释：如果检测到的单元是边缘，更新事件状态。
 							me.state = this.view.getState(cell);
 							
 							if (me.state != null && me.state.shape != null)
 							{
+								// 中文注释：如果边缘状态有效且形状存在，设置容器的光标样式为边缘形状的光标。
 								graph.container.style.cursor = me.state.shape.node.style.cursor;
 							}
 						}
@@ -66,47 +87,68 @@
 					
 					if (me.state == null)
 					{
+						// 中文注释：如果未检测到任何状态，将容器光标恢复为默认样式。
 						graph.container.style.cursor = 'default';
 					}
 					
 					mxGraphFireMouseEvent.apply(this, arguments);
+					// 中文注释：调用原始的fireMouseEvent方法，保持原有的事件处理逻辑。
 				};
 				
 				// Overrides double click handling to use the tolerance
+				// 中文注释：重写双击事件处理以使用容差检测。
 				var mxGraphDblClick = mxGraph.prototype.dblClick;
+				// 中文注释：保存原始的dblClick方法，以便在重写后调用。
 				mxGraph.prototype.dblClick = function(evt, cell)
 				{
 					if (cell == null)
 					{
+						// 中文注释：如果未检测到单元，基于双击事件的客户端坐标查找单元。
 						var pt = mxUtils.convertPoint(this.container,
 							mxEvent.getClientX(evt), mxEvent.getClientY(evt));
+						// 中文注释：将双击事件的客户端坐标转换为图形容器内的坐标。
 						cell = this.getCellAt(pt.x, pt.y);
+						// 中文注释：根据转换后的坐标获取对应的单元。
 					}
 					
 					mxGraphDblClick.call(this, evt, cell);
+					// 中文注释：调用原始的双击处理方法，保持原有逻辑。
 				};
 
 				// Creates the graph inside the given container
+				// 中文注释：在指定容器内创建mxGraph图形对象。
 				var graph = new mxGraph(container);
+				// 中文注释：初始化mxGraph对象，参数为DOM容器。
 				graph.setTolerance(20);
+				// 中文注释：设置图形命中检测的容差为20像素，增加边缘的点击检测范围。
 
 				// Gets the default parent for inserting new cells. This
 				// is normally the first child of the root (ie. layer 0).
+				// 中文注释：获取用于插入新单元的默认父节点，通常是根节点的第一个子节点（即第0层）。
 				var parent = graph.getDefaultParent();
-								
+				// 中文注释：保存默认父节点，用于后续插入节点和边缘。
+
 				// Adds cells to the model in a single step
+				// 中文注释：以单次更新的方式向模型中添加单元。
 				graph.getModel().beginUpdate();
+				// 中文注释：开始批量更新模型，以提高性能。
 				try
 				{
 					var v1 = graph.insertVertex(parent, null, 'Hello,', 120, 120, 80, 30);
+					// 中文注释：插入第一个节点，标签为'Hello,'，位置为(120,120)，大小为80x30像素。
 					var v2 = graph.insertVertex(parent, null, 'World!', 400, 250, 80, 30);
+					// 中文注释：插入第二个节点，标签为'World!'，位置为(400,250)，大小为80x30像素。
 					var e1 = graph.insertEdge(parent, null, '', v1, v2, 'edgeStyle=orthogonalEdgeStyle;');
+					// 中文注释：插入从v1到v2的边缘，样式为正交边缘样式。
 					var e2 = graph.insertEdge(parent, null, '', v2, v1, 'edgeStyle=orthogonalEdgeStyle;');
+					// 中文注释：插入从v2到v1的边缘，样式为正交边缘样式。
 				}
 				finally
 				{
 					// Updates the display
+					// 中文注释：更新显示以反映模型的更改。
 					graph.getModel().endUpdate();
+					// 中文注释：结束批量更新，触发图形重绘。
 				}
 			}
 		};
@@ -114,11 +156,15 @@
 </head>
 
 <!-- Page passes the container for the graph to the program -->
+<!-- 中文注释：页面将图形容器传递给程序的main函数。 -->
 <body onload="main(document.getElementById('graphContainer'))">
+	<!-- 中文注释：在页面加载时调用main函数，传入ID为'graphContainer'的DOM元素作为容器。 -->
 
 	<!-- Creates a container for the graph with a grid wallpaper -->
+	<!-- 中文注释：创建图形容器，带有网格背景图像。 -->
 	<div id="graphContainer"
 		style="overflow:hidden;width:641px;height:481px;background:url('editors/images/grid.gif');cursor:default;">
+		<!-- 中文注释：定义图形容器，ID为'graphContainer'，样式包括隐藏溢出、固定宽高（641x481像素）、网格背景和默认光标。 -->
 	</div>
 </body>
 </html>

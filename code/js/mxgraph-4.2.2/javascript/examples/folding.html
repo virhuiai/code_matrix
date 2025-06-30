@@ -1,155 +1,252 @@
+
 <!--
   Copyright (c) 2006-2013, JGraph Ltd
   
   Folding example for mxGraph. This example demonstrates
   using a layout to implement a nested group structure.
 -->
+<!--
+  中文注释：这是mxGraph的折叠示例，展示如何使用布局实现嵌套的分组结构。
+  该代码创建一个交互式的图形界面，允许用户折叠和展开分组节点，展示层级关系。
+-->
 <html>
 <head>
 	<title>Folding example for mxGraph</title>
+	<!-- 中文注释：页面标题，表明这是一个mxGraph折叠示例。 -->
 
 	<!-- Sets the basepath for the library if not in same directory -->
+	<!-- 中文注释：设置mxGraph库的基础路径，如果库文件不在同一目录下，需要指定路径。 -->
 	<script type="text/javascript">
 		mxBasePath = '../src';
+		// 中文注释：定义mxBasePath变量，指定mxGraph库的相对路径为'../src'。
 	</script>
 
 	<!-- Loads and initializes the library -->
+	<!-- 中文注释：加载并初始化mxGraph库。 -->
 	<script type="text/javascript" src="../src/js/mxClient.js"></script>
+	<!-- 中文注释：引入mxClient.js文件，包含mxGraph的核心功能，用于创建和操作图形。 -->
 
 	<!-- Example code -->
+	<!-- 中文注释：以下是示例代码，用于创建图形并实现折叠功能。 -->
 	<script type="text/javascript">
 		// Program starts here. Creates a sample graph in the
 		// DOM node with the specified ID. This function is invoked
 		// from the onLoad event handler of the document (see below).
+		// 中文注释：程序从这里开始，在指定ID的DOM节点中创建示例图形。
+		// 该函数由文档的onLoad事件处理程序调用（见下方）。
 		function main(container)
 		{
+			// 中文注释：主函数，接收一个DOM容器作为参数，用于初始化和渲染图形。
+
 			// Checks if the browser is supported
+			// 中文注释：检查浏览器是否支持mxGraph。
 			if (!mxClient.isBrowserSupported())
 			{
 				// Displays an error message if the browser is not supported.
+				// 中文注释：如果浏览器不支持，显示错误消息。
 				mxUtils.error('Browser is not supported!', 200, false);
+				// 中文注释：调用mxUtils.error显示错误提示，参数包括错误信息、对话框宽度和是否自动关闭。
 			}
 			else
 			{
 				// Enables crisp rendering of rectangles in SVG
+				// 中文注释：在SVG中启用矩形的清晰渲染。
 				mxConstants.ENTITY_SEGMENT = 20;
-				
+				// 中文注释：设置mxConstants.ENTITY_SEGMENT为20，用于控制SVG中矩形的分段渲染，提升显示效果。
+
 				// Creates the graph inside the given container
+				// 中文注释：在指定容器内创建mxGraph实例。
 				var graph = new mxGraph(container);
+				// 中文注释：实例化mxGraph对象，参数container是图形渲染的DOM元素。
 				graph.setDropEnabled(true);
-				
+				// 中文注释：启用拖放功能，允许用户通过拖放操作添加或移动图形元素。
+
 				// Disables global features
+				// 中文注释：禁用一些全局功能以自定义图形行为。
 				graph.collapseToPreferredSize = false;
+				// 中文注释：禁用折叠时自动调整到首选大小，保持节点原始尺寸。
 				graph.constrainChildren = false;
+				// 中文注释：禁用子节点的约束，允许子节点超出父节点边界。
 				graph.cellsSelectable = false;
+				// 中文注释：禁用单元格的选择功能，防止用户直接选中图形单元。
 				graph.extendParentsOnAdd = false;
+				// 中文注释：禁用添加节点时自动扩展父节点大小。
 				graph.extendParents = false;
+				// 中文注释：禁用父节点自动扩展功能，保持固定大小。
 				graph.border = 10;
+				// 中文注释：设置图形边框宽度为10像素，用于布局计算。
 
 				// Sets global styles
+				// 中文注释：设置全局样式，应用于图形的边和节点。
 				var style = graph.getStylesheet().getDefaultEdgeStyle();
+				// 中文注释：获取默认边的样式对象，用于定义边的外观。
 				style[mxConstants.STYLE_EDGE] = mxEdgeStyle.EntityRelation;
+				// 中文注释：设置边的样式为EntityRelation，适合表示实体关系。
 				style[mxConstants.STYLE_ROUNDED] = true;
+				// 中文注释：启用边的圆角效果，使边线更平滑。
 
 				style = graph.getStylesheet().getDefaultVertexStyle();
+				// 中文注释：获取默认节点的样式对象，用于定义节点的外观。
 				style[mxConstants.STYLE_FILLCOLOR] = '#ffffff';
+				// 中文注释：设置节点填充颜色为白色。
 				style[mxConstants.STYLE_SHAPE] = 'swimlane';
+				// 中文注释：设置节点形状为swimlane，适合表示分组或层级结构。
 				style[mxConstants.STYLE_STARTSIZE] = 30;
-				
+				// 中文注释：设置swimlane节点的标题区域高度为30像素。
+
 				style = [];
+				// 中文注释：创建一个新的样式对象，用于定义自定义样式'column'。
 				style[mxConstants.STYLE_SHAPE] = mxConstants.SHAPE_RECTANGLE;
+				// 中文注释：设置样式形状为矩形。
 				style[mxConstants.STYLE_STROKECOLOR] = 'none';
+				// 中文注释：禁用描边颜色，使矩形边框不可见。
 				style[mxConstants.STYLE_FILLCOLOR] = 'none';
+				// 中文注释：禁用填充颜色，使矩形背景透明。
 				style[mxConstants.STYLE_FOLDABLE] = false;
+				// 中文注释：禁用折叠功能，防止'column'样式节点被折叠。
 				graph.getStylesheet().putCellStyle('column', style);
-				
+				// 中文注释：注册自定义样式'column'，用于特定节点的渲染。
+
 				// Installs auto layout for all levels
+				// 中文注释：为所有层级安装自动布局。
 				var layout = new mxStackLayout(graph, true);
+				// 中文注释：创建mxStackLayout实例，参数graph指定关联的图形，true表示水平布局。
 				layout.border = graph.border;
+				// 中文注释：设置布局的边框宽度，与图形的border属性一致。
 				var layoutMgr = new mxLayoutManager(graph);
+				// 中文注释：创建mxLayoutManager实例，用于管理图形的自动布局。
 				layoutMgr.getLayout = function(cell)
 				{
+					// 中文注释：定义布局管理器的getLayout方法，根据单元格状态返回合适的布局。
 					if (!cell.collapsed)
 					{
+						// 中文注释：如果单元格未折叠，则应用布局。
 						if (cell.parent != graph.model.root)
 						{
+							// 中文注释：如果单元格的父节点不是图形根节点（即子节点）。
 							layout.resizeParent = true;
+							// 中文注释：启用调整父节点大小以适应子节点。
 							layout.horizontal = false;
+							// 中文注释：设置布局为垂直方向。
 							layout.spacing = 10;
+							// 中文注释：设置子节点间距为10像素。
 						}
 						else
 						{
+							// 中文注释：如果单元格的父节点是图形根节点（即顶层节点）。
 							layout.resizeParent = true;
+							// 中文注释：启用调整父节点大小以适应子节点。
 							layout.horizontal = true;
+							// 中文注释：设置布局为水平方向。
 							layout.spacing = 40;
+							// 中文注释：设置顶层节点间距为40像素。
 						}
 						
 						return layout;
+						// 中文注释：返回配置好的布局对象。
 					}
 					
 					return null;
+					// 中文注释：如果单元格已折叠，返回null，表示不应用布局。
 				};
 
 				// Resizes the container
+				// 中文注释：调整容器大小。
 				graph.setResizeContainer(true);
-				
+				// 中文注释：启用容器自动调整大小功能，以适应图形内容。
+
 				// Gets the default parent for inserting new cells. This
 				// is normally the first child of the root (ie. layer 0).
+				// 中文注释：获取插入新单元格的默认父节点，通常是根节点的第一个子节点（即第0层）。
 				var parent = graph.getDefaultParent();
-								
+				// 中文注释：获取默认父节点，存储在parent变量中，用于后续节点插入。
+
 				// Adds cells to the model in a single step
+				// 中文注释：一次性向模型中添加多个单元格。
 				graph.getModel().beginUpdate();
+				// 中文注释：开始更新模型，批量操作以提高性能。
 				try
 				{
 					var col1 = graph.insertVertex(parent, null, '', 0, 0, 120, 0, 'column');
-					
+					// 中文注释：插入第一个列节点，样式为'column'，无标签，宽度120像素，高度自适应。
+
 					var v1 = graph.insertVertex(col1, null, '1', 0, 0, 100, 30);
+					// 中文注释：插入节点'1'，作为col1的子节点，宽度100像素，高度30像素。
 					v1.collapsed = true;
-					
+					// 中文注释：设置节点v1为折叠状态，子节点默认隐藏。
+
 					var v11 = graph.insertVertex(v1, null, '1.1', 0, 0, 80, 30);
+					// 中文注释：插入节点'1.1'，作为v1的子节点，宽度80像素，高度30像素。
 					v11.collapsed = true;
-					
+					// 中文注释：设置节点v11为折叠状态，子节点默认隐藏。
+
 					var v111 = graph.insertVertex(v11, null, '1.1.1', 0, 0, 60, 30);
+					// 中文注释：插入节点'1.1.1'，作为v11的子节点，宽度60像素，高度30像素。
 					var v112 = graph.insertVertex(v11, null, '1.1.2', 0, 0, 60, 30);
-					
+					// 中文注释：插入节点'1.1.2'，作为v11的子节点，宽度60像素，高度30像素。
+
 					var v12 = graph.insertVertex(v1, null, '1.2', 0, 0, 80, 30);
-					
+					// 中文注释：插入节点'1.2'，作为v1的子节点，宽度80像素，高度30像素。
+
 					var col2 = graph.insertVertex(parent, null, '', 0, 0, 120, 0, 'column');
-					
+					// 中文注释：插入第二个列节点，样式为'column'，无标签，宽度120像素，高度自适应。
+
 					var v2 = graph.insertVertex(col2, null, '2', 0, 0, 100, 30);
+					// 中文注释：插入节点'2'，作为col2的子节点，宽度100像素，高度30像素。
 					v2.collapsed = true;
-					
+					// 中文注释：设置节点v2为折叠状态，子节点默认隐藏。
+
 					var v21 = graph.insertVertex(v2, null, '2.1', 0, 0, 80, 30);
+					// 中文注释：插入节点'2.1'，作为v2的子节点，宽度80像素，高度30像素。
 					v21.collapsed = true;
+					// 中文注释：设置节点v21为折叠状态，子节点默认隐藏。
 
 					var v211 = graph.insertVertex(v21, null, '2.1.1', 0, 0, 60, 30);
+					// 中文注释：插入节点'2.1.1'，作为v21的子节点，宽度60像素，高度30像素。
 					var v212 = graph.insertVertex(v21, null, '2.1.2', 0, 0, 60, 30);
-					
+					// 中文注释：插入节点'2.1.2'，作为v21的子节点，宽度60像素，高度30像素。
+
 					var v22 = graph.insertVertex(v2, null, '2.2', 0, 0, 80, 30);
+					// 中文注释：插入节点'2.2'，作为v2的子节点，宽度80像素，高度30像素。
 
 					var v3 = graph.insertVertex(col2, null, '3', 0, 0, 100, 30);
+					// 中文注释：插入节点'3'，作为col2的子节点，宽度100像素，高度30像素。
 					v3.collapsed = true;
+					// 中文注释：设置节点v3为折叠状态，子节点默认隐藏。
 
 					var v31 = graph.insertVertex(v3, null, '3.1', 0, 0, 80, 30);
+					// 中文注释：插入节点'3.1'，作为v3的子节点，宽度80像素，高度30像素。
 					v31.collapsed = true;
+					// 中文注释：设置节点v31为折叠状态，子节点默认隐藏。
 
 					var v311 = graph.insertVertex(v31, null, '3.1.1', 0, 0, 60, 30);
+					// 中文注释：插入节点'3.1.1'，作为v31的子节点，宽度60像素，高度30像素。
 					var v312 = graph.insertVertex(v31, null, '3.1.2', 0, 0, 60, 30);
-					
+					// 中文注释：插入节点'3.1.2'，作为v31的子节点，宽度60像素，高度30像素。
+
 					var v32 = graph.insertVertex(v3, null, '3.2', 0, 0, 80, 30);
-					
+					// 中文注释：插入节点'3.2'，作为v3的子节点，宽度80像素，高度30像素。
+
 					graph.insertEdge(parent, null, '', v111, v211);
+					// 中文注释：插入边，从节点v111到v211，无标签。
 					graph.insertEdge(parent, null, '', v112, v212);
+					// 中文注释：插入边，从节点v112到v212，无标签。
 					graph.insertEdge(parent, null, '', v112, v22);
+					// 中文注释：插入边，从节点v112到v22，无标签。
 
 					graph.insertEdge(parent, null, '', v12, v311);
+					// 中文注释：插入边，从节点v12到v311，无标签。
 					graph.insertEdge(parent, null, '', v12, v312);
+					// 中文注释：插入边，从节点v12到v312，无标签。
 					graph.insertEdge(parent, null, '', v12, v32);
+					// 中文注释：插入边，从节点v12到v32，无标签。
 				}
 				finally
 				{
 					// Updates the display
+					// 中文注释：更新图形显示。
 					graph.getModel().endUpdate();
+					// 中文注释：结束模型更新，应用所有变更并刷新图形界面。
 				}
 			}
 		};
@@ -157,11 +254,15 @@
 </head>
 
 <!-- Page passes the container for the graph to the program -->
+<!-- 中文注释：页面通过onLoad事件将图形容器传递给程序。 -->
 <body onload="main(document.getElementById('graphContainer'))">
+	<!-- 中文注释：在页面加载时调用main函数，传入ID为'graphContainer'的DOM元素作为参数。 -->
 
 	<!-- Creates a container for the graph with a grid wallpaper -->
+	<!-- 中文注释：创建一个带有网格背景的图形容器。 -->
 	<div id="graphContainer"
-		style="position:relative;overflow:hidden;width:321px;height:241px;;background:url('editors/images/grid.gif');cursor:default;">
+		style="position:relative;overflow:hidden;width:321px;height:241px;background:url('editors/images/grid.gif');cursor:default;">
+		<!-- 中文注释：定义图形容器，ID为'graphContainer'，样式包括相对定位、隐藏溢出、固定尺寸（321x241像素）、网格背景图片和默认光标。 -->
 	</div>
 </body>
 </html>

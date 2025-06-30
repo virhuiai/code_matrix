@@ -3,108 +3,157 @@
   
   Dynamic Style example for mxGraph. This example demonstrates changing
   the style of a cell dynamically by overriding mxGraphModel.getStyle.
+  // 动态样式示例，用于mxGraph。此示例展示通过重写mxGraphModel.getStyle动态更改单元格样式。
 -->
 <html>
 <head>
 	<title>Dynamic Style example for mxGraph</title>
+	<!-- 页面标题：mxGraph动态样式示例 -->
 
 	<!-- Sets the basepath for the library if not in same directory -->
+	<!-- 如果库不在同一目录下，设置库的基本路径 -->
 	<script type="text/javascript">
 		mxBasePath = '../src';
+		// 配置mxGraph库的基本路径为'../src'，用于加载库文件
 	</script>
 
 	<!-- Loads and initializes the library -->
+	<!-- 加载并初始化mxGraph库 -->
 	<script type="text/javascript" src="../src/js/mxClient.js"></script>
+	<!-- 引入mxClient.js文件，用于初始化mxGraph核心功能 -->
 
 	<!-- Example code -->
+	<!-- 示例代码 -->
 	<script type="text/javascript">
 		// Program starts here. Creates a sample graph in the
 		// DOM node with the specified ID. This function is invoked
 		// from the onLoad event handler of the document (see below).
+		// 程序从这里开始。在指定ID的DOM节点中创建示例图。此函数由文档的onLoad事件处理程序调用（见下方）。
 		function main(container)
 		{
+			// main函数：程序入口，接收容器参数，用于在指定DOM容器中创建图
+			// 参数说明：container为HTML DOM元素，用于承载图形
+
 			// Checks if the browser is supported
+			// 检查浏览器是否受支持
 			if (!mxClient.isBrowserSupported())
 			{
 				// Displays an error message if the browser is not supported.
+				// 如果浏览器不受支持，显示错误消息
 				mxUtils.error('Browser is not supported!', 200, false);
+				// 使用mxUtils.error显示错误信息，参数：消息内容、对话框宽度、是否自动关闭
 			}
 			else
 			{
 				// Creates the graph inside the given container
+				// 在指定容器内创建图形
 				var graph = new mxGraph(container);
+				// 创建mxGraph实例，参数container为图形的DOM容器
 
 				// Disables moving of edge labels in this examples
+				// 在本例中禁用边标签的移动
 				graph.edgeLabelsMovable = false;
-				
+				// 设置graph属性，禁止用户拖动边标签，保持界面整洁
+
 				// Enables rubberband selection
+				// 启用橡皮筋选择功能
 				new mxRubberband(graph);
+				// 为graph启用橡皮筋选择功能，允许用户通过拖拽选择多个单元格
 
 				// Needs to set a flag to check for dynamic style changes,
 				// that is, changes to styles on cells where the style was
 				// not explicitely changed using mxStyleChange
+				// 需要设置一个标志来检查动态样式更改，即对未使用mxStyleChange显式更改样式的单元格进行样式更新
 				graph.getView().updateStyle = true;
-				
+				// 设置graph视图的updateStyle属性为true，允许动态更新单元格样式
+
 				// Overrides mxGraphModel.getStyle to return a specific style
 				// for edges that reflects their target terminal (in this case
 				// the strokeColor will be equal to the target's fillColor).
+				// 重写mxGraphModel.getStyle方法，为边返回特定样式，反映其目标终端的样式（在此例中，边的strokeColor将等于目标的fillColor）。
 				var previous = graph.model.getStyle;
-				
+				// 保存原始getStyle方法，以便在重写中调用
+
 				graph.model.getStyle = function(cell)
 				{
+					// 重写getStyle方法，动态设置单元格样式
+					// 参数说明：cell为需要设置样式的单元格对象
 					if (cell != null)
 					{
 						var style = previous.apply(this, arguments);
-						
+						// 调用原始getStyle方法获取单元格的默认样式
+
 						if (this.isEdge(cell))
 						{
+							// 判断单元格是否为边
 							var target = this.getTerminal(cell, false);
+							// 获取边的目标终端（false表示目标端，而非源端）
 
 							if (target != null)
 							{
 								var targetStyle = graph.getCurrentCellStyle(target);
+								// 获取目标终端的当前样式
 								var fill = mxUtils.getValue(targetStyle, mxConstants.STYLE_FILLCOLOR);
-								
+								// 获取目标终端的填充颜色
+
 								if (fill != null)
 								{
 									style += ';strokeColor='+fill;
+									// 如果填充颜色存在，将边的strokeColor设置为目标终端的填充颜色
 								}
 							}
 						}
 						else if (this.isVertex(cell))
 						{
+							// 判断单元格是否为顶点
 							var geometry = this.getGeometry(cell);
-							
+							// 获取顶点的几何信息
+
 							if (geometry != null &&
 								geometry.width > 80)
 							{
+								// 如果顶点宽度大于80像素
 								style += ';fillColor=green';
+								// 将顶点的填充颜色设置为绿色
 							}
 						}
 						
 						return style;
+						// 返回更新后的样式字符串
 					}
 					
 					return null;
+					// 如果单元格为空，返回null
 				};
 				
 				// Gets the default parent for inserting new cells. This
 				// is normally the first child of the root (ie. layer 0).
+				// 获取用于插入新单元格的默认父节点，通常是根节点的第一个子节点（即第0层）。
 				var parent = graph.getDefaultParent();
-								
+				// 获取默认父节点，用于后续插入顶点和边
+
 				// Adds cells to the model in a single step
+				// 在一个步骤中向模型添加单元格
 				graph.getModel().beginUpdate();
+				// 开始批量更新模型，以提高性能
 				try
 				{
 					var v1 = graph.insertVertex(parent, null, 'Hello,', 20, 20, 80, 30, 'fillColor=green');
+					// 插入顶点v1，参数：父节点、ID、标签、x坐标、y坐标、宽度、高度、样式
+					// 顶点v1：标签为'Hello,'，位于(20,20)，大小80x30，填充颜色为绿色
 					var v2 = graph.insertVertex(parent, null, 'World!', 200, 150, 80, 30, 'fillColor=blue');
+					// 插入顶点v2，标签为'World!'，位于(200,150)，大小80x30，填充颜色为蓝色
 					var v3 = graph.insertVertex(parent, null, 'World!', 20, 150, 80, 30, 'fillColor=red');
+					// 插入顶点v3，标签为'World!'，位于(20,150)，大小80x30，填充颜色为红色
 					var e1 = graph.insertEdge(parent, null, 'Connect', v1, v2, 'perimeterSpacing=4;strokeWidth=4;labelBackgroundColor=white;fontStyle=1');
+					// 插入边e1，连接v1和v2，标签为'Connect'，样式包括边界间距4、线宽4、标签背景白色、字体样式为粗体
 				}
 				finally
 				{
 					// Updates the display
+					// 更新显示
 					graph.getModel().endUpdate();
+					// 结束批量更新，刷新图形显示
 				}
 			}
 		};
@@ -112,11 +161,15 @@
 </head>
 
 <!-- Page passes the container for the graph to the program -->
+<!-- 页面将图形容器传递给程序 -->
 <body onload="main(document.getElementById('graphContainer'))">
+	<!-- 在页面加载时调用main函数，传入ID为'graphContainer'的DOM元素 -->
 
 	<!-- Creates a container for the graph with a grid wallpaper -->
+	<!-- 创建带有网格背景的图形容器 -->
 	<div id="graphContainer"
 		style="overflow:hidden;width:321px;height:241px;background:url('editors/images/grid.gif')">
+		<!-- 定义图形的DOM容器，设置溢出隐藏、宽321px、高241px，使用网格背景图片 -->
 	</div>
 </body>
 </html>

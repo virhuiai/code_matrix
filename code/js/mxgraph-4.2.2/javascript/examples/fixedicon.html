@@ -4,74 +4,119 @@
   FixedIcon example for mxGraph. This example demonstrates
   customizing the icon position in the mxLabel shape.
 -->
+<!--
+  中文注释：此示例展示了如何在 mxGraph 中自定义 mxLabel 形状的图标位置。
+  主要功能：通过重写 mxLabel 的 getImageBounds 方法调整图标在标签中的位置。
+-->
 <html>
 <head>
 	<title>Fixed icon example for mxGraph</title>
+	<!-- 中文注释：页面标题，描述这是一个 mxGraph 的固定图标示例。 -->
 
 	<!-- Sets the basepath for the library if not in same directory -->
+	<!-- 中文注释：设置 mxGraph 库的基础路径，如果库文件不在同一目录下需指定路径。 -->
 	<script type="text/javascript">
 		mxBasePath = '../src';
+		// 中文注释：mxBasePath 定义 mxGraph 库文件的相对路径，指向 '../src' 目录。
 	</script>
 
 	<!-- Loads and initializes the library -->
+	<!-- 中文注释：加载并初始化 mxGraph 库。 -->
 	<script type="text/javascript" src="../src/js/mxClient.js"></script>
+	<!-- 中文注释：引入 mxGraph 的核心库文件 mxClient.js，用于初始化图形功能。 -->
 
 	<!-- Example code -->
+	<!-- 中文注释：以下为示例代码，展示自定义图标位置的实现。 -->
 	<script type="text/javascript">
 		// Overrides the image bounds code to change the position
+		// 中文注释：重写 mxLabel 的 getImageBounds 方法以自定义图标位置。
 		mxLabel.prototype.getImageBounds = function(x, y, w, h)
 		{
+			// 中文注释：获取图标的宽度和高度，设置默认值（mxConstants.DEFAULT_IMAGESIZE）。
 			var iw = mxUtils.getValue(this.style, mxConstants.STYLE_IMAGE_WIDTH, mxConstants.DEFAULT_IMAGESIZE);
 			var ih = mxUtils.getValue(this.style, mxConstants.STYLE_IMAGE_HEIGHT, mxConstants.DEFAULT_IMAGESIZE);
 			
 			// Places the icon
-			var ix = (w - iw) / 2;
-			var iy = h - ih;
+			// 中文注释：计算图标的水平和垂直位置，使其居中并靠近底部。
+			var ix = (w - iw) / 2; // 中文注释：水平居中图标。
+			var iy = h - ih;       // 中文注释：将图标放置在标签底部。
 			
+			// 中文注释：返回新的图标边界矩形，包含位置和大小。
 			return new mxRectangle(x + ix, y + iy, iw, ih);
 		};
 
 		// Program starts here. Creates a sample graph in the
 		// DOM node with the specified ID. This function is invoked
 		// from the onLoad event handler of the document (see below).
+		// 中文注释：程序入口函数，在指定 DOM 节点中创建示例图形，由页面加载事件触发。
 		function main(container)
 		{
 			// Checks if the browser is supported
+			// 中文注释：检查浏览器是否支持 mxGraph。
 			if (!mxClient.isBrowserSupported())
 			{
 				// Displays an error message if the browser is not supported.
+				// 中文注释：如果浏览器不支持，显示错误提示，宽度 200 像素，不自动关闭。
 				mxUtils.error('Browser is not supported!', 200, false);
 			}
 			else
 			{
 				// Makes the shadow brighter
+				// 中文注释：设置阴影颜色为更亮的灰色 (#C0C0C0)，增强视觉效果。
 				mxConstants.SHADOWCOLOR = '#C0C0C0';
-				
+				// 中文注释：重要配置参数：SHADOWCOLOR 定义图形阴影颜色，影响所有带阴影的元素。
+
 				// Creates the graph inside the given container
+				// 中文注释：在指定容器内创建 mxGraph 图形实例。
 				var graph = new mxGraph(container);
+				// 中文注释：关键变量：graph 是 mxGraph 的核心对象，用于管理图形和交互。
 
 				// Uncomment the following if you want the container
 				// to fit the size of the graph
 				//graph.setResizeContainer(true);
-				
+				// 中文注释：可选配置：取消注释可使容器自动调整大小以适应图形内容。
+
 				// Enables rubberband selection
+				// 中文注释：启用橡皮筋选择功能，允许用户通过拖拽选择多个图形元素。
 				new mxRubberband(graph);
-				
+				// 中文注释：交互逻辑：mxRubberband 提供框选功能，增强用户交互体验。
+
 				// Gets the default parent for inserting new cells. This
 				// is normally the first child of the root (ie. layer 0).
+				// 中文注释：获取默认父节点（通常为根节点的第一个子节点，即 layer 0），用于插入新单元。
 				var parent = graph.getDefaultParent();
-								
+				// 中文注释：关键变量：parent 表示默认图层，所有新单元将插入到此图层。
+
 				// Adds cells to the model in a single step
+				// 中文注释：开始批量更新模型，以一次性添加单元，优化性能。
 				graph.getModel().beginUpdate();
 				try
 				{
+					// 中文注释：插入一个顶点（单元），展示固定图标效果。
 					var v1 = graph.insertVertex(parent, null, 'Fixed icon', 20, 20, 80, 50,
 						'shape=label;image=images/plus.png;imageWidth=16;imageHeight=16;spacingBottom=10;' +
 						'fillColor=#adc5ff;gradientColor=#7d85df;glass=1;rounded=1;shadow=1;');
+					// 中文注释：关键方法：insertVertex 用于添加顶点，参数说明：
+					// - parent：父节点（图层）。
+					// - null：单元 ID，设为 null 自动生成。
+					// - 'Fixed icon'：顶点显示的文本标签。
+					// - 20, 20：顶点左上角坐标 (x, y)。
+					// - 80, 50：顶点宽度和高度。
+					// - 样式参数：
+					//   - shape=label：使用标签形状。
+					//   - image=images/plus.png：图标路径。
+					//   - imageWidth=16, imageHeight=16：图标宽高。
+					//   - spacingBottom=10：底部间距，留出图标空间。
+					//   - fillColor=#adc5ff：填充颜色（浅蓝色）。
+					//   - gradientColor=#7d85df：渐变颜色（深蓝色）。
+					//   - glass=1：启用玻璃效果。
+					//   - rounded=1：圆角边框。
+					//   - shadow=1：启用阴影。
 				}
 				finally
 				{
 					// Updates the display
+					// 中文注释：完成模型更新，刷新图形显示。
 					graph.getModel().endUpdate();
 				}
 			}
@@ -80,11 +125,21 @@
 </head>
 
 <!-- Page passes the container for the graph to the program -->
+<!-- 中文注释：页面通过 onload 事件将图形容器传递给 main 函数。 -->
 <body onload="main(document.getElementById('graphContainer'))">
+	<!-- 中文注释：事件处理逻辑：页面加载时调用 main 函数，传入 graphContainer 元素作为图形容器。 -->
 
 	<!-- Creates a container for the graph with a grid wallpaper -->
+	<!-- 中文注释：创建图形容器，设置网格背景图片。 -->
 	<div id="graphContainer"
 		style="overflow:hidden;position:relative;width:321px;height:241px;background:url('editors/images/grid.gif');cursor:default;">
+		<!-- 中文注释：样式设置说明：
+			- overflow:hidden：隐藏超出容器的内容。
+			- position:relative：相对定位，便于内部元素定位。
+			- width:321px, height:241px：固定容器尺寸。
+			- background:url('editors/images/grid.gif')：设置网格背景。
+			- cursor:default：鼠标指针为默认样式。
+		-->
 	</div>
 </body>
 </html>

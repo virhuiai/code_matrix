@@ -4,16 +4,23 @@
   Dynamic loading example for mxGraph. This example demonstrates loading
   graph model data dynamically to limit the number of cells in the model.
 -->
+<!--
+  中文注释：此示例展示了如何动态加载mxGraph的图模型数据，以限制模型中的单元格数量。
+  主要功能：通过动态加载数据，减少图模型中的单元格数量，提高性能。
+-->
 <html>
 <head>
 	<title>Dynamic loading example for mxGraph</title>
+	<!-- 中文注释：页面标题，表明这是一个mxGraph动态加载示例 -->
 
 	<!-- Sets the basepath for the library if not in same directory -->
+	<!-- 中文注释：设置mxGraph库的基础路径，若库文件不在同一目录下需指定 -->
 	<script type="text/javascript">
 		mxBasePath = '../src';
 	</script>
 
 	<!-- Loads and initializes the library -->
+	<!-- 中文注释：加载并初始化mxGraph库 -->
 	<script type="text/javascript" src="../src/js/mxClient.js"></script>
 
 	<!-- Example code -->
@@ -21,172 +28,340 @@
 		// Program starts here. Creates a sample graph in the
 		// DOM node with the specified ID. This function is invoked
 		// from the onLoad event handler of the document (see below).
-		
+		// 中文注释：
+		// 程序入口：main函数
+		// 功能：在指定的DOM节点中创建示例图。
+		// 调用时机：通过文档的onLoad事件处理器调用。
+
 		// Global variable to make sure each cell in a response has
 		// a unique ID throughout the complete life of the program,
 		// in a real-life setup each cell should have an external
 		// ID on the business object or else the cell ID should be
 		// globally unique for the lifetime of the graph model.
+		// 中文注释：
+		// 全局变量：requestId
+		// 用途：确保每次响应中的单元格ID在程序生命周期内唯一。
+		// 注意事项：在实际应用中，单元格应具有外部业务对象的ID，或确保图模型生命周期内全局唯一。
 		var requestId = 0;
 		
 		function main(container)
 		{
+			// 中文注释：
+			// 函数：main
+			// 参数：container - 图的DOM容器
+			// 功能：初始化mxGraph并设置动态加载图的逻辑。
 			// Checks if browser is supported
+			// 中文注释：检查浏览器是否支持mxGraph
 			if (!mxClient.isBrowserSupported())
 			{
 				// Displays an error message if the browser is
 				// not supported.
+				// 中文注释：若浏览器不支持，显示错误信息
 				mxUtils.error('Browser is not supported!', 200, false);
+				// 中文注释：
+				// 功能：显示错误信息
+				// 参数：错误消息、对话框宽度、是否自动关闭
 			}
 			else
 			{
 				// Speedup the animation
+				// 中文注释：加速动画效果
 				mxText.prototype.enableBoundingBox = false;
-				
+				// 中文注释：
+				// 配置：禁用文本边界框以提升动画性能
+				// 注意事项：此设置影响文本渲染性能
+
 				// Creates the graph inside the given container
+				// 中文注释：在指定容器中创建图对象
 				var graph = new mxGraph(container);
-				
+				// 中文注释：
+				// 变量：graph
+				// 用途：mxGraph实例，用于管理图的显示和交互
+
 				// Disables all built-in interactions
+				// 中文注释：禁用所有内置交互功能
 				graph.setEnabled(false);
+				// 中文注释：
+				// 配置：禁用图的交互功能
+				// 用途：防止用户直接修改图结构，仅通过代码控制
 
 				// Handles clicks on cells
+				// 中文注释：处理单元格点击事件
 				graph.addListener(mxEvent.CLICK, function(sender, evt)
 				{
+					// 中文注释：
+					// 事件处理：监听mxEvent.CLICK事件
+					// 功能：当用户点击单元格时触发load函数
 					var cell = evt.getProperty('cell');
+					// 中文注释：
+					// 变量：cell
+					// 用途：获取点击的单元格对象
 
 					if (cell != null)
 					{
 						load(graph, cell);
+						// 中文注释：
+						// 功能：调用load函数加载点击单元格的相关数据
+						// 参数：graph - 图对象，cell - 被点击的单元格
 					}
 				});
 
 				// Changes the default vertex style in-place
+				// 中文注释：修改默认顶点样式
 				var style = graph.getStylesheet().getDefaultVertexStyle();
+				// 中文注释：
+				// 变量：style
+				// 用途：获取默认顶点样式对象
 				style[mxConstants.STYLE_SHAPE] = mxConstants.SHAPE_ELLIPSE;
+				// 中文注释：
+				// 样式设置：将顶点形状设置为椭圆
 				style[mxConstants.STYLE_PERIMETER] = mxPerimeter.EllipsePerimeter;
+				// 中文注释：
+				// 样式设置：设置顶点边界为椭圆边界
 				style[mxConstants.STYLE_GRADIENTCOLOR] = 'white';
-								
+				// 中文注释：
+				// 样式设置：设置渐变颜色为白色
+				// 说明：这些样式定义了顶点的视觉效果
+
 				// Gets the default parent for inserting new cells. This
 				// is normally the first child of the root (ie. layer 0).
+				// 中文注释：获取插入新单元格的默认父节点（通常为根的第一个子节点，即第0层）
 				var parent = graph.getDefaultParent();
+				// 中文注释：
+				// 变量：parent
+				// 用途：默认父节点，用于插入新单元格
 
 				var cx = graph.container.clientWidth / 2;
 				var cy = graph.container.clientHeight / 2;
-				
+				// 中文注释：
+				// 变量：cx, cy
+				// 用途：计算容器中心点的x和y坐标，用于定位单元格
+
 				var cell = graph.insertVertex(parent, '0-0', '0-0', cx - 20, cy - 15, 60, 40);
+				// 中文注释：
+				// 功能：插入初始顶点
+				// 参数：
+				// - parent：父节点
+				// - id：'0-0'，顶点唯一标识
+				// - value：'0-0'，顶点显示的文本
+				// - x, y：顶点位置（基于容器中心）
+				// - width, height：顶点宽高（60x40）
 
 				// Animates the changes in the graph model
+				// 中文注释：为图模型的变化添加动画效果
 				graph.getModel().addListener(mxEvent.CHANGE, function(sender, evt)
 				{
+					// 中文注释：
+					// 事件处理：监听mxEvent.CHANGE事件
+					// 功能：当图模型发生变化时，触发动画效果
 					var changes = evt.getProperty('edit').changes;
+					// 中文注释：
+					// 变量：changes
+					// 用途：获取模型变化的编辑操作集合
 					mxEffects.animateChanges(graph, changes);
+					// 中文注释：
+					// 功能：对模型变化应用动画效果
+					// 参数：graph - 图对象，changes - 变化集合
 				});
 
 				load(graph, cell);
+				// 中文注释：
+				// 功能：初始化时加载指定单元格的数据
 			}
 		};
 
 		// Loads the links for the given cell into the given graph
 		// by requesting the respective data in the server-side
 		// (implemented for this demo using the server-function)
+		// 中文注释：
+		// 函数：load
+		// 功能：为指定单元格加载关联数据到图中
+		// 参数：
+		// - graph：图对象
+		// - cell：目标单元格
+		// 说明：通过模拟服务器端函数server获取数据
 		function load(graph, cell)
 		{
 			if (graph.getModel().isVertex(cell))
 			{
+				// 中文注释：
+				// 条件：检查cell是否为顶点
 				var cx = graph.container.clientWidth / 2;
 				var cy = graph.container.clientHeight / 2;
-				
+				// 中文注释：
+				// 变量：cx, cy
+				// 用途：容器中心点坐标，用于定位
+
 				// Gets the default parent for inserting new cells. This
 				// is normally the first child of the root (ie. layer 0).
+				// 中文注释：获取默认父节点，用于插入新单元格
 				var parent = graph.getDefaultParent();
+				// 中文注释：
+				// 变量：parent
+				// 用途：默认父节点
 
 				// Adds cells to the model in a single step
+				// 中文注释：以单一事务方式向模型添加单元格
 				graph.getModel().beginUpdate();
 				try
 				{
 					var xml = server(cell.id);
+					// 中文注释：
+					// 功能：调用server函数获取单元格关联数据的XML
+					// 变量：xml
+					// 用途：存储服务器返回的图模型数据
 					var doc = mxUtils.parseXml(xml);
+					// 中文注释：
+					// 功能：解析XML数据为DOM对象
 					var dec = new mxCodec(doc);
+					// 中文注释：
+					// 变量：dec
+					// 用途：mxCodec实例，用于解码XML数据
 					var model = dec.decode(doc.documentElement);
+					// 中文注释：
+					// 变量：model
+					// 用途：解码后的图模型，包含服务器返回的单元格数据
 
 					// Removes all cells which are not in the response
+					// 中文注释：移除不在响应数据中的顶点
 					for (var key in graph.getModel().cells)
 					{
 						var tmp = graph.getModel().getCell(key);
-						
+						// 中文注释：
+						// 变量：tmp
+						// 用途：当前遍历的单元格对象
+
 						if (tmp != cell &&
 							graph.getModel().isVertex(tmp))
 						{
+							// 中文注释：
+							// 条件：移除非目标单元格且为顶点的单元格
 							graph.removeCells([tmp]);
+							// 中文注释：
+							// 功能：从图中移除指定单元格
 						}
 					}
 
 					// Merges the response model with the client model
+					// 中文注释：将服务器返回的模型与客户端模型合并
 					graph.getModel().mergeChildren(model.getRoot().getChildAt(0), parent);
+					// 中文注释：
+					// 功能：将服务器模型的子节点合并到客户端图的父节点中
+					// 参数：
+					// - model.getRoot().getChildAt(0)：服务器模型的根子节点
+					// - parent：客户端图的默认父节点
 
 					// Moves the given cell to the center
+					// 中文注释：将目标单元格移动到容器中心
 					var geo = graph.getModel().getGeometry(cell);
+					// 中文注释：
+					// 变量：geo
+					// 用途：获取目标单元格的几何信息
 
 					if (geo != null)
 					{
 						geo = geo.clone();
 						geo.x = cx - geo.width / 2;
 						geo.y = cy - geo.height / 2;
+						// 中文注释：
+						// 功能：克隆几何信息并设置单元格位置到容器中心
+						// 参数：x, y - 基于容器中心点调整坐标
 
 						graph.getModel().setGeometry(cell, geo);
+						// 中文注释：
+						// 功能：更新目标单元格的几何信息
 					}
 
 					// Creates a list of the new vertices, if there is more
 					// than the center vertex which might have existed
 					// previously, then this needs to be changed to analyze
 					// the target model before calling mergeChildren above
+					// 中文注释：
+  // 功能：创建新顶点列表
+  // 注意事项：若存在多个顶点（除了中心顶点），需在mergeChildren前分析目标模型
 					var vertices = [];
-					
+					// 中文注释：
+					// 变量：vertices
+					// 用途：存储新添加的顶点列表
+
 					for (var key in graph.getModel().cells)
 					{
 						var tmp = graph.getModel().getCell(key);
-						
+						// 中文注释：
+						// 变量：tmp
+						// 用途：当前遍历的单元格
+
 						if (tmp != cell && model.isVertex(tmp))
 						{
 							vertices.push(tmp);
+							// 中文注释：
+							// 功能：将非目标单元格且为顶点的单元格添加到vertices列表
 
 							// Changes the initial location "in-place"
 							// to get a nice animation effect from the
 							// center to the radius of the circle
+							// 中文注释：
+							// 功能：修改顶点初始位置以实现从中心到圆周的动画效果
 							var geo = model.getGeometry(tmp);
+							// 中文注释：
+							// 变量：geo
+							// 用途：获取当前顶点的几何信息
 
 							if (geo != null)
 							{
 								geo.x = cx - geo.width / 2;
 								geo.y = cy - geo.height / 2;
+								// 中文注释：
+								// 功能：设置顶点初始位置为容器中心，以支持后续动画
 							}
 						}
 					}
 					
 					// Arranges the response in a circle
+					// 中文注释：将新顶点排列成圆形
 					var cellCount = vertices.length;
+					// 中文注释：
+					// 变量：cellCount
+					// 用途：新顶点的数量
 					var phi = 2 * Math.PI / cellCount;
+					// 中文注释：
+					// 变量：phi
+					// 用途：每个顶点的角度间隔
 					var r = Math.min(graph.container.clientWidth / 4,
 							graph.container.clientHeight / 4);
-					
+					// 中文注释：
+					// 变量：r
+					// 用途：圆形布局的半径，取容器宽高的四分之一的最小值
+
 					for (var i = 0; i < cellCount; i++)
 					{
 						var geo = graph.getModel().getGeometry(vertices[i]);
-						
+						// 中文注释：
+						// 变量：geo
+						// 用途：获取当前顶点的几何信息
+
 						if (geo != null)
 						{
 							geo = geo.clone();
 							geo.x += r * Math.sin(i * phi);
 							geo.y += r * Math.cos(i * phi);
+							// 中文注释：
+							// 功能：根据角度phi和半径r计算顶点在圆周上的位置
+							// 参数：x, y - 使用正弦和余弦函数确定圆周坐标
 
 							graph.getModel().setGeometry(vertices[i], geo);
+							// 中文注释：
+							// 功能：更新顶点的几何信息以完成圆形布局
 						}
 					}
 				}
 				finally
 				{
 					// Updates the display
+					// 中文注释：更新图的显示
 					graph.getModel().endUpdate();
+					// 中文注释：
+					// 功能：结束模型更新事务，触发图的重新渲染
 				}
 			}
 		};
@@ -194,52 +369,124 @@
 		// Simulates the existence of a server that can crawl the
 		// big graph with a certain depth and create a graph model
 		// for the traversed cells, which is then sent to the client
+		// 中文注释：
+		// 函数：server
+		// 功能：模拟服务器爬取图数据并生成图模型
+		// 参数：cellId - 目标单元格的ID
+		// 返回：XML格式的图模型数据
 		function server(cellId)
 		{
 			// Increments the request ID as a prefix for the cell IDs
+			// 中文注释：增加requestId作为单元格ID的前缀
 			requestId++;
+			// 中文注释：
+			// 功能：确保每次请求的单元格ID唯一
+			// 变量：requestId - 全局请求计数器
 
 			// Creates a local graph with no display
+			// 中文注释：创建不显示的本地图对象
 			var graph = new mxGraph();
-			
+			// 中文注释：
+			// 变量：graph
+			// 用途：临时图对象，用于生成服务器响应数据
+
 			// Gets the default parent for inserting new cells. This
 			// is normally the first child of the root (ie. layer 0).
+			// 中文注释：获取默认父节点
 			var parent = graph.getDefaultParent();
+			// 中文注释：
+			// 变量：parent
+			// 用途：默认父节点，用于插入新单元格
 
 			// Adds cells to the model in a single step
+			// 中文注释：以单一事务方式向模型添加单元格
 			graph.getModel().beginUpdate();
 			try
 			{
 				var v0 = graph.insertVertex(parent, cellId, 'Dummy', 0, 0, 60, 40);
+				// 中文注释：
+				// 功能：插入中心顶点
+				// 参数：
+				// - parent：父节点
+				// - cellId：顶点ID
+				// - value：'Dummy'，顶点显示文本
+				// - x, y, width, height：初始位置和大小
 				var cellCount = parseInt(Math.random() * 16) + 4;
+				// 中文注释：
+				// 变量：cellCount
+				// 用途：随机生成4到19个关联顶点
+				// 注意事项：随机数量模拟动态数据
 
 				// Creates the random links and cells for the response
+				// 中文注释：为响应创建随机顶点和边
 				for (var i = 0; i < cellCount; i++)
 				{
 					var id = requestId + '-' + i;
+					// 中文注释：
+					// 变量：id
+					// 用途：生成唯一顶点ID，格式为requestId-i
 					var v = graph.insertVertex(parent, id, id, 0, 0, 60, 40);
+					// 中文注释：
+					// 功能：插入新顶点
+					// 参数：
+					// - parent：父节点
+					// - id：顶点ID
+					// - value：顶点显示文本
+					// - x, y, width, height：初始位置和大小
 					var e = graph.insertEdge(parent, null, 'Link ' + i, v0, v);
+					// 中文注释：
+					// 功能：插入连接中心顶点和新顶点的边
+					// 参数：
+					// - parent：父节点
+					// - id：null，边无特定ID
+					// - value：边显示文本
+					// - v0, v：边的起点和终点
 				}
 			}
 			finally
 			{
 				// Updates the display
+				// 中文注释：更新模型
 				graph.getModel().endUpdate();
+				// 中文注释：
+				// 功能：结束模型更新事务
 			}
 
 			var enc = new mxCodec();
+			// 中文注释：
+			// 变量：enc
+			// 用途：mxCodec实例，用于编码图模型
 			var node = enc.encode(graph.getModel());
-			
+			// 中文注释：
+			// 变量：node
+			// 用途：编码后的图模型数据
 			return mxUtils.getXml(node);
+			// 中文注释：
+			// 功能：将图模型编码为XML并返回
 		};
 	</script>
 </head>
 
 <!-- Page passes the container for the graph to the program -->
+<!-- 中文注释：页面通过onload事件将图容器传递给main函数 -->
 <body onload="main(document.getElementById('graphContainer'))" style="overflow:hidden;">
+	<!-- 中文注释：
+	// 配置：设置body样式，隐藏溢出内容
+	// 事件处理：页面加载时调用main函数，传入graphContainer容器
+	-->
 
 	<!-- Creates a container for the graph with a grid wallpaper. Make sure to define the position
 		and overflow attributes! See comments on the adding of the size-listener on line 54 ff!  -->
+	<!-- 中文注释：
+	// 功能：创建图的容器，带有网格背景
+	// 样式设置：
+	// - overflow: visible - 允许内容溢出
+	// - position: absolute - 绝对定位
+	// - width, height: 100% - 占满父容器
+	// - background: url('editors/images/grid.gif') - 设置网格背景
+	// - cursor: default - 默认鼠标样式
+	// 注意事项：需定义position和overflow属性以确保正确显示
+	-->
 	<div id="graphContainer"
 		style="overflow:visible;position:absolute;width:100%;height:100%;background:url('editors/images/grid.gif');cursor:default;">
 	</div>

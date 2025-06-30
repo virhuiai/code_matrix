@@ -4,39 +4,54 @@
   Dynamic toolbar example for mxGraph. This example demonstrates changing the
   state of the toolbar at runtime.
 -->
+<!--
+  中文注释：这是mxGraph的动态工具栏示例，展示如何在运行时动态更改工具栏状态。
+-->
 <html>
 <head>
 	<title>Toolbar example for mxGraph</title>
+	<!-- 中文注释：设置页面标题为“mxGraph工具栏示例”。 -->
 
 	<!-- Sets the basepath for the library if not in same directory -->
+	<!-- 中文注释：设置mxGraph库的基础路径，如果库文件不在同一目录下。 -->
 	<script type="text/javascript">
 		mxBasePath = '../src';
+		// 中文注释：指定mxGraph库的相对路径为'../src'。
 	</script>
 
 	<!-- Loads and initializes the library -->
+	<!-- 中文注释：加载并初始化mxGraph库。 -->
 	<script type="text/javascript" src="../src/js/mxClient.js"></script>
 
 	<!-- Example code -->
+	<!-- 中文注释：以下是示例代码，用于创建交互式图形编辑器。 -->
 	<script type="text/javascript">
 		// Program starts here. Creates a sample graph in the
 		// DOM node with the specified ID. This function is invoked
 		// from the onLoad event handler of the document (see below).
+		// 中文注释：程序入口函数，创建具有指定ID的DOM节点中的示例图形。由文档的onLoad事件触发。
 		function main()
 		{
 			// Checks if browser is supported
+			// 中文注释：检查浏览器是否支持mxGraph。
 			if (!mxClient.isBrowserSupported())
 			{
 				// Displays an error message if the browser is
 				// not supported.
+				// 中文注释：如果浏览器不支持，显示错误消息。
 				mxUtils.error('Browser is not supported!', 200, false);
+				// 中文注释：调用mxUtils.error显示错误提示，参数200表示对话框宽度，false表示不自动关闭。
 			}
 			else
 			{
 				// Defines an icon for creating new connections in the connection handler.
 				// This will automatically disable the highlighting of the source vertex.
+				// 中文注释：为连接处理器定义创建新连接的图标，自动禁用源顶点高亮。
 				mxConnectionHandler.prototype.connectImage = new mxImage('images/connector.gif', 16, 16);
+				// 中文注释：设置连接图标为'images/connector.gif'，大小为16x16像素。
 
 				// Creates the div for the toolbar
+				// 中文注释：创建工具栏的div容器。
 				var tbContainer = document.createElement('div');
 				tbContainer.style.position = 'absolute';
 				tbContainer.style.overflow = 'hidden';
@@ -45,14 +60,19 @@
 				tbContainer.style.top = '0px';
 				tbContainer.style.width = '24px';
 				tbContainer.style.bottom = '0px';
-				
+				// 中文注释：配置工具栏容器的样式：绝对定位、隐藏溢出内容、内边距2px、固定在页面左侧、宽度24px、从顶部到底部全屏。
+
 				document.body.appendChild(tbContainer);
-			
+				// 中文注释：将工具栏容器添加到页面主体。
+
 				// Creates new toolbar without event processing
+				// 中文注释：创建不带事件处理的工具栏对象。
 				var toolbar = new mxToolbar(tbContainer);
 				toolbar.enabled = false
-				
+				// 中文注释：初始化工具栏并禁用其默认事件处理。
+
 				// Creates the div for the graph
+				// 中文注释：创建图形显示区域的div容器。
 				var container = document.createElement('div');
 				container.style.position = 'absolute';
 				container.style.overflow = 'hidden';
@@ -61,43 +81,58 @@
 				container.style.right = '0px';
 				container.style.bottom = '0px';
 				container.style.background = 'url("editors/images/grid.gif")';
+				// 中文注释：配置图形容器的样式：绝对定位、隐藏溢出内容、左侧留24px（与工具栏对齐）、从顶部到底部全屏、背景为网格图片。
 
 				document.body.appendChild(container);
-				
+				// 中文注释：将图形容器添加到页面主体。
+
 				// Workaround for Internet Explorer ignoring certain styles
+				// 中文注释：针对IE浏览器忽略某些样式的兼容性处理。
 				if (mxClient.IS_QUIRKS)
 				{
 					document.body.style.overflow = 'hidden';
 					new mxDivResizer(tbContainer);
 					new mxDivResizer(container);
+					// 中文注释：当浏览器为IE怪异模式时，隐藏页面溢出内容，并为工具栏和图形容器添加动态调整大小的功能。
 				}
 	
 				// Creates the model and the graph inside the container
 				// using the fastest rendering available on the browser
+				// 中文注释：在容器中创建图形模型和图形对象，使用浏览器支持的最快渲染方式。
 				var model = new mxGraphModel();
 				var graph = new mxGraph(container, model);
+				// 中文注释：初始化图形模型（mxGraphModel）和图形对象（mxGraph），并将其绑定到指定容器。
 
 				// Enables new connections in the graph
+				// 中文注释：启用图形中的新连接功能。
 				graph.setConnectable(true);
 				graph.setMultigraph(false);
+				// 中文注释：设置图形允许创建连接（setConnectable），并禁用多重连接（setMultigraph）。
 
 				// Stops editing on enter or escape keypress
+				// 中文注释：设置在按下Enter或Escape键时停止编辑。
 				var keyHandler = new mxKeyHandler(graph);
 				var rubberband = new mxRubberband(graph);
-				
+				// 中文注释：初始化键盘事件处理器（mxKeyHandler）和橡皮筋选择工具（mxRubberband）以支持交互操作。
+
 				var addVertex = function(icon, w, h, style)
 				{
+					// 中文注释：定义添加顶点的函数，参数包括图标、宽、高和样式。
 					var vertex = new mxCell(null, new mxGeometry(0, 0, w, h), style);
 					vertex.setVertex(true);
-				
+					// 中文注释：创建新的顶点单元（mxCell），设置其几何属性（位置为0,0，大小为w x h）和样式，并标记为顶点。
+
 					var img = addToolbarItem(graph, toolbar, vertex, icon);
 					img.enabled = true;
-					
+					// 中文注释：调用addToolbarItem函数添加工具栏项，并启用该项的交互功能。
+
 					graph.getSelectionModel().addListener(mxEvent.CHANGE, function()
 					{
+						// 中文注释：监听图形选择状态变化事件，动态更新工具栏项的透明度和启用状态。
 						var tmp = graph.isSelectionEmpty();
 						mxUtils.setOpacity(img, (tmp) ? 100 : 20);
 						img.enabled = tmp;
+						// 中文注释：当图形无选中项时，设置工具栏项透明度为100%并启用；否则透明度为20%并禁用。
 					});
 				};
 				
@@ -108,6 +143,7 @@
 				addVertex('editors/images/triangle.gif', 40, 40, 'shape=triangle');
 				addVertex('editors/images/cylinder.gif', 40, 40, 'shape=cylinder');
 				addVertex('editors/images/actor.gif', 30, 40, 'shape=actor');
+				// 中文注释：调用addVertex函数，添加多种形状的工具栏项（矩形、圆角矩形、椭圆、菱形、三角形、圆柱、角色），指定各自的图标、大小和形状样式。
 			}
 		}
 
@@ -116,52 +152,65 @@
 			// Function that is executed when the image is dropped on
 			// the graph. The cell argument points to the cell under
 			// the mousepointer if there is one.
+			// 中文注释：定义工具栏项的拖放处理函数，当图标被拖放到图形上时执行，cell参数指向鼠标下的单元（如果存在）。
 			var funct = function(graph, evt, cell, x, y)
 			{
 				graph.stopEditing(false);
+				// 中文注释：停止当前编辑状态。
 
 				var vertex = graph.getModel().cloneCell(prototype);
 				vertex.geometry.x = x;
 				vertex.geometry.y = y;
-					
+				// 中文注释：克隆原型单元，设置新顶点的位置为鼠标点击的坐标(x, y)。
+
 				graph.addCell(vertex);
 				graph.setSelectionCell(vertex);
+				// 中文注释：将新顶点添加到图形并将其设置为选中状态。
 			}
 			
 			// Creates the image which is used as the drag icon (preview)
+			// 中文注释：创建用作拖放预览的图标图像。
 			var img = toolbar.addMode(null, image, function(evt, cell)
 			{
 				var pt = this.graph.getPointForEvent(evt);
 				funct(graph, evt, cell, pt.x, pt.y);
+				// 中文注释：将鼠标事件转换为图形坐标，调用funct函数处理拖放逻辑。
 			});
 			
 			// Disables dragging if element is disabled. This is a workaround
 			// for wrong event order in IE. Following is a dummy listener that
 			// is invoked as the last listener in IE.
+			// 中文注释：当元素被禁用时，禁止拖动操作。这是针对IE浏览器事件顺序错误的解决方法。
 			mxEvent.addListener(img, 'mousedown', function(evt)
 			{
 				// do nothing
+				// 中文注释：IE浏览器的占位监听器，无实际操作。
 			});
 			
 			// This listener is always called first before any other listener
 			// in all browsers.
+			// 中文注释：此监听器在所有浏览器中优先于其他监听器被调用。
 			mxEvent.addListener(img, 'mousedown', function(evt)
 			{
 				if (img.enabled == false)
 				{
 					mxEvent.consume(evt);
+					// 中文注释：当图标禁用时，阻止鼠标按下事件的默认行为。
 				}
 			});
 						
 			mxUtils.makeDraggable(img, graph, funct);
-			
+			// 中文注释：使图标可拖动，绑定到图形对象和拖放处理函数。
+
 			return img;
+			// 中文注释：返回创建的工具栏图标元素。
 		}
 
 	</script>
 </head>
 
 <!-- Calls the main function after the page has loaded. Container is dynamically created. -->
+<!-- 中文注释：页面加载完成后调用main函数，动态创建容器。 -->
 <body onload="main();">
 </body>
 </html>

@@ -5,48 +5,80 @@
   automatic graph layouts and listening to changes of the graph size
   to keep the container size in sync.
 -->
+<!--
+  中文注释：此文件为mxGraph的图布局示例，展示如何使用自动图布局并监听图大小变化以保持容器大小同步。
+-->
 <html>
 <head>
 	<title>Graphlayout example for mxGraph</title>
+	<!-- 中文注释：设置页面标题为“mxGraph的图布局示例”。 -->
 
 	<!-- Sets the basepath for the library if not in same directory -->
+	<!-- 中文注释：设置mxGraph库的基础路径，如果库文件不在同一目录下。 -->
 	<script type="text/javascript">
 		mxBasePath = '../src';
+		// 中文注释：将mxGraph库的基础路径设置为'../src'，指定库文件位置。
 	</script>
 
 	<!-- Loads and initializes the library -->
+	<!-- 中文注释：加载并初始化mxGraph库。 -->
 	<script type="text/javascript" src="../src/js/mxClient.js"></script>
+	<!-- 中文注释：引入mxClient.js文件，包含mxGraph的核心功能，用于创建和操作图。 -->
 
 	<!-- Example code -->
+	<!-- 中文注释：示例代码部分，定义图的创建和布局逻辑。 -->
 	<script type="text/javascript">
 
 		// Program starts here. Creates a sample graph in the
 		// DOM node with the specified ID. This function is invoked
 		// from the onLoad event handler of the document (see below).
+		// 中文注释：程序从此处开始，在指定ID的DOM节点中创建示例图。此函数由文档的onLoad事件处理程序调用。
 		function main(container)
 		{
+			// 中文注释：main函数接收一个DOM容器参数，用于初始化和绘制图。
+			// 参数说明：container - 承载图的DOM元素。
+
 			// Checks if browser is supported
+			// 中文注释：检查浏览器是否支持mxGraph库。
 			if (!mxClient.isBrowserSupported())
 			{
 				// Displays an error message if the browser is
 				// not supported.
+				// 中文注释：如果浏览器不支持，则显示错误消息。
 				mxUtils.error('Browser is not supported!', 200, false);
+				// 中文注释：调用mxUtils.error显示错误信息，参数：消息内容“Browser is not supported!”，错误代码200，是否自动关闭（false）。
 			}
 			else
 			{
 				// Creates the graph inside the given container
+				// 中文注释：在指定容器中创建图对象。
 				var graph = new mxGraph(container);
-				
+				// 中文注释：初始化mxGraph实例，参数container为图的渲染容器。
+				// 关键变量说明：graph - mxGraph实例，用于管理图的节点、边和布局。
+
 				// Disables basic selection and cell handling
+				// 中文注释：禁用基本的选择和单元格操作功能。
 				graph.setEnabled(false);
-				
+				// 中文注释：设置图为不可交互状态，禁止用户选择或编辑图元素。
+
 				// Changes the default vertex style in-place
+				// 中文注释：修改默认顶点样式。
 				var style = graph.getStylesheet().getDefaultVertexStyle();
+				// 中文注释：获取图的默认顶点样式对象，用于设置节点外观。
+				// 关键变量说明：style - 存储顶点样式的对象，控制节点形状、颜色等。
 				style[mxConstants.STYLE_SHAPE] = mxConstants.SHAPE_ELLIPSE;
+				// 中文注释：设置顶点形状为椭圆。
+				// 样式设置说明：mxConstants.STYLE_SHAPE定义节点形状，设置为椭圆（SHAPE_ELLIPSE）。
 				style[mxConstants.STYLE_PERIMETER] = mxPerimeter.EllipsePerimeter;
+				// 中文注释：设置顶点边界为椭圆边界。
+				// 样式设置说明：mxConstants.STYLE_PERIMETER定义节点边界计算方式，适配椭圆形状。
 				style[mxConstants.STYLE_GRADIENTCOLOR] = 'white';
+				// 中文注释：设置节点渐变颜色为白色。
+				// 样式设置说明：mxConstants.STYLE_GRADIENTCOLOR控制节点填充渐变色。
 				style[mxConstants.STYLE_FONTSIZE] = '10';
-								
+				// 中文注释：设置节点标签字体大小为10。
+				// 样式设置说明：mxConstants.STYLE_FONTSIZE定义节点文本的字体大小。
+
 				// Updates the size of the container to match
 				// the size of the graph when it changes. If
 				// this is commented-out, and the DIV style's
@@ -56,98 +88,164 @@
 				// visible even when outside the parent DIV.
 				// With the code below, the parent DIV will be
 				// resized to contain the complete graph.
+				// 中文注释：当图大小变化时，更新容器大小以匹配图。如果注释掉此代码，且DIV的overflow样式设为“auto”，图表将显示滚动条；若设为“visible”，图表将超出父DIV显示。以下代码使父DIV调整大小以包含整个图。
 				//graph.setResizeContainer(true);
-				
+				// 中文注释：启用容器大小自动调整以适应图（现已注释，禁用此功能）。
+				// 特殊处理说明：若启用，容器将随图大小动态调整；若禁用，需通过CSS控制溢出行为。
+
 				// Larger grid size yields cleaner layout result
+				// 中文注释：设置较大的网格大小以获得更清晰的布局效果。
 				graph.gridSize = 40;
-				
+				// 中文注释：将图的网格大小设置为40像素，影响节点对齐和布局精度。
+				// 重要配置参数：gridSize - 控制图的网格间距，较大的值使布局更整洁。
+
 				// Gets the default parent for inserting new cells. This
 				// is normally the first child of the root (ie. layer 0).
+				// 中文注释：获取用于插入新单元的默认父节点，通常是根节点的第一个子节点（即第0层）。
 				var parent = graph.getDefaultParent();
+				// 中文注释：获取默认父节点，用于添加顶点和边。
+				// 关键变量说明：parent - 表示图的默认层，用于组织节点和边。
 
 				// Creates a layout algorithm to be used
 				// with the graph
+				// 中文注释：创建用于图的布局算法。
 				var layout = new mxFastOrganicLayout(graph);
+				// 中文注释：初始化mxFastOrganicLayout布局算法，用于自动排列图的节点。
+				// 关键变量说明：layout - mxFastOrganicLayout实例，控制图的有机布局。
+				// 方法目的：提供自动节点排列功能，优化图的可视化效果。
 
 				// Moves stuff wider apart than usual
+				// 中文注释：将节点之间的距离设置得比默认值更宽。
 				layout.forceConstant = 80;
+				// 中文注释：设置布局的力常数为80，控制节点间的排斥力。
+				// 重要配置参数：forceConstant - 决定节点间距，值越大，节点分布越分散。
 
 				// Reference to the transition checkbox
+				// 中文注释：引用动画过渡复选框。
 				var animate = document.getElementById('animate');
-				
+				// 中文注释：获取ID为“animate”的复选框元素，用于控制布局动画。
+				// 关键变量说明：animate - HTML复选框元素，决定是否启用布局动画。
+
 				// Adds a button to execute the layout
+				// 中文注释：添加按钮以执行圆形布局。
 				document.body.insertBefore(mxUtils.button('Circle Layout',
 					function(evt)
 					{
+						// 中文注释：创建“Circle Layout”按钮，点击时执行圆形布局。
+						// 事件处理逻辑：按钮点击触发圆形布局算法，并根据动画设置决定是否平滑过渡。
 						graph.getModel().beginUpdate();
+						// 中文注释：开始更新图模型，防止多次重绘。
+						// 方法目的：beginUpdate确保批量操作期间图不被重绘，提高性能。
 						try
 						{
 							// Creates a layout algorithm to be used
 							// with the graph
+							// 中文注释：创建用于图的布局算法。
 							var circleLayout = new mxCircleLayout(graph);
+							// 中文注释：初始化mxCircleLayout布局算法，用于将节点排列成圆形。
+							// 关键变量说明：circleLayout - mxCircleLayout实例，控制圆形布局。
 							circleLayout.execute(parent);
+							// 中文注释：执行圆形布局，将节点排列在默认父节点中。
+							// 方法目的：execute方法应用布局算法，重新定位节点。
 						}
 						catch (e)
 						{
+							// 中文注释：捕获执行布局时的异常。
 							throw e;
+							// 中文注释：抛出异常以便调试。
+							// 特殊处理说明：确保错误被捕获并抛出，避免程序无声失败。
 						}
 						finally
 						{
 							if (animate.checked)
 							{
+								// 中文注释：检查动画复选框是否选中，若选中则启用动画过渡。
 								var morph = new mxMorphing(graph);
+								// 中文注释：创建mxMorphing实例，用于实现平滑的布局动画。
+								// 关键变量说明：morph - mxMorphing实例，管理图的动画过渡。
 								morph.addListener(mxEvent.DONE, function()
 								{
+									// 中文注释：监听动画完成事件，结束后更新图模型。
+									// 事件处理逻辑：动画完成后调用endUpdate，完成图更新。
 									graph.getModel().endUpdate();
+									// 中文注释：结束图模型更新，触发重绘。
 								});
 								
 								morph.startAnimation();
+								// 中文注释：启动布局动画。
+								// 方法目的：startAnimation执行平滑的节点位置过渡效果。
 							}
 							else
 							{
+								// 中文注释：若未启用动画，直接结束图模型更新。
 								graph.getModel().endUpdate();
+								// 中文注释：结束更新，立即应用布局变化。
 							}
 						}
 					}
 				), document.body.firstChild);
-												
+				// 中文注释：将“Circle Layout”按钮插入到文档body的第一个子节点之前。
+				// 交互逻辑：用户点击按钮触发圆形布局，动态调整图的显示。
+
 				// Adds a button to execute the layout
+				// 中文注释：添加按钮以执行有机布局。
 				document.body.insertBefore(mxUtils.button('Organic Layout',
 					function(evt)
 					{
+						// 中文注释：创建“Organic Layout”按钮，点击时执行有机布局。
+						// 事件处理逻辑：按钮点击触发有机布局算法，并根据动画设置决定是否平滑过渡。
 						graph.getModel().beginUpdate();
+						// 中文注释：开始更新图模型，防止多次重绘。
 						try
 						{
 							layout.execute(parent);
+							// 中文注释：执行有机布局，将节点排列在默认父节点中。
+							// 方法目的：execute方法应用有机布局算法，优化节点分布。
 						}
 						catch (e)
 						{
+							// 中文注释：捕获执行布局时的异常。
 							throw e;
+							// 中文注释：抛出异常以便调试。
 						}
 						finally
 						{
 							if (animate.checked)
 							{
 								// Default values are 6, 1.5, 20
+								// 中文注释：默认动画参数为6（步数）、1.5（缩放因子）、20（延迟）。
 								var morph = new mxMorphing(graph, 10, 1.7, 20);
+								// 中文注释：创建mxMorphing实例，设置动画参数：10步，1.7缩放因子，20ms延迟。
+								// 重要配置参数：mxMorphing构造函数参数控制动画步数、缩放和延迟。
 								morph.addListener(mxEvent.DONE, function()
 								{
+									// 中文注释：监听动画完成事件，结束后更新图模型。
 									graph.getModel().endUpdate();
+									// 中文注释：结束图模型更新，触发重绘。
 								});
 								morph.startAnimation();
+								// 中文注释：启动布局动画。
 							}
 							else
 							{
+								// 中文注释：若未启用动画，直接结束图模型更新。
 								graph.getModel().endUpdate();
+								// 中文注释：结束更新，立即应用布局变化。
 							}
 						}
 					}
 				), document.body.firstChild);
+				// 中文注释：将“Organic Layout”按钮插入到文档body的第一个子节点之前。
+				// 交互逻辑：用户点击按钮触发有机布局，动态调整图的显示。
 
 				// Adds cells to the model in a single step
+				// 中文注释：一次性向模型中添加单元（顶点和边）。
 				graph.getModel().beginUpdate();
+				// 中文注释：开始更新图模型，批量添加节点和边。
 				var w = 30;
 				var h = 30;
+				// 中文注释：定义顶点的宽度和高度，均为30像素。
+				// 关键变量说明：w, h - 控制顶点的大小，影响节点显示。
 				try
 				{
 					var v1 = graph.insertVertex(parent, null, 'A', 0, 0, w, h);
@@ -158,6 +256,8 @@
 					var v6 = graph.insertVertex(parent, null, 'F', 0, 0, w, h);
 					var v7 = graph.insertVertex(parent, null, 'G', 0, 0, w, h);
 					var v8 = graph.insertVertex(parent, null, 'H', 0, 0, w, h);
+					// 中文注释：添加8个顶点（v1到v8），标签为A到H，初始位置(0,0)，大小为w×h。
+					// 方法目的：insertVertex向图中添加顶点，参数：父节点、ID、标签、x坐标、y坐标、宽度、高度。
 					var e1 = graph.insertEdge(parent, null, 'ab', v1, v2);
 					var e2 = graph.insertEdge(parent, null, 'ac', v1, v3);
 					var e3 = graph.insertEdge(parent, null, 'cd', v3, v4);
@@ -168,14 +268,20 @@
 					var e8 = graph.insertEdge(parent, null, 'gc', v7, v3);
 					var e9 = graph.insertEdge(parent, null, 'gd', v7, v4);
 					var e10 = graph.insertEdge(parent, null, 'eh', v5, v8);
-					
+					// 中文注释：添加10条边（e1到e10），连接指定顶点，标签为边的标识。
+					// 方法目的：insertEdge向图中添加边，参数：父节点、ID、标签、源顶点、目标顶点。
+
 					// Executes the layout
+					// 中文注释：执行布局算法。
 					layout.execute(parent);
+					// 中文注释：应用有机布局算法，自动排列父节点中的所有顶点和边。
 				}
 				finally
 				{
 					// Updates the display
+					// 中文注释：更新显示。
 					graph.getModel().endUpdate();
+					// 中文注释：结束图模型更新，触发图的重新渲染。
 				}
 			}
 		};
@@ -183,14 +289,22 @@
 </head>
 
 <!-- Page passes the container for the graph to the program -->
+<!-- 中文注释：页面将图的容器传递给程序。 -->
 <body onload="main(document.getElementById('graphContainer'))">
+	<!-- 中文注释：页面加载时调用main函数，传入ID为“graphContainer”的DOM元素作为图容器。 -->
+	<!-- 事件处理逻辑：onload事件触发main函数，初始化图。 -->
 
 	<!-- Creates a container for the graph with a grid wallpaper. Make sure to define the position
 		and overflow attributes! See comments on the adding of the size-listener on line 54 ff!  -->
+	<!-- 中文注释：为图创建容器，设置网格背景。需定义position和overflow属性！参考第54行起的尺寸监听器注释。 -->
 	<div id="graphContainer"
 		style="position:relative;overflow:auto;width:821px;height:641px;background:url('editors/images/grid.gif');">
 	</div>
+	<!-- 中文注释：定义图容器，ID为“graphContainer”，设置样式：相对定位、自动溢出、固定宽821px、高641px、网格背景图片。 -->
+	<!-- 样式设置说明：position:relative确保容器定位，overflow:auto允许滚动条，背景图片提供网格视觉效果。 -->
 	<br>
 	<input type="checkbox" id="animate" checked="checked"/> Transitions
+	<!-- 中文注释：添加复选框，ID为“animate”，默认选中，标签为“Transitions”，用于控制布局动画。 -->
+	<!-- 交互逻辑：用户通过复选框切换动画效果，影响布局按钮的执行行为。 -->
 </body>
 </html>

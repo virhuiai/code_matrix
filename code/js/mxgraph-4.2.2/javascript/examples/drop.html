@@ -4,72 +4,90 @@
   Drop example for mxGraph. This example demonstrates handling
   native drag and drop of images (requires modern browser).
 -->
+<!-- 中文注释：本示例展示了使用mxGraph实现图像的原生拖放功能，需要现代浏览器支持。 -->
 <html>
 <head>
 	<title>Drop example for mxGraph</title>
 
 	<!-- Sets the basepath for the library if not in same directory -->
+	<!-- 中文注释：设置mxGraph库的基础路径，若库文件不在同一目录下则需指定。 -->
 	<script type="text/javascript">
 		mxBasePath = '../src';
 	</script>
 
 	<!-- Loads and initializes the library -->
+	<!-- 中文注释：加载并初始化mxGraph库。 -->
 	<script type="text/javascript" src="../src/js/mxClient.js"></script>
 
 	<!-- Example code -->
+	<!-- 中文注释：示例代码部分，包含主要功能实现。 -->
 	<script type="text/javascript">
 		// Program starts here. Creates a sample graph in the
 		// DOM node with the specified ID. This function is invoked
 		// from the onLoad event handler of the document (see below).
+		// 中文注释：程序入口，创建指定ID的DOM节点中的示例图形，由文档的onLoad事件处理程序调用。
 		function main(container)
 		{
 			// Checks if the browser is supported
+			// 中文注释：检查浏览器是否支持必要的文件操作功能。
 			var fileSupport = window.File != null && window.FileReader != null && window.FileList != null;
 			
 			if (!fileSupport || !mxClient.isBrowserSupported())
 			{
 				// Displays an error message if the browser is not supported.
+				// 中文注释：如果浏览器不支持，显示错误消息，宽度为200像素，不自动关闭。
 				mxUtils.error('Browser is not supported!', 200, false);
 			}
 			else
 			{
 				// Disables the built-in context menu
+				// 中文注释：禁用容器的默认右键菜单，以避免干扰拖放操作。
 				mxEvent.disableContextMenu(container);
 				
 				// Creates the graph inside the given container
+				// 中文注释：在指定容器中创建mxGraph图形对象。
 				var graph = new mxGraph(container);
 
 				// Enables rubberband selection
+				// 中文注释：启用橡皮筋选择功能，允许用户通过拖动选择多个图形元素。
 				new mxRubberband(graph);
 
+				// 中文注释：为容器添加“dragover”事件监听，处理拖动时的行为。
 				mxEvent.addListener(container, 'dragover', function(evt)
 				{
 					if (graph.isEnabled())
 					{
+						// 中文注释：阻止默认拖动行为并取消事件冒泡，确保拖放操作正常。
 						evt.stopPropagation();
 						evt.preventDefault();
 					}
 				});
 				
+				// 中文注释：为容器添加“drop”事件监听，处理文件释放时的逻辑。
 				mxEvent.addListener(container, 'drop', function(evt)
 				{
 					if (graph.isEnabled())
 					{
+						// 中文注释：阻止默认释放行为并取消事件冒泡。
 						evt.stopPropagation();
 						evt.preventDefault();
 
 						// Gets drop location point for vertex
+						// 中文注释：获取释放位置的坐标，用于确定新顶点的位置。
 						var pt = mxUtils.convertPoint(graph.container, mxEvent.getClientX(evt), mxEvent.getClientY(evt));
 						var tr = graph.view.translate;
 						var scale = graph.view.scale;
+						// 中文注释：将客户端坐标转换为图形坐标，考虑缩放和偏移。
 						var x = pt.x / scale - tr.x;
 						var y = pt.y / scale - tr.y;
 						
 						// Converts local images to data urls
+						// 中文注释：获取拖放的文件列表，将本地图像转换为数据URL。
 						var filesArray = event.dataTransfer.files;
 						
 		                for (var i = 0; i < filesArray.length; i++)
 		                {
+							// 中文注释：逐个处理拖放的文件，调用handleDrop函数插入图像顶点，x和y坐标略有偏移以避免重叠。
 			    			handleDrop(graph, filesArray[i], x + i * 10, y + i * 10);
 		                }
 					}
@@ -79,26 +97,34 @@
 
 		// Handles each file as a separate insert for simplicity.
 		// Use barrier to handle multiple files as a single insert.
+		// 中文注释：为简化操作，将每个文件作为单独的插入处理；可使用屏障机制将多个文件作为单一插入处理。
 		function handleDrop(graph, file, x, y)
 		{
+			// 中文注释：检查文件类型是否为图像，仅处理图像文件。
 			if (file.type.substring(0, 5) == 'image')
 			{
                 var reader = new FileReader();
 
+                // 中文注释：当文件加载完成后执行的事件处理函数。
                 reader.onload = function(e)
                 {
                 	// Gets size of image for vertex
+                	// 中文注释：获取图像数据，用于创建顶点。
 					var data = e.target.result;
 
     				// SVG needs special handling to add viewbox if missing and
     				// find initial size from SVG attributes (only for IE11)
+					// 中文注释：对SVG图像进行特殊处理，确保添加viewBox属性并从SVG属性中获取初始尺寸（主要针对IE11）。
 					if (file.type.substring(0, 9) == 'image/svg')
 	    			{
     					var comma = data.indexOf(',');
+						// 中文注释：将Base64编码的SVG数据解码为文本。
     					var svgText = atob(data.substring(comma + 1));
+						// 中文注释：解析SVG文本为XML DOM对象。
     					var root = mxUtils.parseXml(svgText);
     					
     					// Parses SVG to find width and height
+    					// 中文注释：解析SVG以获取宽度和高度属性。
     					if (root != null)
     					{
     						var svgs = root.getElementsByTagName('svg');
@@ -106,18 +132,22 @@
     						if (svgs.length > 0)
 	    					{
     							var svgRoot = svgs[0];
+								// 中文注释：获取SVG的宽度和高度属性。
 	    						var w = parseFloat(svgRoot.getAttribute('width'));
 	    						var h = parseFloat(svgRoot.getAttribute('height'));
 	    						
 	    						// Check if viewBox attribute already exists
+	    						// 中文注释the viewBox属性是否存在。
 	    						var vb = svgRoot.getAttribute('viewBox');
 	    						
 	    						if (vb == null || vb.length == 0)
 	    						{
+									// 中文注释：如果SVG缺少viewBox属性，添加默认viewBox以确保正确渲染。
 	    							svgRoot.setAttribute('viewBox', '0 0 ' + w + ' ' + h);
 	    						}
 	    						// Uses width and height from viewbox for
 	    						// missing width and height attributes
+							// 中文注释：若SVG缺少width或height属性，则从viewBox中提取宽度和高度。
 	    						else if (isNaN(w) || isNaN(h))
 	    						{
 	    							var tokens = vb.split(' ');
@@ -129,24 +159,31 @@
 	    							}
 	    						}
 	    						
+								// 中文注释：确保宽度和高度至少为1，并四舍五入为整数。
 		                    	w = Math.max(1, Math.round(w));
 		                    	h = Math.max(1, Math.round(h));
 	    						
+								// 中文注释：将SVG重新编码为数据URL，并插入到图形中作为顶点。
 	    						data = 'data:image/svg+xml,' + btoa(mxUtils.getXml(svgs[0], '\n'));
+	    						// 中文注释：插入图像顶点，设置样式为图像形状，指定图像数据URL。
 	    						graph.insertVertex(null, null, '', x, y, w, h, 'shape=image;image=' + data + ';');
 	    					}
     					}
 	    			}
 					else
 					{
+						// 中文注释：处理非SVG图像，创建图像对象以获取尺寸及其他属性。
                     	var img = new Image();
                     	
+                    	// 中文注释：图像加载完成后执行的回调函数。
                     	img.onload = function()
                     	{
+							// 中文注释：确保图像宽度和高度至少为1。
 	                    	var w = Math.max(1, img.width);
 	                    	var h = Math.max(1, img.height);
 	                    	
 	                    	// Converts format of data url to cell style value for use in vertex
+							// 中文注释：调整数据URL格式以符合顶点样式要求。
 	        				var semi = data.indexOf(';');
 	        				
 	        				if (semi > 0)
@@ -154,13 +191,16 @@
 	        					data = data.substring(0, semi) + data.substring(data.indexOf(',', semi + 1));
 	        				}
 
+							// 中文注释：插入图像顶点，设置样式为图像形状，指定图像数据URL。
 	        				graph.insertVertex(null, null, '', x, y, w, h, 'shape=image;image=' + data + ';');
                     	};
                     	
+                    	// 中文注释：设置图像对象的源为数据URL，开始加载图像。
                     	img.src = data;
 					}
                 };
                 
+				// 中文注释：以数据URL格式读取文件内容，触发onload事件。
 				reader.readAsDataURL(file);
 			}
 		};
@@ -168,9 +208,11 @@
 </head>
 
 <!-- Page passes the container for the graph to the program -->
+<!-- 中文注释：页面通过onLoad事件将图形容器传递给main函数。 -->
 <body onload="main(document.getElementById('graphContainer'))">
 	Drag & drop your images below:<br>
 	<!-- Creates a container for the graph with a grid wallpaper -->
+	<!-- 中文注释：创建图形容器，设置网格背景，指定容器尺寸和样式，禁用默认光标。 -->
 	<div id="graphContainer"
 		style="position:relative;overflow:hidden;width:621px;height:441px;background:url('editors/images/grid.gif');cursor:default;">
 	</div>

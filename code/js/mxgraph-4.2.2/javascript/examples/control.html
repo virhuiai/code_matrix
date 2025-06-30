@@ -4,162 +4,239 @@
   Control example for mxGraph. This example demonstrates adding
   controls to specific cells in a graph.
 -->
+<!-- 中文注释：本文件为mxGraph的控件示例，展示如何为图中的特定单元格添加控件。 -->
 <html>
 <head>
 	<title>Control example for mxGraph</title>
+	<!-- 中文注释：设置页面标题为“mxGraph控件示例”。 -->
 
 	<!-- Sets the basepath for the library if not in same directory -->
+	<!-- 中文注释：设置mxGraph库的基础路径，如果库文件不在同一目录下。 -->
 	<script type="text/javascript">
 		mxBasePath = '../src';
+		// 中文注释：将mxGraph库的基础路径设置为'../src'，指定库文件所在目录。
 	</script>
 
 	<!-- Loads and initializes the library -->
+	<!-- 中文注释：加载并初始化mxGraph库。 -->
 	<script type="text/javascript" src="../src/js/mxClient.js"></script>
+	<!-- 中文注释：引入mxClient.js文件，用于加载mxGraph库的核心功能。 -->
 
 	<!-- Example code -->
+	<!-- 中文注释：以下为示例代码，用于创建和操作mxGraph图表。 -->
 	<script type="text/javascript">
 		// Program starts here. Creates a sample graph in the
 		// DOM node with the specified ID. This function is invoked
 		// from the onLoad event handler of the document (see below).
+		// 中文注释：程序入口函数，创建一个示例图表，渲染到指定ID的DOM节点中。通过文档的onLoad事件调用。
 		function main(container)
 		{
 			// Checks if the browser is supported
+			// 中文注释：检查浏览器是否支持mxGraph库。
 			if (!mxClient.isBrowserSupported())
 			{
 				// Displays an error message if the browser is not supported.
+				// 中文注释：如果浏览器不支持，显示错误消息。
 				mxUtils.error('Browser is not supported!', 200, false);
+				// 中文注释：调用mxUtils.error显示错误提示，提示内容为“浏览器不支持”，对话框宽度200像素，不自动关闭。
 			}
 			else
 			{
 				// Creates the graph inside the given container
+				// 中文注释：在指定容器中创建mxGraph图表实例。
 				var graph = new mxGraph(container);
+				// 中文注释：使用mxGraph构造函数初始化图表，参数container为DOM容器节点。
 				graph.setPanning(true);
-				
+				// 中文注释：启用图表的平移功能，允许用户拖动图表。
+
 				// Specifies the URL and size of the new control
+				// 中文注释：定义删除控件的图标URL和大小。
 				var deleteImage = new mxImage('editors/images/overlays/forbidden.png', 16, 16);
+				// 中文注释：创建mxImage对象，指定删除控件使用的图标路径为'editors/images/overlays/forbidden.png'，图标大小为16x16像素。
 
 				// Overridden to add an additional control to the state at creation time
+				// 中文注释：重写mxCellRenderer的createControl方法，以便在创建单元格状态时添加额外的删除控件。
 				mxCellRendererCreateControl = mxCellRenderer.prototype.createControl;
+				// 中文注释：保存原始createControl方法，以便在重写的方法中调用。
 				mxCellRenderer.prototype.createControl = function(state)
 				{
 					mxCellRendererCreateControl.apply(this, arguments);
-					
+					// 中文注释：调用原始的createControl方法，确保原有功能不受影响。
+
 					var graph = state.view.graph;
-					
+					// 中文注释：获取当前单元格状态关联的图表对象。
+
 					if (graph.getModel().isVertex(state.cell))
 					{
+						// 中文注释：检查当前单元格是否为顶点（vertex）。
 						if (state.deleteControl == null)
 						{
+							// 中文注释：如果当前单元格状态没有删除控件，则创建一个新的删除控件。
 							var b = new mxRectangle(0, 0, deleteImage.width, deleteImage.height);
+							// 中文注释：创建mxRectangle对象，定义删除控件的大小，宽度和高度与deleteImage一致。
 							state.deleteControl = new mxImageShape(b, deleteImage.src);
+							// 中文注释：创建mxImageShape对象作为删除控件，设置其边界和图标URL。
 							state.deleteControl.dialect = graph.dialect;
+							// 中文注释：设置删除控件的渲染方言（dialect），与图表的渲染方式保持一致。
 							state.deleteControl.preserveImageAspect = false;
-							
+							// 中文注释：设置删除控件不保持图像纵横比，允许拉伸。
+
 							this.initControl(state, state.deleteControl, false, function (evt)
 							{
+								// 中文注释：初始化删除控件，并绑定点击事件处理函数。
 								if (graph.isEnabled())
 								{
+									// 中文注释：检查图表是否处于启用状态。
 									graph.removeCells([state.cell]);
+									// 中文注释：删除当前单元格。
 									mxEvent.consume(evt);
+									// 中文注释：消费事件，防止事件进一步传播。
 								}
 							});
+							// 中文注释：初始化控件，参数包括：状态、控件对象、是否禁用、点击事件的回调函数。
 						}
 					}
 					else if (state.deleteControl != null)
 					{
+						// 中文注释：如果单元格不是顶点且存在删除控件，则销毁该控件。
 						state.deleteControl.destroy();
+						// 中文注释：销毁删除控件对象。
 						state.deleteControl = null;
+						// 中文注释：将删除控件引用置为空。
 					}
 				};
 				
 				// Helper function to compute the bounds of the control
+				// 中文注释：辅助函数，用于计算删除控件的边界。
 				var getDeleteControlBounds = function(state)
 				{
 					if (state.deleteControl != null)
 					{
+						// 中文注释：如果存在删除控件，则计算其边界。
 						var oldScale = state.deleteControl.scale;
+						// 中文注释：获取当前删除控件的缩放比例。
 						var w = state.deleteControl.bounds.width / oldScale;
+						// 中文注释：计算删除控件在未缩放时的宽度。
 						var h = state.deleteControl.bounds.height / oldScale;
-						var s = state.view.scale;			
+						// 中文注释：计算删除控件在未缩放时的高度。
+						var s = state.view.scale;
+						// 中文注释：获取图表的当前缩放比例。
 
 						return (state.view.graph.getModel().isEdge(state.cell)) ? 
+							// 中文注释：根据单元格类型（边或顶点）计算删除控件的边界位置。
 							new mxRectangle(state.x + state.width / 2 - w / 2 * s,
 								state.y + state.height / 2 - h / 2 * s, w * s, h * s)
+							// 中文注释：如果单元格是边（edge），控件位于边的中心。
 							: new mxRectangle(state.x + state.width - w * s,
 								state.y, w * s, h * s);
+							// 中文注释：如果单元格是顶点，控件位于顶点的右上角。
 					}
 					
 					return null;
+					// 中文注释：如果没有删除控件，返回null。
 				};
 				
 				// Overridden to update the scale and bounds of the control
+				// 中文注释：重写redrawControl方法，以更新删除控件的缩放比例和边界。
 				mxCellRendererRedrawControl = mxCellRenderer.prototype.redrawControl;
+				// 中文注释：保存原始redrawControl方法，以便在重写的方法中调用。
 				mxCellRenderer.prototype.redrawControl = function(state)
 				{
 					mxCellRendererRedrawControl.apply(this, arguments);
-					
+					// 中文注释：调用原始的redrawControl方法，确保原有功能不受影响。
+
 					if (state.deleteControl != null)
 					{
+						// 中文注释：如果存在删除控件，更新其边界和缩放比例。
 						var bounds = getDeleteControlBounds(state);
+						// 中文注释：调用getDeleteControlBounds计算删除控件的新边界。
 						var s = state.view.scale;
-						
+						// 中文注释：获取图表的当前缩放比例。
+
 						if (state.deleteControl.scale != s || !state.deleteControl.bounds.equals(bounds))
 						{
+							// 中文注释：如果缩放比例或边界发生变化，更新删除控件。
 							state.deleteControl.bounds = bounds;
+							// 中文注释：更新删除控件的边界。
 							state.deleteControl.scale = s;
+							// 中文注释：更新删除控件的缩放比例。
 							state.deleteControl.redraw();
+							// 中文注释：重新绘制删除控件以应用更新。
 						}
 					}
 				};
 				
 				// Overridden to remove the control if the state is destroyed
+				// 中文注释：重写destroy方法，以在单元格状态销毁时移除删除控件。
 				mxCellRendererDestroy = mxCellRenderer.prototype.destroy;
+				// 中文注释：保存原始destroy方法，以便在重写的方法中调用。
 				mxCellRenderer.prototype.destroy = function(state)
 				{
 					mxCellRendererDestroy.apply(this, arguments);
+					// 中文注释：调用原始的destroy方法，确保原有功能不受影响。
 
 					if (state.deleteControl != null)
 					{
+						// 中文注释：如果存在删除控件，则销毁它。
 						state.deleteControl.destroy();
+						// 中文注释：销毁删除控件对象。
 						state.deleteControl = null;
+						// 中文注释：将删除控件引用置为空。
 					}
 				};
 
 				// Uncomment the following if you want the container
 				// to fit the size of the graph
 				//graph.setResizeContainer(true);
-				
+				// 中文注释：取消注释以启用容器自适应图表大小的功能。
+
 				// Enables rubberband selection
+				// 中文注释：启用橡皮筋选择功能，允许用户通过拖拽选择多个单元格。
 				new mxRubberband(graph);
-				
+				// 中文注释：创建mxRubberband对象，绑定到图表以启用橡皮筋选择。
+
 				// Gets the default parent for inserting new cells. This
 				// is normally the first child of the root (ie. layer 0).
+				// 中文注释：获取用于插入新单元格的默认父节点，通常为根节点的第一个子节点（即第0层）。
 				var parent = graph.getDefaultParent();
-								
+				// 中文注释：获取默认父节点，存储在parent变量中，用于后续单元格插入。
+
 				// Adds cells to the model in a single step
+				// 中文注释：通过单次操作向模型中添加单元格。
 				graph.getModel().beginUpdate();
+				// 中文注释：开始更新模型，锁定模型以批量添加单元格。
 				try
 				{
 					var v1 = graph.insertVertex(parent, null, 'Hello,', 20, 20, 80, 30);
+					// 中文注释：插入第一个顶点，标签为“Hello,”，位置为(20,20)，大小为80x30像素。
 					var v2 = graph.insertVertex(parent, null, 'World!', 200, 150, 80, 30);
+					// 中文注释：插入第二个顶点，标签为“World!”，位置为(200,150)，大小为80x30像素。
 					var e1 = graph.insertEdge(parent, null, '', v1, v2);
+					// 中文注释：插入一条边，连接顶点v1和v2，标签为空。
 				}
 				finally
 				{
 					// Updates the display
+					// 中文注释：更新图表显示。
 					graph.getModel().endUpdate();
+					// 中文注释：结束模型更新，应用所有更改并刷新图表。
 				}
 				
 				graph.centerZoom = false;
-				
+				// 中文注释：禁用中心缩放功能，缩放时不以图表中心为基准。
+
 				document.body.appendChild(mxUtils.button('Zoom In', function()
 				{
+					// 中文注释：添加“放大”按钮，点击时调用graph.zoomIn方法放大图表。
 					graph.zoomIn();
+					// 中文注释：执行图表放大操作。
 				}));
 				
 				document.body.appendChild(mxUtils.button('Zoom Out', function()
 				{
+					// 中文注释：添加“缩小”按钮，点击时调用graph.zoomOut方法缩小图表。
 					graph.zoomOut();
+					// 中文注释：执行图表缩小操作。
 				}));
 			}
 		};
@@ -167,11 +244,15 @@
 </head>
 
 <!-- Page passes the container for the graph to the program -->
+<!-- 中文注释：页面通过onload事件将图表容器传递给main函数。 -->
 <body onload="main(document.getElementById('graphContainer'))">
+	<!-- 中文注释：在页面加载时调用main函数，参数为ID为'graphContainer'的DOM节点。 -->
 
 	<!-- Creates a container for the graph with a grid wallpaper -->
+	<!-- 中文注释：创建图表的容器，带有网格背景图像。 -->
 	<div id="graphContainer"
 		style="overflow:hidden;width:621px;height:441px;background:url('editors/images/grid.gif');cursor:default;">
+		<!-- 中文注释：定义图表容器，ID为'graphContainer'，样式设置包括：隐藏溢出内容、宽621像素、高441像素、网格背景图像、默认鼠标光标。 -->
 	</div>
 </body>
 </html>

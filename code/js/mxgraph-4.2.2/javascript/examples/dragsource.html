@@ -4,194 +4,275 @@
   Dragsource example for mxGraph. This example demonstrates using
   one drag source for multiple graphs and changing the drag icon.
 -->
+<!--
+  中文注释：此示例展示了如何使用mxGraph库实现一个拖放源在多个图表中的应用，并支持自定义拖放图标。
+-->
 <html>
 <head>
 	<title>Dragsource example for mxGraph</title>
+	<!-- 中文注释：页面标题，表明这是一个mxGraph的拖放源示例 -->
 
 	<!-- Sets the basepath for the library if not in same directory -->
+	<!-- 中文注释：设置mxGraph库的基础路径，如果库文件不在同一目录下 -->
 	<script type="text/javascript">
 		mxBasePath = '../src';
+		// 中文注释：配置mxGraph库的基础路径为'../src'，用于加载库文件
 	</script>
 
 	<!-- Loads and initializes the library -->
+	<!-- 中文注释：加载并初始化mxGraph库 -->
 	<script type="text/javascript" src="../src/js/mxClient.js"></script>
 
 	<!-- Example code -->
+	<!-- 中文注释：以下为示例代码，包含主要逻辑 -->
 	<script type="text/javascript">
 		// Program starts here. Creates a sample graph in the
 		// DOM node with the specified ID. This function is invoked
 		// from the onLoad event handler of the document (see below).
+		// 中文注释：程序入口函数，在页面加载时调用，创建一个示例图表并将其插入到指定ID的DOM节点中
 		function main()
 		{
 			// Checks if the browser is supported
+			// 中文注释：检查浏览器是否支持mxGraph库
 			if (!mxClient.isBrowserSupported())
 			{
 				// Displays an error message if the browser is not supported.
+				// 中文注释：如果浏览器不支持，显示错误提示信息
 				mxUtils.error('Browser is not supported!', 200, false);
+				// 中文注释：调用mxUtils.error方法显示错误信息，参数200表示错误对话框宽度，false表示不自动关闭
 			}
 			else
 			{
 				// Enables guides
+				// 中文注释：启用辅助线功能，帮助用户对齐图形元素
 				mxGraphHandler.prototype.guidesEnabled = true;
-				
+				// 中文注释：设置mxGraphHandler的guidesEnabled属性为true，开启辅助线
+
 			    // Alt disables guides
+			    // 中文注释：当按下Alt键时禁用辅助线
 			    mxGuide.prototype.isEnabledForEvent = function(evt)
 			    {
 			    	return !mxEvent.isAltDown(evt);
+			    	// 中文注释：检查事件中是否按下Alt键，若按下则禁用辅助线
 			    };
 				
 				// Enables snapping waypoints to terminals
+				// 中文注释：启用路径点自动吸附到终端点功能
 				mxEdgeHandler.prototype.snapToTerminals = true;
-				
+				// 中文注释：设置mxEdgeHandler的snapToTerminals属性为true，使连接线的端点自动吸附到节点
+
 				var graphs = [];
-				
+				// 中文注释：定义一个数组，用于存储多个图表实例
+
 				// Creates the graph inside the given container
+				// 中文注释：在指定容器中创建图表
 				for (var i = 0; i < 2; i++)
 				{
 					var container = document.createElement('div');
+					// 中文注释：创建div元素作为图表的容器
 					container.style.overflow = 'hidden';
+					// 中文注释：设置容器样式，隐藏溢出内容
 					container.style.position = 'relative';
+					// 中文注释：设置容器为相对定位，便于子元素定位
 					container.style.width = '321px';
+					// 中文注释：设置容器宽度为321像素
 					container.style.height = '241px';
+					// 中文注释：设置容器高度为241像素
 					container.style.background = 'url(\'editors/images/grid.gif\')';
+					// 中文注释：设置容器背景为网格图片，增强视觉辅助
 					container.style.cursor = 'default';
+					// 中文注释：设置鼠标指针为默认样式
 
 					document.body.appendChild(container);
-					
+					// 中文注释：将容器添加到页面body中
+
 					var graph = new mxGraph(container);
+					// 中文注释：创建mxGraph实例，绑定到指定容器
 					graph.gridSize = 30;
-					
+					// 中文注释：设置图表网格大小为30像素，用于对齐元素
+
 					// Uncomment the following if you want the container
 					// to fit the size of the graph
 					//graph.setResizeContainer(true);
-					
+					// 中文注释：如果取消注释，容器将自动调整大小以适应图表内容
+
 					// Enables rubberband selection
+					// 中文注释：启用橡皮筋选择功能，允许通过拖动选择多个元素
 					new mxRubberband(graph);
-					
+					// 中文注释：为图表实例创建橡皮筋选择功能
+
 					// Gets the default parent for inserting new cells. This
 					// is normally the first child of the root (ie. layer 0).
+					// 中文注释：获取默认父节点，用于插入新单元格，通常是根节点的第一个子节点 Kepi
 					var parent = graph.getDefaultParent();
-									
+					// 中文注释：获取默认父节点（通常为根节点的第一个子节点，层级0）
+
 					// Adds cells to the model in a single step
+					// 中文注释：以单次更新的方式向模型中添加单元格
 					graph.getModel().beginUpdate();
+					// 中文注释：开始更新图表模型，确保批量操作的原子性
 					try
 					{
 						var v1 = graph.insertVertex(parent, null, 'Hello,', 20, 20, 80, 30);
+						// 中文注释：在父节点中插入一个顶点，标签为“Hello,”，位置为(20,20)，大小为80x30像素
 						var v2 = graph.insertVertex(parent, null, 'World!', 200, 150, 80, 30);
+						// 中文注释：插入第二个顶点，标签为“World!”，位置为(200,150)，大小为80x30像素
 						var e1 = graph.insertEdge(parent, null, '', v1, v2);
+						// 中文注释：插入一条连接线，连接v1和v2，无标签
 					}
 					finally
 					{
 						// Updates the display
+						// 中文注释：更新图表显示，应用所有更改
 						graph.getModel().endUpdate();
+						// 中文注释：结束模型更新，提交所有更改
 					}
 					
 					graphs.push(graph);
+					// 中文注释：将图表实例添加到graphs数组中
 				}
 				
 				// Returns the graph under the mouse
+				// 中文注释：获取鼠标指针所在位置的图表实例
 				var graphF = function(evt)
 				{
 					var x = mxEvent.getClientX(evt);
+					// 中文注释：获取鼠标事件的客户端X坐标
 					var y = mxEvent.getClientY(evt);
+					// 中文注释：获取鼠标事件的客户端Y坐标
 					var elt = document.elementFromPoint(x, y);
-					
+					// 中文注释：根据鼠标坐标获取DOM元素
+
 					for (var i = 0; i < graphs.length; i++)
 					{
 						if (mxUtils.isAncestorNode(graphs[i].container, elt))
 						{
 							return graphs[i];
+							// 中文注释：如果鼠标位于某个图表的容器内，返回该图表实例
 						}
 					}
 					
 					return null;
+					// 中文注释：如果鼠标不在任何图表容器内，返回null
 				};
 				
 				// Inserts a cell at the given location
+				// 中文注释：在指定位置插入一个单元格
 				var funct = function(graph, evt, target, x, y)
 				{
 					var cell = new mxCell('Test', new mxGeometry(0, 0, 120, 40));
+					// 中文注释：创建新单元格，标签为“Test”，大小为120x40像素
 					cell.vertex = true;
+					// 中文注释：设置单元格为顶点类型
 					var cells = graph.importCells([cell], x, y, target);
+					// 中文注释：在指定坐标(x,y)和目标父节点中插入单元格
 
 					if (cells != null && cells.length > 0)
 					{
 						graph.scrollCellToVisible(cells[0]);
+						// 中文注释：滚动图表使新插入的单元格可见
 						graph.setSelectionCells(cells);
+						// 中文注释：将新插入的单元格设置为选中状态
 					}
 				};
 				
 				// Creates a DOM node that acts as the drag source
+				// 中文注释：创建拖放源的DOM节点
 				var img = mxUtils.createImage('images/icons48/gear.png');
+				// 中文注释：创建拖放源的图像元素，引用gear.png图标
 				img.style.width = '48px';
+				// 中文注释：设置图像宽度为48像素
 				img.style.height = '48px';
+				// 中文注释：设置图像高度为48像素
 				document.body.appendChild(img);
-				
+				// 中文注释：将图像元素添加到页面body中
+
 				// Disables built-in DnD in IE (this is needed for cross-frame DnD, see below)
+				// 中文注释：在IE浏览器中禁用内置拖放功能（为支持跨框架拖放）
 				if (mxClient.IS_IE)
 				{
 					mxEvent.addListener(img, 'dragstart', function(evt)
 					{
 						evt.returnValue = false;
+						// 中文注释：阻止IE浏览器的默认拖放行为
 					});
 				}
 				
 				// Creates the element that is being for the actual preview.
+				// 中文注释：创建用于拖放预览的DOM元素
 				var dragElt = document.createElement('div');
+				// 中文注释：创建div元素作为拖放预览元素
 				dragElt.style.border = 'dashed black 1px';
+				// 中文注释：设置预览元素的边框为1像素黑色虚线
 				dragElt.style.width = '120px';
+				// 中文注释：设置预览元素宽度为120像素
 				dragElt.style.height = '40px';
-				
+				// 中文注释：设置预览元素高度为40像素
+
 				// Drag source is configured to use dragElt for preview and as drag icon
 				// if scalePreview (last) argument is true. Dx and dy are null to force
 				// the use of the defaults. Note that dx and dy are only used for the
 				// drag icon but not for the preview.
+				// 中文注释：配置拖放源，使用dragElt作为预览元素和拖放图标（如果scalePreview为true）
+				// 中文注释：dx和dy参数为null，使用默认值，仅影响拖放图标，不影响预览
 				var ds = mxUtils.makeDraggable(img, graphF, funct, dragElt, null, null, graph.autoscroll, true);
-				
+				// 中文注释：创建拖放源，绑定图像元素到graphF函数和funct函数，支持自动滚动和预览
+
 				// Redirects feature to global switch. Note that this feature should only be used
-				// if the the x and y arguments are used in funct to insert the cell.
+				// if the x and y arguments are used in funct to insert the cell.
+				// 中文注释：将辅助线功能重定向到全局开关，仅当funct函数中使用x和y参数插入单元格时使用
 				ds.isGuidesEnabled = function()
 				{
 					return graph.graphHandler.guidesEnabled;
+					// 中文注释：返回图表的辅助线启用状态
 				};
 				
 				// Restores original drag icon while outside of graph
+				// 中文注释：在图表外部时恢复原始拖放图标
 				ds.createDragElement = mxDragSource.prototype.createDragElement;
+				// 中文注释：重置拖放元素的创建方法为默认方法
 			}
 		};
 		
 		// NOTE: To enable cross-document DnD (eg. between frames),
 		// the following methods need to be overridden:
 		/*mxDragSourceMouseUp = mxDragSource.prototype.mouseUp;
+		// 中文注释：保存原始的mouseUp方法，用于跨文档拖放支持
 		mxDragSource.prototype.mouseUp = function(evt)
 		{
 			var doc = this.element.ownerDocument;
-			
+			// 中文注释：获取拖放源元素所属的文档
 			if (doc != document)
 			{
 				var mu = (mxClient.IS_TOUCH) ? 'touchend' : 'mouseup';
-				
+				// 中文注释：根据设备类型选择鼠标松开或触摸结束事件
 				if (this.mouseUpHandler != null)
 				{
 					mxEvent.removeListener(doc, mu, this.mouseUpHandler);
+					// 中文注释：移除鼠标松开事件的监听器
 				}
 			}
 			
 			mxDragSourceMouseUp.apply(this, arguments);
+			// 中文注释：调用原始的mouseUp方法
 		};*/
 		
 		/*mxDragSourceMouseDown = mxDragSource.prototype.mouseDown;
+		// 中文注释：保存原始的mouseDown方法，用于跨文档拖放支持
 		mxDragSource.prototype.mouseDown = function(evt)
 		{
 			if (this.enabled && !mxEvent.isConsumed(evt))
 			{
 				mxDragSourceMouseDown.apply(this, arguments);
+				// 中文注释：如果拖放源启用且事件未被消耗，调用原始mouseDown方法
 				var doc = this.element.ownerDocument;
-				
+				// 中文注释：获取拖放源元素所属的文档
 				if (doc != document)
 				{
 					var mu = (mxClient.IS_TOUCH) ? 'touchend' : 'mouseup';
+					// 中文注释：根据设备类型选择鼠标松开或触摸结束事件
 					mxEvent.addListener(doc, mu, this.mouseUpHandler);
+					// 中文注释：为文档添加鼠标松开事件的监听器
 				}
 			}
 		};*/
@@ -199,6 +280,8 @@
 </head>
 
 <!-- Page passes the container for the graph to the program -->
+<!-- 中文注释：页面通过onload事件将图表容器传递给程序 -->
 <body onload="main();">
+	<!-- 中文注释：页面加载完成后调用main函数初始化图表 -->
 </body>
 </html>

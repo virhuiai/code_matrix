@@ -6,145 +6,199 @@
   a specific field of the user object. Wrapping and DOM nodes as labels are
   also demonstrated here.
 -->
+<!--
+  中文注释：此示例展示如何使用 mxGraph 的内嵌编辑器触发器来指定编辑值，并将新值写入用户对象的特定字段。还展示了标签的换行和 DOM 节点的使用。
+-->
 <html>
 <head>
 	<title>Editing example for mxGraph</title>
+	<!-- 中文注释：页面标题，表明这是一个 mxGraph 的编辑示例 -->
 
 	<!-- Sets the basepath for the library if not in same directory -->
+	<!-- 中文注释：设置 mxGraph 库的基础路径，如果库文件不在同一目录下 -->
 	<script type="text/javascript">
 		mxBasePath = '../src';
+		// 中文注释：将 mxGraph 库的基础路径设置为 '../src'
 	</script>
 
 	<!-- Loads and initializes the library -->
+	<!-- 中文注释：加载并初始化 mxGraph 库 -->
 	<script type="text/javascript" src="../src/js/mxClient.js"></script>
 
 	<!-- Example code -->
+	<!-- 中文注释：以下为示例代码 -->
 	<script type="text/javascript">
 
 		// Program starts here. Creates a sample graph in the
 		// DOM node with the specified ID. This function is invoked
 		// from the onLoad event handler of the document (see below).
+		// 中文注释：程序从这里开始。在指定 ID 的 DOM 节点中创建示例图形。此函数由文档的 onLoad 事件处理程序调用（见下方）。
 		function main(container)
 		{
 			// Checks if the browser is supported
+			// 中文注释：检查浏览器是否支持 mxGraph
 			if (!mxClient.isBrowserSupported())
 			{
 				// Displays an error message if the browser is not supported
+				// 中文注释：如果浏览器不受支持，显示错误消息
 				mxUtils.error('Browser is not supported!', 200, false);
+				// 中文注释：调用 mxUtils.error 显示错误信息，参数为消息内容、宽度和是否自动关闭
 			}
 			else
 			{
 				// Creates the graph inside the given container
+				// 中文注释：在指定容器中创建图形对象
 				var graph = new mxGraph(container);
+				// 中文注释：初始化 mxGraph 实例，参数为 DOM 容器
 				graph.setHtmlLabels(true);
-				
+				// 中文注释：设置图形支持 HTML 标签，允许在单元格中使用 HTML 内容
+
 				// Adds handling of return and escape keystrokes for editing
+				// 中文注释：添加处理回车和 ESC 键的键盘事件，用于编辑功能
 				var keyHandler = new mxKeyHandler(graph);
-				
+				// 中文注释：创建 mxKeyHandler 实例，绑定到图形对象以处理键盘输入
+
 				// Helper method that returns the fieldname to be used for
 				// a mouse event
+				// 中文注释：辅助方法，根据鼠标事件返回要编辑的字段名称
 				var getFieldnameForEvent = function(cell, evt)
 				{
+					// 中文注释：接收单元格和事件对象作为参数
 					if (evt != null)
 					{
 						// Finds the relative coordinates inside the cell
+						// 中文注释：计算鼠标在单元格内的相对坐标
 						var point = mxUtils.convertPoint(graph.container,
 							mxEvent.getClientX(evt), mxEvent.getClientY(evt));
+						// 中文注释：使用 mxUtils.convertPoint 将鼠标的客户端坐标转换为容器内的相对坐标
 						var state = graph.getView().getState(cell);
-						
+						// 中文注释：获取单元格的视图状态，用于定位
+
 						if (state != null)
 						{
 							point.x -= state.x;
 							point.y -= state.y;
-							
+							// 中文注释：将绝对坐标转换为单元格内的相对坐标
+
 							// Returns second if mouse in second half of cell
+							// 中文注释：如果鼠标位于单元格的下半部分，返回 'second'
 							if (point.y > state.height / 2)
 							{
 								return 'second';
+								// 中文注释：返回字段名 'second'，表示编辑下半部分的字段
 							}
 						}
 					}
 					
 					return 'first';
+					// 中文注释：默认返回 'first'，表示编辑上半部分的字段
 				};
 				
 				// Returns a HTML representation of the cell where the
 				// upper half is the first value, lower half is second
 				// value
+				// 中文注释：返回单元格的 HTML 表示，上半部分显示第一个值，下半部分显示第二个值
 				graph.getLabel = function(cell)
 				{
+					// 中文注释：定义单元格标签的显示方式
 					var table = document.createElement('table');
 					table.style.height = '100%';
 					table.style.width = '100%';
-					
+					// 中文注释：创建表格元素，设置高度和宽度为 100%，填充整个单元格
+
 					var body = document.createElement('tbody');
+					// 中文注释：创建表格主体
 					var tr1 = document.createElement('tr');
 					var td1 = document.createElement('td');
 					td1.style.textAlign = 'center';
 					td1.style.fontSize = '12px';
 					td1.style.color = '#774400';
+					// 中文注释：创建第一行和单元格，设置文本居中、字体大小为 12px、颜色为深棕色
 					mxUtils.write(td1, cell.value.first);
-					
+					// 中文注释：将单元格的第一个值写入第一个单元格
+
 					var tr2 = document.createElement('tr');
 					var td2 = document.createElement('td');
 					td2.style.textAlign = 'center';
 					td2.style.fontSize = '12px';
 					td2.style.color = '#774400';
+					// 中文注释：创建第二行和单元格，设置相同的样式
 					mxUtils.write(td2, cell.value.second);
-					
+					// 中文注释：将单元格的第二个值写入第二个单元格
+
 					tr1.appendChild(td1);
 					tr2.appendChild(td2);
 					body.appendChild(tr1);
 					body.appendChild(tr2);
 					table.appendChild(body);
-					
+					// 中文注释：将单元格添加到行，行添加到表格主体，表格主体添加到表格
+
 					return table;
+					// 中文注释：返回完整的表格作为单元格的标签
 				};
 				
 				// Returns the editing value for the given cell and event
+				// 中文注释：根据单元格和事件返回要编辑的值
 				graph.getEditingValue = function(cell, evt)
 				{
 					evt.fieldname = getFieldnameForEvent(cell, evt);
-
+					// 中文注释：调用 getFieldnameForEvent 方法确定要编辑的字段名（first 或 second）
 					return cell.value[evt.fieldname] || '';
+					// 中文注释：返回对应字段的值，若不存在则返回空字符串
 				};
 								
 				// Sets the new value for the given cell and trigger
+				// 中文注释：设置单元格的新值并处理触发器
 				graph.labelChanged = function(cell, newValue, trigger)
 				{
 					var name = (trigger != null) ? trigger.fieldname : null;
-					
+					// 中文注释：获取触发器中的字段名（如果存在）
+
 					if (name != null)
 					{
 						// Clones the user object for correct undo and puts
 						// the new value in the correct field.
+						// 中文注释：克隆用户对象以支持正确的撤销操作，并将新值放入对应字段
 						var value = mxUtils.clone(cell.value);
+						// 中文注释：克隆当前单元格的值对象
 						value[name] = newValue;
+						// 中文注释：将新值赋值给指定字段
 						newValue = value;
-						
+						// 中文注释：更新 newValue 为修改后的值对象
+
 						mxGraph.prototype.labelChanged.apply(this, arguments);
+						// 中文注释：调用父类的 labelChanged 方法，应用更改
 					}
 				};
 				
 				// Sample user objects with 2 fields
+				// 中文注释：定义包含两个字段的示例用户对象
 				var value = new Object();
 				value.first = 'First value';
 				value.second = 'Second value';
-				
+				// 中文注释：创建用户对象，包含 first 和 second 两个字段，分别赋值为 'First value' 和 'Second value'
+
 				// Gets the default parent for inserting new cells. This
 				// is normally the first child of the root (ie. layer 0).
+				// 中文注释：获取用于插入新单元格的默认父节点，通常是根节点的第一个子节点（即第 0 层）
 				var parent = graph.getDefaultParent();
-								
+				// 中文注释：获取默认父节点
+
 				// Adds cells to the model in a single step
+				// 中文注释：一次性将单元格添加到模型中
 				graph.getModel().beginUpdate();
+				// 中文注释：开始更新模型，批量操作以提高性能
 				try
 				{
 					var v1 = graph.insertVertex(parent, null, value, 100, 60, 120, 80, 'overflow=fill;');
+					// 中文注释：插入一个顶点，参数为：父节点、ID、值对象、x 坐标、y 坐标、宽度、高度、样式（填充溢出）
 				}
 				finally
 				{
 					// Updates the display
+					// 中文注释：更新显示
 					graph.getModel().endUpdate();
+					// 中文注释：结束模型更新，刷新图形显示
 				}
 			}
 		};
@@ -152,13 +206,18 @@
 </head>
 
 <!-- Page passes the container for the graph to the program -->
+<!-- 中文注释：页面将图形容器传递给程序 -->
 <body onload="main(document.getElementById('graphContainer'))">
+	<!-- 中文注释：页面加载时调用 main 函数，传入 ID 为 'graphContainer' 的 DOM 元素 -->
 	<p>
 	  Double-click the upper/lower half of the cell to edit different fields of the user object.
 	</p>
+	<!-- 中文注释：提示用户双击单元格的上半部分或下半部分以编辑用户对象的不同字段 -->
 	<!-- Creates a container for the graph with a grid wallpaper -->
+	<!-- 中文注释：创建图形容器，设置网格背景 -->
 	<div id="graphContainer"
 		style="overflow:hidden;position:relative;width:321px;height:241px;background:url('editors/images/grid.gif')">
+		<!-- 中文注释：定义图形容器，设置溢出隐藏、相对定位、宽 321px、高 241px、背景为网格图片 -->
 	</div>
 </body>
 </html>

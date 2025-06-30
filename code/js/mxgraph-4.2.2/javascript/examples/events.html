@@ -14,50 +14,77 @@
 	<title>Events example for mxGraph</title>
 
 	<!-- Sets the basepath for the library if not in same directory -->
+	<!-- 设置库的基本路径，如果库文件不在同一目录下 -->
 	<script type="text/javascript">
 		mxBasePath = '../src';
+		// 定义mxGraph库的相对路径，用于加载库文件
 	</script>
 
 	<!-- Loads and initializes the library -->
+	<!-- 加载并初始化mxGraph库 -->
 	<script type="text/javascript" src="../src/js/mxClient.js"></script>
 
 	<!-- Example code -->
+	<!-- 示例代码 -->
 	<script type="text/javascript">
 		// Program starts here. Creates a sample graph in the dynamically
 		// created DOM node called container which is created below.
+		// 程序从此处开始。在动态创建的名为container的DOM节点中创建一个示例图
+		// 主函数，初始化并创建图表容器及相关交互功能
 		function main()
 		{
 			// Sets the image to be used for creating new connections
+			// 设置用于创建新连接的图像
+			// 配置连接处理器使用绿色圆点图像，大小为14x14像素
 			mxConnectionHandler.prototype.connectImage = new mxImage('images/green-dot.gif', 14, 14);
 			
 			// Checks if browser is supported
+			// 检查浏览器是否受支持
+			// 验证当前浏览器是否兼容mxGraph库
 			if (!mxClient.isBrowserSupported())
 			{
 				// Displays an error message if the browser is
 				// not supported.
+				// 如果浏览器不受支持，显示错误消息
+				// 使用mxUtils.error显示错误提示，宽度200像素，不自动关闭
 				mxUtils.error('Browser is not supported!', 200, false);
 			}
 			else
 			{
+				// 创建一个div容器，用于承载图表
 				var container = document.createElement('div');
+				// 设置容器样式，定位为绝对定位，覆盖整个窗口
 				container.style.position = 'absolute';
+				// 防止内容溢出
 				container.style.overflow = 'hidden';
+				// 容器左侧与窗口左侧对齐
 				container.style.left = '0px';
+				// 容器顶部与窗口顶部对齐
 				container.style.top = '0px';
+				// 容器右侧与窗口右侧对齐
 				container.style.right = '0px';
+				// 容器底部与窗口底部对齐
 				container.style.bottom = '0px';
+				// 设置背景为网格图像
 				container.style.background = 'url("editors/images/grid.gif")';
 
 				// Disables built-in context menu
+				// 禁用内置的右键上下文菜单
+				// 禁止容器上的默认浏览器右键菜单
 				mxEvent.disableContextMenu(container);
 
 				// Workaround for Internet Explorer ignoring certain styles
+				// 针对Internet Explorer忽略某些样式的解决方法
+				// 如果是IE怪异模式，调整body样式并添加容器大小调整器
 				if (mxClient.IS_QUIRKS)
 				{
+					// 设置body隐藏溢出内容
 					document.body.style.overflow = 'hidden';
+					// 创建mxDivResizer实例以动态调整容器大小
 					new mxDivResizer(container);
 				}
 
+				// 将容器添加到页面body中
 				document.body.appendChild(container);
 			
 				// Creates the graph inside the DOM node.
@@ -65,19 +92,33 @@
 				// using graph.setPanning(), setTooltips() & setConnectable().
 				// To enable rubberband selection and basic keyboard events,
 				// use new mxRubberband(graph) and new mxKeyHandler(graph).
+				// 在DOM节点中创建图表
+				// 可选择启用平移、提示框和连接功能
+				// 使用graph.setPanning()、setTooltips()和setConnectable()配置
+				// 使用mxRubberband和mxKeyHandler启用框选和基本键盘事件
 				var graph = new mxGraph(container);
+				// 初始化mxGraph实例，将图表绑定到容器
 
 				// Enables tooltips, new connections and panning
+				// 启用提示框、新连接和平移功能
+				// 允许图表支持鼠标悬停提示
 				graph.setPanning(true);
+				// 允许图表显示单元格提示
 				graph.setTooltips(true);
+				// 允许图表创建新连接
 				graph.setConnectable(true);
 				
 				// Automatically handle parallel edges
+				// 自动处理平行边
+				// 创建平行边布局管理器，用于处理多条边的情况
  				var layout = new mxParallelEdgeLayout(graph);
+				// 创建布局管理器，管理图表的布局
  				var layoutMgr = new mxLayoutManager(graph);
  				
+				// 定义布局管理器的getLayout方法
  				layoutMgr.getLayout = function(cell)
 				{
+					// 如果单元格有子节点，则应用平行边布局
 					if (cell.getChildCount() > 0)
 					{
 						return layout;
@@ -86,7 +127,10 @@
 				
 				// Enables rubberband (marquee) selection and a handler
 				// for basic keystrokes (eg. return, escape during editing).
+				// 启用框选（橡皮筋选择）和基本按键处理
+				// 初始化框选功能，支持拖动选择多个单元格
 				var rubberband = new mxRubberband(graph);
+				// 初始化键盘事件处理器，支持编辑时的回车、Esc等键
 				var keyHandler = new mxKeyHandler(graph);
 
 				// Changes the default style for edges "in-place" and assigns
@@ -94,74 +138,112 @@
 				// when the user double clicks on the adjustment control point
 				// of the edge. The ElbowConnector edge style switches to TopToBottom
 				// if the horizontal style is true.
+				// 直接修改边的默认样式，并分配备用边样式
+				// 当用户双击边的调整控制点时，应用mxGraph.flip中的备用样式
+				// ElbowConnector边样式在水平样式为true时切换为TopToBottom
+				// 获取默认边样式并进行配置
 				var style = graph.getStylesheet().getDefaultEdgeStyle();
+				// 启用圆角边
 				style[mxConstants.STYLE_ROUNDED] = true;
+				// 设置边样式为ElbowConnector（折线连接器）
 				style[mxConstants.STYLE_EDGE] = mxEdgeStyle.ElbowConnector;
 		
+				// 设置备用边样式，折线方向为垂直
 				graph.alternateEdgeStyle = 'elbow=vertical';
 
 				// Installs a custom tooltip for cells
+				// 安装自定义单元格提示
+				// 为所有单元格定义统一的提示信息
 				graph.getTooltipForCell = function(cell)
 				{
 					return 'Doubleclick and right- or shiftclick';
+					// 返回提示内容，提示用户可双击或右键/Shift+点击
 				}
 				
 				// Installs a popupmenu handler using local function (see below).
+				// 使用本地函数安装弹出菜单处理器
+				// 配置右键菜单的生成逻辑
 				graph.popupMenuHandler.factoryMethod = function(menu, cell, evt)
 				{
 					return createPopupMenu(graph, menu, cell, evt);
+					// 调用createPopupMenu函数生成右键菜单
 				};
 				
 				// Gets the default parent for inserting new cells. This
 				// is normally the first child of the root (ie. layer 0).
+				// 获取插入新单元格的默认父节点
+				// 通常是根节点的第一个子节点（即第0层）
 				var parent = graph.getDefaultParent();
-								
+				// 获取默认层，用于插入新节点
+
 				// Adds cells to the model in a single step
+				// 在单一步骤中向模型添加单元格
+				// 开始更新模型，确保批量操作的原子性
 				graph.getModel().beginUpdate();
 				try
 				{
+					// 插入顶点（节点），包含位置、大小和标签
 					var v1 = graph.insertVertex(parent, null, 'Doubleclick', 20, 20, 80, 30);
+					// 创建第一个节点，标签为“Doubleclick”，位于(20,20)，大小80x30
 					var v2 = graph.insertVertex(parent, null, 'Right-/Shiftclick', 200, 150, 120, 30);
+					// 创建第二个节点，标签为“Right-/Shiftclick”，位于(200,150)，大小120x30
 					var v3 = graph.insertVertex(parent, null, 'Connect/Reconnect', 200, 20, 120, 30);
+					// 创建第三个节点，标签为“Connect/Reconnect”，位于(200,20)，大小120x30
 					var v4 = graph.insertVertex(parent, null, 'Control-Drag', 20, 150, 100, 30);
+					// 创建第四个节点，标签为“Control-Drag”，位于(20,150)，大小100x30
 					var e1 = graph.insertEdge(parent, null, 'Tooltips', v1, v2);
+					// 创建边，连接v1和v2，标签为“Tooltips”
 					var e2 = graph.insertEdge(parent, null, '', v2, v3);
+					// 创建边，连接v2和v3，无标签
 				}
 				finally
 				{
 					// Updates the display
+					// 更新显示
+					// 结束模型更新，刷新图表显示
 					graph.getModel().endUpdate();
 				}
 			}
 		};
 		
 		// Function to create the entries in the popupmenu
+		// 创建弹出菜单条目的函数
+		// 定义右键菜单的内容和交互逻辑
 		function createPopupMenu(graph, menu, cell, evt)
 		{
+			// 如果点击了单元格
 			if (cell != null)
 			{
+				// 添加菜单项“Cell Item”，带图标，点击时弹出提示
 				menu.addItem('Cell Item', 'editors/images/image.gif', function()
 				{
 					mxUtils.alert('MenuItem1');
+					// 显示提示框，内容为“MenuItem1”
 				});
 			}
 			else
 			{
+				// 如果未点击单元格，添加菜单项“No-Cell Item”
 				menu.addItem('No-Cell Item', 'editors/images/image.gif', function()
 				{
 					mxUtils.alert('MenuItem2');
+					// 显示提示框，内容为“MenuItem2”
 				});
 			}
+			// 添加菜单分隔线
 			menu.addSeparator();
+			// 添加菜单项“MenuItem3”，显示当前选中单元格数量
 			menu.addItem('MenuItem3', '../src/images/warning.gif', function()
 			{
 				mxUtils.alert('MenuItem3: '+graph.getSelectionCount()+' selected');
+				// 显示提示框，内容包含当前选中单元格数量
 			});
 		};
 	</script>
 </head>
 
 <!-- Calls the main function after the page has loaded. Container is dynamically created. -->
+<!-- 页面加载完成后调用main函数，容器动态创建 -->
 <body onload="main();">
 </body>
 </html>
