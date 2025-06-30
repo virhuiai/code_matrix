@@ -4,171 +4,281 @@
   HTML label example for mxGraph. This example demonstrates using
   HTML labels that are connected to the state of the user object.
 -->
+<!--
+  版权信息及示例说明：此示例展示了如何在 mxGraph 中使用 HTML 标签，并与用户对象的状态关联。
+-->
 <html>
 <head>
 	<title>HTML label example for mxGraph</title>
+	<!-- HTML label example for mxGraph -->
+	<!-- mxGraph 的 HTML 标签示例 -->
 
 	<!-- Sets the basepath for the library if not in same directory -->
+	<!-- 设置库的基础路径，如果库文件不在同一目录下 -->
 	<script type="text/javascript">
 		mxBasePath = '../src';
+		// 配置 mxGraph 库的基础路径为 '../src'，用于加载 mxClient.js 等资源
 	</script>
 
 	<!-- Loads and initializes the library -->
+	<!-- 加载并初始化 mxGraph 库 -->
 	<script type="text/javascript" src="../src/js/mxClient.js"></script>
+	<!-- 引入 mxClient.js，mxGraph 的核心库文件，用于创建和操作图形 -->
 
 	<!-- Example code -->
+	<!-- 示例代码 -->
 	<script type="text/javascript">
 		// Program starts here. Creates a sample graph in the
 		// DOM node with the specified ID. This function is invoked
 		// from the onLoad event handler of the document (see below).
+		// 程序从这里开始，在指定 ID 的 DOM 节点中创建示例图形。此函数由文档的 onLoad 事件处理程序调用（见下方）。
 		function main(container)
 		{
+			// main 函数：程序入口，接收容器元素作为参数，用于初始化并渲染 mxGraph 图形
+			// 参数 container: DOM 容器元素，用于容纳图形
+
 			// Checks if the browser is supported
+			// 检查浏览器是否受支持
 			if (!mxClient.isBrowserSupported())
 			{
 				// Displays an error message if the browser is not supported.
+				// 如果浏览器不受支持，显示错误消息
 				mxUtils.error('Browser is not supported!', 200, false);
+				// 使用 mxUtils.error 显示错误提示，参数：消息内容、宽度、不自动关闭
 			}
 			else
 			{
 				// Disables the built-in context menu
+				// 禁用内置右键菜单
 				mxEvent.disableContextMenu(container);
-				
+				// 禁用容器的默认右键菜单，防止干扰图形交互
+
 				// Creates the graph inside the given container
+				// 在指定容器中创建图形
 				var graph = new mxGraph(container);
-				
+				// 初始化 mxGraph 实例，参数 container 为图形渲染的 DOM 容器
+
 				// Enables HTML labels
+				// 启用 HTML 标签
 				graph.setHtmlLabels(true);
+				// 设置图形支持 HTML 格式的标签，允许在节点中使用 HTML 内容
 
 				// Enables rubberband selection
+				// 启用橡皮筋选择
 				new mxRubberband(graph);
-				
+				// 为图形启用橡皮筋选择功能，允许用户通过拖拽框选多个节点
+
 				// Creates a user object that stores the state
+				// 创建存储状态的用户对象
 				var doc = mxUtils.createXmlDocument();
+				// 创建一个 XML 文档对象，用于构造用户对象
 				var obj = doc.createElement('UserObject');
+				// 创建一个名为 'UserObject' 的 XML 元素，作为用户对象的载体
 				obj.setAttribute('label', 'Hello, World!');
+				// 设置用户对象的 label 属性为 'Hello, World!'，作为节点的显示文本
 				obj.setAttribute('checked', 'false');
-				
+				// 设置用户对象的 checked 属性为 'false'，表示复选框初始未选中
+
 				// Adds optional caching for the HTML label
+				// 为 HTML 标签添加可选的缓存
 				var cached = true;
-				
+				// 定义 cached 变量，值为 true，启用 HTML 标签缓存以提高性能
+
 				if (cached)
 				{
 					// Ignores cached label in codec
+					// 在编解码器中忽略缓存的标签
 					mxCodecRegistry.getCodec(mxCell).exclude.push('div');
-					
+					// 将 'div' 属性添加到 mxCell 编解码器的排除列表，避免序列化缓存的 HTML 标签
+
 					// Invalidates cached labels
+					// 使缓存的标签失效
 					graph.model.setValue = function(cell, value)
 					{
+						// 重写 setValue 方法，设置单元格值时清除缓存的 div
 						cell.div = null;
+						// 将单元格的 div 属性置空，强制重新生成 HTML 标签
 						mxGraphModel.prototype.setValue.apply(this, arguments);
+						// 调用原始 setValue 方法，保持默认行为
 					};
 				}
 				
 				// Overrides method to provide a cell label in the display
+				// 重写方法以提供显示中的单元格标签
 				graph.convertValueToString = function(cell)
 				{
+					// 重写 convertValueToString 方法，将单元格值转换为显示的字符串或 HTML
+					// 参数 cell: 当前处理的单元格对象
 					if (cached && cell.div != null)
 					{
 						// Uses cached label
+						// 使用缓存的标签
 						return cell.div;
+						// 如果启用了缓存且单元格有缓存的 div，直接返回缓存的 HTML 元素
 					}
 					else if (mxUtils.isNode(cell.value) && cell.value.nodeName.toLowerCase() == 'userobject')
 					{
 						// Returns a DOM for the label
+						// 为标签返回一个 DOM 元素
 						var div = document.createElement('div');
+						// 创建一个 div 元素，用于承载 HTML 标签内容
 						div.innerHTML = cell.getAttribute('label');
+						// 设置 div 的内容为单元格的 label 属性值
 						mxUtils.br(div);
-						
+						// 在 div 中添加一个换行符 (<br>)，分隔文本和复选框
+
 						var checkbox = document.createElement('input');
+						// 创建一个 input 元素，用于表示复选框
 						checkbox.setAttribute('type', 'checkbox');
+						// 设置 input 类型为 checkbox
 
 						if (cell.getAttribute('checked') == 'true')
 						{
+							// 如果 checked 属性为 true，设置复选框为选中状态
 							checkbox.setAttribute('checked', 'checked');
+							// 设置 HTML 的 checked 属性
 							checkbox.defaultChecked = true;
+							// 设置 JavaScript 的默认选中状态
 						}
 						
 						// Writes back to cell if checkbox is clicked
+						// 当复选框被点击时写回单元格
 						mxEvent.addListener(checkbox, (mxClient.IS_QUIRKS) ? 'click' : 'change', function(evt)
 						{
+							// 为复选框添加事件监听器，处理点击或状态变化
+							// 根据浏览器模式（IE 怪异模式使用 click，标准模式使用 change）
 							var elt = cell.value.cloneNode(true);
+							// 克隆当前单元格的值，保持原始数据不变
 							elt.setAttribute('checked', (checkbox.checked) ? 'true' : 'false');
-							
+							// 根据复选框状态更新 checked 属性
 							graph.model.setValue(cell, elt);
+							// 更新单元格的值，触发重新渲染
 						});
-						
+						// 事件处理逻辑：当用户点击复选框时，更新单元格的 checked 属性并触发图形更新
+
 						div.appendChild(checkbox);
-						
+						// 将复选框添加到 div 元素中
+
 						if (cached)
 						{
 							// Caches label
+							// 缓存标签
 							cell.div = div;
+							// 如果启用了缓存，将生成的 div 缓存到单元格的 div 属性
 						}
 						
 						return div;
+						// 返回生成的 div 元素作为单元格的显示内容
 					}
 
 					return '';
+					// 如果不是 UserObject 类型的单元格，返回空字符串
 				};
 
 				// Overrides method to store a cell label in the model
+				// 重写方法以在模型中存储单元格标签
 				var cellLabelChanged = graph.cellLabelChanged;
+				// 保存原始的 cellLabelChanged 方法
 				graph.cellLabelChanged = function(cell, newValue, autoSize)
 				{
+					// 重写 cellLabelChanged 方法，处理单元格标签的更新
+					// 参数 cell: 单元格对象
+					// 参数 newValue: 新标签值
+					// 参数 autoSize: 是否自动调整大小
 					if (mxUtils.isNode(cell.value) && cell.value.nodeName.toLowerCase() == 'userobject')
 					{
 						// Clones the value for correct undo/redo
+						// 克隆值以支持正确的撤销/重做
 						var elt = cell.value.cloneNode(true);
+						// 克隆当前单元格值，确保原始数据不变
 						elt.setAttribute('label', newValue);
+						// 更新克隆值的 label 属性为新值
 						newValue = elt;
+						// 将克隆值作为新值传递
 					}
 					
 					cellLabelChanged.apply(this, arguments);
+					// 调用原始的 cellLabelChanged 方法，保持默认行为
 				};
-				
+				// 方法目的：确保在编辑标签时更新 UserObject 的 label 属性，并支持撤销/重做
+
 				// Overrides method to create the editing value
+				// 重写方法以创建编辑值
 				var getEditingValue = graph.getEditingValue;
+				// 保存原始的 getEditingValue 方法
 				graph.getEditingValue = function(cell)
 				{
+					// 重写 getEditingValue 方法，返回单元格的编辑值
+					// 参数 cell: 当前编辑的单元格
 					if (mxUtils.isNode(cell.value) && cell.value.nodeName.toLowerCase() == 'userobject')
 					{
 						return cell.getAttribute('label');
+						// 如果是 UserObject，返回其 label 属性作为编辑值
 					}
 				};
-				
+				// 方法目的：提供单元格的 label 属性值作为编辑时的默认值
+
 				var parent = graph.getDefaultParent();
+				// 获取图形的默认父节点，用于插入新节点
 				graph.insertVertex(parent, null, obj, 20, 20, 80, 60);
-				
+				// 插入一个顶点到图形中
+				// 参数说明：
+				// parent: 父节点
+				// null: 顶点 ID（自动生成）
+				// obj: 用户对象，包含 label 和 checked 属性
+				// 20, 20: 顶点的 x, y 坐标
+				// 80, 60: 顶点的宽度和高度
+
 				// Undo/redo
+				// 撤销/重做
 				var undoManager = new mxUndoManager();
+				// 创建 mxUndoManager 实例，用于管理撤销和重做操作
 				var listener = function(sender, evt)
 				{
+					// 定义监听器，处理撤销事件
 					undoManager.undoableEditHappened(evt.getProperty('edit'));
+					// 将编辑操作添加到撤销管理器
 				};
+				// 事件处理逻辑：监听模型和视图的撤销事件，确保编辑操作可撤销
 				graph.getModel().addListener(mxEvent.UNDO, listener);
+				// 为图形模型添加 UNDO 事件监听器
 				graph.getView().addListener(mxEvent.UNDO, listener);
-				
+				// 为图形视图添加 UNDO 事件监听器
+
 				document.body.appendChild(mxUtils.button('Undo', function()
 				{
 					undoManager.undo();
+					// 创建“撤销”按钮，点击时执行撤销操作
 				}));
-				
+				// 交互逻辑：在页面上添加“撤销”按钮，点击调用 undoManager.undo()
+
 				document.body.appendChild(mxUtils.button('Redo', function()
 				{
 					undoManager.redo();
+					// 创建“重做”按钮，点击时执行重做操作
 				}));
+				// 交互逻辑：在页面上添加“重做”按钮，点击调用 undoManager.redo()
 			}
 		};
 	</script>
 </head>
 
 <!-- Page passes the container for the graph to the program -->
+<!-- 页面将图形容器传递给程序 -->
 <body onload="main(document.getElementById('graphContainer'))">
-
+	<!-- 在页面加载时调用 main 函数，传入 graphContainer 元素 -->
 	<!-- Creates a container for the graph with a grid wallpaper -->
+	<!-- 为图形创建容器，设置网格背景 -->
 	<div id="graphContainer"
 		style="position:relative;overflow:hidden;width:321px;height:241px;background:url('editors/images/grid.gif');cursor:default;">
 	</div>
+	<!-- 定义图形容器，ID 为 graphContainer -->
+	<!-- 样式设置说明：
+	     position: relative - 相对定位，确保图形元素正确布局
+	     overflow: hidden - 隐藏溢出内容，保持容器边界
+	     width: 321px - 容器宽度
+	     height: 241px - 容器高度
+	     background: url('editors/images/grid.gif') - 设置网格背景图片
+	     cursor: default - 设置默认鼠标光标 -->
 </body>
 </html>

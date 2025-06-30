@@ -5,93 +5,160 @@
   indicators, which are small subshapes inside a parent shape, typically
   an mxLabel.
 -->
+<!--
+  版权 (c) 2006-2013, JGraph Ltd
+  mxGraph的指示器示例。此示例展示如何使用指示器，指示器是父形状中的小型子形状，通常是一个mxLabel。
+-->
 <html>
 <head>
 	<title>Indicators example for mxGraph</title>
+	<!-- mxGraph指示器示例的页面标题 -->
 
 	<!-- Sets the basepath for the library if not in same directory -->
+	<!-- 如果库不在同一目录下，设置库的基础路径 -->
 	<script type="text/javascript">
 		mxBasePath = '../src';
+		// 设置mxGraph库的基础路径为'../src'，用于加载库文件
 	</script>
 
 	<!-- Loads and initializes the library -->
+	<!-- 加载并初始化mxGraph库 -->
 	<script type="text/javascript" src="../src/js/mxClient.js"></script>
+	<!-- 引入mxClient.js以加载mxGraph的核心功能 -->
 
 	<!-- Example code -->
+	<!-- 示例代码 -->
 	<script type="text/javascript">
-
 		// Program starts here. Creates a sample graph in the
 		// DOM node with the specified ID. This function is invoked
 		// from the onLoad event handler of the document (see below).
+		// 程序从此处开始。在具有指定ID的DOM节点中创建示例图表。此函数由文档的onLoad事件处理程序调用（见下文）。
 		function main(container)
 		{
+			// main函数接收一个容器参数，用于初始化mxGraph图表
+			// 参数说明：container是DOM元素，用于渲染图表
+
 			// Checks if the browser is supported
+			// 检查浏览器是否受支持
 			if (!mxClient.isBrowserSupported())
 			{
+				// 如果浏览器不受支持，显示错误消息
 				// Displays an error message if the browser is not supported.
+				// 如果浏览器不受支持，显示错误消息
 				mxUtils.error('Browser is not supported!', 200, false);
+				// 使用mxUtils.error显示错误，参数：消息内容、对话框宽度、是否自动关闭
 			}
 			else
 			{
 				// Creates the graph inside the given container
+				// 在指定容器中创建图表
 				var graph = new mxGraph(container);
+				// 初始化mxGraph实例，参数container指定图表的渲染容器
 				graph.setConnectable(true);
+				// 启用图表的连接功能，允许节点之间创建边
 				new mxKeyHandler(graph);
-				
+				// 为图表创建键盘事件处理器，用于处理键盘交互
+
 				// Enables moving of vertex labels
+				// 启用顶点标签的可移动功能
 				graph.vertexLabelsMovable = true;
-				
+				// 设置图表属性，允许用户拖动顶点标签
+
 				// Creates a style with an indicator
+				// 创建带指示器的样式
 				var style = graph.getStylesheet().getDefaultVertexStyle();
-				
+				// 获取图表的默认顶点样式，用于设置节点外观
+
 				style[mxConstants.STYLE_SHAPE] = 'label';
+				// 设置节点形状为标签类型
 				style[mxConstants.STYLE_VERTICAL_ALIGN] = 'bottom';
+				// 设置垂直对齐方式为底部
 				style[mxConstants.STYLE_INDICATOR_SHAPE] = 'ellipse';
+				// 设置指示器形状为椭圆
 				style[mxConstants.STYLE_INDICATOR_WIDTH] = 34;
+				// 设置指示器宽度为34像素
 				style[mxConstants.STYLE_INDICATOR_HEIGHT] = 34;
+				// 设置指示器高度为34像素
 				style[mxConstants.STYLE_IMAGE_VERTICAL_ALIGN] = 'top'; // indicator v-alignment
+				// 设置图像垂直对齐方式为顶部（指示器的垂直对齐）
+				// 说明：此设置影响指示器在标签中的位置
 				style[mxConstants.STYLE_IMAGE_ALIGN] = 'center';
+				// 设置图像水平对齐方式为中心
 				style[mxConstants.STYLE_INDICATOR_COLOR] = 'green';
+				// 设置指示器颜色为绿色
 				delete style[mxConstants.STYLE_STROKECOLOR]; // transparent
+				// 删除描边颜色，使其透明
+				// 注意：此操作确保节点边框不显示
 				delete style[mxConstants.STYLE_FILLCOLOR]; // transparent
-				
+				// 删除填充颜色，使其透明
+				// 注意：此操作确保节点背景不显示
+
 				// Creates a style with an indicator
+				// 创建带指示器的边样式
 				var style = graph.getStylesheet().getDefaultEdgeStyle();
-				
+				// 获取图表的默认边样式，用于设置边外观
+
 				style[mxConstants.STYLE_EDGE] = mxEdgeStyle.ElbowConnector;
+				// 设置边样式为折线连接器
+				// 说明：折线连接器提供拐角连接效果
 				style[mxConstants.STYLE_ELBOW] = mxConstants.ELBOW_VERTICAL;
+				// 设置折线为垂直方向
+				// 说明：控制折线连接的拐角方向
 				style[mxConstants.STYLE_ROUNDED] = true;
-				
+				// 启用边的圆角效果
+				// 说明：使边的拐角更平滑
+
 				// Gets the default parent for inserting new cells. This
 				// is normally the first child of the root (ie. layer 0).
+				// 获取插入新单元的默认父节点，通常是根节点的第一个子节点（即第0层）。
 				var parent = graph.getDefaultParent();
-								
+				// 获取默认父节点，用于插入新节点和边
+
 				// Adds cells to the model in a single step
+				// 在单个步骤中向模型添加单元
 				graph.getModel().beginUpdate();
+				// 开始批量更新模型，优化性能
+				// 说明：批量更新防止多次重绘
 				try
 				{
 					graph.insertVertex(parent, null, 'Bottom Label', 80, 80, 80, 60);
+					// 插入一个顶点，标签为“Bottom Label”，位置(80,80)，大小80x60像素
+					// 参数说明：parent=父节点，id=null（自动生成），value=标签文本，x/y=坐标，width/height=尺寸
 					graph.insertVertex(parent, null, 'Top Label', 200, 80, 60, 60,
 						'indicatorShape=actor;indicatorWidth=28;indicatorColor=blue;imageVerticalAlign=bottom;verticalAlign=top');
+					// 插入一个顶点，标签为“Top Label”，位置(200,80)，大小60x60像素，自定义样式
+					// 参数说明：样式字符串指定指示器为actor形状，宽度28像素，颜色蓝色，图像底部对齐，标签顶部对齐
 					graph.insertVertex(parent, null, 'Right Label', 300, 80, 120, 60,
 						'indicatorShape=cloud;indicatorWidth=40;indicatorColor=#00FFFF;imageVerticalAlign=center;verticalAlign=middle;imageAlign=left;align=left;spacingLeft=44');
+					// 插入一个顶点，标签为“Right Label”，位置(300,80)，大小120x60像素，自定义样式
+					// 参数说明：样式字符串指定指示器为云形状，宽度40像素，颜色青色，图像和标签居中对齐，左边距44像素
+					// 注意：spacingLeft确保标签文本不会与指示器重叠
 				}
 				finally
 				{
 					// Updates the display
+					// 更新显示
 					graph.getModel().endUpdate();
+					// 结束批量更新，刷新图表以显示所有更改
 				}
 			}
 		};
+		// main函数的主要目的是初始化mxGraph并在容器中创建带指示器的示例节点
 	</script>
 </head>
 
 <!-- Page passes the container for the graph to the program -->
+<!-- 页面将图表的容器传递给程序 -->
 <body onload="main(document.getElementById('graphContainer'))">
+	<!-- 在页面加载时调用main函数，传入graphContainer元素 -->
+	<!-- 说明：onload事件触发图表初始化 -->
 
 	<!-- Creates a container for the graph with a grid wallpaper -->
+	<!-- 创建带有网格壁纸的图表容器 -->
 	<div id="graphContainer"
 		style="position:absolute;top:0px;left:0px;overflow:hidden;width:100%;height:100%;">
+		<!-- 定义图表容器，ID为graphContainer，占据整个页面 -->
+		<!-- 样式说明：绝对定位，溢出隐藏，宽高100%以填充页面 -->
 	</div>
 </body>
 </html>

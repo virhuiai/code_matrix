@@ -4,125 +4,202 @@
   Images example for mxGraph. This example demonstrates using
   background images and images for for the label- and image-shape.
 -->
+<!-- 中文注释：这是mxGraph的图像示例代码，展示了如何使用背景图像以及标签和图像形状的图像 -->
 <html>
 <head>
 	<title>Images example for mxGraph</title>
+	<!-- 中文注释：设置网页标题为“mxGraph图像示例” -->
 
 	<!-- Sets the basepath for the library if not in same directory -->
+	<!-- 中文注释：设置mxGraph库的基础路径，若库文件不在同一目录下 -->
 	<script type="text/javascript">
 		mxBasePath = '../src';
+		// 中文注释：将mxBasePath设置为'../src'，指定mxGraph库的相对路径
 	</script>
 
 	<!-- Loads and initializes the library -->
+	<!-- 中文注释：加载并初始化mxGraph库 -->
 	<script type="text/javascript" src="../src/js/mxClient.js"></script>
+	<!-- 中文注释：引入mxClient.js文件，包含mxGraph的核心功能 -->
 
 	<!-- Example code -->
+	<!-- 中文注释：以下为示例代码，定义了创建图表的逻辑 -->
 	<script type="text/javascript">
 
 		// Program starts here. Creates a sample graph in the
 		// DOM node with the specified ID. This function is invoked
 		// from the onLoad event handler of the document (see below).
+		// 中文注释：程序入口，创建指定ID的DOM节点中的示例图表，由文档的onLoad事件触发
 		function main(container)
 		{
+			// 中文注释：接收参数container，表示图表渲染的DOM容器
 			// Checks if the browser is supported
+			// 中文注释：检查浏览器是否支持mxGraph
 			if (!mxClient.isBrowserSupported())
 			{
 				// Displays an error message if the browser is not supported.
+				// 中文注释：如果浏览器不支持，显示错误消息
 				mxUtils.error('Browser is not supported!', 200, false);
+				// 中文注释：调用mxUtils.error显示错误提示，参数为错误消息、对话框宽度200px、不自动关闭
 			}
 			else
 			{
 				// Creates the graph inside the given container
+				// 中文注释：在指定容器中创建mxGraph实例
 				var graph = new mxGraph(container);
+				// 中文注释：初始化graph对象，用于管理图表的绘制和交互
 
 				// Sets a background image and restricts child movement to its bounds
+				// 中文注释：设置图表的背景图像，并限制子节点的移动范围在其边界内
 				graph.setBackgroundImage(new mxImage('images/gradient_background.jpg', 360, 200));
+				// 中文注释：设置背景图像为gradient_background.jpg，宽度360px，高度200px
 				graph.maximumGraphBounds = new mxRectangle(0, 0, 360, 200);
+				// 中文注释：设置图表的最大边界为矩形区域，起点(0,0)，宽360px，高200px
 
 				// Resizes the container but never make it bigger than the background
+				// 中文注释：调整容器大小，但不超过背景图像的尺寸
 				graph.minimumContainerSize = new mxRectangle(0, 0, 360, 200);
+				// 中文注释：设置容器最小尺寸为宽360px，高200px，与背景图像一致
 				graph.setResizeContainer(true);
+				// 中文注释：启用容器大小调整功能，允许容器根据内容调整尺寸
 
 				// Disables basic selection and cell handling
+				// 中文注释：禁用基本的选择和单元格处理功能（此行被注释，未生效）
 				//graph.setEnabled(false);
 				configureStylesheet(graph);
-				
+				// 中文注释：调用configureStylesheet函数配置图表的样式表
+
 				// Gets the default parent for inserting new cells. This
 				// is normally the first child of the root (ie. layer 0).
+				// 中文注释：获取插入新单元格的默认父节点，通常为根节点的第一个子节点（层0）
 				var parent = graph.getDefaultParent();
-								
+				// 中文注释：parent变量存储默认父节点，用于后续插入单元格
+
 				// Adds cells to the model in a single step
+				// 中文注释：以单一事务方式向模型中添加单元格
 				graph.getModel().beginUpdate();
+				// 中文注释：开始模型更新，批量操作以提高性能
 				try
 				{
 					var v1 = graph.insertVertex(parent, null, 'First Line\nSecond Line', 20, 10, 80, 100, 'bottom');
+					// 中文注释：插入一个顶点，父节点为parent，显示文本为两行，位置(20,10)，宽80px，高100px，样式为'bottom'
 					var v1 = graph.insertVertex(parent, null, 'First Line\nSecond Line', 130, 10, 80, 100, 'top');
+					// 中文注释：插入第二个顶点，位置(130,10)，宽80px，高100px，样式为'top'
 					var v1 = graph.insertVertex(parent, null, '', 230, 10, 100, 100, 'image');
+					// 中文注释：插入第三个顶点，无文本，位置(230,10)，宽100px，高100px，样式为'image'
 					var v2 = graph.insertVertex(parent, null, 'First Line\nSecond Line', 20, 130, 140, 60, 'right');
+					// 中文注释：插入第四个顶点，位置(20,130)，宽140px，高60px，样式为'right'
 					var v2 = graph.insertVertex(parent, null, 'First Line\nSecond Line', 180, 130, 140, 60, 'left');
+					// 中文注释：插入第五个顶点，位置(180,130)，宽140px，高60px，样式为'left'
 				}
 				finally
 				{
 					// Updates the display
+					// 中文注释：更新显示，应用模型中的所有更改
 					graph.getModel().endUpdate();
+					// 中文注释：结束模型更新，提交所有更改并刷新图表
 				}
 			}
 		};
 		
 		function configureStylesheet(graph)
 		{
+			// 中文注释：定义configureStylesheet函数，用于配置图表的样式表，接收graph参数
 			var style = new Object();
+			// 中文注释：创建style对象，用于存储样式配置
 			style[mxConstants.STYLE_SHAPE] = mxConstants.SHAPE_IMAGE;
+			// 中文注释：设置样式形状为图像形状
 			style[mxConstants.STYLE_PERIMETER] = mxPerimeter.RectanglePerimeter;
+			// 中文注释：设置边界样式为矩形边界
 			style[mxConstants.STYLE_IMAGE] = 'images/icons48/keys.png';
+			// 中文注释：指定图像为keys.png，路径为images/icons48/
 			style[mxConstants.STYLE_FONTCOLOR] = '#FFFFFF';
+			// 中文注释：设置字体颜色为白色
 			graph.getStylesheet().putCellStyle('image', style);
-			
+			// 中文注释：将样式注册为'image'，应用于样式名为'image'的单元格
+
 			style = mxUtils.clone(style);
+			// 中文注释：克隆style对象，创建新样式以复用部分配置
 			style[mxConstants.STYLE_SHAPE] = mxConstants.SHAPE_LABEL;
+			// 中文注释：设置形状为标签形状，包含文本和图像
 			style[mxConstants.STYLE_STROKECOLOR] = '#000000';
+			// 中文注释：设置边框颜色为黑色
 			style[mxConstants.STYLE_ALIGN] = mxConstants.ALIGN_CENTER;
+			// 中文注释：设置文本水平居中对齐
 			style[mxConstants.STYLE_VERTICAL_ALIGN] = mxConstants.ALIGN_TOP;
+			// 中文注释：设置文本垂直顶部对齐
 			style[mxConstants.STYLE_IMAGE_ALIGN] = mxConstants.ALIGN_CENTER;
+			// 中文注释：设置图像水平居中对齐
 			style[mxConstants.STYLE_IMAGE_VERTICAL_ALIGN] = mxConstants.ALIGN_TOP;
+			// 中文注释：设置图像垂直顶部对齐
 			style[mxConstants.STYLE_IMAGE] = 'images/icons48/gear.png';
+			// 中文注释：指定图像为gear.png
 			style[mxConstants.STYLE_IMAGE_WIDTH] = '48';
+			// 中文注释：设置图像宽度为48px
 			style[mxConstants.STYLE_IMAGE_HEIGHT] = '48';
+			// 中文注释：设置图像高度为48px
 			style[mxConstants.STYLE_SPACING_TOP] = '56';
+			// 中文注释：设置顶部间距为56px，以容纳图像
 			style[mxConstants.STYLE_SPACING] = '8';
+			// 中文注释：设置通用间距为8px，用于文本和图像之间的间距
 			graph.getStylesheet().putCellStyle('bottom', style);
-			
+			// 中文注释：将样式注册为'bottom'，应用于样式名为'bottom'的单元格
+
 			style = mxUtils.clone(style);
+			// 中文注释：再次克隆style对象，复用并修改样式
 			style[mxConstants.STYLE_IMAGE_VERTICAL_ALIGN] = mxConstants.ALIGN_BOTTOM;
+			// 中文注释：设置图像垂直底部对齐
 			style[mxConstants.STYLE_IMAGE] = 'images/icons48/server.png';
+			// 中文注释：指定图像为server.png
 			delete style[mxConstants.STYLE_SPACING_TOP];
+			// 中文注释：删除顶部间距配置，适应底部对齐
 			graph.getStylesheet().putCellStyle('top', style);
-			
+			// 中文注释：将样式注册为'top'，应用于样式名为'top'的单元格
+
 			style = mxUtils.clone(style);
+			// 中文注释：克隆style对象，继续复用并修改
 			style[mxConstants.STYLE_ALIGN] = mxConstants.ALIGN_LEFT;
+			// 中文注释：设置文本水平左对齐
 			style[mxConstants.STYLE_IMAGE_ALIGN] = mxConstants.ALIGN_LEFT;
+			// 中文注释：设置图像水平左对齐
 			style[mxConstants.STYLE_VERTICAL_ALIGN] = mxConstants.ALIGN_MIDDLE;
+			// 中文注释：设置文本垂直居中对齐
 			style[mxConstants.STYLE_IMAGE_VERTICAL_ALIGN] = mxConstants.ALIGN_MIDDLE;
+			// 中文注释：设置图像垂直居中对齐
 			style[mxConstants.STYLE_IMAGE] = 'images/icons48/earth.png';
+			// 中文注释：指定图像为earth.png
 			style[mxConstants.STYLE_SPACING_LEFT] = '55';
+			// 中文注释：设置左侧间距为55px，以容纳图像
 			style[mxConstants.STYLE_SPACING] = '4';
+			// 中文注释：设置通用间距为4px
 			graph.getStylesheet().putCellStyle('right', style);
-			
+			// 中文注释：将样式注册为'right'，应用于样式名为'right'的单元格
+
 			style = mxUtils.clone(style);
+			// 中文注释：克隆style对象，创建最后一个样式
 			style[mxConstants.STYLE_ALIGN] = mxConstants.ALIGN_RIGHT;
+			// 中文注释：设置文本水平右对齐
 			style[mxConstants.STYLE_IMAGE_ALIGN] = mxConstants.ALIGN_RIGHT;
+			// 中文注释：设置图像水平右对齐
 			delete style[mxConstants.STYLE_SPACING_LEFT];
+			// 中文注释：删除左侧间距配置，适应右对齐
 			style[mxConstants.STYLE_SPACING_RIGHT] = '55';
+			// 中文注释：设置右侧间距为55px，以容纳图像
 			graph.getStylesheet().putCellStyle('left', style);
+			// 中文注释：将样式注册为'left'，应用于样式名为'left'的单元格
 		};
 	</script>
 </head>
 
 <!-- Page passes the container for the graph to the program -->
+<!-- 中文注释：页面通过onLoad事件将图表容器传递给main函数 -->
 <body onload="main(document.getElementById('graphContainer'))">
+	<!-- 中文注释：当页面加载完成时，调用main函数并传入ID为graphContainer的DOM元素 -->
 
 	<!-- Creates a container for the graph -->
+	<!-- 中文注释：创建图表的容器元素 -->
 	<div id="graphContainer" style="position:relative;overflow:hidden;width:360px;height:200px;cursor:default;">
+	<!-- 中文注释：定义图表容器，ID为graphContainer，样式包括相对定位、隐藏溢出内容、固定尺寸360x200px，默认光标 -->
 	</div>
 </body>
 </html>

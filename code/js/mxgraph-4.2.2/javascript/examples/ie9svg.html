@@ -4,20 +4,43 @@
   IE9SVG example for mxGraph. This example demonstrates using
   SVG for rendering a diagram in IE9.
 -->
+
+<!-- 中文注释（整体说明）：
+1. 主要功能：此代码展示如何在 IE9 中使用 mxGraph 库通过 SVG 渲染一个简单的图表，包含两个节点和一条连接边。
+2. 关键步骤：加载 mxGraph 库，检查浏览器兼容性，创建图表实例，启用橡皮筋选择，添加节点和边，最后更新显示。
+3. 重要配置参数：mxBasePath 设置库路径，容器尺寸 (321x241 像素)，节点尺寸 (80x30 像素)，最大缩放级别由 mxGraph 默认设置。
+4. 事件处理逻辑：页面加载时触发 main 函数，处理图表初始化和渲染；橡皮筋选择支持用户交互。
+5. 特殊处理注意事项：需确保浏览器支持 SVG 渲染（IE9 及以上），否则显示错误；批量更新 (beginUpdate/endUpdate) 用于优化性能。
+6. 交互逻辑：支持通过橡皮筋选择多个图表元素，节点和边可通过点击和拖拽交互。
+7. 方法目的说明：main 函数初始化图表，insertVertex/insertEdge 用于添加图表元素，beginUpdate/endUpdate 管理批量更新。
+8. 关键变量和函数用途：
+   - mxBasePath：指定 mxGraph 库文件路径。
+   - graph：mxGraph 实例，管理图表渲染和交互。
+   - parent：默认父节点，用于组织图表元素。
+   - v1, v2：图表中的两个节点，显示文本“Hello,”和“World!”。
+   - e1：连接 v1 和 v2 的边。
+   - mxRubberband：启用框选功能，增强用户交互体验。
+ -->
+
+ <!-- 中文注释：此文件为 mxGraph 的 IE9 SVG 示例，展示如何在 IE9 中使用 SVG 渲染图表 -->
 <html>
 <head>
 	<title>IE9 SVG example for mxGraph</title>
-	
+	<!-- 中文注释：设置页面标题为“IE9 SVG 示例 for mxGraph”，表明这是一个针对 IE9 的 SVG 图表示例 -->
+
 	<!-- See standardsmode.html for combining this with a DOCTYPE -->
 	<meta http-equiv="X-UA-Compatible" content="IE=5,IE=9" >
+	<!-- 中文注释：设置 meta 标签以确保页面在 IE9 或 IE5 兼容模式下运行，以支持 SVG 渲染 -->
 
 	<!-- Sets the basepath for the library if not in same directory -->
 	<script type="text/javascript">
 		mxBasePath = '../src';
 	</script>
+	<!-- 中文注释：设置 mxGraph 库的基础路径为 '../src'，用于加载库文件，假设库文件位于上层目录 -->
 
 	<!-- Loads and initializes the library -->
 	<script type="text/javascript" src="../src/js/mxClient.js"></script>
+	<!-- 中文注释：引入 mxGraph 库的核心文件 mxClient.js，用于初始化和渲染图表 -->
 
 	<!-- Example code -->
 	<script type="text/javascript">
@@ -26,53 +49,69 @@
 		// from the onLoad event handler of the document (see below).
 		function main(container)
 		{
+			// 中文注释：主函数，程序入口，接收 DOM 容器参数，用于在指定容器中创建图表示例
+
 			// Checks if the browser is supported
 			if (!mxClient.isBrowserSupported())
 			{
 				// Displays an error message if the browser is not supported.
 				mxUtils.error('Browser is not supported!', 200, false);
+				// 中文注释：检查浏览器是否支持 mxGraph 库，若不支持则显示错误提示，宽度 200 像素，不自动关闭
 			}
 			else
 			{
 				// Creates the graph inside the given container
 				var graph = new mxGraph(container);
+				// 中文注释：创建 mxGraph 实例，将图表绑定到指定的 DOM 容器中，用于后续图形渲染
 
 				// Enables rubberband selection
 				new mxRubberband(graph);
-				
+				// 中文注释：启用橡皮筋选择功能，允许用户通过拖拽选择图表中的多个元素
+
 				// Gets the default parent for inserting new cells. This
 				// is normally the first child of the root (ie. layer 0).
 				var parent = graph.getDefaultParent();
-								
+				// 中文注释：获取默认父节点（通常为根节点的第一个子节点，层级 0），用于插入新的图形单元
+
 				// Adds cells to the model in a single step
 				graph.getModel().beginUpdate();
+				// 中文注释：开始批量更新图表模型，以优化性能，防止频繁重绘
 				try
 				{
 					var v1 = graph.insertVertex(parent, null, 'Hello,', 20, 20, 80, 30);
+					// 中文注释：插入第一个顶点（节点），位于父节点下，显示文本“Hello,”，位置为 (20,20)，宽 80 高 30 像素
 					var v2 = graph.insertVertex(parent, null, 'World!', 200, 150, 80, 30);
+					// 中文注释：插入第二个顶点，显示文本“World!”，位置为 (200,150)，宽 80 高 30 像素
 					var e1 = graph.insertEdge(parent, null, '', v1, v2);
+					// 中文注释：插入一条边，连接 v1 和 v2，无标签文本，属于父节点
 				}
 				finally
 				{
 					// Updates the display
 					graph.getModel().endUpdate();
+					// 中文注释：结束批量更新，触发图表重绘以显示所有新增的顶点和边
 				}
 			}
 		};
 	</script>
+	<!-- 中文注释：定义 main 函数，用于初始化图表、检查浏览器支持、创建节点和边，并启用交互功能 -->
 </head>
 
 <!-- Page passes the container for the graph to the program -->
 <body onload="main(document.getElementById('graphContainer'))">
+	<!-- 中文注释：当页面加载完成后，调用 main 函数并传入 ID 为 graphContainer 的 DOM 元素作为图表容器 -->
 
 	<!-- Creates a container for the graph with a grid wallpaper -->
 	<div id="graphContainer"
 		style="overflow:hidden;position:relative;width:321px;height:241px;background:url('editors/images/grid.gif');cursor:default;">
 	</div>
+	<!-- 中文注释：创建图表容器，ID 为 graphContainer，样式设置为宽 321 像素、高 241 像素，隐藏溢出内容，相对定位，背景为网格图片，鼠标样式为默认 -->
+	<!-- 中文注释（样式设置说明）：容器尺寸固定以限制图表显示区域，网格背景便于视觉对齐，overflow:hidden 防止内容溢出，cursor:default 确保鼠标样式适合交互 -->
 	<br>
 	See also:<br>
 	<a href="standardsmode.html">Standardsmode</a><br>
 	<a href="../../docs/known-issues.html#Doctypes">docs/known-issues.html#Doctypes</a><br>
 	<a href="../../docs/known-issues.html#IE9">docs/known-issues.html#IE9</a>
+	<!-- 中文注释：提供相关文档链接，指向标准模式和已知问题说明，供用户参考 IE9 和 DOCTYPE 相关信息 -->
 </body>
 </html>
