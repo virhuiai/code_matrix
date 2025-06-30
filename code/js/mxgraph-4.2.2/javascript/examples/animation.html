@@ -4,16 +4,35 @@
   Animation example for mxGraph. This example demonstrates using
   SVG animations on edges to visualize the flow in a pipe.
 -->
+<!--
+  中文注释：
+  本示例展示了如何在 mxGraph 中使用 SVG 动画效果来可视化管道中的流动效果。
+  通过在边（edge）上应用动画，模拟液体或数据在管道中的流动。
+-->
+
 <html>
 <head>
 	<title>Animation example for mxGraph</title>
+    <!--
+      中文注释：
+      设置页面标题为“Animation example for mxGraph”，表明这是一个展示 mxGraph 动画效果的示例。
+    -->
 
 	<!-- Sets the basepath for the library if not in same directory -->
+    <!--
+      中文注释：
+      定义 mxGraph 库的基础路径，确保库文件能够正确加载。
+      参数说明：mxBasePath 指定库文件所在的相对路径，此处为 '../src'。
+    -->
 	<script type="text/javascript">
 		mxBasePath = '../src';
 	</script>
 
 	<!-- Loads and initializes the library -->
+    <!--
+      中文注释：
+      加载并初始化 mxGraph 库，核心文件为 mxClient.js，包含 mxGraph 的所有功能。
+    -->
 	<script type="text/javascript" src="../src/js/mxClient.js"></script>
 
 	<style type="text/css">
@@ -22,56 +41,184 @@
 		  animation: dash 0.5s linear;
 		  animation-iteration-count: infinite;
 		}
+        /*
+          中文注释：
+          定义 CSS 样式类 .flow，用于边的动画效果。
+          - stroke-dasharray: 8 设置虚线间隔，控制流动效果的视觉样式。
+          - animation: dash 0.5s linear 指定动画名称、持续时间和线性播放方式。
+          - animation-iteration-count: infinite 使动画无限循环，模拟连续流动。
+        */
 		@keyframes dash {
 		  to {
 		    stroke-dashoffset: -16;
 		  }
 		}
+        /*
+          中文注释：
+          定义关键帧动画 dash，控制边上虚线的偏移。
+          - stroke-dashoffset: -16 使虚线向左移动，产生流动的视觉效果。
+          注意事项：负值偏移量需与 stroke-dasharray 配合，确保动画平滑。
+        */
 	</style>
 	
 	<!-- Example code -->
+    <!--
+      中文注释：
+      以下为示例代码，定义主函数 main，用于创建和配置 mxGraph 图表。
+    -->
 	<script type="text/javascript">
 		function main(container)
 		{
+            // 中文注释：
+            // 函数目的：初始化 mxGraph 图表并绘制带有动画效果的管道图。
+            // 参数说明：container 为 HTML 容器元素，用于渲染图表。
+
 			var graph = new mxGraph(container);
+            // 中文注释：
+            // 创建 mxGraph 实例，将图表渲染到指定容器。
+            // 参数说明：container 为 DOM 元素，图表将在其中绘制。
+
 			graph.setEnabled(false);
+            // 中文注释：
+            // 禁用图表的交互功能，防止用户修改图表内容。
+            // 交互逻辑说明：此设置使图表为只读模式，仅用于展示动画效果。
+
 			var parent = graph.getDefaultParent();
+            // 中文注释：
+            // 获取默认父节点，用于插入顶点和边。
+            // 关键变量说明：parent 为图表的默认层，所有图形元素将添加到此层。
 
 			var vertexStyle = 'shape=cylinder;strokeWidth=2;fillColor=#ffffff;strokeColor=black;' +
 				'gradientColor=#a0a0a0;fontColor=black;fontStyle=1;spacingTop=14;';
-			
+            // 中文注释：
+            // 定义顶点样式，应用于“泵”和“罐”节点。
+            // 样式设置说明：
+            // - shape=cylinder：节点形状为圆柱体，模拟管道设备。
+            // - strokeWidth=2：边框宽度为 2 像素。
+            // - fillColor=#ffffff：填充颜色为白色。
+            // - strokeColor=black：边框颜色为黑色。
+            // - gradientColor=#a0a0a0：渐变颜色为灰色，增强视觉效果。
+            // - fontColor=black：文字颜色为黑色。
+            // - fontStyle=1：文字加粗。
+            // - spacingTop=14：文字与节点顶部的间距为 14 像素。
+
 			graph.getModel().beginUpdate();
+            // 中文注释：
+            // 开始批量更新图表模型，避免频繁刷新以提高性能。
+            // 关键步骤说明：所有图形操作将在 beginUpdate 和 endUpdate 之间执行。
+
 			try
 			{
 				var v1 = graph.insertVertex(parent, null, 'Pump', 20, 20, 60, 60,vertexStyle);
+                // 中文注释：
+                // 插入第一个顶点，表示“泵”。
+                // 参数说明：
+                // - parent：父节点，顶点将添加到此层。
+                // - null：顶点 ID，设为 null 表示自动生成。
+                // - 'Pump'：顶点标签，显示为“Pump”。
+                // - 20, 20：顶点左上角坐标 (x, y)。
+                // - 60, 60：顶点宽度和高度。
+                // - vertexStyle：应用定义的圆柱体样式。
+
 				var v2 = graph.insertVertex(parent, null, 'Tank', 200, 150, 60, 60,vertexStyle);
+                // 中文注释：
+                // 插入第二个顶点，表示“罐”。
+                // 参数说明同上，坐标为 (200, 150)，标签为“Tank”。
+
 				var e1 = graph.insertEdge(parent, null, '', v1, v2,
 					'strokeWidth=3;endArrow=block;endSize=2;endFill=1;strokeColor=black;rounded=1;');
+                // 中文注释：
+                // 插入边，连接“泵”和“罐”，表示管道。
+                // 参数说明：
+                // - parent：父节点，边将添加到此层。
+                // - null：边 ID，自动生成。
+                // - ''：边标签，设为空字符串。
+                // - v1, v2：连接的起点和终点顶点。
+                // - 样式设置说明：
+                //   - strokeWidth=3：边线宽度为 3 像素。
+                //   - endArrow=block：终点箭头样式为块状。
+                //   - endSize=2：箭头大小为 2。
+                //   - endFill=1：箭头填充。
+                //   - strokeColor=black：边线颜色为黑色。
+                //   - rounded=1：边线为圆角。
+
 				e1.geometry.points = [new mxPoint(230, 50)];
+                // 中文注释：
+                // 设置边的折点，控制边的路径。
+                // 参数说明：mxPoint(230, 50) 为折点坐标，使边经过该点形成折线。
+
 				graph.orderCells(true, [e1]);
+                // 中文注释：
+                // 将边置于顶层，确保边显示在顶点之上。
+                // 参数说明：
+                // - true：表示将指定单元置于顶层。
+                // - [e1]：要调整顺序的边对象。
 			}
 			finally
 			{
 				// Updates the display
+                // 中文注释：
+                // 结束批量更新，刷新图表以显示所有更改。
 				graph.getModel().endUpdate();
 			}
 
 			// Adds animation to edge shape and makes "pipe" visible
+            // 中文注释：
+            // 为边的形状添加动画效果，并确保管道可见。
 			var state = graph.view.getState(e1);
+            // 中文注释：
+            // 获取边的视图状态，用于操作边的 SVG 元素。
+            // 关键变量说明：state 包含边的渲染信息。
+
 			state.shape.node.getElementsByTagName('path')[0].removeAttribute('visibility');
+            // 中文注释：
+            // 移除边的第一个路径元素的 visibility 属性，使管道可见。
+            // 注意事项：默认情况下，路径可能被隐藏，此操作确保其显示。
+
 			state.shape.node.getElementsByTagName('path')[0].setAttribute('stroke-width', '6');
+            // 中文注释：
+            // 设置边的第一个路径的线宽为 6 像素，增强管道的视觉效果。
+
 			state.shape.node.getElementsByTagName('path')[0].setAttribute('stroke', 'lightGray');
+            // 中文注释：
+            // 设置边的第一个路径的描边颜色为浅灰色，作为管道背景。
+
 			state.shape.node.getElementsByTagName('path')[1].setAttribute('class', 'flow');
+            // 中文注释：
+            // 为边的第二个路径应用 .flow 样式类，触发流动动画。
+            // 交互逻辑说明：通过 CSS 动画实现虚线移动，模拟管道中的流动效果。
 		};
 	</script>
 </head>
 
 <!-- Page passes the container for the graph to the program -->
+<!--
+  中文注释：
+  页面在加载时调用 main 函数，将 graphContainer 容器传递给程序，用于渲染图表。
+-->
 <body onload="main(document.getElementById('graphContainer'))">
+    <!--
+      中文注释：
+      事件处理逻辑说明：onload 事件在页面加载完成后触发，调用 main 函数并传入 graphContainer 元素。
+    -->
 
 	<!-- Creates a container for the graph with a grid wallpaper -->
+    <!--
+      中文注释：
+      创建图表的容器元素，设置网格背景以增强视觉效果。
+    -->
 	<div id="graphContainer"
 		style="position:relative;overflow:hidden;width:321px;height:241px;background:url('editors/images/grid.gif');cursor:default;">
+        <!--
+          中文注释：
+          定义图表容器 div，ID 为 graphContainer。
+          样式设置说明：
+          - position: relative：相对定位，确保图表元素正确布局。
+          - overflow: hidden：隐藏超出容器范围的内容。
+          - width: 321px, height: 241px：设置容器尺寸。
+          - background: url('editors/images/grid.gif')：使用网格图片作为背景。
+          - cursor: default：设置默认鼠标指针。
+        -->
 	</div>
 </body>
 </html>

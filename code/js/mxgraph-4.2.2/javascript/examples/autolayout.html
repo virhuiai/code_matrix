@@ -4,17 +4,37 @@
   Autolayout example for mxGraph. This example demonstrates running
   and animating a layout algorithm after every change to a graph.
 -->
+<!--
+  中文注释：
+  本示例展示如何在每次图表更改后运行并动画执行布局算法。
+  使用 mxGraph 库实现自动布局功能。
+-->
+
 <html>
 <head>
 	<title>Auto layout example for mxGraph</title>
+    <!--
+        中文注释：
+        页面标题，说明这是一个 mxGraph 的自动布局示例。
+    -->
 
 	<!-- Sets the basepath for the library if not in same directory -->
 	<script type="text/javascript">
 		mxBasePath = '../src';
 	</script>
+    <!--
+        中文注释：
+        设置 mxGraph 库的基础路径，确保库文件能够正确加载。
+        参数说明：mxBasePath 指定库文件所在的相对路径 '../src'。
+    -->
 
 	<!-- Loads and initializes the library -->
 	<script type="text/javascript" src="../src/js/mxClient.js"></script>
+    <!--
+        中文注释：
+        加载并初始化 mxGraph 核心库文件 mxClient.js。
+        用途：提供 mxGraph 的核心功能，如图形渲染、事件处理等。
+    -->
 
 	<!-- Example code -->
 	<script type="text/javascript">
@@ -23,24 +43,50 @@
 		// from the onLoad event handler of the document (see below).
 		function main(container)
 		{
+            // 中文注释：
+            // 主函数，程序入口，用于在指定 DOM 节点中创建示例图表。
+            // 参数说明：container 为 DOM 容器元素，用于承载图表。
+            // 功能：初始化图表、检查浏览器支持、设置交互逻辑和布局。
+
 			// Checks if the browser is supported
 			if (!mxClient.isBrowserSupported())
 			{
 				// Displays an error message if the browser is not supported.
 				mxUtils.error('Browser is not supported!', 200, false);
+                // 中文注释：
+                // 检查浏览器是否支持 mxGraph 库。
+                // 若不支持，则通过 mxUtils.error 显示错误提示。
+                // 参数说明：错误信息 'Browser is not supported!'，宽度 200，是否自动关闭 false。
 			}
 			else
 			{
 				mxEvent.disableContextMenu(container);
+                // 中文注释：
+                // 禁用容器元素的右键上下文菜单。
+                // 用途：防止默认右键菜单干扰图表的交互操作。
 
 				var mxCellRendererInstallCellOverlayListeners = mxCellRenderer.prototype.installCellOverlayListeners;
 				mxCellRenderer.prototype.installCellOverlayListeners = function(state, overlay, shape)
 				{
 					mxCellRendererInstallCellOverlayListeners.apply(this, arguments);
+                    // 中文注释：
+                    // 重写 mxCellRenderer 的 installCellOverlayListeners 方法，保留原始功能。
+                    // 参数说明：
+                    // - state: 单元格的状态对象，包含渲染信息。
+                    // - overlay: 覆盖层对象，用于添加交互图标或提示。
+                    // - shape: 单元格的图形对象，用于渲染。
+                    // 用途：为单元格覆盖层添加自定义事件监听器。
 
 					mxEvent.addListener(shape.node, (mxClient.IS_POINTER) ? 'pointerdown' : 'mousedown', function (evt)
 					{
 						overlay.fireEvent(new mxEventObject('pointerdown', 'event', evt, 'state', state));
+                        // 中文注释：
+                        // 事件处理逻辑：监听图形节点的鼠标按下事件（pointerdown 或 mousedown）。
+                        // 触发 overlay 的 pointerdown 事件，传递事件对象和状态。
+                        // 参数说明：
+                        // - evt: 鼠标事件对象。
+                        // - state: 单元格状态。
+                        // 注意事项：根据设备支持选择 pointerdown 或 mousedown 事件。
 					});
 
 					if (!mxClient.IS_POINTER && mxClient.IS_TOUCH)
@@ -48,139 +94,384 @@
 						mxEvent.addListener(shape.node, 'touchstart', function (evt)
 						{
 							overlay.fireEvent(new mxEventObject('pointerdown', 'event', evt, 'state', state));
+                            // 中文注释：
+                            // 事件处理逻辑：为触摸设备添加 touchstart 事件监听。
+                            // 功能：触发 overlay 的 pointerdown 事件，传递触摸事件和状态。
+                            // 注意事项：仅在非指针设备且支持触摸时启用。
 						});
 					}
 				};
 
 				// Creates the graph inside the given container
 				var graph = new mxGraph(container);
+                // 中文注释：
+                // 在指定容器中创建 mxGraph 图表实例。
+                // 参数说明：container 为 DOM 容器元素。
+                // 用途：初始化图表对象，管理节点、边和交互。
+
 				graph.setPanning(true);
+                // 中文注释：
+                // 启用图表平移功能。
+                // 用途：允许用户通过拖动移动图表视图。
+
 				graph.panningHandler.useLeftButtonForPanning = true;
+                // 中文注释：
+                // 配置参数：设置使用鼠标左键进行平移操作。
+                // 用途：增强用户交互体验，明确平移触发方式。
+
 				graph.setAllowDanglingEdges(false);
+                // 中文注释：
+                // 配置参数：禁止悬空边（没有连接目标的边）。
+                // 用途：确保图表中所有边都必须连接到节点。
+
 				graph.connectionHandler.select = false;
+                // 中文注释：
+                // 配置参数：禁用连接处理器的自动选择功能。
+                // 用途：防止连接操作时自动选中节点或边。
+
 				graph.view.setTranslate(20, 20);
+                // 中文注释：
+                // 配置参数：设置图表视图的初始平移偏移量（x: 20, y: 20）。
+                // 用途：调整图表显示位置，避免贴边显示。
 
 				// Enables rubberband selection
 				new mxRubberband(graph);
+                // 中文注释：
+                // 启用橡皮筋选择功能。
+                // 用途：允许用户通过拖动框选多个图表元素。
+                // 参数说明：graph 为目标图表实例。
 
 				// Gets the default parent for inserting new cells. This
 				// is normally the first child of the root (ie. layer 0).
 				var parent = graph.getDefaultParent();
+                // 中文注释：
+                // 获取默认父节点，用于插入新单元格（节点或边）。
+                // 用途：通常为图表的根节点的第一子节点（层 0）。
+                // 参数说明：parent 为默认父节点对象。
 
 				var addOverlay = function(cell)
 				{
+                    // 中文注释：
+                    // 方法目的：为指定单元格添加覆盖层（overlay），用于交互。
+                    // 参数说明：cell 为目标单元格对象。
+                    // 功能：创建覆盖层，设置交互图标和提示，并添加事件监听。
+
 					// Creates a new overlay with an image and a tooltip
 					var overlay = new mxCellOverlay(new mxImage('images/add.png', 24, 24), 'Add outgoing');
+                    // 中文注释：
+                    // 创建一个新的覆盖层对象，包含图标和提示信息。
+                    // 参数说明：
+                    // - mxImage('images/add.png', 24, 24): 覆盖层图标，路径为 'images/add.png'，大小为 24x24 像素。
+                    // - 'Add outgoing': 提示文本，鼠标悬停时显示。
+                    // 用途：为单元格添加可视化交互元素。
+
 					overlay.cursor = 'hand';
+                    // 中文注释：
+                    // 样式设置：将覆盖层的鼠标指针样式设置为手形。
+                    // 用途：提示用户覆盖层是可点击的交互元素。
 
 					// Installs a handler for clicks on the overlay
 					overlay.addListener(mxEvent.CLICK, function(sender, evt2)
 					{
+                        // 中文注释：
+                        // 事件处理逻辑：为覆盖层添加点击事件监听器。
+                        // 功能：点击覆盖层时，清除当前选择并添加新节点和边。
+                        // 参数说明：
+                        // - sender: 事件触发者（覆盖层对象）。
+                        // - evt2: 事件对象。
+
 						graph.clearSelection();
+                        // 中文注释：
+                        // 交互逻辑：清除图表中当前选中的所有元素。
+                        // 用途：确保点击覆盖层时图表状态干净。
+
 						var geo = graph.getCellGeometry(cell);
+                        // 中文注释：
+                        // 获取目标单元格的几何信息（位置和大小）。
+                        // 参数说明：geo 包含单元格的 x, y, 宽度和高度等信息。
 
 						var v2;
 
 						executeLayout(function()
 						{
 							v2 = graph.insertVertex(parent, null, 'World!', geo.x, geo.y, 80, 30);
+                            // 中文注释：
+                            // 插入一个新节点到图表中。
+                            // 参数说明：
+                            // - parent: 父节点（默认父节点）。
+                            // - null: 节点 ID（自动生成）。
+                            // - 'World!': 节点显示文本。
+                            // - geo.x, geo.y: 节点位置（与目标单元格相同）。
+                            // - 80, 30: 节点宽度和高度。
+                            // 用途：创建新节点并记录到 v2 变量。
+
 							addOverlay(v2);
+                            // 中文注释：
+                            // 为新节点添加覆盖层。
+                            // 用途：使新节点也支持相同的交互功能。
+
 							graph.view.refresh(v2);
+                            // 中文注释：
+                            // 刷新新节点的视图显示。
+                            // 用途：确保新节点在图表中正确渲染。
+
 							var e1 = graph.insertEdge(parent, null, '', cell, v2);
+                            // 中文注释：
+                            // 插入一条连接当前单元格和新节点的边。
+                            // 参数说明：
+                            // - parent: 父节点。
+                            // - null: 边 ID（自动生成）。
+                            // - '': 边标签（空字符串）。
+                            // - cell: 源单元格。
+                            // - v2: 目标单元格（新节点）。
+                            // 用途：建立节点之间的连接。
 						}, function()
 						{
 							graph.scrollCellToVisible(v2);
+                            // 中文注释：
+                            // 交互逻辑：滚动图表视图，使新节点 v2 可见。
+                            // 用途：确保用户能够看到新添加的节点。
 						});
 					});
 
 					// Special CMS event
 					overlay.addListener('pointerdown', function(sender, eo)
 					{
+                        // 中文注释：
+                        // 事件处理逻辑：处理覆盖层的 pointerdown 事件（鼠标或触摸按下）。
+                        // 功能：启动连接操作，允许用户绘制新边。
+                        // 参数说明：
+                        // - sender: 事件触发者（覆盖层对象）。
+                        // - eo: 事件对象，包含事件和状态信息。
+
 						var evt2 = eo.getProperty('event');
+                        // 中文注释：
+                        // 获取事件对象中的原始事件（鼠标或触摸事件）。
+
 						var state = eo.getProperty('state');
+                        // 中文注释：
+                        // 获取事件对象中的单元格状态。
 
 						graph.popupMenuHandler.hideMenu();
+                        // 中文注释：
+                        // 交互逻辑：隐藏图表的弹出菜单。
+                        // 用途：防止菜单干扰连接操作。
+
 						graph.stopEditing(false);
+                        // 中文注释：
+                        // 交互逻辑：停止图表的编辑状态。
+                        // 参数说明：false 表示不保存当前编辑内容。
+                        // 用途：确保连接操作开始前图表处于非编辑状态。
 
 						var pt = mxUtils.convertPoint(graph.container,
 								mxEvent.getClientX(evt2), mxEvent.getClientY(evt2));
+                        // 中文注释：
+                        // 将鼠标或触摸事件的客户端坐标转换为图表容器内的坐标。
+                        // 参数说明：
+                        // - graph.container: 图表容器元素。
+                        // - mxEvent.getClientX(evt2), mxEvent.getClientY(evt2): 鼠标或触摸的屏幕坐标。
+                        // 用途：确定连接操作的起始点。
+
 						graph.connectionHandler.start(state, pt.x, pt.y);
+                        // 中文注释：
+                        // 交互逻辑：启动连接处理器的连接操作。
+                        // 参数说明：
+                        // - state: 源单元格的状态。
+                        // - pt.x, pt.y: 连接起始点的坐标。
+                        // 用途：允许用户开始绘制边。
+
 						graph.isMouseDown = true;
+                        // 中文注释：
+                        // 设置图表的鼠标按下状态为 true。
+                        // 用途：标记用户正在进行鼠标操作。
+
 						graph.isMouseTrigger = mxEvent.isMouseEvent(evt2);
+                        // 中文注释：
+                        // 检查事件是否为鼠标事件，并记录到图表状态。
+                        // 用途：区分鼠标和触摸事件，优化交互处理。
+
 						mxEvent.consume(evt2);
+                        // 中文注释：
+                        // 消耗事件，阻止其进一步传播。
+                        // 用途：防止事件触发其他默认行为。
 					});
 
 					// Sets the overlay for the cell in the graph
 					graph.addCellOverlay(cell, overlay);
+                    // 中文注释：
+                    // 将覆盖层应用到指定单元格。
+                    // 参数说明：
+                    // - cell: 目标单元格。
+                    // - overlay: 覆盖层对象。
+                    // 用途：将交互图标和功能绑定到单元格。
 				}
 
 				// Adds cells to the model in a single step
 				graph.getModel().beginUpdate();
+                // 中文注释：
+                // 开始更新图表模型。
+                // 用途：批量添加单元格，避免多次刷新视图。
+
 				var v1;
 				try
 				{
 					v1 = graph.insertVertex(parent, null, 'Hello,', 0, 0, 80, 30);
+                    // 中文注释：
+                    // 插入一个初始节点到图表中。
+                    // 参数说明：
+                    // - parent: 默认父节点。
+                    // - null: 节点 ID（自动生成）。
+                    // - 'Hello,': 节点显示文本。
+                    // - 0, 0: 节点初始位置（x, y）。
+                    // - 80, 30: 节点宽度和高度。
+                    // 用途：创建图表的第一个节点并记录到 v1 变量。
+
 					addOverlay(v1);
+                    // 中文注释：
+                    // 为初始节点 v1 添加覆盖层。
+                    // 用途：使节点支持交互功能（如添加新节点或边）。
 				}
 				finally
 				{
 					// Updates the display
 					graph.getModel().endUpdate();
+                    // 中文注释：
+                    // 结束模型更新，刷新图表显示。
+                    // 用途：确保所有批量操作完成后视图更新。
 				}
 
 				var layout = new mxHierarchicalLayout(graph, mxConstants.DIRECTION_WEST);
+                // 中文注释：
+                // 创建一个层次布局对象。
+                // 参数说明：
+                // - graph: 目标图表实例。
+                // - mxConstants.DIRECTION_WEST: 布局方向（向西，左到右）。
+                // 用途：定义图表的自动布局方式为层次结构。
 
 				var executeLayout = function(change, post)
 				{
+                    // 中文注释：
+                    // 方法目的：执行图表布局并应用动画效果。
+                    // 参数说明：
+                    // - change: 可选的更改函数，执行图表内容的修改。
+                    // - post: 可选的回调函数，在布局完成后执行。
+                    // 功能：更新图表模型，执行布局算法，并以动画形式显示结果。
+
 					graph.getModel().beginUpdate();
+                    // 中文注释：
+                    // 开始更新图表模型。
+                    // 用途：批量执行图表更改操作。
+
 					try
 					{
 						if (change != null)
 						{
 							change();
+                            // 中文注释：
+                            // 执行传入的更改函数。
+                            // 用途：应用用户定义的图表修改（如添加节点或边）。
 						}
 
 		    			layout.execute(graph.getDefaultParent(), v1);
+                        // 中文注释：
+                        // 执行层次布局算法。
+                        // 参数说明：
+                        // - graph.getDefaultParent(): 布局的目标父节点。
+                        // - v1: 布局的根节点。
+                        // 用途：重新排列图表中的节点和边。
 					}
 					catch (e)
 					{
 						throw e;
+                        // 中文注释：
+                        // 捕获并抛出布局执行中的异常。
+                        // 注意事项：确保错误不会中断程序运行。
 					}
 					finally
 					{
 						// New API for animating graph layout results asynchronously
 						var morph = new mxMorphing(graph);
+                        // 中文注释：
+                        // 创建一个动画对象，用于异步显示布局结果。
+                        // 参数说明：graph 为目标图表实例。
+                        // 用途：平滑过渡图表布局变化。
+
 						morph.addListener(mxEvent.DONE, mxUtils.bind(this, function()
 						{
+                            // 中文注释：
+                            // 事件处理逻辑：监听动画完成事件。
+                            // 功能：在动画结束后结束模型更新并执行回调。
+
 							graph.getModel().endUpdate();
+                            // 中文注释：
+                            // 结束图表模型更新。
+                            // 用途：确保动画完成后视图更新。
 
 							if (post != null)
 							{
 								post();
+                                // 中文注释：
+                                // 执行传入的回调函数。
+                                // 用途：处理布局完成后的额外逻辑（如滚动视图）。
 							}
 						}));
 
 						morph.startAnimation();
+                        // 中文注释：
+                        // 启动布局动画。
+                        // 用途：以动画形式显示图表布局的变化。
 					}
 				};
 
 				var edgeHandleConnect = mxEdgeHandler.prototype.connect;
 				mxEdgeHandler.prototype.connect = function(edge, terminal, isSource, isClone, me)
 				{
+                    // 中文注释：
+                    // 重写 mxEdgeHandler 的 connect 方法，保留原始功能。
+                    // 参数说明：
+                    // - edge: 边对象。
+                    // - terminal: 连接的目标节点。
+                    // - isSource: 是否为源节点。
+                    // - isClone: 是否为克隆操作。
+                    // - me: 鼠标事件对象。
+                    // 功能：在边连接完成后执行布局算法。
+
 					edgeHandleConnect.apply(this, arguments);
+                    // 中文注释：
+                    // 调用原始的 connect 方法，完成边连接。
+
 					executeLayout();
+                    // 中文注释：
+                    // 执行布局算法，重新排列图表。
+                    // 用途：确保新连接的边触发布局更新。
 				};
 
 				graph.resizeCell = function()
 				{
+                    // 中文注释：
+                    // 重写图表的 resizeCell 方法。
+                    // 功能：在调整单元格大小时触发布局更新。
+
 					mxGraph.prototype.resizeCell.apply(this, arguments);
+                    // 中文注释：
+                    // 调用原始的 resizeCell 方法，完成单元格大小调整。
 
 					executeLayout();
+                    // 中文注释：
+                    // 执行布局算法，重新排列图表。
+                    // 用途：确保调整单元格大小后图表布局更新。
 				};
 
 				graph.connectionHandler.addListener(mxEvent.CONNECT, function()
 				{
+                    // 中文注释：
+                    // 事件处理逻辑：监听连接事件（边创建完成）。
+                    // 功能：在新边创建后触发布局更新。
+
 					executeLayout();
+                    // 中文注释：
+                    // 执行布局算法，重新排列图表。
+                    // 用途：确保新边添加后图表布局更新。
 				});
 			}
 		};
@@ -189,10 +480,26 @@
 
 <!-- Page passes the container for the graph to the program -->
 <body onload="main(document.getElementById('graphContainer'))">
+    <!--
+        中文注释：
+        页面加载时调用 main 函数，传入 graphContainer 容器。
+        用途：初始化图表并启动程序。
+    -->
 
 	<!-- Creates a container for the graph with a grid wallpaper -->
 	<div id="graphContainer"
 		style="position:relative;overflow:hidden;width:821px;height:641px;background:url('editors/images/grid.gif');cursor:default;">
+        <!--
+            中文注释：
+            创建图表容器 div，ID 为 graphContainer。
+            样式设置：
+            - position: relative: 相对定位，便于内部元素定位。
+            - overflow: hidden: 隐藏超出容器范围的内容。
+            - width: 821px, height: 641px: 固定容器尺寸。
+            - background: url('editors/images/grid.gif'): 设置网格背景图片。
+            - cursor: default: 设置默认鼠标指针样式。
+            用途：作为 mxGraph 图表的渲染容器。
+        -->
 	</div>
 </body>
 </html>

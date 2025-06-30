@@ -4,103 +4,166 @@
   Consistuent example for mxGraph. This example demonstrates using
   cells as parts of other cells.
 -->
+<!--
+  中文注释：此为mxGraph的示例代码，展示如何将单元格（cells）作为其他单元格的组成部分。
+-->
+
 <html>
 <head>
-	<title>Consistuent example for mxGraph</title>
+    <title>Consistuent example for mxGraph</title>
+    <!--
+        中文注释：页面标题，说明这是一个mxGraph的组成部分示例。
+    -->
 
-	<!-- Sets the basepath for the library if not in same directory -->
-	<script type="text/javascript">
-		mxBasePath = '../src';
-	</script>
+    <!-- Sets the basepath for the library if not in same directory -->
+    <!--
+        中文注释：设置mxGraph库的基础路径（mxBasePath），当库文件不在同一目录时使用。
+    -->
+    <script type="text/javascript">
+        mxBasePath = '../src';
+        // 中文注释：将mxGraph库的基础路径设置为“../src”，确保正确加载库文件。
+    </script>
 
-	<!-- Loads and initializes the library -->
-	<script type="text/javascript" src="../src/js/mxClient.js"></script>
+    <!-- Loads and initializes the library -->
+    <!--
+        中文注释：加载并初始化mxGraph库。
+    -->
+    <script type="text/javascript" src="../src/js/mxClient.js"></script>
+    <!--
+    组合
+        中文注释：引入mxClient.js文件，包含mxGraph的核心功能，用于创建和操作图形。
+    -->
 
-	<!-- Example code -->
-	<script type="text/javascript">
-		
-		/**
-		 * Redirects start drag to parent.
-		 */
-		var graphHandlerGetInitialCellForEvent = mxGraphHandler.prototype.getInitialCellForEvent;
-		mxGraphHandler.prototype.getInitialCellForEvent = function(me)
-		{
-			var cell = graphHandlerGetInitialCellForEvent.apply(this, arguments);
-			
-			if (this.graph.isPart(cell))
-			{
-				cell = this.graph.getModel().getParent(cell)
-			}
-			
-			return cell;
-		};
+    <!-- Example code -->
+    <script type="text/javascript">
 
-		// Program starts here. Creates a sample graph in the
-		// DOM node with the specified ID. This function is invoked
-		// from the onLoad event handler of the document (see below).
-		function main(container)
-		{
-			// Checks if the browser is supported
-			if (!mxClient.isBrowserSupported())
-			{
-				// Displays an error message if the browser is not supported.
-				mxUtils.error('Browser is not supported!', 200, false);
-			}
-			else
-			{
-				// Disables the built-in context menu
-				mxEvent.disableContextMenu(container);
-				
-				// Creates the graph inside the given container
-				var graph = new mxGraph(container);
-				graph.foldingEnabled = false;
-				graph.recursiveResize = true;
-				
-				// Helper method to mark parts with constituent=1 in the style
-				graph.isPart = function(cell)
-				{
-					return this.getCurrentCellStyle(cell)['constituent'] == '1';
-				};
-				
-				// Redirects selection to parent
-				graph.selectCellForEvent = function(cell)
-				{
-					if (this.isPart(cell))
-					{
-						cell = this.model.getParent(cell);
-					}
-					
-					mxGraph.prototype.selectCellForEvent.apply(this, arguments);
-				};
-				
-				// Enables rubberband selection
-				new mxRubberband(graph);
-				
-				// Gets the default parent for inserting new cells. This
-				// is normally the first child of the root (ie. layer 0).
-				var parent = graph.getDefaultParent();
-								
-				// Adds cells to the model in a single step
-				graph.getModel().beginUpdate();
-				try
-				{
-					var v1 = graph.insertVertex(parent, null, '', 20, 20, 120, 70);
-					var v2 = graph.insertVertex(v1, null, 'Constituent', 20, 20, 80, 30, 'constituent=1;');
-				}
-				finally
-				{
-					// Updates the display
-					graph.getModel().endUpdate();
-				}
-			}
-		};
-	</script>
+        /**
+         * Redirects start drag to parent.
+         */
+        // 中文注释：重定向拖拽起始单元格到其父单元格。
+        var graphHandlerGetInitialCellForEvent = mxGraphHandler.prototype.getInitialCellForEvent;
+        // 中文注释：保存原始的getInitialCellForEvent方法，用于后续调用。
+        mxGraphHandler.prototype.getInitialCellForEvent = function(me)
+        {
+            var cell = graphHandlerGetInitialCellForEvent.apply(this, arguments);
+            // 中文注释：调用原始方法获取当前事件触发的单元格。
+
+            if (this.graph.isPart(cell))
+            {
+                cell = this.graph.getModel().getParent(cell)
+            }
+            // 中文注释：如果当前单元格是组成部分（isPart返回true），则将单元格重定向为其父单元格。
+
+            return cell;
+            // 中文注释：返回最终的单元格（可能是父单元格）。
+        };
+
+        // Program starts here. Creates a sample graph in the
+        // DOM node with the specified ID. This function is invoked
+        // from the onLoad event handler of the document (see below).
+        // 中文注释：程序入口，创建一个示例图形，绘制在指定ID的DOM节点中，通过文档的onLoad事件调用。
+        function main(container)
+        {
+            // Checks if the browser is supported
+            // 中文注释：检查浏览器是否支持mxGraph库。
+            if (!mxClient.isBrowserSupported())
+            {
+                // Displays an error message if the browser is not supported.
+                // 中文注释：如果浏览器不支持，显示错误信息。
+                mxUtils.error('Browser is not supported!', 200, false);
+                // 中文注释：调用mxUtils.error显示错误提示，参数：错误信息、对话框宽度（200px）、是否自动关闭（false）。
+            }
+            else
+            {
+                // Disables the built-in context menu
+                // 中文注释：禁用浏览器的内置右键菜单。
+                mxEvent.disableContextMenu(container);
+                // 中文注释：在指定容器上禁用右键菜单，防止干扰图形交互。
+
+                // Creates the graph inside the given container
+                // 中文注释：在指定容器中创建mxGraph图形实例。
+                var graph = new mxGraph(container);
+                // 中文注释：初始化mxGraph对象，参数container为图形渲染的DOM容器。
+                graph.foldingEnabled = false;
+                // 中文注释：禁用单元格折叠功能，防止子单元格被折叠。
+                graph.recursiveResize = true;
+                // 中文注释：启用递归调整大小，允许父单元格根据子单元格自动调整尺寸。
+
+                // Helper method to mark parts with constituent=1 in the style
+                // 中文注释：辅助方法，检查单元格样式中是否包含constituent=1，标记为组成部分。
+                graph.isPart = function(cell)
+                {
+                    return this.getCurrentCellStyle(cell)['constituent'] == '1';
+                    // 中文注释：获取单元格样式，检查是否包含“constituent=1”，返回布尔值。
+                };
+
+                // Redirects selection to parent
+                // 中文注释：将单元格选择重定向到其父单元格。
+                graph.selectCellForEvent = function(cell)
+                {
+                    if (this.isPart(cell))
+                    {
+                        cell = this.model.getParent(cell);
+                    }
+                    // 中文注释：如果选中的单元格是组成部分，则将其重定向为父单元格。
+
+                    mxGraph.prototype.selectCellForEvent.apply(this, arguments);
+                    // 中文注释：调用原始的selectCellForEvent方法，执行选择操作。
+                };
+
+                // Enables rubberband selection
+                // 中文注释：启用橡皮筋选择功能（框选）。
+                new mxRubberband(graph);
+                // 中文注释：为图形对象启用橡皮筋选择，用户可通过拖拽框选多个单元格。
+
+                // Gets the default parent for inserting new cells. This
+                // is normally the first child of the root (ie. layer 0).
+                // 中文注释：获取插入新单元格的默认父节点，通常为根节点的第一个子节点（即第0层）。
+                var parent = graph.getDefaultParent();
+                // 中文注释：保存默认父节点，用于后续插入单元格。
+
+                // Adds cells to the model in a single step
+                // 中文注释：以单次操作向模型中添加单元格。
+                graph.getModel().beginUpdate();
+                // 中文注释：开始批量更新模型，优化性能，防止多次重绘。
+                try
+                {
+                    var v1 = graph.insertVertex(parent, null, '', 20, 20, 120, 70);
+                    // 中文注释：插入父单元格，参数：父节点、ID（null）、显示值（空字符串）、位置（x=20, y=20）、大小（宽120，高70）。
+                    var v2 = graph.insertVertex(v1, null, 'Constituent', 20, 20, 80, 30, 'constituent=1;');
+                    // 中文注释：插入子单元格，父节点为v1，显示值“Constituent”，位置（x=20, y=20），大小（宽80，高30），样式包含“constituent=1”标记其为组成部分。
+                }
+                finally
+                {
+                    // Updates the display
+                    // 中文注释：更新图形显示。
+                    graph.getModel().endUpdate();
+                    // 中文注释：结束批量更新，触发图形重绘以显示所有更改。
+                }
+            }
+        };
+    </script>
 </head>
 
 <!-- Page passes the container for the graph to the program -->
+<!--
+    中文注释：页面通过onLoad事件将图形容器传递给main函数。
+-->
 <body onload="main(document.getElementById('graphContainer'))">
+    <!--
+        中文注释：页面加载时调用main函数，参数为ID为“graphContainer”的DOM元素。
+    -->
 
 	<!-- Creates a container for the graph with a grid wallpaper -->
+<!--
+        中文注释：创建图形容器，设置网格背景图。
+定义图形容器div，ID为“graphContainer”，样式设置：
+            - position:relative：相对定位，保持元素相对于其原始位置。
+            - overflow:hidden：隐藏超出容器的内容。
+            - width:321px;height:241px：容器尺寸（宽321px，高241px）。
+            - background:url('editors/images/grid.gif')：设置网格背景图。
+            - cursor:default：鼠标样式为默认箭头。
+    -->
 	<div id="graphContainer"
 		style="position:relative;overflow:hidden;width:321px;height:241px;background:url('editors/images/grid.gif');cursor:default;">
 	</div>

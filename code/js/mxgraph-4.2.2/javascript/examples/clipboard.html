@@ -4,353 +4,546 @@
   Clipboard example for mxGraph. This example demonstrates using the
   clipboard for providing cross-tab and cross-browser copy and paste.
 -->
+<!--
+  中文注释：这是mxGraph的剪贴板示例，展示了如何使用剪贴板实现跨标签页和跨浏览器的复制和粘贴功能。
+-->
+
 <html>
 <head>
-	<title>Clipboard example for mxGraph</title>
+    <title>Clipboard example for mxGraph</title>
+    <!--
+      中文注释：页面标题，表明这是一个mxGraph的剪贴板示例。
+    -->
 
-	<!-- Sets the basepath for the library if not in same directory -->
-	<script type="text/javascript">
-		mxBasePath = '../src';
-	</script>
+    <!-- Sets the basepath for the library if not in same directory -->
+    <!--
+      中文注释：设置mxGraph库的基础路径，如果库文件不在同一目录下，需要指定路径。
+    -->
+    <script type="text/javascript">
+        mxBasePath = '../src';
+        // 中文注释：mxBasePath 是 mxGraph 库的基础路径配置，指向 '../src' 目录，确保库文件正确加载。
+    </script>
 
-	<!-- Loads and initializes the library -->
-	<script type="text/javascript" src="../src/js/mxClient.js"></script>
+    <!-- Loads and initializes the library -->
+    <!--
+      中文注释：加载并初始化mxGraph库。
+    -->
+    <script type="text/javascript" src="../src/js/mxClient.js"></script>
+    <!--
+      中文注释：引入 mxClient.js 文件，用于加载 mxGraph 核心库，初始化图形编辑功能。
+    -->
 
-	<!-- Example code -->
-	<script type="text/javascript">
-		// Program starts here. Creates a sample graph in the
-		// DOM node with the specified ID. This function is invoked
-		// from the onLoad event handler of the document (see below).
-		function main(container)
-		{
-			// Checks if the browser is supported
-			if (!mxClient.isBrowserSupported())
-			{
-				// Displays an error message if the browser is not supported.
-				mxUtils.error('Browser is not supported!', 200, false);
-			}
-			else
-			{
-				// Disables the built-in context menu
-				mxEvent.disableContextMenu(container);
-				
-				// Creates the graph inside the given container
-				var graph = new mxGraph(container);
+    <!-- Example code -->
+    <!--
+      中文注释：以下是示例代码，展示如何使用 mxGraph 实现剪贴板功能。
+    -->
+    <script type="text/javascript">
+        // Program starts here. Creates a sample graph in the
+        // DOM node with the specified ID. This function is invoked
+        // from the onLoad event handler of the document (see below).
+        // 中文注释：程序从这里开始，在指定 ID 的 DOM 节点中创建一个示例图形。此函数由文档的 onLoad 事件处理程序调用。
+        function main(container)
+        // 中文注释：main 函数是程序入口，参数 container 是用于渲染图形的 DOM 容器。
+        {
+            // Checks if the browser is supported
+            // 中文注释：检查浏览器是否支持 mxGraph 库。
+            if (!mxClient.isBrowserSupported())
+            {
+                // Displays an error message if the browser is not supported.
+                // 中文注释：如果浏览器不支持，显示错误消息。
+                mxUtils.error('Browser is not supported!', 200, false);
+                // 中文注释：mxUtils.error 用于显示错误提示，参数分别是错误消息、对话框宽度（200px）和是否自动关闭（false）。
+            }
+            else
+            {
+                // Disables the built-in context menu
+                // 中文注释：禁用浏览器的内置右键菜单。
+                mxEvent.disableContextMenu(container);
+                // 中文注释：mxEvent.disableContextMenu 禁止 container 上的右键菜单，防止干扰图形编辑。
 
-				// Public helper method for shared clipboard.
-				mxClipboard.cellsToString = function(cells)
-				{
-					var codec = new mxCodec();
-					var model = new mxGraphModel();
-					var parent = model.getChildAt(model.getRoot(), 0);
-					
-					for (var i = 0; i < cells.length; i++)
-					{
-						model.add(parent, cells[i]);
-					}
+                // Creates the graph inside the given container
+                // 中文注释：在指定容器中创建 mxGraph 图形对象。
+                var graph = new mxGraph(container);
+                // 中文注释：graph 是 mxGraph 实例，用于在 container 中渲染和操作图形。
 
-					return mxUtils.getXml(codec.encode(model));
-				};
+                // Public helper method for shared clipboard.
+                // 中文注释：公共辅助方法，用于将单元格数据转换为 XML 字符串以支持剪贴板操作。
+                mxClipboard.cellsToString = function(cells)
+                // 中文注释：cellsToString 方法将单元格数组转换为 XML 格式字符串，参数 cells 是要转换的单元格数组。
+                {
+                    var codec = new mxCodec();
+                    // 中文注释：codec 是 mxCodec 实例，用于将图形模型编码为 XML。
+                    var model = new mxGraphModel();
+                    // 中文注释：model 是临时的 mxGraphModel 实例，用于构建单元格的模型。
+                    var parent = model.getChildAt(model.getRoot(), 0);
+                    // 中文注释：parent 是模型根节点的第一个子节点，用于添加单元格。
 
-				// Focused but invisible textarea during control or meta key events
-				var textInput = document.createElement('textarea');
-				mxUtils.setOpacity(textInput, 0);
-				textInput.style.width = '1px';
-				textInput.style.height = '1px';
-				var restoreFocus = false;
-				var gs = graph.gridSize;
-				var lastPaste = null;
-				var dx = 0;
-				var dy = 0;
+                    for (var i = 0; i < cells.length; i++)
+                    {
+                        model.add(parent, cells[i]);
+                        // 中文注释：将每个单元格添加到临时模型的 parent 节点中。
+                    }
 
-				// Workaround for no copy event in IE/FF if empty
-				textInput.value = ' ';
-			
-				// Shows a textare when control/cmd is pressed to handle native clipboard actions
-				mxEvent.addListener(document, 'keydown', function(evt)
-				{
-					// No dialog visible
-					var source = mxEvent.getSource(evt);
-					
-					if (graph.isEnabled() && !graph.isMouseDown && !graph.isEditing() && source.nodeName != 'INPUT')
-					{
-						if (evt.keyCode == 224 /* FF */ || (!mxClient.IS_MAC && evt.keyCode == 17 /* Control */) ||
-							(mxClient.IS_MAC && (evt.keyCode == 91 || evt.keyCode == 93) /* Left/Right Meta */))
-						{
-							// Cannot use parentNode for check in IE
-							if (!restoreFocus)
-							{
-								// Avoid autoscroll but allow handling of events
-								textInput.style.position = 'absolute';
-								textInput.style.left = (graph.container.scrollLeft + 10) + 'px';
-								textInput.style.top = (graph.container.scrollTop + 10) + 'px';
-								graph.container.appendChild(textInput);
+                    return mxUtils.getXml(codec.encode(model));
+                    // 中文注释：使用 codec.encode 将模型编码为 XML，并通过 mxUtils.getXml 转换为字符串返回。
+                };
 
-								restoreFocus = true;
-								textInput.focus();
-								textInput.select();
-							}
-						}
-					}
-				});
-				
-				// Restores focus on graph container and removes text input from DOM
-				mxEvent.addListener(document, 'keyup', function(evt)
-				{
-					if (restoreFocus && (evt.keyCode == 224 /* FF */ || evt.keyCode == 17 /* Control */ ||
-						evt.keyCode == 91 || evt.keyCode == 93 /* Meta */))
-					{
-						restoreFocus = false;
-						
-						if (!graph.isEditing())
-						{
-							graph.container.focus();
-						}
-						
-						textInput.parentNode.removeChild(textInput);
-					}
-				});
-				
-				// Inserts the XML for the given cells into the text input for copy
-				var copyCells = function(graph, cells)
-				{
-					if (cells.length > 0)
-					{
-						var clones = graph.cloneCells(cells);
-						
-						// Checks for orphaned relative children and makes absolute
-						for (var i = 0; i < clones.length; i++)
-						{
-							var state = graph.view.getState(cells[i]);
-							
-							if (state != null)
-							{
-								var geo = graph.getCellGeometry(clones[i]);
-								
-								if (geo != null && geo.relative)
-								{
-									geo.relative = false;
-									geo.x = state.x / state.view.scale - state.view.translate.x;
-									geo.y = state.y / state.view.scale - state.view.translate.y;
-								}
-							}
-						}
-						
-						textInput.value = mxClipboard.cellsToString(clones);
-					}
-					
-					textInput.select();
-					lastPaste = textInput.value;
-				};
-				
-				// Handles copy event by putting XML for current selection into text input
-				mxEvent.addListener(textInput, 'copy', mxUtils.bind(this, function(evt)
-				{
-					if (graph.isEnabled() && !graph.isSelectionEmpty())
-					{
-						copyCells(graph, mxUtils.sortCells(graph.model.getTopmostCells(graph.getSelectionCells())));
-						dx = 0;
-						dy = 0;
-					}
-				}));
-				
-				// Handles cut event by removing cells putting XML into text input
-				mxEvent.addListener(textInput, 'cut', mxUtils.bind(this, function(evt)
-				{
-					if (graph.isEnabled() && !graph.isSelectionEmpty())
-					{
-						copyCells(graph, graph.removeCells());
-						dx = -gs;
-						dy = -gs;
-					}
-				}));
-				
-				// Merges XML into existing graph and layers
-				var importXml = function(xml, dx, dy)
-				{
-					dx = (dx != null) ? dx : 0;
-					dy = (dy != null) ? dy : 0;
-					var cells = []
+                // Focused but invisible textarea during control or meta key events
+                // 中文注释：在按下 Control 或 Meta 键时，创建一个焦点可获得但不可见的文本区域，用于处理剪贴板操作。
+                var textInput = document.createElement('textarea');
+                // 中文注释：textInput 是一个动态创建的 textarea 元素，用于捕获剪贴板内容。
+                mxUtils.setOpacity(textInput, 0);
+                // 中文注释：设置 textarea 的透明度为 0，使其不可见。
+                textInput.style.width = '1px';
+                // 中文注释：设置 textarea 宽度为 1px，尽量减少其占用空间。
+                textInput.style.height = '1px';
+                // 中文注释：设置 textarea 高度为 1px，保持最小化显示。
+                var restoreFocus = false;
+                // 中文注释：restoreFocus 是布尔变量，标记是否需要恢复焦点到图形容器。
+                var gs = graph.gridSize;
+                // 中文注释：gs 是 graph 的网格大小，用于计算粘贴时的偏移量。
+                var lastPaste = null;
+                // 中文注释：lastPaste 存储最近一次粘贴的 XML 内容，用于比较避免重复粘贴。
+                var dx = 0;
+                // 中文注释：dx 表示粘贴时的水平偏移量，初始为 0。
+                var dy = 0;
+                // 中文注释：dy 表示粘贴时的垂直偏移量，初始为 0。
 
-					try
-					{
-						var doc = mxUtils.parseXml(xml);
-						var node = doc.documentElement;
-						
-						if (node != null)
-						{
-							var model = new mxGraphModel();
-							var codec = new mxCodec(node.ownerDocument);
-							codec.decode(node, model);
-							
-							var childCount = model.getChildCount(model.getRoot());
-							var targetChildCount = graph.model.getChildCount(graph.model.getRoot());
-							
-							// Merges existing layers and adds new layers
-							graph.model.beginUpdate();
-							try
-							{
-								for (var i = 0; i < childCount; i++)
-								{
-									var parent = model.getChildAt(model.getRoot(), i);
-									
-									// Adds cells to existing layers if not locked
-									if (targetChildCount > i)
-									{
-										// Inserts into active layer if only one layer is being pasted
-										var target = (childCount == 1) ? graph.getDefaultParent() : graph.model.getChildAt(graph.model.getRoot(), i);
-										
-										if (!graph.isCellLocked(target))
-										{								
-											var children = model.getChildren(parent);
-											cells = cells.concat(graph.importCells(children, dx, dy, target));
-										}
-									}
-									else
-									{
-										// Delta is non cascading, needs separate move for layers
-										parent = graph.importCells([parent], 0, 0, graph.model.getRoot())[0];
-										var children = graph.model.getChildren(parent);
-										graph.moveCells(children, dx, dy);
-										cells = cells.concat(children);
-									}
-								}
-							}
-							finally
-							{
-								graph.model.endUpdate();
-							}
-						}
-					}
-					catch (e)
-					{
-						alert(e);
-						throw e;
-					}
-					
-					return cells;
-				};
-				
-				// Parses and inserts XML into graph
-				var pasteText = function(text)
-				{
-					var xml = mxUtils.trim(text);
-					var x = graph.container.scrollLeft / graph.view.scale - graph.view.translate.x;
-					var y = graph.container.scrollTop / graph.view.scale - graph.view.translate.y;
-					
-					if (xml.length > 0)
-					{
-						if (lastPaste != xml)
-						{
-							lastPaste = xml;
-							dx = 0;
-							dy = 0;
-						}
-						else
-						{
-							dx += gs;
-							dy += gs;
-						}
-								
-						// Standard paste via control-v
-						if (xml.substring(0, 14) == '<mxGraphModel>')
-						{
-							graph.setSelectionCells(importXml(xml, dx, dy));
-							graph.scrollCellToVisible(graph.getSelectionCell());
-						}
-					}
-				};
-				
-				// Cross-browser function to fetch text from paste events
-				var extractGraphModelFromEvent = function(evt)
-				{
-					var data = null;
-					
-					if (evt != null)
-					{
-						var provider = (evt.dataTransfer != null) ? evt.dataTransfer : evt.clipboardData;
-						
-						if (provider != null)
-						{
-							if (document.documentMode == 10 || document.documentMode == 11)
-							{
-								data = provider.getData('Text');
-							}
-							else
-							{
-								data = (mxUtils.indexOf(provider.types, 'text/html') >= 0) ? provider.getData('text/html') : null;
-							
-								if (mxUtils.indexOf(provider.types, 'text/plain' && (data == null || data.length == 0)))
-								{
-									data = provider.getData('text/plain');
-								}
-							}		
-						}
-					}
-					
-					return data;
-				};
+                // Workaround for no copy event in IE/FF if empty
+                // 中文注释：解决 IE/FF 浏览器在剪贴板为空时不触发复制事件的兼容性问题。
+                textInput.value = ' ';
+                // 中文注释：设置 textarea 的默认值为空格，避免空内容导致复制事件不触发。
 
-				// Handles paste event by parsing and inserting XML
-				mxEvent.addListener(textInput, 'paste', function(evt)
-				{
-					// Clears existing contents before paste - should not be needed
-					// because all text is selected, but doesn't hurt since the
-					// actual pasting of the new text is delayed in all cases.
-					textInput.value = '';
+                // Shows a textare when control/cmd is pressed to handle native clipboard actions
+                // 中文注释：在按下 Control 或 Cmd 键时显示 textarea，以处理原生剪贴板操作。
+                mxEvent.addListener(document, 'keydown', function(evt)
+                // 中文注释：为 document 添加 keydown 事件监听器，处理按键事件。
+                {
+                    // No dialog visible
+                    // 中文注释：确保没有对话框显示，以避免干扰。
+                    var source = mxEvent.getSource(evt);
+                    // 中文注释：source 是触发事件的 DOM 元素。
 
-					if (graph.isEnabled())
-					{
-						var xml = extractGraphModelFromEvent(evt);
+                    if (graph.isEnabled() && !graph.isMouseDown && !graph.isEditing() && source.nodeName != 'INPUT')
+                    // 中文注释：检查 graph 是否启用、鼠标未按下、未处于编辑状态，且事件源不是 input 元素。
+                    {
+                        if (evt.keyCode == 224 /* FF */ || (!mxClient.IS_MAC && evt.keyCode == 17 /* Control */) ||
+                            (mxClient.IS_MAC && (evt.keyCode == 91 || evt.keyCode == 93) /* Left/Right Meta */))
+                        // 中文注释：检测按下的键是否为 Firefox 的 Meta 键（224）、Control 键（17，Windows），或 Mac 的 Meta 键（91 或 93）。
+                        {
+                            // Cannot use parentNode for check in IE
+                            // 中文注释：IE 浏览器中不能使用 parentNode 检查，因此直接操作 DOM。
+                            if (!restoreFocus)
+                            // 中文注释：如果焦点未被标记为需要恢复，执行以下逻辑。
+                            {
+                                // Avoid autoscroll but allow handling of events
+                                // 中文注释：避免容器自动滚动，但允许处理事件。
+                                textInput.style.position = 'absolute';
+                                // 中文注释：设置 textarea 的定位为绝对定位，避免影响页面布局。
+                                textInput.style.left = (graph.container.scrollLeft + 10) + 'px';
+                                // 中文注释：设置 textarea 的左边距，基于容器滚动位置加 10px 偏移。
+                                textInput.style.top = (graph.container.scrollTop + 10) + 'px';
+                                // 中文注释：设置 textarea 的顶边距，基于容器滚动位置加 10px 偏移。
+                                graph.container.appendChild(textInput);
+                                // 中文注释：将 textarea 添加到 graph 容器中。
 
-						if (xml != null && xml.length > 0)
-						{
-							pasteText(xml);
-						}
-						else
-						{
-							// Timeout for new value to appear
-							window.setTimeout(mxUtils.bind(this, function()
-							{
-								pasteText(textInput.value);
-							}), 0);
-						}
-					}
-		
-					textInput.select();
-				});
+                                restoreFocus = true;
+                                // 中文注释：标记需要恢复焦点。
+                                textInput.focus();
+                                // 中文注释：使 textarea 获得焦点。
+                                textInput.select();
+                                // 中文注释：选中 textarea 中的内容，便于剪贴板操作。
+                            }
+                        }
+                    }
+                });
 
-				// Enables rubberband selection
-				new mxRubberband(graph);
-				
-				// Gets the default parent for inserting new cells. This
-				// is normally the first child of the root (ie. layer 0).
-				var parent = graph.getDefaultParent();
-								
-				// Adds cells to the model in a single step
-				graph.getModel().beginUpdate();
-				try
-				{
-					var v1 = graph.insertVertex(parent, null, 'Hello,', 20, 20, 80, 30);
-					var v2 = graph.insertVertex(parent, null, 'World!', 200, 150, 80, 30);
-					var e1 = graph.insertEdge(parent, null, '', v1, v2);
-				}
-				finally
-				{
-					// Updates the display
-					graph.getModel().endUpdate();
-				}
-			}
-		};
-	</script>
+                // Restores focus on graph container and removes text input from DOM
+                // 中文注释：当释放按键时，恢复焦点到图形容器并移除 textarea。
+                mxEvent.addListener(document, 'keyup', function(evt)
+                // 中文注释：为 document 添加 keyup 事件监听器，处理按键释放。
+                {
+                    if (restoreFocus && (evt.keyCode == 224 /* FF */ || evt.keyCode == 17 /* Control */ ||
+                        evt.keyCode == 91 || evt.keyCode == 93 /* Meta */))
+                    // 中文注释：检查是否需要恢复焦点，并且释放的键是 Meta 或 Control 键。
+                    {
+                        restoreFocus = false;
+                        // 中文注释：重置 restoreFocus 标志。
+
+                        if (!graph.isEditing())
+                        // 中文注释：如果 graph 未处于编辑状态，执行焦点恢复。
+                        {
+                            graph.container.focus();
+                            // 中文注释：将焦点恢复到 graph 容器。
+                        }
+
+                        textInput.parentNode.removeChild(textInput);
+                        // 中文注释：从 DOM 中移除 textarea 元素。
+                    }
+                });
+
+                // Inserts the XML for the given cells into the text input for copy
+                // 中文注释：将指定单元格的 XML 数据插入到 textarea 中，用于复制操作。
+                var copyCells = function(graph, cells)
+                // 中文注释：copyCells 函数将单元格数据转换为 XML 并放入 textarea，参数 graph 是图形实例，cells 是要复制的单元格数组。
+                {
+                    if (cells.length > 0)
+                    // 中文注释：如果有单元格需要复制，执行以下逻辑。
+                    {
+                        var clones = graph.cloneCells(cells);
+                        // 中文注释：克隆单元格数组，创建副本以避免修改原始数据。
+
+                        // Checks for orphaned relative children and makes absolute
+                        // 中文注释：检查是否存在相对定位的孤立子节点，并将其转换为绝对定位。
+                        for (var i = 0; i < clones.length; i++)
+                        {
+                            var state = graph.view.getState(cells[i]);
+                            // 中文注释：获取单元格的视图状态，用于定位信息。
+
+                            if (state != null)
+                            {
+                                var geo = graph.getCellGeometry(clones[i]);
+                                // 中文注释：获取克隆单元格的几何信息。
+
+                                if (geo != null && geo.relative)
+                                // 中文注释：如果几何信息存在且是相对定位，执行转换。
+                                {
+                                    geo.relative = false;
+                                    // 中文注释：将几何定位设置为绝对定位。
+                                    geo.x = state.x / state.view.scale - state.view.translate.x;
+                                    // 中文注释：计算绝对 x 坐标，考虑视图缩放和偏移。
+                                    geo.y = state.y / state.view.scale - state.view.translate.y;
+                                    // 中文注释：计算绝对 y 坐标，考虑视图缩放和偏移。
+                                }
+                            }
+                        }
+
+                        textInput.value = mxClipboard.cellsToString(clones);
+                        // 中文注释：将克隆的单元格转换为 XML 字符串并赋值给 textarea。
+                    }
+
+                    textInput.select();
+                    // 中文注释：选中 textarea 中的内容，准备复制。
+                    lastPaste = textInput.value;
+                    // 中文注释：记录当前复制的内容到 lastPaste，用于后续粘贴比较。
+                };
+
+                // Handles copy event by putting XML for current selection into text input
+                // 中文注释：处理复制事件，将当前选中的单元格 XML 数据放入 textarea。
+                mxEvent.addListener(textInput, 'copy', mxUtils.bind(this, function(evt)
+                // 中文注释：为 textarea 添加 copy 事件监听器，处理复制操作。
+                {
+                    if (graph.isEnabled() && !graph.isSelectionEmpty())
+                    // 中文注释：检查 graph 是否启用且有选中的单元格。
+                    {
+                        copyCells(graph, mxUtils.sortCells(graph.model.getTopmostCells(graph.getSelectionCells())));
+                        // 中文注释：调用 copyCells，处理选中的最顶层单元格（排序后）。
+                        dx = 0;
+                        // 中文注释：重置水平偏移量。
+                        dy = 0;
+                        // 中文注释：重置垂直偏移量。
+                    }
+                }));
+
+                // Handles cut event by removing cells putting XML into text input
+                // 中文注释：处理剪切事件，删除选中的单元格并将 XML 数据放入 textarea。
+                mxEvent.addListener(textInput, 'cut', mxUtils.bind(this, function(evt)
+                // 中文注释：为 textarea 添加 cut 事件监听器，处理剪切操作。
+                {
+                    if (graph.isEnabled() && !graph.isSelectionEmpty())
+                    // 中文注释：检查 graph 是否启用且有选中的单元格。
+                    {
+                        copyCells(graph, graph.removeCells());
+                        // 中文注释：调用 copyCells 处理被删除的单元格（通过 graph.removeCells 删除）。
+                        dx = -gs;
+                        // 中文注释：设置水平偏移量为负网格大小，用于粘贴时偏移。
+                        dy = -gs;
+                        // 中文注释：设置垂直偏移量为负网格大小，用于粘贴时偏移。
+                    }
+                }));
+
+                // Merges XML into existing graph and layers
+                // 中文注释：将 XML 数据合并到现有图形和图层中。
+                var importXml = function(xml, dx, dy)
+                // 中文注释：importXml 函数将 XML 数据导入图形，参数 xml 是 XML 字符串，dx 和 dy 是偏移量。
+                {
+                    dx = (dx != null) ? dx : 0;
+                    // 中文注释：如果 dx 未提供，默认为 0。
+                    dy = (dy != null) ? dy : 0;
+                    // 中文注释：如果 dy 未提供，默认为 0。
+                    var cells = []
+                    // 中文注释：cells 数组存储导入的单元格。
+
+                    try
+                    {
+                        var doc = mxUtils.parseXml(xml);
+                        // 中文注释：解析 XML 字符串为 DOM 文档。
+                        var node = doc.documentElement;
+                        // 中文注释：获取 XML 文档的根节点。
+
+                        if (node != null)
+                        {
+                            var model = new mxGraphModel();
+                            // 中文注释：创建临时 mxGraphModel 用于解码 XML。
+                            var codec = new mxCodec(node.ownerDocument);
+                            // 中文注释：创建 mxCodec 实例，用于解码 XML。
+                            codec.decode(node, model);
+                            // 中文注释：将 XML 节点解码为图形模型。
+
+                            var childCount = model.getChildCount(model.getRoot());
+                            // 中文注释：获取临时模型根节点的子节点数量。
+                            var targetChildCount = graph.model.getChildCount(graph.model.getRoot());
+                            // 中文注释：获取当前图形模型根节点的子节点数量。
+
+                            // Merges existing layers and adds new layers
+                            // 中文注释：合并现有图层并添加新图层。
+                            graph.model.beginUpdate();
+                            // 中文注释：开始更新图形模型，批量操作以提高性能。
+                            try
+                            {
+                                for (var i = 0; i < childCount; i++)
+                                {
+                                    var parent = model.getChildAt(model.getRoot(), i);
+                                    // 中文注释：获取临时模型根节点的第 i 个子节点（图层）。
+
+                                    // Adds cells to existing layers if not locked
+                                    // 中文注释：如果图层未锁定，将单元格添加到现有图层。
+                                    if (targetChildCount > i)
+                                    {
+                                        // Inserts into active layer if only one layer is being pasted
+                                        // 中文注释：如果仅粘贴一个图层，则插入到当前活动图层。
+                                        var target = (childCount == 1) ? graph.getDefaultParent() : graph.model.getChildAt(graph.model.getRoot(), i);
+                                        // 中文注释：确定目标图层：单图层粘贴使用默认父节点，否则使用对应索引的图层。
+
+                                        if (!graph.isCellLocked(target))
+                                        {
+                                            var children = model.getChildren(parent);
+                                            // 中文注释：获取临时模型中父节点的子节点（单元格）。
+                                            cells = cells.concat(graph.importCells(children, dx, dy, target));
+                                            // 中文注释：将子节点导入目标图层，应用 dx 和 dy 偏移。
+                                        }
+                                    }
+                                    else
+                                    {
+                                        // Delta is non cascading, needs separate move for layers
+                                        // 中文注释：偏移量不级联，需单独移动新图层。
+                                        parent = graph.importCells([parent], 0, 0, graph.model.getRoot())[0];
+                                        // 中文注释：将新图层导入到图形模型根节点。
+                                        var children = graph.model.getChildren(parent);
+                                        // 中文注释：获取新图层的子节点。
+                                        graph.moveCells(children, dx, dy);
+                                        // 中文注释：移动子节点，应用 dx 和 dy 偏移。
+                                        cells = cells.concat(children);
+                                        // 中文注释：将移动后的子节点添加到 cells 数组。
+                                    }
+                                }
+                            }
+                            finally
+                            {
+                                graph.model.endUpdate();
+                                // 中文注释：结束模型更新，应用所有更改。
+                            }
+                        }
+                    }
+                    catch (e)
+                    {
+                        alert(e);
+                        // 中文注释：捕获异常并通过 alert 显示错误。
+                        throw e;
+                        // 中文注释：抛出异常以便进一步处理。
+                    }
+
+                    return cells;
+                    // 中文注释：返回导入的单元格数组。
+                };
+
+                // Parses and inserts XML into graph
+                // 中文注释：解析并将 XML 数据插入到图形中。
+                var pasteText = function(text)
+                // 中文注释：pasteText 函数处理粘贴的文本，参数 text 是粘贴的 XML 字符串。
+                {
+                    var xml = mxUtils.trim(text);
+                    // 中文注释：去除文本首尾的空白字符。
+                    var x = graph.container.scrollLeft / graph.view.scale - graph.view.translate.x;
+                    // 中文注释：计算粘贴位置的 x 坐标，考虑容器滚动和视图缩放。
+                    var y = graph.container.scrollTop / graph.view.scale - graph.view.translate.y;
+                    // 中文注释：计算粘贴位置的 y 坐标，考虑容器滚动和视图缩放。
+
+                    if (xml.length > 0)
+                    // 中文注释：如果 XML 字符串不为空，执行粘贴逻辑。
+                    {
+                        if (lastPaste != xml)
+                        // 中文注释：如果当前粘贴内容与上次不同，重置偏移量。
+                        {
+                            lastPaste = xml;
+                            // 中文注释：记录当前粘贴内容。
+                            dx = 0;
+                            // 中文注释：重置水平偏移量。
+                            dy = 0;
+                            // 中文注释：重置垂直偏移量。
+                        }
+                        else
+                        {
+                            dx += gs;
+                            // 中文注释：如果重复粘贴，增加水平偏移量（网格大小）。
+                            dy += gs;
+                            // 中文注释：如果重复粘贴，增加垂直偏移量（网格大小）。
+                        }
+
+                        // Standard paste via control-v
+                        // 中文注释：通过 Ctrl+V 进行的标准粘贴操作。
+                        if (xml.substring(0, 14) == '<mxGraphModel>')
+                        // 中文注释：检查 XML 是否以 mxGraphModel 开头，确保是有效的图形数据。
+                        {
+                            graph.setSelectionCells(importXml(xml, dx, dy));
+                            // 中文注释：调用 importXml 导入 XML 数据，并将导入的单元格设置为选中状态。
+                            graph.scrollCellToVisible(graph.getSelectionCell());
+                            // 中文注释：滚动视图以确保选中的单元格可见。
+                        }
+                    }
+                };
+
+                // Cross-browser function to fetch text from paste events
+                // 中文注释：跨浏览器函数，用于从粘贴事件中提取文本。
+                var extractGraphModelFromEvent = function(evt)
+                // 中文注释：extractGraphModelFromEvent 函数从粘贴事件中提取图形模型数据，参数 evt 是事件对象。
+                {
+                    var data = null;
+                    // 中文注释：data 存储提取的剪贴板数据。
+
+                    if (evt != null)
+                    {
+                        var provider = (evt.dataTransfer != null) ? evt.dataTransfer : evt.clipboardData;
+                        // 中文注释：provider 是剪贴板数据提供者，优先使用 dataTransfer，否则使用 clipboardData。
+
+                        if (provider != null)
+                        {
+                            if (document.documentMode == 10 || document.documentMode == 11)
+                            // 中文注释：针对 IE10 和 IE11 的特殊处理。
+                            {
+                                data = provider.getData('Text');
+                                // 中文注释：直接获取纯文本数据。
+                            }
+                            else
+                            {
+                                data = (mxUtils.indexOf(provider.types, 'text/html') >= 0) ? provider.getData('text/html') : null;
+                                // 中文注释：如果支持 text/html 格式，优先获取 HTML 数据。
+
+                                if (mxUtils.indexOf(provider.types, 'text/plain' && (data == null || data.length == 0)))
+                                // 中文注释：如果没有 HTML 数据或数据为空，尝试获取纯文本数据。
+                                {
+                                    data = provider.getData('text/plain');
+                                    // 中文注释：获取 text/plain 格式的数据。
+                                }
+                            }
+                        }
+                    }
+
+                    return data;
+                    // 中文注释：返回提取的剪贴板数据。
+                };
+
+                // Handles paste event by parsing and inserting XML
+                // 中文注释：处理粘贴事件，解析并插入 XML 数据。
+                mxEvent.addListener(textInput, 'paste', function(evt)
+                // 中文注释：为 textarea 添加 paste 事件监听器，处理粘贴操作。
+                {
+                    // Clears existing contents before paste - should not be needed
+                    // because all text is selected, but doesn't hurt since the
+                    // actual pasting of the new text is delayed in all cases.
+                    // 中文注释：在粘贴前清空 textarea 内容，虽然通常不需要（因为内容已选中），但为安全起见执行此操作。
+                    textInput.value = '';
+                    // 中文注释：清空 textarea 的值。
+
+                    if (graph.isEnabled())
+                    // 中文注释：检查 graph 是否启用。
+                    {
+                        var xml = extractGraphModelFromEvent(evt);
+                        // 中文注释：从粘贴事件中提取 XML 数据。
+
+                        if (xml != null && xml.length > 0)
+                        // 中文注释：如果提取到有效的 XML 数据，直接处理。
+                        {
+                            pasteText(xml);
+                            // 中文注释：调用 pasteText 处理 XML 数据。
+                        }
+                        else
+                        {
+                            // Timeout for new value to appear
+                            // 中文注释：设置超时以等待 textarea 中出现新值。
+                            window.setTimeout(mxUtils.bind(this, function()
+                            {
+                                pasteText(textInput.value);
+                                // 中文注释：延迟处理 textarea 中的新值。
+                            }), 0);
+                            // 中文注释：使用 setTimeout 延迟执行，确保 textarea 值更新。
+                        }
+                    }
+
+                    textInput.select();
+                    // 中文注释：选中 textarea 中的内容，准备后续操作。
+                });
+
+                // Enables rubberband selection
+                // 中文注释：启用橡皮筋选择功能（框选）。
+                new mxRubberband(graph);
+                // 中文注释：创建 mxRubberband 实例，允许用户通过拖动框选图形中的单元格。
+
+                // Gets the default parent for inserting new cells. This
+                // is normally the first child of the root (ie. layer 0).
+                // 中文注释：获取插入新单元格的默认父节点，通常是根节点的第一个子节点（第 0 层）。
+                var parent = graph.getDefaultParent();
+                // 中文注释：parent 是默认父节点，用于插入新单元格。
+
+                // Adds cells to the model in a single step
+                // 中文注释：一次性向模型中添加单元格。
+                graph.getModel().beginUpdate();
+                // 中文注释：开始批量更新模型以提高性能。
+                try
+                {
+                    var v1 = graph.insertVertex(parent, null, 'Hello,', 20, 20, 80, 30);
+                    // 中文注释：插入第一个顶点，标签为 'Hello,'，位置 (20,20)，大小 80x30。
+                    var v2 = graph.insertVertex(parent, null, 'World!', 200, 150, 80, 30);
+                    // 中文注释：插入第二个顶点，标签为 'World!'，位置 (200,150)，大小 80x30。
+                    var e1 = graph.insertEdge(parent, null, '', v1, v2);
+                    // 中文注释：插入一条边，连接 v1 和 v2，无标签。
+                }
+                finally
+                {
+                    // Updates the display
+                    // 中文注释：更新图形显示。
+                    graph.getModel().endUpdate();
+                    // 中文注释：结束模型更新，应用所有更改。
+                }
+            }
+        };
+    </script>
 </head>
 
 <!-- Page passes the container for the graph to the program -->
+<!--
+  中文注释：页面通过 onload 事件将图形容器传递给 main 函数。
+-->
 <body onload="main(document.getElementById('graphContainer'))">
+    <!--
+      中文注释：当页面加载完成时，调用 main 函数并传入 graphContainer 元素作为参数。
+    -->
 
-	<!-- Creates a container for the graph with a grid wallpaper -->
-	<div id="graphContainer"
-		style="position:relative;overflow:hidden;width:321px;height:241px;background:url('editors/images/grid.gif');cursor:default;">
-	</div>
+    <!-- Creates a container for the graph with a grid wallpaper -->
+    <!--
+      中文注释：创建图形容器，带有网格背景图片。
+    -->
+    <div id="graphContainer"
+        style="position:relative;overflow:hidden;width:321px;height:241px;background:url('editors/images/grid.gif');cursor:default;">
+        <!--
+          中文注释：graphContainer 是图形渲染的容器，样式说明：
+          - position: relative：相对定位，便于内部元素定位。
+          - overflow: hidden：隐藏超出容器的内容。
+          - width: 321px：容器宽度。
+          - height: 241px：容器高度。
+          - background: url('editors/images/grid.gif')：设置网格背景图片。
+          - cursor: default：默认鼠标指针样式。
+        -->
+    </div>
 </body>
 </html>

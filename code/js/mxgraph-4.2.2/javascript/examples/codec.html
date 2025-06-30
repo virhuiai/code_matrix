@@ -5,154 +5,369 @@
   creating a graph from XML and encoding the model into XML, as well
   as changing the default style for edges in-place.
 -->
+<!--
+  中文注释：
+  本示例展示了使用mxGraph动态从XML创建图表，并将图表模型编码为XML，同时原地修改边的默认样式。
+  主要功能包括：
+  - 动态解析XML以生成图表
+  - 修改边的默认样式为ElbowConnector
+  - 实现图表的缩放和平移交互
+-->
+
 <html>
 <head>
-	<title>Codec example for mxGraph</title>
+    <title>Codec example for mxGraph</title>
+    <!-- 中文注释：页面标题，说明这是一个mxGraph的Codec示例 -->
 
-	<!-- Sets the basepath for the library if not in same directory -->
-	<script type="text/javascript">
-		mxBasePath = '../src';
-	</script>
+    <!-- Sets the basepath for the library if not in same directory -->
+    <!-- 中文注释：设置mxGraph库的基础路径，如果库文件不在当前目录下 -->
+    <script type="text/javascript">
+        mxBasePath = '../src';
+        // 中文注释：mxBasePath指定mxGraph库文件所在的基础目录路径
+    </script>
 
-	<!-- Loads and initializes the library -->
-	<script type="text/javascript" src="../src/js/mxClient.js"></script>
+    <!-- Loads and initializes the library -->
+    <!-- 中文注释：加载并初始化mxGraph库 -->
+    <script type="text/javascript" src="../src/js/mxClient.js"></script>
+    <!-- 中文注释：引入mxClient.js，mxGraph的核心库文件，负责提供图表渲染和操作功能 -->
 
-	<!-- Example code -->
-	<script type="text/javascript">
-		// Program starts here. Creates a sample graph in the
-		// DOM node with the specified ID. This function is invoked
-		// from the onLoad event handler of the document (see below).
-		function main(container)
-		{
-			if (mxClient.isBrowserSupported())
-			{
-				var divs = document.getElementsByTagName('*');
-				
-				for (var i = 0; i < divs.length; i++)
-				{
-					if (divs[i].className.toString().indexOf('mxgraph') >= 0)
-					{
-						(function(container)
-						{
-							var xml = mxUtils.getTextContent(container);
-							var xmlDocument = mxUtils.parseXml(xml);
-							
-							if (xmlDocument.documentElement != null && xmlDocument.documentElement.nodeName == 'mxGraphModel')
-							{
-								var decoder = new mxCodec(xmlDocument);
-								var node = xmlDocument.documentElement;
-		
-								container.innerHTML = '';
-		
-								var graph = new mxGraph(container);
-								graph.centerZoom = false;
-								graph.setTooltips(false);
-								graph.setEnabled(false);
-								
-								// Changes the default style for edges "in-place"
-								var style = graph.getStylesheet().getDefaultEdgeStyle();
-								style[mxConstants.STYLE_EDGE] = mxEdgeStyle.ElbowConnector;
-								
-								// Enables panning with left mouse button
-								graph.panningHandler.useLeftButtonForPanning = true;
-								graph.panningHandler.ignoreCell = true;
-								graph.container.style.cursor = 'move';
-								graph.setPanning(true);
-								
-								if (divs[i].style.width == '' && divs[i].style.height == '')
-								{
-									graph.resizeContainer = true;
-								}
-								else
-								{
-									// Adds border for fixed size boxes
-									graph.border = 20;
-								}
-								
-								decoder.decode(node, graph.getModel());
-								graph.resizeContainer = false;
-								
-								// Adds zoom buttons in top, left corner
-								var buttons = document.createElement('div');
-								buttons.style.position = 'absolute';
-								buttons.style.overflow = 'visible';
+    <!-- Example code -->
+    <!-- 中文注释：以下为示例代码，用于实现图表的动态创建和交互 -->
+    <script type="text/javascript">
+        // Program starts here. Creates a sample graph in the
+        // DOM node with the specified ID. This function is invoked
+        // from the onLoad event handler of the document (see below).
+        // 中文注释：
+        // 主程序入口，创建指定ID的DOM节点中的示例图表。
+        // 该函数在文档的onLoad事件处理程序中被调用。
+        // 参数：
+        // - container: DOM容器元素，用于渲染图表
+        function main(container)
+        {
+            // 中文注释：检查浏览器是否支持mxGraph库
+            if (mxClient.isBrowserSupported())
+            {
+                // 中文注释：获取页面中所有DOM元素
+                var divs = document.getElementsByTagName('*');
+                // 中文注释：divs存储页面中所有标签元素，用于后续查找mxgraph类名的容器
 
-								var bs = graph.getBorderSizes();
-								buttons.style.top = (container.offsetTop + bs.y) + 'px';
-								buttons.style.left = (container.offsetLeft + bs.x) + 'px';
-								
-								var left = 0;
-								var bw = 16;
-								var bh = 16;
-								
-								if (mxClient.IS_QUIRKS)
-								{
-									bw -= 1;
-									bh -= 1;
-								}
-								
-								function addButton(label, funct)
-								{
-									var btn = document.createElement('div');
-									mxUtils.write(btn, label);
-									btn.style.position = 'absolute';
-									btn.style.backgroundColor = 'transparent';
-									btn.style.border = '1px solid gray';
-									btn.style.textAlign = 'center';
-									btn.style.fontSize = '10px';
-									btn.style.cursor = 'hand';
-									btn.style.width = bw + 'px';
-									btn.style.height = bh + 'px';
-									btn.style.left = left + 'px';
-									btn.style.top = '0px';
-									
-									mxEvent.addListener(btn, 'click', function(evt)
-									{
-										funct();
-										mxEvent.consume(evt);
-									});
-									
-									left += bw;
-									
-									buttons.appendChild(btn);
-								};
-								
-								addButton('+', function()
-								{
-									graph.zoomIn();
-								});
-								
-								addButton('-', function()
-								{
-									graph.zoomOut();
-								});
-								
-								if (container.nextSibling != null)
-								{
-									container.parentNode.insertBefore(buttons, container.nextSibling);
-								}
-								else
-								{
-									container.appendChild(buttons);
-								}
-							}
-						})(divs[i]);
-					}
-				}
-			}
-		};
-	</script>
+                // 中文注释：遍历所有DOM元素，寻找类名包含'mxgraph'的元素
+                for (var i = 0; i < divs.length; i++)
+                {
+                    if (divs[i].className.toString().indexOf('mxgraph') >= 0)
+                    {
+                        // 中文注释：
+                        // 找到类名包含'mxgraph'的元素后，执行匿名函数处理该容器。
+                        // 使用立即执行函数表达式(IIFE)确保每个容器的处理独立。
+                        (function(container)
+                        {
+                            // 中文注释：获取容器中的XML内容
+                            var xml = mxUtils.getTextContent(container);
+                            // 中文注释：将XML字符串解析为XML文档对象
+                            var xmlDocument = mxUtils.parseXml(xml);
+                            // 中文注释：
+                            // xml: 存储容器中的XML文本，用于定义图表结构
+                            // xmlDocument: 解析后的XML文档对象，用于后续解码
+
+                            // 中文注释：检查XML文档是否有效且根节点为mxGraphModel
+                            if (xmlDocument.documentElement != null && xmlDocument.documentElement.nodeName == 'mxGraphModel')
+                            {
+                                // 中文注释：创建mxCodec对象，用于解码XML到图表模型
+                                var decoder = new mxCodec(xmlDocument);
+                                // 中文注释：获取XML文档的根节点
+                                var node = xmlDocument.documentElement;
+                                // 中文注释：
+                                // decoder: mxCodec实例，用于将XML解码为mxGraph模型
+                                // node: XML文档的根节点，包含图表结构信息
+
+                                // 中文注释：清空容器内容，为图表渲染做准备
+                                container.innerHTML = '';
+
+                                // 中文注释：创建mxGraph实例，绑定到指定容器
+                                var graph = new mxGraph(container);
+                                // 中文注释：禁用图表的中心缩放功能
+                                graph.centerZoom = false;
+                                // 中文注释：禁用图表的工具提示
+                                graph.setTooltips(false);
+                                // 中文注释：禁用图表的交互编辑功能
+                                graph.setEnabled(false);
+                                // 中文注释：
+                                // graph: mxGraph实例，负责图表渲染和操作
+                                // centerZoom: 禁止缩放时自动居中
+                                // setTool consulted: 禁用鼠标悬停时的工具提示
+                                // setEnabled: 禁用图表的交互编辑功能
+
+                                // Changes the default style for edges "in-place"
+                                // 中文注释：原地修改边的默认样式
+                                var style = graph.getStylesheet().getDefaultEdgeStyle();
+                                // 中文注释：设置边的样式为ElbowConnector（折线连接器）
+                                style[mxConstants.STYLE_EDGE] = mxEdgeStyle.ElbowConnector;
+                                // 中文注释：
+                                // style: 图表的默认边样式对象
+                                // mxConstants.STYLE_EDGE: 边样式常量
+                                // mxEdgeStyle.ElbowConnector: 折线连接器样式，使边显示为折线而非直线
+
+                                // Enables panning with left mouse button
+                                // 中文注释：启用鼠标左键平移功能
+                                // 中文注释：设置平移处理程序使用鼠标左键进行平移
+                                graph.panningHandler.useLeftButtonForPanning = true;
+                                // 中文注释：忽略单元格选择，允许平移整个图表
+                                graph.panningHandler.ignoreCell = true;
+                                // 中文注释：设置容器光标样式为移动光标
+                                graph.container.style.cursor = 'move';
+                                // 中文注释：启用图表平移功能
+                                graph.setPanning(true);
+                                // 中文注释：
+                                // panningHandler: 图表的平移处理程序
+                                // useLeftButtonForPanning: 允许使用鼠标左键进行平移
+                                // ignoreCell: 忽略单元格选择，确保平移整个图表
+                                // setPanning: 启用平移功能
+
+                                // 中文注释：检查容器是否设置了固定宽高
+                                if (divs[i].style.width == '' && divs[i].style.height == '')
+                                {
+                                    // 中文注释：若未设置宽高，允许图表容器自动调整大小
+                                    graph.resizeContainer = true;
+                                }
+                                else
+                                {
+                                    // Adds border for fixed size boxes
+                                    // 中文注释：为固定大小的容器添加边框
+                                    // 中文注释：设置图表边框宽度为20像素
+                                    graph.border = 20;
+                                    // 中文注释：
+                                    // border: 图表容器的边框宽度，仅在容器有固定大小时应用
+                                }
+
+                                // 中文注释：将XML节点解码为图表模型，生成图表内容
+                                decoder.decode(node, graph.getModel());
+                                // 中文注释：禁用容器大小调整，确保图表内容适配容器
+                                graph.resizeContainer = false;
+                                // 中文注释：
+                                // decode: 将XML节点解码为mxGraph模型，生成图表
+                                // getModel: 获取图表的模型对象，用于存储图表数据
+
+                                // Adds zoom buttons in top, left corner
+                                // 中文注释：在容器左上角添加缩放按钮
+                                var buttons = document.createElement('div');
+                                // 中文注释：设置按钮容器为绝对定位
+                                buttons.style.position = 'absolute';
+                                // 中文注释：确保按钮容器内容可见，溢出不隐藏
+                                buttons.style.overflow = 'visible';
+                                // 中文注释：
+                                // buttons: 包含缩放按钮的DIV容器
+                                // position: absolute确保按钮定位相对于容器
+                                // overflow: visible确保按钮内容不被裁剪
+
+                                // 中文注释：获取图表的边框尺寸
+                                var bs = graph.getBorderSizes();
+                                // 中文注释：设置按钮容器的顶部位置，考虑图表边框偏移
+                                buttons.style.top = (container.offsetTop + bs.y) + 'px';
+                                // 中文注释：设置按钮容器的左侧位置，考虑图表边框偏移
+                                buttons.style.left = (container.offsetLeft + bs.x) + 'px';
+                                // 中文注释：
+                                // getBorderSizes: 获取图表边框的尺寸信息
+                                // offsetTop/offsetLeft: 容器的顶部和左侧偏移量
+                                // bs.x/bs.y: 图表边框的水平和垂直尺寸
+
+                                // 中文注释：初始化按钮的水平位置
+                                var left = 0;
+                                // 中文注释：定义按钮的宽度
+                                var bw = 16;
+                                // 中文注释：定义按钮的高度
+                                var bh = 16;
+                                // 中文注释：
+                                // left: 按钮的水平位置，控制按钮排列
+                                // bw: 按钮宽度，单位像素
+                                // bh: 按钮高度，单位像素
+
+                                // 中文注释：针对IE怪异模式调整按钮尺寸
+                                if (mxClient.IS_QUIRKS)
+                                {
+                                    bw -= 1;
+                                    bh -= 1;
+                                    // 中文注释：
+                                    // IS_QUIRKS: 检查是否为IE怪异模式
+                                    // 调整bw和bh，减少1像素以适配怪异模式下的渲染
+                                }
+
+                                // 中文注释：
+                                // 定义添加按钮的函数
+                                // 参数：
+                                // - label: 按钮显示的文本
+                                // - funct: 按钮点击时执行的函数
+                                function addButton(label, funct)
+                                {
+                                    // 中文注释：创建按钮的DIV元素
+                                    var btn = document.createElement('div');
+                                    // 中文注释：在按钮上显示文本
+                                    mxUtils.write(btn, label);
+                                    // 中文注释：设置按钮为绝对定位
+                                    btn.style.position = 'absolute';
+                                    // 中文注释：设置按钮背景为透明
+                                    btn.style.backgroundColor = 'transparent';
+                                    // 中文注释：设置按钮边框为1像素灰色
+                                    btn.style.border = '1px solid gray';
+                                    // 中文注释：设置按钮文本居中
+                                    btn.style.textAlign = 'center';
+                                    // 中文注释：设置按钮字体大小为10像素
+                                    btn.style.fontSize = '10px';
+                                    // 中文注释：设置按钮光标为手型，表示可点击
+                                    btn.style.cursor = 'hand';
+                                    // 中文注释：设置按钮宽度
+                                    btn.style.width = bw + 'px';
+                                    // 中文注释：设置按钮高度
+                                    btn.style.height = bh + 'px';
+                                    // 中文注释：设置按钮的左侧位置
+                                    btn.style.left = left + 'px';
+                                    // 中文注释：设置按钮的顶部位置
+                                    btn.style.top = '0px';
+                                    // 中文注释：
+                                    // btn: 按钮的DIV元素
+                                    // mxUtils.write: 将文本写入按钮
+                                    // 样式设置：确保按钮外观统一，透明背景，灰色边框，文本居中
+
+                                    // 中文注释：为按钮添加点击事件监听器
+                                    mxEvent.addListener(btn, 'click', function(evt)
+                                    {
+                                        // 中文注释：执行按钮关联的函数
+                                        funct();
+                                        // 中文注释：阻止事件冒泡，确保点击事件不影响其他元素
+                                        mxEvent.consume(evt);
+                                        // 中文注释：
+                                        // addListener: 绑定点击事件
+                                        // funct: 执行用户定义的缩放函数
+                                        // consume: 阻止事件冒泡，避免干扰其他事件
+                                    });
+
+                                    // 中文注释：更新按钮的水平位置，准备下一个按钮
+                                    left += bw;
+
+                                    // 中文注释：将按钮添加到按钮容器
+                                    buttons.appendChild(btn);
+                                };
+
+                                // 中文注释：添加放大按钮
+                                addButton('+', function()
+                                {
+                                    // 中文注释：调用图表的放大方法
+                                    graph.zoomIn();
+                                    // 中文注释：zoomIn使图表放大，增加显示比例
+                                });
+
+                                // 中文注释：添加缩小按钮
+                                addButton('-', function()
+                                {
+                                    // 中文注释：调用图表的缩小方法
+                                    graph.zoomOut();
+                                    // 中文注释：zoomOut使图表缩小，减少显示比例
+                                });
+
+                                // 中文注释：将按钮容器插入到DOM中
+                                if (container.nextSibling != null)
+                                {
+                                    // 中文注释：如果容器有下一个兄弟节点，将按钮容器插入到其前面
+                                    container.parentNode.insertBefore(buttons, container.nextSibling);
+                                }
+                                else
+                                {
+                                    // 中文注释：否则将按钮容器追加到当前容器
+                                    container.appendChild(buttons);
+                                }
+                            }
+                        })(divs[i]);
+                    }
+                }
+            }
+        };
+    </script>
 </head>
 <body>
 	<!-- Contains a graph description which will be converted. -->
+	<!-- 中文注释：包含将被转换为图表的XML描述 -->
 	This graph is embedded in the page.
-	<div class="mxgraph" style="position:relative;overflow:auto;">&lt;mxGraphModel&gt;&lt;root&gt;&lt;mxCell id="0"/&gt;&lt;mxCell id="1" parent="0"/&gt;&lt;mxCell id="2" vertex="1" parent="1" value="Interval 1"&gt;&lt;mxGeometry x="380" y="0" width="140" height="30" as="geometry"/&gt;&lt;/mxCell&gt;&lt;mxCell id="3" vertex="1" parent="1" value="Interval 2"&gt;&lt;mxGeometry x="200" y="80" width="380" height="30" as="geometry"/&gt;&lt;/mxCell&gt;&lt;mxCell id="4" vertex="1" parent="1" value="Interval 3"&gt;&lt;mxGeometry x="40" y="140" width="260" height="30" as="geometry"/&gt;&lt;/mxCell&gt;&lt;mxCell id="5" vertex="1" parent="1" value="Interval 4"&gt;&lt;mxGeometry x="120" y="200" width="240" height="30" as="geometry"/&gt;&lt;/mxCell&gt;&lt;mxCell id="6" vertex="1" parent="1" value="Interval 5"&gt;&lt;mxGeometry x="420" y="260" width="80" height="30" as="geometry"/&gt;&lt;/mxCell&gt;&lt;mxCell id="7" edge="1" source="2" target="3" parent="1" value="Transfer1"&gt;&lt;mxGeometry as="geometry"&gt;&lt;Array as="points"&gt;&lt;Object x="420" y="60"/&gt;&lt;/Array&gt;&lt;/mxGeometry&gt;&lt;/mxCell&gt;&lt;mxCell id="8" edge="1" source="2" target="6" parent="1" value=""&gt;&lt;mxGeometry as="geometry" relative="1" y="-30"&gt;&lt;Array as="points"&gt;&lt;Object x="600" y="60"/&gt;&lt;/Array&gt;&lt;/mxGeometry&gt;&lt;/mxCell&gt;&lt;mxCell id="9" edge="1" source="3" target="4" parent="1" value="Transfer3"&gt;&lt;mxGeometry as="geometry"&gt;&lt;Array as="points"&gt;&lt;Object x="260" y="120"/&gt;&lt;/Array&gt;&lt;/mxGeometry&gt;&lt;/mxCell&gt;&lt;mxCell id="10" edge="1" source="4" target="5" parent="1" value="Transfer4"&gt;&lt;mxGeometry as="geometry"&gt;&lt;Array as="points"&gt;&lt;Object x="200" y="180"/&gt;&lt;/Array&gt;&lt;/mxGeometry&gt;&lt;/mxCell&gt;&lt;mxCell id="11" edge="1" source="4" target="6" parent="1" value="Transfer5"&gt;&lt;mxGeometry as="geometry" relative="1" y="-10"&gt;&lt;Array as="points"&gt;&lt;Object x="460" y="155"/&gt;&lt;/Array&gt;&lt;/mxGeometry&gt;&lt;/mxCell&gt;&lt;/root&gt;&lt;/mxGraphModel&gt;</div>
+	<!-- 中文注释：页面中的文本，说明图表嵌入在页面中 -->
+	<div class="mxgraph" style="position:relative;overflow:auto;">&lt;mxGraphModel&gt;&lt;root&gt;&lt;mxCell id="0"/&gt;&lt;mxCell
+		id="1" parent="0"/&gt;&lt;mxCell id="2" vertex="1" parent="1" value="Interval 1"&gt;&lt;mxGeometry x="380" y="0"
+		width="140" height="30" as="geometry"/&gt;&lt;/mxCell&gt;&lt;mxCell id="3" vertex="1" parent="1" value="Interval
+		2"&gt;&lt;mxGeometry x="200" y="80" width="380" height="30" as="geometry"/&gt;&lt;/mxCell&gt;&lt;mxCell id="4"
+		vertex="1" parent="1" value="Interval 3"&gt;&lt;mxGeometry x="40" y="140" width="260" height="30" as="geometry"/&gt;&lt;/mxCell&gt;&lt;mxCell
+		id="5" vertex="1" parent="1" value="Interval 4"&gt;&lt;mxGeometry x="120" y="200" width="240" height="30"
+		as="geometry"/&gt;&lt;/mxCell&gt;&lt;mxCell id="6" vertex="1" parent="1" value="Interval 5"&gt;&lt;mxGeometry
+		x="420" y="260" width="80" height="30" as="geometry"/&gt;&lt;/mxCell&gt;&lt;mxCell id="7" edge="1" source="2"
+		target="3" parent="1" value="Transfer1"&gt;&lt;mxGeometry as="geometry"&gt;&lt;Array as="points"&gt;&lt;Object
+		x="420" y="60"/&gt;&lt;/Array&gt;&lt;/mxGeometry&gt;&lt;/mxCell&gt;&lt;mxCell id="8" edge="1" source="2"
+		target="6" parent="1" value=""&gt;&lt;mxGeometry as="geometry" relative="1" y="-30"&gt;&lt;Array as="points"&gt;&lt;Object
+		x="600" y="60"/&gt;&lt;/Array&gt;&lt;/mxGeometry&gt;&lt;/mxCell&gt;&lt;mxCell id="9" edge="1" source="3"
+		target="4" parent="1" value="Transfer3"&gt;&lt;mxGeometry as="geometry"&gt;&lt;Array as="points"&gt;&lt;Object
+		x="260" y="120"/&gt;&lt;/Array&gt;&lt;/mxGeometry&gt;&lt;/mxCell&gt;&lt;mxCell id="10" edge="1" source="4"
+		target="5" parent="1" value="Transfer4"&gt;&lt;mxGeometry as="geometry"&gt;&lt;Array as="points"&gt;&lt;Object
+		x="200" y="180"/&gt;&lt;/Array&gt;&lt;/mxGeometry&gt;&lt;/mxCell&gt;&lt;mxCell id="11" edge="1" source="4"
+		target="6" parent="1" value="Transfer5"&gt;&lt;mxGeometry as="geometry" relative="1" y="-10"&gt;&lt;Array
+		as="points"&gt;&lt;Object x="460" y="155"/&gt;&lt;/Array&gt;&lt;/mxGeometry&gt;&lt;/mxCell&gt;&lt;/root&gt;&lt;/mxGraphModel&gt;
+	</div>
 	This graph is embedded in the page.
-	<div class="mxgraph" style="position:relative;background:#eeeeee;border:1px solid gray;overflow:auto;width:400px;height:200px;">&lt;mxGraphModel&gt;&lt;root&gt;&lt;mxCell id="0"/&gt;&lt;mxCell id="1" parent="0"/&gt;&lt;mxCell id="2" vertex="1" parent="1" value="Interval 1"&gt;&lt;mxGeometry x="380" y="0" width="140" height="30" as="geometry"/&gt;&lt;/mxCell&gt;&lt;mxCell id="3" vertex="1" parent="1" value="Interval 2"&gt;&lt;mxGeometry x="200" y="80" width="380" height="30" as="geometry"/&gt;&lt;/mxCell&gt;&lt;mxCell id="4" vertex="1" parent="1" value="Interval 3"&gt;&lt;mxGeometry x="40" y="140" width="260" height="30" as="geometry"/&gt;&lt;/mxCell&gt;&lt;mxCell id="5" vertex="1" parent="1" value="Interval 4"&gt;&lt;mxGeometry x="120" y="200" width="240" height="30" as="geometry"/&gt;&lt;/mxCell&gt;&lt;mxCell id="6" vertex="1" parent="1" value="Interval 5"&gt;&lt;mxGeometry x="420" y="260" width="80" height="30" as="geometry"/&gt;&lt;/mxCell&gt;&lt;mxCell id="7" edge="1" source="2" target="3" parent="1" value="Transfer1"&gt;&lt;mxGeometry as="geometry"&gt;&lt;Array as="points"&gt;&lt;Object x="420" y="60"/&gt;&lt;/Array&gt;&lt;/mxGeometry&gt;&lt;/mxCell&gt;&lt;mxCell id="8" edge="1" source="2" target="6" parent="1" value=""&gt;&lt;mxGeometry as="geometry" relative="1" y="-30"&gt;&lt;Array as="points"&gt;&lt;Object x="600" y="60"/&gt;&lt;/Array&gt;&lt;/mxGeometry&gt;&lt;/mxCell&gt;&lt;mxCell id="9" edge="1" source="3" target="4" parent="1" value="Transfer3"&gt;&lt;mxGeometry as="geometry"&gt;&lt;Array as="points"&gt;&lt;Object x="260" y="120"/&gt;&lt;/Array&gt;&lt;/mxGeometry&gt;&lt;/mxCell&gt;&lt;mxCell id="10" edge="1" source="4" target="5" parent="1" value="Transfer4"&gt;&lt;mxGeometry as="geometry"&gt;&lt;Array as="points"&gt;&lt;Object x="200" y="180"/&gt;&lt;/Array&gt;&lt;/mxGeometry&gt;&lt;/mxCell&gt;&lt;mxCell id="11" edge="1" source="4" target="6" parent="1" value="Transfer5"&gt;&lt;mxGeometry as="geometry" relative="1" y="-10"&gt;&lt;Array as="points"&gt;&lt;Object x="460" y="155"/&gt;&lt;/Array&gt;&lt;/mxGeometry&gt;&lt;/mxCell&gt;&lt;/root&gt;&lt;/mxGraphModel&gt;</div>
+	<div class="mxgraph"
+		 style="position:relative;background:#eeeeee;border:1px solid gray;overflow:auto;width:400px;height:200px;">&lt;mxGraphModel&gt;&lt;root&gt;&lt;mxCell
+		id="0"/&gt;&lt;mxCell id="1" parent="0"/&gt;&lt;mxCell id="2" vertex="1" parent="1" value="Interval 1"&gt;&lt;mxGeometry
+		x="380" y="0" width="140" height="30" as="geometry"/&gt;&lt;/mxCell&gt;&lt;mxCell id="3" vertex="1" parent="1"
+		value="Interval 2"&gt;&lt;mxGeometry x="200" y="80" width="380" height="30" as="geometry"/&gt;&lt;/mxCell&gt;&lt;mxCell
+		id="4" vertex="1" parent="1" value="Interval 3"&gt;&lt;mxGeometry x="40" y="140" width="260" height="30"
+		as="geometry"/&gt;&lt;/mxCell&gt;&lt;mxCell id="5" vertex="1" parent="1" value="Interval 4"&gt;&lt;mxGeometry
+		x="120" y="200" width="240" height="30" as="geometry"/&gt;&lt;/mxCell&gt;&lt;mxCell id="6" vertex="1" parent="1"
+		value="Interval 5"&gt;&lt;mxGeometry x="420" y="260" width="80" height="30" as="geometry"/&gt;&lt;/mxCell&gt;&lt;mxCell
+		id="7" edge="1" source="2" target="3" parent="1" value="Transfer1"&gt;&lt;mxGeometry as="geometry"&gt;&lt;Array
+		as="points"&gt;&lt;Object x="420" y="60"/&gt;&lt;/Array&gt;&lt;/mxGeometry&gt;&lt;/mxCell&gt;&lt;mxCell id="8"
+		edge="1" source="2" target="6" parent="1" value=""&gt;&lt;mxGeometry as="geometry" relative="1" y="-30"&gt;&lt;Array
+		as="points"&gt;&lt;Object x="600" y="60"/&gt;&lt;/Array&gt;&lt;/mxGeometry&gt;&lt;/mxCell&gt;&lt;mxCell id="9"
+		edge="1" source="3" target="4" parent="1" value="Transfer3"&gt;&lt;mxGeometry as="geometry"&gt;&lt;Array
+		as="points"&gt;&lt;Object x="260" y="120"/&gt;&lt;/Array&gt;&lt;/mxGeometry&gt;&lt;/mxCell&gt;&lt;mxCell id="10"
+		edge="1" source="4" target="5" parent="1" value="Transfer4"&gt;&lt;mxGeometry as="geometry"&gt;&lt;Array
+		as="points"&gt;&lt;Object x="200" y="180"/&gt;&lt;/Array&gt;&lt;/mxGeometry&gt;&lt;/mxCell&gt;&lt;mxCell id="11"
+		edge="1" source="4" target="6" parent="1" value="Transfer5"&gt;&lt;mxGeometry as="geometry" relative="1" y="-10"&gt;&lt;Array
+		as="points"&gt;&lt;Object x="460" y="155"/&gt;&lt;/Array&gt;&lt;/mxGeometry&gt;&lt;/mxCell&gt;&lt;/root&gt;&lt;/mxGraphModel&gt;
+	</div>
 	This graph is embedded in the page.
-	<div class="mxgraph" style="position:relative;background:#eeeeee;border:6px solid gray;overflow:auto;width:400px;height:200px;">&lt;mxGraphModel&gt;&lt;root&gt;&lt;mxCell id="0"/&gt;&lt;mxCell id="1" parent="0"/&gt;&lt;mxCell id="2" vertex="1" parent="1" value="Interval 1"&gt;&lt;mxGeometry x="380" y="20" width="140" height="30" as="geometry"/&gt;&lt;/mxCell&gt;&lt;mxCell id="3" vertex="1" parent="1" value="Interval 2"&gt;&lt;mxGeometry x="200" y="80" width="380" height="30" as="geometry"/&gt;&lt;/mxCell&gt;&lt;mxCell id="4" vertex="1" parent="1" value="Interval 3"&gt;&lt;mxGeometry x="40" y="140" width="260" height="30" as="geometry"/&gt;&lt;/mxCell&gt;&lt;mxCell id="5" vertex="1" parent="1" value="Interval 4"&gt;&lt;mxGeometry x="120" y="200" width="240" height="30" as="geometry"/&gt;&lt;/mxCell&gt;&lt;mxCell id="6" vertex="1" parent="1" value="Interval 5"&gt;&lt;mxGeometry x="420" y="260" width="80" height="30" as="geometry"/&gt;&lt;/mxCell&gt;&lt;mxCell id="7" edge="1" source="2" target="3" parent="1" value="Transfer1"&gt;&lt;mxGeometry as="geometry"&gt;&lt;Array as="points"&gt;&lt;Object x="420" y="60"/&gt;&lt;/Array&gt;&lt;/mxGeometry&gt;&lt;/mxCell&gt;&lt;mxCell id="8" edge="1" source="2" target="6" parent="1" value="Transfer2"&gt;&lt;mxGeometry as="geometry" relative="1" y="0"&gt;&lt;Array as="points"&gt;&lt;Object x="600" y="60"/&gt;&lt;/Array&gt;&lt;/mxGeometry&gt;&lt;/mxCell&gt;&lt;mxCell id="9" edge="1" source="3" target="4" parent="1" value="Transfer3"&gt;&lt;mxGeometry as="geometry"&gt;&lt;Array as="points"&gt;&lt;Object x="260" y="120"/&gt;&lt;/Array&gt;&lt;/mxGeometry&gt;&lt;/mxCell&gt;&lt;mxCell id="10" edge="1" source="4" target="5" parent="1" value="Transfer4"&gt;&lt;mxGeometry as="geometry"&gt;&lt;Array as="points"&gt;&lt;Object x="200" y="180"/&gt;&lt;/Array&gt;&lt;/mxGeometry&gt;&lt;/mxCell&gt;&lt;mxCell id="11" edge="1" source="4" target="6" parent="1" value="Transfer5"&gt;&lt;mxGeometry as="geometry" relative="1" y="-10"&gt;&lt;Array as="points"&gt;&lt;Object x="460" y="155"/&gt;&lt;/Array&gt;&lt;/mxGeometry&gt;&lt;/mxCell&gt;&lt;/root&gt;&lt;/mxGraphModel&gt;</div>
+	<div class="mxgraph"
+		 style="position:relative;background:#eeeeee;border:6px solid gray;overflow:auto;width:400px;height:200px;">&lt;mxGraphModel&gt;&lt;root&gt;&lt;mxCell
+		id="0"/&gt;&lt;mxCell id="1" parent="0"/&gt;&lt;mxCell id="2" vertex="1" parent="1" value="Interval 1"&gt;&lt;mxGeometry
+		x="380" y="20" width="140" height="30" as="geometry"/&gt;&lt;/mxCell&gt;&lt;mxCell id="3" vertex="1" parent="1"
+		value="Interval 2"&gt;&lt;mxGeometry x="200" y="80" width="380" height="30" as="geometry"/&gt;&lt;/mxCell&gt;&lt;mxCell
+		id="4" vertex="1" parent="1" value="Interval 3"&gt;&lt;mxGeometry x="40" y="140" width="260" height="30"
+		as="geometry"/&gt;&lt;/mxCell&gt;&lt;mxCell id="5" vertex="1" parent="1" value="Interval 4"&gt;&lt;mxGeometry
+		x="120" y="200" width="240" height="30" as="geometry"/&gt;&lt;/mxCell&gt;&lt;mxCell id="6" vertex="1" parent="1"
+		value="Interval 5"&gt;&lt;mxGeometry x="420" y="260" width="80" height="30" as="geometry"/&gt;&lt;/mxCell&gt;&lt;mxCell
+		id="7" edge="1" source="2" target="3" parent="1" value="Transfer1"&gt;&lt;mxGeometry as="geometry"&gt;&lt;Array
+		as="points"&gt;&lt;Object x="420" y="60"/&gt;&lt;/Array&gt;&lt;/mxGeometry&gt;&lt;/mxCell&gt;&lt;mxCell id="8"
+		edge="1" source="2" target="6" parent="1" value="Transfer2"&gt;&lt;mxGeometry as="geometry" relative="1" y="0"&gt;&lt;Array
+		as="points"&gt;&lt;Object x="600" y="60"/&gt;&lt;/Array&gt;&lt;/mxGeometry&gt;&lt;/mxCell&gt;&lt;mxCell id="9"
+		edge="1" source="3" target="4" parent="1" value="Transfer3"&gt;&lt;mxGeometry as="geometry"&gt;&lt;Array
+		as="points"&gt;&lt;Object x="260" y="120"/&gt;&lt;/Array&gt;&lt;/mxGeometry&gt;&lt;/mxCell&gt;&lt;mxCell id="10"
+		edge="1" source="4" target="5" parent="1" value="Transfer4"&gt;&lt;mxGeometry as="geometry"&gt;&lt;Array
+		as="points"&gt;&lt;Object x="200" y="180"/&gt;&lt;/Array&gt;&lt;/mxGeometry&gt;&lt;/mxCell&gt;&lt;mxCell id="11"
+		edge="1" source="4" target="6" parent="1" value="Transfer5"&gt;&lt;mxGeometry as="geometry" relative="1" y="-10"&gt;&lt;Array
+		as="points"&gt;&lt;Object x="460" y="155"/&gt;&lt;/Array&gt;&lt;/mxGeometry&gt;&lt;/mxCell&gt;&lt;/root&gt;&lt;/mxGraphModel&gt;
+	</div>
 	This graph is embedded in the page.
-	<div class="mxgraph" style="position:relative;overflow:hidden;border:6px solid gray;">&lt;mxGraphModel&gt;&lt;root&gt;&lt;mxCell id="0"/&gt;&lt;mxCell id="1" parent="0"/&gt;&lt;mxCell id="2" vertex="1" parent="1" value="Interval 1"&gt;&lt;mxGeometry x="380" y="20" width="140" height="30" as="geometry"/&gt;&lt;/mxCell&gt;&lt;mxCell id="3" vertex="1" parent="1" value="Interval 2"&gt;&lt;mxGeometry x="200" y="80" width="380" height="30" as="geometry"/&gt;&lt;/mxCell&gt;&lt;mxCell id="4" vertex="1" parent="1" value="Interval 3"&gt;&lt;mxGeometry x="40" y="140" width="260" height="30" as="geometry"/&gt;&lt;/mxCell&gt;&lt;mxCell id="5" vertex="1" parent="1" value="Interval 4"&gt;&lt;mxGeometry x="120" y="200" width="240" height="30" as="geometry"/&gt;&lt;/mxCell&gt;&lt;mxCell id="6" vertex="1" parent="1" value="Interval 5"&gt;&lt;mxGeometry x="420" y="260" width="80" height="30" as="geometry"/&gt;&lt;/mxCell&gt;&lt;mxCell id="7" edge="1" source="2" target="3" parent="1" value="Transfer1"&gt;&lt;mxGeometry as="geometry"&gt;&lt;Array as="points"&gt;&lt;Object x="420" y="60"/&gt;&lt;/Array&gt;&lt;/mxGeometry&gt;&lt;/mxCell&gt;&lt;mxCell id="8" edge="1" source="2" target="6" parent="1" value="Transfer2"&gt;&lt;mxGeometry as="geometry" relative="1" y="0"&gt;&lt;Array as="points"&gt;&lt;Object x="600" y="60"/&gt;&lt;/Array&gt;&lt;/mxGeometry&gt;&lt;/mxCell&gt;&lt;mxCell id="9" edge="1" source="3" target="4" parent="1" value="Transfer3"&gt;&lt;mxGeometry as="geometry"&gt;&lt;Array as="points"&gt;&lt;Object x="260" y="120"/&gt;&lt;/Array&gt;&lt;/mxGeometry&gt;&lt;/mxCell&gt;&lt;mxCell id="10" edge="1" source="4" target="5" parent="1" value="Transfer4"&gt;&lt;mxGeometry as="geometry"&gt;&lt;Array as="points"&gt;&lt;Object x="200" y="180"/&gt;&lt;/Array&gt;&lt;/mxGeometry&gt;&lt;/mxCell&gt;&lt;mxCell id="11" edge="1" source="4" target="6" parent="1" value="Transfer5"&gt;&lt;mxGeometry as="geometry" relative="1" y="-10"&gt;&lt;Array as="points"&gt;&lt;Object x="460" y="155"/&gt;&lt;/Array&gt;&lt;/mxGeometry&gt;&lt;/mxCell&gt;&lt;/root&gt;&lt;/mxGraphModel&gt;</div>
+	<div class="mxgraph" style="position:relative;overflow:hidden;border:6px solid gray;">&lt;mxGraphModel&gt;&lt;root&gt;&lt;mxCell
+		id="0"/&gt;&lt;mxCell id="1" parent="0"/&gt;&lt;mxCell id="2" vertex="1" parent="1" value="Interval 1"&gt;&lt;mxGeometry
+		x="380" y="20" width="140" height="30" as="geometry"/&gt;&lt;/mxCell&gt;&lt;mxCell id="3" vertex="1" parent="1"
+		value="Interval 2"&gt;&lt;mxGeometry x="200" y="80" width="380" height="30" as="geometry"/&gt;&lt;/mxCell&gt;&lt;mxCell
+		id="4" vertex="1" parent="1" value="Interval 3"&gt;&lt;mxGeometry x="40" y="140" width="260" height="30"
+		as="geometry"/&gt;&lt;/mxCell&gt;&lt;mxCell id="5" vertex="1" parent="1" value="Interval 4"&gt;&lt;mxGeometry
+		x="120" y="200" width="240" height="30" as="geometry"/&gt;&lt;/mxCell&gt;&lt;mxCell id="6" vertex="1" parent="1"
+		value="Interval 5"&gt;&lt;mxGeometry x="420" y="260" width="80" height="30" as="geometry"/&gt;&lt;/mxCell&gt;&lt;mxCell
+		id="7" edge="1" source="2" target="3" parent="1" value="Transfer1"&gt;&lt;mxGeometry as="geometry"&gt;&lt;Array
+		as="points"&gt;&lt;Object x="420" y="60"/&gt;&lt;/Array&gt;&lt;/mxGeometry&gt;&lt;/mxCell&gt;&lt;mxCell id="8"
+		edge="1" source="2" target="6" parent="1" value="Transfer2"&gt;&lt;mxGeometry as="geometry" relative="1" y="0"&gt;&lt;Array
+		as="points"&gt;&lt;Object x="600" y="60"/&gt;&lt;/Array&gt;&lt;/mxGeometry&gt;&lt;/mxCell&gt;&lt;mxCell id="9"
+		edge="1" source="3" target="4" parent="1" value="Transfer3"&gt;&lt;mxGeometry as="geometry"&gt;&lt;Array
+		as="points"&gt;&lt;Object x="260" y="120"/&gt;&lt;/Array&gt;&lt;/mxGeometry&gt;&lt;/mxCell&gt;&lt;mxCell id="10"
+		edge="1" source="4" target="5" parent="1" value="Transfer4"&gt;&lt;mxGeometry as="geometry"&gt;&lt;Array
+		as="points"&gt;&lt;Object x="200" y="180"/&gt;&lt;/Array&gt;&lt;/mxGeometry&gt;&lt;/mxCell&gt;&lt;mxCell id="11"
+		edge="1" source="4" target="6" parent="1" value="Transfer5"&gt;&lt;mxGeometry as="geometry" relative="1" y="-10"&gt;&lt;Array
+		as="points"&gt;&lt;Object x="460" y="155"/&gt;&lt;/Array&gt;&lt;/mxGeometry&gt;&lt;/mxCell&gt;&lt;/root&gt;&lt;/mxGraphModel&gt;
+	</div>
 	This graph is embedded in the page.
 	<script type="text/javascript">
 		main();

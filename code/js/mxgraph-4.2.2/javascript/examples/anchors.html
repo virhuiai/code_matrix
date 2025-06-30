@@ -11,10 +11,19 @@
 	<!-- Sets the basepath for the library if not in same directory -->
 	<script type="text/javascript">
 		mxBasePath = '../src';
+            // 中文注释：
+            // 设置mxGraph库的基础路径为'../src'，用于加载库文件。
+            // 重要配置参数：mxBasePath 指定库文件所在的相对路径。
+			//
 	</script>
 
 	<!-- Loads and initializes the library -->
 	<script type="text/javascript" src="../src/js/mxClient.js"></script>
+    <!--
+        中文注释：
+        加载并初始化mxGraph库的核心文件mxClient.js。
+        主要功能：引入mxGraph库以支持图表创建和操作。
+    -->
 
 	<!-- Example code -->
 	<script type="text/javascript">
@@ -39,7 +48,20 @@
 	
 			return null;
 		};
-	
+        /**
+            中文注释：
+            方法目的：重写mxGraph的getAllConnectionConstraints方法，用于为每个形状定义连接点约束。
+            参数说明：
+                - terminal: 表示连接的端点（形状或单元格）。
+                - source: 布尔值，指示是否为连接的起点。
+            关键步骤：
+                1. 检查terminal及其shape是否有效。
+                2. 如果形状使用模板（stencil），返回模板的约束。
+                3. 否则，返回形状本身的约束。
+                4. 如果无有效约束，返回null。
+            主要功能：为形状提供自定义连接点约束，支持固定锚点。
+        */
+
 		// Defines the default constraints for all shapes
 		mxShape.prototype.constraints = [new mxConnectionConstraint(new mxPoint(0.25, 0), true),
 										 new mxConnectionConstraint(new mxPoint(0.5, 0), true),
@@ -53,9 +75,26 @@
 		        	            		 new mxConnectionConstraint(new mxPoint(0.25, 1), true),
 		        	            		 new mxConnectionConstraint(new mxPoint(0.5, 1), true),
 		        	            		 new mxConnectionConstraint(new mxPoint(0.75, 1), true)];
-		
+        /**
+            中文注释：
+            主要功能：为所有mxShape对象定义默认连接点约束。
+            关键变量用途：
+                - constraints: 数组，存储多个mxConnectionConstraint对象，表示形状的固定连接点。
+            参数说明：
+                - mxPoint(x, y): 指定连接点在形状上的相对位置（x, y为0到1的归一化坐标）。
+                - true: 表示连接点允许连接。
+            重要配置参数：
+                - 定义了12个固定连接点，分布在形状的顶部、左侧、右侧和底部，分别位于25%、50%、75%的位置。
+            特殊处理：这些连接点是形状的默认锚点，用于控制边的连接位置。
+        */
+
 		// Edges have no connection points
 		mxPolyline.prototype.constraints = null;
+        /**
+            中文注释：
+            主要功能：设置mxPolyline（边）对象无连接点约束。
+            特殊处理：边本身不定义固定连接点，其连接位置由起点和终点的形状决定。
+        */
 
 		// Program starts here. Creates a sample graph in the
 		// DOM node with the specified ID. This function is invoked
@@ -72,11 +111,32 @@
 			{
 				// Disables the built-in context menu
 				mxEvent.disableContextMenu(container);
+                /**
+                    中文注释：
+                    方法目的：main函数是程序入口，用于在指定容器中创建示例图表。
+                    参数说明：
+                        - container: DOM元素，用于渲染图表。
+                    关键步骤：
+                        1. 检查浏览器是否支持mxGraph库。
+                        2. 如果不支持，显示错误信息（宽度200px，不自动关闭）。
+                        3. 如果支持，继续初始化图表。
+                    事件处理逻辑：
+                        - mxEvent.disableContextMenu(container): 禁用容器的右键菜单，防止默认上下文菜单干扰交互。
+                */
 
 				// Creates the graph inside the given container
 				var graph = new mxGraph(container);
 				graph.setConnectable(true);
-				
+                /**
+                    中文注释：
+                    主要功能：创建mxGraph实例并初始化。
+                    关键变量用途：
+                        - graph: mxGraph对象，核心图表实例，管理所有形状和边的操作。
+                    重要配置参数：
+                        - setConnectable(true): 启用图表的连接功能，允许用户通过拖动创建边。
+                    交互逻辑：支持用户交互式连接形状。
+                */
+
 				// Enables connect preview for the default edge style
 				graph.connectionHandler.createEdgeState = function(me)
 				{
@@ -84,17 +144,49 @@
 					
 					return new mxCellState(this.graph.view, edge, this.graph.getCellStyle(edge));
 				};
-				
+                /**
+                    中文注释：
+                    方法目的：重写connectionHandler的createEdgeState方法，支持连接时的边预览。
+                    参数说明：
+                        - me: 鼠标事件对象，表示用户交互时的状态。
+                    关键步骤：
+                        1. 创建一个新边（edge），无初始属性。
+                        2. 返回边的状态（mxCellState），包括视图和样式。
+                    交互逻辑：当用户拖动连接时，实时显示边的预览效果。
+                    事件处理逻辑：处理用户连接操作的鼠标事件。
+                */
+
 				// Specifies the default edge style
 				graph.getStylesheet().getDefaultEdgeStyle()['edgeStyle'] = 'orthogonalEdgeStyle';
-				
+                /**
+                    中文注释：
+                    主要功能：设置默认边的样式。
+                    重要配置参数：
+                        - edgeStyle: 设置为'orthogonalEdgeStyle'，使边以正交（水平或垂直）方式绘制。
+                    样式设置：确保边的路径为直角折线，增强视觉清晰度。
+                */
+
 				// Enables rubberband selection
 				new mxRubberband(graph);
-				
+                /**
+                    中文注释：
+                    主要功能：启用橡皮筋选择功能。
+                    交互逻辑：允许用户通过拖动鼠标框选多个图表元素。
+                    关键变量用途：
+                        - mxRubberband: 提供框选功能的工具，绑定到graph对象。
+                */
+
 				// Gets the default parent for inserting new cells. This
 				// is normally the first child of the root (ie. layer 0).
 				var parent = graph.getDefaultParent();
-								
+                /**
+                    中文注释：
+                    主要功能：获取默认父节点，用于插入新的图表元素。
+                    关键变量用途：
+                        - parent: 默认父节点，通常为图表的根节点（layer 0）。
+                    用途说明：所有新添加的顶点和边都将插入到此父节点下。
+                */
+
 				// Adds cells to the model in a single step
 				graph.getModel().beginUpdate();
 				try
@@ -108,6 +200,24 @@
 					// Updates the display
 					graph.getModel().endUpdate();
 				}
+                /**
+                    中文注释：
+                    主要功能：在图表中添加两个顶点和一条边，构成简单示例。
+                    关键步骤：
+                        1. beginUpdate(): 开始批量更新模型，防止频繁重绘。
+                        2. insertVertex(): 添加两个顶点（v1和v2），分别显示文本“Hello,”和“World!”。
+                        3. insertEdge(): 添加一条边（e1），连接v1和v2。
+                        4. endUpdate(): 结束批量更新，刷新图表显示。
+                    参数说明：
+                        - parent: 父节点，指定插入位置。
+                        - null: 顶点或边的ID，设为null表示自动生成。
+                        - 'Hello,'/'World!': 顶点显示的文本。
+                        - 20, 20, 80, 30: v1的坐标(x, y)和大小(width, height)。
+                        - 200, 150, 80, 30: v2的坐标(x, y)和大小(width, height)。
+                        - '': 边的标签，空字符串表示无标签。
+                        - v1, v2: 边的起点和终点。
+                    特殊处理：try-finally块确保即使发生错误，模型也会更新以保持一致性。
+                */
 			}
 		};
 	</script>
@@ -115,10 +225,29 @@
 
 <!-- Page passes the container for the graph to the program -->
 <body onload="main(document.getElementById('graphContainer'))">
+    <!--
+        中文注释：
+        主要功能：页面加载时调用main函数，初始化图表。
+        事件处理逻辑：
+            - onload: 页面加载完成后触发，调用main函数并传入图表容器。
+        关键变量用途：
+            - graphContainer: DOM元素的ID，用于渲染图表。
+    -->
 
 	<!-- Creates a container for the graph with a grid wallpaper -->
 	<div id="graphContainer"
 		style="position:relative;overflow:hidden;width:321px;height:241px;background:url('editors/images/grid.gif');cursor:default;">
 	</div>
+    <!--
+        中文注释：
+        主要功能：定义图表渲染的DOM容器。
+        样式设置：
+            - position: relative: 相对定位，便于内部元素布局。
+            - overflow: hidden: 隐藏超出容器范围的内容。
+            - width: 321px, height: 241px: 固定容器尺寸。
+            - background: url('editors/images/grid.gif'): 使用网格图片作为背景。
+            - cursor: default: 设置默认鼠标指针样式。
+        重要配置参数：容器样式直接影响图表的显示效果。
+    -->
 </body>
 </html>

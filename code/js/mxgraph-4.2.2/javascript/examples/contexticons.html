@@ -4,45 +4,92 @@
   Context icons example for mxGraph. This example demonstrates adding
   icons to selected vertices to carry out special operations.
 -->
+<!--
+  中文注释：
+  本示例展示了如何为 mxGraph 的选中顶点添加可点击的图标，以执行特定操作。
+  - 功能：为选中的顶点添加工具图标（如删除、调整大小、移动、连接等）。
+  - 说明：通过扩展 mxVertexHandler 类，实现自定义工具栏功能。
+-->
+
 <html>
 <head>
-	<title>Context icons example for mxGraph</title>
+    <title>Context icons example for mxGraph</title>
 
-	<!-- Sets the basepath for the library if not in same directory -->
-	<script type="text/javascript">
-		mxBasePath = '../src';
-	</script>
+    <!-- Sets the basepath for the library if not in same directory -->
+    <!--
+      中文注释：
+      设置 mxGraph 库的基础路径。
+      - 参数说明：mxBasePath 指定库文件所在目录，默认为 '../src'。
+      - 用途：确保 mxGraph 库文件能够正确加载。
+    -->
+    <script type="text/javascript">
+        mxBasePath = '../src';
+    </script>
 
-	<!-- Loads and initializes the library -->
-	<script type="text/javascript" src="../src/js/mxClient.js"></script>
+    <!-- Loads and initializes the library -->
+    <!--
+      中文注释：
+      加载并初始化 mxGraph 库。
+      - 功能：引入核心库文件 mxClient.js，用于创建和操作图形。
+      - 注意事项：确保库文件路径正确，否则可能导致初始化失败。
+    -->
+    <script type="text/javascript" src="../src/js/mxClient.js"></script>
 
-	<!-- Example code -->
-	<script type="text/javascript">
-		// Defines a subclass for mxVertexHandler that adds a set of clickable
-		// icons to every selected vertex.
-		function mxVertexToolHandler(state)
-		{
-			mxVertexHandler.apply(this, arguments);
-		};
+    <!-- Example code -->
+    <script type="text/javascript">
+        // Defines a subclass for mxVertexHandler that adds a set of clickable
+        // icons to every selected vertex.
+        //
+        // 中文注释：
+        // 定义 mxVertexToolHandler 类，继承自 mxVertexHandler，用于为选中的顶点添加可点击的工具图标。
+        // - 功能：扩展顶点处理器，添加交互图标以执行删除、调整大小、移动和连接等操作。
+        // - 用途：增强顶点的交互功能，方便用户操作图形。
+        function mxVertexToolHandler(state)
+        {
+            mxVertexHandler.apply(this, arguments);
+            // 中文注释：
+            // 调用父类 mxVertexHandler 的构造函数，初始化顶点处理器。
+            // - 参数说明：state 为顶点的状态对象，包含位置、大小等信息。
+        };
 
 		mxVertexToolHandler.prototype = new mxVertexHandler();
 		mxVertexToolHandler.prototype.constructor = mxVertexToolHandler;
 
 		mxVertexToolHandler.prototype.domNode = null;
+        // 中文注释：
+        // 定义 domNode 属性，用于存储工具图标的 DOM 容器。
+        // - 用途：保存动态创建的图标容器，方便后续操作和销毁。
 
 		mxVertexToolHandler.prototype.init = function()
 		{
 			mxVertexHandler.prototype.init.apply(this, arguments);
+            // 中文注释：
+            // 调用父类的 init 方法，完成顶点处理器的初始化。
+            // - 功能：初始化顶点处理器，确保父类功能正常运行。
 
 			// In this example we force the use of DIVs for images in IE. This
 			// handles transparency in PNG images properly in IE and fixes the
 			// problem that IE routes all mouse events for a gesture via the
-			// initial IMG node, which means the target vertices 
+			// initial IMG node, which means the target vertices
+            // 中文注释：
+            // 在 IE 浏览器中强制使用 DIV 元素替代 IMG 标签来显示图标。
+            // - 原因：解决 IE 中 PNG 图片透明度问题以及鼠标事件路由问题。
+            // - 注意事项：确保兼容 IE 浏览器的特殊处理逻辑。
 			this.domNode = document.createElement('div');
 			this.domNode.style.position = 'absolute';
 			this.domNode.style.whiteSpace = 'nowrap';
-			
+            // 中文注释：
+            // 创建工具图标的 DOM 容器并设置样式。
+            // - 样式说明：
+            //   - position: absolute - 绝对定位，使图标浮动在顶点上方。
+            //   - whiteSpace: nowrap - 防止图标换行，保持水平排列。
+            // - 用途：作为工具图标的父容器，用于动态添加图标。
+
 			// Workaround for event redirection via image tag in quirks and IE8
+            // 中文注释：
+            // 定义 createImage 函数，用于创建图标元素，兼容 IE 浏览器的怪异模式和 IE8。
+            // - 功能：根据浏览器类型创建 DIV 或 IMG 元素来显示图标。
+            // - 注意事项：IE 中使用 DIV 模拟图片以解决透明度和事件问题。
 			function createImage(src)
 			{
 				if (mxClient.IS_IE && !mxClient.IS_SVG)
@@ -52,12 +99,24 @@
 					img.style.backgroundPosition = 'center';
 					img.style.backgroundRepeat = 'no-repeat';
 					img.style.display = (mxClient.IS_QUIRKS) ? 'inline' : 'inline-block';
-					
+                    // 中文注释：
+                    // 在 IE 非 SVG 模式下，创建 DIV 元素模拟图片。
+                    // - 样式说明：
+                    //   - backgroundImage: 设置图标的图片路径。
+                    //   - backgroundPosition: center - 图片居中显示。
+                    //   - backgroundRepeat: no-repeat - 图片不重复。
+                    //   - display: 根据怪异模式或标准模式设置为 inline 或 inline-block。
+                    // - 返回值：模拟图片的 DIV 元素。
+
 					return img;
 				}
 				else
 				{
 					return mxUtils.createImage(src);
+                    // 中文注释：
+                    // 在非 IE 或支持 SVG 的环境中，使用 mxUtils.createImage 创建标准 IMG 元素。
+                    // - 参数说明：src 为图片的路径。
+                    // - 返回值：标准的 IMG 元素。
 				}
 			};
 
@@ -67,11 +126,22 @@
 			img.style.cursor = 'pointer';
 			img.style.width = '16px';
 			img.style.height = '16px';
+// 中文注释：
+            // 创建删除图标并设置其样式和属性。
+            // - 功能：用于删除选中的顶点。
+            // - 样式说明：
+            //   - cursor: pointer - 鼠标悬停时显示手型光标。
+            //   - width, height: 16px - 设置图标大小为 16x16 像素。
+            // - 属性说明：title='Delete' - 鼠标悬停时显示“删除”提示。
 			mxEvent.addGestureListeners(img,
 				mxUtils.bind(this, function(evt)
 				{
 					// Disables dragging the image
 					mxEvent.consume(evt);
+                    // 中文注释：
+                    // 为删除图标添加手势监听器，禁用拖动行为。
+                    // - 功能：阻止默认拖动事件，确保点击时只触发删除操作。
+                    // - 参数说明：evt 为鼠标事件对象。
 				})
 			);
 			mxEvent.addListener(img, 'click',
@@ -79,9 +149,15 @@
 				{
 					this.graph.removeCells([this.state.cell]);
 					mxEvent.consume(evt);
+                    // 中文注释：
+                    // 为删除图标添加点击事件监听器。
+                    // - 功能：删除当前选中的顶点。
 				})
 			);
 			this.domNode.appendChild(img);
+			// 中文注释：
+            // 将删除图标添加到 DOM 容器。
+            // - 功能：将图标元素加入工具栏容器，显示在界面上。
 
 			// Size
 			var img = createImage('images/fit_to_size.png');
@@ -89,6 +165,13 @@
 			img.style.cursor = 'se-resize';
 			img.style.width = '16px';
 			img.style.height = '16px';
+            // 中文注释：
+            // 创建调整大小图标并设置其样式和属性。
+            // - 功能：用于调整选中顶点的大小。
+            // - 样式说明：
+            //   - cursor: se-resize - 鼠标悬停时显示调整大小的光标。
+            //   - width, height: 16px - 设置图标大小为 16x16 像素。
+            // - 属性说明：title='Resize' - 鼠标悬停时显示“调整大小”提示。
 			mxEvent.addGestureListeners(img,
 				mxUtils.bind(this, function(evt)
 				{
@@ -96,9 +179,20 @@
 					this.graph.isMouseDown = true;
 					this.graph.isMouseTrigger = mxEvent.isMouseEvent(evt);
 					mxEvent.consume(evt);
+					// 中文注释：
+                    // 为调整大小图标添加手势监听器。
+                    // - 功能：启动调整大小操作。
+                    // - 参数说明：
+                    //   - mxEvent.getClientX(evt), mxEvent.getClientY(evt)：获取鼠标点击的坐标。
+                    //   - 7：表示调整大小的操作索引（右下角拖拽点）。
+                    // - 事件处理：设置鼠标按下状态并触发调整大小逻辑，阻止事件冒泡。
 				})
+
 			);
 			this.domNode.appendChild(img);
+			// 中文注释：
+            // 将调整大小图标添加到 DOM 容器。
+            // - 功能：将图标元素加入工具栏容器，显示在界面上。
 
 			// Move
 			var img = createImage('images/plus.png');
@@ -106,6 +200,13 @@
 			img.style.cursor = 'move';
 			img.style.width = '16px';
 			img.style.height = '16px';
+			// 中文注释：
+            // 创建移动图标并设置其样式和属性。
+            // - 功能：用于移动选中的顶点。
+            // - 样式说明：
+            //   - cursor: move - 鼠标悬停时显示移动光标。
+            //   - width, height: 16px - 设置图标大小为 16x16 像素。
+            // - 属性说明：title='Move' - 鼠标悬停时显示“移动”提示。
 			mxEvent.addGestureListeners(img,
 				mxUtils.bind(this, function(evt)
 				{
@@ -115,6 +216,13 @@
 					this.graph.isMouseDown = true;
 					this.graph.isMouseTrigger = mxEvent.isMouseEvent(evt);
 					mxEvent.consume(evt);
+					// 中文注释：
+                    // 为移动图标添加手势监听器。
+                    // - 功能：启动移动顶点的操作。
+                    // - 参数说明：
+                    //   - this.state.cell：当前选中的顶点对象。
+                    //   - mxEvent.getClientX(evt), mxEvent.getClientY(evt)：获取鼠标点击的坐标。
+                    // - 事件处理：设置鼠标按下状态并触发移动逻辑，阻止事件冒泡。
 				})
 			);
 			this.domNode.appendChild(img);
@@ -125,6 +233,13 @@
 			img.style.cursor = 'pointer';
 			img.style.width = '16px';
 			img.style.height = '16px';
+			// 中文注释：
+            // 创建连接图标并设置其样式和属性。
+            // - 功能：用于启动连接顶点的操作。
+            // - 样式说明：
+            //   - cursor: pointer - 鼠标悬停时显示手型光标。
+            //   - width, height: 16px - 设置图标大小为 16x16 像素。
+            // - 属性说明：title='Connect' - 鼠标悬停时显示“连接”提示。
 			mxEvent.addGestureListeners(img,
 				mxUtils.bind(this, function(evt)
 				{
@@ -134,18 +249,36 @@
 					this.graph.isMouseDown = true;
 					this.graph.isMouseTrigger = mxEvent.isMouseEvent(evt);
 					mxEvent.consume(evt);
+					// 中文注释：
+                    // 为连接图标添加手势监听器。
+                    // - 功能：启动连接顶点的操作。
+                    // - 参数说明：
+                    //   - this.graph.container：图形容器的 DOM 元素。
+                    //   - mxEvent.getClientX(evt), mxEvent.getClientY(evt)：获取鼠标点击的坐标。
+                    //   - this.state：当前顶点的状态对象。
+                    //   - pt.x, pt.y：转换后的鼠标坐标点。
+                    // - 事件处理：设置鼠标按下状态并触发连接逻辑，阻止事件冒泡。
 				})
 			);
 			this.domNode.appendChild(img);
-			
+			// 中文注释：
+            // 将工具图标容器添加到图形容器中。
+            // - 功能：将整个工具栏显示在图形界面的指定位置。
 			this.graph.container.appendChild(this.domNode);
 			this.redrawTools();
+			// 中文注释：
+            // 调用 redrawTools 方法，重绘工具图标。
+            // - 功能：更新工具栏的位置和显示状态。
 		};
 
 		mxVertexToolHandler.prototype.redraw = function()
 		{
 			mxVertexHandler.prototype.redraw.apply(this);
 			this.redrawTools();
+			// 中文注释：
+            // 重绘顶点处理器和工具图标。
+            // - 功能：调用父类的 redraw 方法并更新工具栏的位置。
+            // - 用途：确保顶点和工具栏在图形变化后正确显示。
 		};
 
 		mxVertexToolHandler.prototype.redrawTools = function()
@@ -155,23 +288,44 @@
 				var dy = (mxClient.IS_VML && document.compatMode == 'CSS1Compat') ? 20 : 4;
 				this.domNode.style.left = (this.state.x + this.state.width - 56) + 'px';
 				this.domNode.style.top = (this.state.y + this.state.height + dy) + 'px';
+				// 中文注释：
+                // 更新工具栏的位置。
+                // - 功能：根据顶点的位置和大小，调整工具栏的显示位置。
+                // - 参数说明：
+                //   - this.state.x, this.state.y：顶点的左上角坐标。
+                //   - this.state.width, this.state.height：顶点的宽度和高度。
+                //   - dy：垂直偏移量，根据浏览器模式（VML 和 CSS1Compat 模式）取 20 或 4 像素。
+                // - 样式说明：
+                //   - left：工具栏的水平位置，位于顶点右边缘向左偏移 56 像素。
+                //   - top：工具栏的垂直位置，位于顶点底部下方偏移 dy 像素。
 			}
 		};
 		
 		mxVertexToolHandler.prototype.destroy = function(sender, me)
 		{
 			mxVertexHandler.prototype.destroy.apply(this, arguments);
-
+            // 中文注释：
+            // 调用父类的 destroy 方法，销毁顶点处理器。
+            // - 功能：清理顶点处理器的资源。
 			if (this.domNode != null)
 			{
 				this.domNode.parentNode.removeChild(this.domNode);
 				this.domNode = null;
+                // 中文注释：
+                // 销毁工具图标的 DOM 容器。
+                // - 功能：从 DOM 中移除工具栏容器并释放资源。
+                // - 注意事项：确保在销毁顶点处理器时清理工具栏。
 			}
 		};
 		
 		// Program starts here. Creates a sample graph in the
 		// DOM node with the specified ID. This function is invoked
 		// from the onLoad event handler of the document (see below).
+        // 中文注释：
+        // 程序的入口函数，创建示例图形。
+        // - 功能：在指定的 DOM 节点中创建 mxGraph 图形。
+        // - 参数说明：container 为承载图形的 DOM 容器元素。
+        // - 用途：初始化图形并设置交互逻辑。
 		function main(container)
 		{
 			// Checks if the browser is supported
@@ -179,6 +333,13 @@
 			{
 				// Displays an error message if the browser is not supported.
 				mxUtils.error('Browser is not supported!', 200, false);
+                // 中文注释：
+                // 检查浏览器是否支持 mxGraph。
+                // - 功能：如果浏览器不受支持，显示错误消息。
+                // - 参数说明：
+                //   - 'Browser is not supported!'：错误消息文本。
+                //   - 200：错误对话框的宽度（像素）。
+                //   - false：表示不自动关闭对话框。
 			}
 			else
 			{

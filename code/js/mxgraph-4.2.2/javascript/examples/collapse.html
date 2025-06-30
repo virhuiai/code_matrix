@@ -4,70 +4,129 @@
   Collapse example for mxGraph. This example demonstrates changing
   the style of a cell based on its collapsed state.
 -->
+<!-- 中文注释：此示例展示了如何根据单元格的折叠状态动态更改其样式。 -->
+
 <html>
 <head>
-	<title>Collapse example for mxGraph</title>
+    <title>Collapse example for mxGraph</title>
+    <!-- 中文注释：页面标题，表明这是一个mxGraph的折叠示例。 -->
 
-	<!-- Sets the basepath for the library if not in same directory -->
-	<script type="text/javascript">
-		mxBasePath = '../src';
-	</script>
+    <!-- Sets the basepath for the library if not in same directory -->
+    <!-- 中文注释：设置mxGraph库的基础路径，如果库文件不在同一目录下需要此配置。 -->
+    <script type="text/javascript">
+        mxBasePath = '../src';
+        // 中文注释：配置mxGraph库的基础路径为'../src'，用于加载库文件。
+    </script>
 
-	<!-- Loads and initializes the library -->
-	<script type="text/javascript" src="../src/js/mxClient.js"></script>
+    <!-- Loads and initializes the library -->
+    <!-- 中文注释：加载并初始化mxGraph库。 -->
+    <script type="text/javascript" src="../src/js/mxClient.js"></script>
+    <!-- 中文注释：引入mxClient.js文件，包含mxGraph的核心功能，用于图表渲染和操作。 -->
 
-	<!-- Example code -->
-	<script type="text/javascript">
-		// Program starts here. Creates a sample graph in the
-		// DOM node with the specified ID. This function is invoked
-		// from the onLoad event handler of the document (see below).
-		function main(container)
-		{
-			var graph = new mxGraph(container);
-			var parent = graph.getDefaultParent();
-			
-			// Extends mxGraphModel.getStyle to show an image when collapsed
-			var modelGetStyle = graph.model.getStyle;
-			graph.model.getStyle = function(cell)
-			{
-				if (cell != null)
-				{
-					var style = modelGetStyle.apply(this, arguments);
-					
-					if (this.isCollapsed(cell))
-					{
-						style = style + ';shape=image;image=http://www.jgraph.com/images/mxgraph.gif;' +
-							'noLabel=1;imageBackground=#C3D9FF;imageBorder=#6482B9';
-					}
-					
-					return style;
-				}
-				
-				return null;
-			};
-			
-			graph.getModel().beginUpdate();
-			try
-			{
-				var v1 = graph.insertVertex(parent, null, 'Container', 20, 20, 200, 200,
-					'shape=swimlane;startSize=20;');
-				v1.geometry.alternateBounds = new mxRectangle(0, 0, 110, 70);
-				var v11 = graph.insertVertex(v1, null, 'Hello,', 10, 40, 120, 80);
-			}
-			finally
-			{
-				graph.getModel().endUpdate();
-			}
-		};
-	</script>
+    <!-- Example code -->
+    <!-- 中文注释：示例代码部分，展示如何创建和操作图表。 -->
+    <script type="text/javascript">
+        // Program starts here. Creates a sample graph in the
+        // DOM node with the specified ID. This function is invoked
+        // from the onLoad event handler of the document (see below).
+        // 中文注释：程序入口，创建一个示例图表，渲染到指定ID的DOM节点中，由页面加载事件触发。
+        function main(container)
+        {
+            // 中文注释：main函数目的：初始化mxGraph并创建示例图表。
+            // 中文注释：参数container：DOM容器元素，用于渲染图表。
+            var graph = new mxGraph(container);
+            // 中文注释：创建mxGraph实例，绑定到指定的container，用于图表渲染。
+            var parent = graph.getDefaultParent();
+            // 中文注释：获取默认父节点，所有图表元素将添加到此节点下。
+
+            // Extends mxGraphModel.getStyle to show an image when collapsed
+            // 中文注释：扩展mxGraphModel.getStyle方法，以在单元格折叠时显示特定图像样式。
+            var modelGetStyle = graph.model.getStyle;
+            // 中文注释：保存原始getStyle方法，用于后续调用。
+            graph.model.getStyle = function(cell)
+            {
+                // 中文注释：重写getStyle方法，动态调整单元格样式。
+                // 中文注释：参数cell：当前处理的单元格对象。
+                if (cell != null)
+                {
+                    var style = modelGetStyle.apply(this, arguments);
+                    // 中文注释：调用原始getStyle方法获取单元格默认样式。
+
+                    if (this.isCollapsed(cell))
+                    {
+                        // 中文注释：事件处理逻辑：检查单元格是否处于折叠状态。
+                        style = style + ';shape=image;image=http://www.jgraph.com/images/mxgraph.gif;' +
+                            'noLabel=1;imageBackground=#C3D9FF;imageBorder=#6482B9';
+                        // 中文注释：样式设置说明：当单元格折叠时，添加图像形状、指定图像URL、隐藏标签、设置背景色和边框色。
+                        // 中文注释：重要配置参数：
+                        // - shape=image：将单元格形状设置为图像。
+                        // - image：指定图像URL为mxgraph.gif。
+                        // - noLabel=1：隐藏单元格标签。
+                        // - imageBackground=#C3D9FF：设置图像背景色为浅蓝色。
+                        // - imageBorder=#6482B9：设置图像边框色为深蓝色。
+                    }
+
+                    return style;
+                    // 中文注释：返回最终的样式字符串。
+                }
+
+                return null;
+                // 中文注释：如果单元格为空，返回null。
+            };
+
+            graph.getModel().beginUpdate();
+            // 中文注释：开始批量更新图表模型，优化性能，避免频繁刷新。
+            try
+            {
+                var v1 = graph.insertVertex(parent, null, 'Container', 20, 20, 200, 200,
+                    'shape=swimlane;startSize=20;');
+                // 中文注释：插入一个顶点（节点）作为容器。
+                // 中文注释：关键参数说明：
+                // - parent：父节点（默认父节点）。
+                // - null：节点ID，设为null表示自动生成。
+                // - 'Container'：节点显示的标签文本。
+                // - 20, 20：节点左上角坐标(x, y)。
+                // - 200, 200：节点宽度和高度。
+                // - 'shape=swimlane;startSize=20;'：样式设置，定义为泳道形状，标题区域高度为20。
+                v1.geometry.alternateBounds = new mxRectangle(0, 0, 110, 70);
+                // 中文注释：设置折叠时的备用边界，定义折叠后节点的大小为110x70。
+                // 中文注释：特殊处理注意：alternateBounds用于控制折叠状态下的显示尺寸。
+                var v11 = graph.insertVertex(v1, null, 'Hello,', 10, 40, 120, 80);
+                // 中文注释：在v1容器中插入子节点。
+                // 中文注释：关键参数说明：
+                // - v1：父节点（容器节点）。
+                // - null：子节点ID，自动生成。
+                // - 'Hello,'：子节点标签文本。
+                // - 10, 40：子节点相对于父节点的坐标(x, y)。
+                // - 120, 80：子节点宽度和高度。
+            }
+            finally
+            {
+                graph.getModel().endUpdate();
+                // 中文注释：结束批量更新，应用所有更改并刷新图表。
+            }
+        };
+    </script>
 </head>
 
 <!-- Page passes the container for the graph to the program -->
+<!-- 中文注释：页面通过容器传递给程序，用于图表渲染。 -->
 <body onload="main(document.getElementById('graphContainer'))">
+    <!-- 中文注释：页面加载时触发main函数，传入graphContainer元素作为图表容器。 -->
+    <!-- 中文注释：事件处理逻辑：onload事件调用main函数，初始化图表。 -->
 
-	<!-- Creates a container for the graph with a grid wallpaper -->
-	<div id="graphContainer"
-		style="position:relative;overflow:hidden;width:321px;height:241px;background:url('editors/images/grid.gif');cursor:default;">
-	</div>
+    <!-- Creates a container for the graph with a grid wallpaper -->
+    <!-- 中文注释：创建图表容器，设置网格背景样式。 -->
+    <div id="graphContainer"
+        style="position:relative;overflow:hidden;width:321px;height:241px;background:url('editors/images/grid.gif');cursor:default;">
+        <!-- 中文注释：定义图表容器DOM元素，ID为graphContainer。 -->
+        <!-- 中文注释：样式设置详细说明：
+        // - position:relative：相对定位，确保图表元素正确布局。
+        // - overflow:hidden：隐藏超出容器范围的内容。
+        // - width:321px;height:241px：容器固定尺寸。
+        // - background:url('editors/images/grid.gif')：设置网格背景图像。
+        // - cursor:default：鼠标指针样式为默认箭头。
+        -->
+    </div>
 </body>
 </html>
