@@ -178,124 +178,48 @@
             graph.getModel().endUpdate();
         }
 
-        // 自定义折叠行为
-        // 重写判断节点是否可折叠的逻辑
-        graph.isCellFoldable = function(cell) {
-            // 只有包含子节点的单元格可以折叠
-            // 限制只有包含子节点的节点才可以折叠
-            // return this.model.getChildCount(cell) > 0;
-
-            return this.model.getOutgoingEdges(cell).length > 0;
+        // 定义折叠图标的位置
+        graph.cellRenderer.getControlBounds  = function(state)
+        {
+            // 返回null来隐藏折叠图标
+            return null;
         };
+
+        // // 自定义折叠行为
+        // // 重写判断节点是否可折叠的逻辑
+        // graph.isCellFoldable = function(cell) {
+        //     // 只有包含子节点的单元格可以折叠
+        //     // 限制只有包含子节点的节点才可以折叠
+        //     // return this.model.getChildCount(cell) > 0;
+        //
+        //     // return this.model.getOutgoingEdges(cell).length > 0;
+        // };
 
         // 重写折叠处理函数
         // 自定义节点的折叠/展开逻辑
-        var oldFoldCells = graph.foldCells;
-        graph.foldCells = function(collapse, recurse, cells) {
-            hideConnectedNodes(graph, cells[0]);
-            return;
-
-            //cells[0] 点击的折叠图标的所在的节点
-            // 对于 Node 1，执行自定义折叠逻辑
-            // 针对节点1的特殊折叠处理
-            // if (cells && cells.length > 0 && cells[0].value === 'Node 1') {
-            if (cells && cells.length > 0 && this.model.getOutgoingEdges(cells[0]).length > 0) {
-                this.model.beginUpdate();
-                // 开始模型更新
-                try {
-                    // 获取所有从 Node 1 出发的边
-                    // 获取节点1的所有出边
-                    var edges = this.model.getEdges(cells[0], false, true, false);
-
-                    for (var i = 0; i < edges.length; i++) {
-                        var edge = edges[i];
-                        var target = this.model.getTerminal(edge, false);
-                        // 遍历每条边，获取目标节点
-
-                        if (target) {
-                            // 隐藏/显示目标节点和边
-                            // 根据折叠状态控制边的可见性
-                            this.model.setVisible(edge, !collapse);
-                            // 设置边的可见性
-                            this.model.setVisible(target, !collapse);
-                            // 设置目标节点的可见性
-
-                            // 递归处理目标节点的出边
-                            // 递归处理目标节点的连接
-                            if (collapse) {
-                                hideConnectedNodes(this, target);
-                                // 如果折叠，隐藏目标节点的连接
-                            } else {
-                                showConnectedNodes(this, target);
-                                // 如果展开，显示目标节点的连接
-                            }
-                        }
-                    }
-
-                    // 更新折叠状态
-                    // 记录节点1的折叠状态
-                    this.model.setCollapsed(cells[0], collapse);
-                    nodeStates[cells[0].id] = !collapse;
-
-                } finally {
-                    this.model.endUpdate();
-                    // 结束模型更新
-                }
-
-                return cells;
-            } else {
-                // 其他节点使用默认折叠行为
-                // 对非节点1的节点使用原始折叠逻辑
-                // return oldFoldCells.apply(this, arguments);
-            }
-        };
-
-        // 隐藏连接的节点
-        // 定义函数，递归隐藏节点的出边及目标节点
-        function hideConnectedNodes(graph, node) {
-            var edges = graph.model.getEdges(node, false, true, false);
-            for (var i = 0; i < edges.length; i++) {
-                var edge = edges[i];
-                var target = graph.model.getTerminal(edge, false);
-                if (target) {
-                    graph.model.setVisible(edge, false);
-                    // 隐藏边
-                    graph.model.setVisible(target, false);
-                    // 隐藏目标节点
-                    hideConnectedNodes(graph, target);
-                    // 递归隐藏目标节点的连接
-                }
-            }
-        }
-
-        // 显示连接的节点
-        // 定义函数，递归显示节点的出边及目标节点
-        function showConnectedNodes(graph, node) {
-            if (nodeStates[node.id]) {
-                var edges = graph.model.getEdges(node, false, true, false);
-                for (var i = 0; i < edges.length; i++) {
-                    var edge = edges[i];
-                    var target = graph.model.getTerminal(edge, false);
-                    if (target) {
-                        graph.model.setVisible(edge, true);
-                        // 显示边
-                        graph.model.setVisible(target, true);
-                        // 显示目标节点
-                        showConnectedNodes(graph, target);
-                        // 递归显示目标节点的连接
-                    }
-                }
-            }
-        }
+        // var oldFoldCells = graph.foldCells;
+        // graph.foldCells = function(collapse, recurse, cells) {
+        //     console.log("foldCells,cells[0]"+cells[0].id)
+        //     // mxGraphUtils.clickCellHandle(cells[0], graph, nodeStates);
+        //
+        //     // if (collapse) {
+        //     //     mxGraphUtils.hideConnectedNodes(this, cells[0]);
+        //     //     // 如果折叠，隐藏目标节点的连接
+        //     // } else {
+        //     //     mxGraphUtils.showConnectedNodes(this, cells[0],nodeStates);
+        //     //     // 如果展开，显示目标节点的连接
+        //     // }
+        //     // 记录节点1的折叠状态
+        //     // this.model.setCollapsed(cells[0], collapse);
+        //     return cells;
+        // };
 
         // 添加点击事件处理
         // 为图形添加点击事件监听器，处理节点交互
         graph.addListener(mxEvent.CLICK, function(sender, evt) {
             var cell = evt.getProperty('cell');
             // 获取点击的单元格
-
             mxGraphUtils.clickCellHandle(cell,graph, nodeStates);
-
             evt.consume();
             // 消费事件，防止进一步传播
         });
@@ -304,6 +228,7 @@
         // 重写折叠图标的渲染逻辑
         var oldGetFoldingImage = graph.getFoldingImage;
         graph.getFoldingImage = function(state) {
+            // console.log("graph.getFoldingImage:" + mxGraphUtils.JSONstringify(state));
             if (state != null) {
                 // 检查 Node 1 的出边目标是否可见
                 // 检查节点1的出边目标节点的可见性
@@ -317,6 +242,12 @@
                         break;
                     }
                 }
+                // console.log("hasHiddenTargets:" + hasHiddenTargets + ",graph.getFoldingImage:" + state.cell.id);
+                // console.log("nodeStates:" + mxGraphUtils.JSONstringify(nodeStates));
+                //
+                // if(nodeStates.hasOwnProperty(state.cell.id) && nodeStates[state.cell.id]){
+                //     hasHiddenTargets = true;
+                // }
 
                 return hasHiddenTargets ? this.collapsedImage : this.expandedImage;
                 // 根据目标节点可见性返回折叠或展开图标

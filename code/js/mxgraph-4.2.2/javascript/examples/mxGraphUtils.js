@@ -20,6 +20,9 @@ mxGraphUtils.insertToGraph = function(graph, parent, cb) {
 
 /**
  * 检查浏览器
+ mxGraphUtils.checkBrowserOrError();
+ // 检查浏览器是否支持 mxGraph,若浏览器不支持，调用 mxUtils.error 显示错误信息
+ //     错误信息参数：消息内容 'Browser is not supported!'，宽度 200 像素，是否自动关闭（false）
  */
 mxGraphUtils.checkBrowserOrError = function(){
     if (!mxClient.isBrowserSupported()) {
@@ -29,6 +32,39 @@ mxGraphUtils.checkBrowserOrError = function(){
         throw new Error("浏览器不受支持!");
     }
 }
+
+
+/**
+ * 低版本浏览器不支持（CEF）
+ * 自定义 JSON.stringify 函数，用于处理循环引用的对象
+ * @param obj
+ * @returns {string}
+ * @constructor
+ *
+ mxGraphUtils.JSONstringify();
+ */
+mxGraphUtils.JSONstringify = function(obj){
+    // 创建一个 WeakSet 用于存储已经遇到的对象，以避免循环引用
+    var seen = new WeakSet();
+    //`WeakSet` 中的对象引用是弱引用，不会阻止垃圾回收器回收这些对象。这使得 `WeakSet` 非常适合存储那些生命周期不由您控制的对象。
+    // `WeakSet` 只能存储对象，不能存储原始类型（如字符串、数字等）。
+
+    // 使用 JSON.stringify 的 replacer 函数来处理对象的序列化
+    return JSON.stringify(obj, function (key, value) {
+        // 检查值是否为对象且不为 null
+        if (typeof value === "object" && value !== null) {
+            // 如果对象已经在 seen 中，说明有循环引用，返回 undefined
+            if (seen.has(value)) {
+                return "###haset###" + value.id;
+            }
+            // 将新遇到的对象添加到 seen 中
+            seen.add(value);
+        }
+        // 返回值进行序列化
+        return value;
+    });
+}
+
 
 /**
  * 向指定ID的元素添加子节点
@@ -55,6 +91,131 @@ mxGraphUtils.addNodeToElementById = function(parentId, newNode) {
     // 添加新节点到父元素
     parentElement.appendChild(newNode);
 }
+
+/**
+ // 隐藏连接的节点
+ // 定义函数，递归隐藏节点的出边及目标节点
+ * @param graph
+ * @param node
+ */
+mxGraphUtils.hideConnectedNodes = function(graph, node){
+    var edges = graph.model.getEdges(node, false, true, false);
+    for (var i = 0; i < edges.length; i++) {
+        var edge = edges[i];
+        var target = graph.model.getTerminal(edge, false);
+        if (target) {
+            graph.model.setVisible(edge, false);
+            // 隐藏边
+            graph.model.setVisible(target, false);
+            // 隐藏目标节点
+            mxGraphUtils.hideConnectedNodes(graph, target);
+            // 递归隐藏目标节点的连接
+        }
+    }
+}
+
+/**
+ // 显示连接的节点
+ // 定义函数，递归显示节点的出边及目标节点
+ mxGraphUtils.showConnectedNodes(graph, node, nodeStates);
+ * @param graph
+ * @param node
+ */
+mxGraphUtils.showConnectedNodes = function(graph, node, nodeStates){
+
+    if (nodeStates[node.id]) {
+        var edges = graph.model.getEdges(node, false, true, false);
+        for (var i = 0; i < edges.length; i++) {
+            var edge = edges[i];
+            var target = graph.model.getTerminal(edge, false);
+            if (target) {
+                graph.model.setVisible(edge, true);
+                // 显示边
+                graph.model.setVisible(target, true);
+                // 显示目标节点
+                mxGraphUtils.showConnectedNodes(graph, target, nodeStates);
+                // 递归显示目标节点的连接
+            }
+        }
+    }
+}
+
+/**
+ * 点击节点事件处理
+ * @param cell
+ */
+mxGraphUtils.clickCellHandle = function(cell, graph, nodeStates){
+    // console.log("graph.model.isCollapsed(cell):" + graph.model.isCollapsed(cell));
+    if (cell != null && graph.model.isVertex(cell) && !graph.model.isCollapsed(cell)) {
+        console.log("graph.model.isCollapsed(cell):" + graph.model.isCollapsed(cell));
+        // 确保点击的是节点且未折叠
+        // 确保不是子节点
+        // if (graph.model.getParent(cell) === graph.getDefaultParent()) {
+        graph.model.beginUpdate();
+        // 开始模型更新
+        try {
+            var edges = graph.model.getEdges(cell, false, true, false);
+            var hasVisibleTargets = false;
+
+            // 检查是否有可见的目标节点
+            // 遍历出边，检查目标节点是否可见
+            for (var i = 0; i < edges.length; i++) {
+                var target = graph.model.getTerminal(edges[i], false);
+                if (target && graph.model.isVisible(target)) {
+                    hasVisibleTargets = true;
+                    break;
+                }
+            }
+
+            // 切换显示/隐藏状态
+            // 根据目标节点状态切换可见性
+            for (var i = 0; i < edges.length; i++) {
+                var edge = edges[i];
+                var target = graph.model.getTerminal(edge, false);
+
+                if (target) {
+                    graph.model.setVisible(edge, !hasVisibleTargets);
+                    // 设置边的可见性
+                    graph.model.setVisible(target, !hasVisibleTargets);
+                    // 设置目标节点的可见性
+
+                    if (hasVisibleTargets) {
+                        mxGraphUtils.hideConnectedNodes(graph, target);
+                        // 如果目标可见，隐藏连接
+                    } else {
+                        mxGraphUtils.showConnectedNodes(graph, target, nodeStates);
+                        // 如果目标不可见，显示连接
+                    }
+                }
+            }
+
+            // 更新节点状态
+            // 记录节点的显示/隐藏状态
+            nodeStates[cell.id] = !hasVisibleTargets;
+
+        } finally {
+            graph.model.endUpdate();
+            // 结束模型更新
+        }
+        // }
+    }
+}
+
+/**
+ * 获取节点形状
+ * @returns {*}
+ */
+mxGraphUtils.getCurrentVertexShape = function(graph){
+    var style = graph.getStylesheet().getDefaultVertexStyle();
+    var styleShape = style[mxConstants.STYLE_SHAPE];
+    return mxCellRenderer.defaultShapes[styleShape];
+}
+
+mxGraphUtils.getDefaultVertexShape = function(){
+    return mxCellRenderer.defaultShapes['rectangle'];
+}
+
+
 
 /**
  * 获取边样式常量数组
@@ -154,8 +315,8 @@ mxGraphUtils.setCompactTreeLayout = function(graph){
     // 当组的子节点被更改、添加或删除时，将应用此布局
     var layout = new mxCompactTreeLayout(graph, false);
     // 不使用边界框进行布局计算
-    layout.useBoundingBox = false;
-    // 不进行边的路由计算
+    // layout.useBoundingBox = false;
+    // // 不进行边的路由计算
     layout.edgeRouting = false;
     // 设置层级之间的距离为60
     layout.levelDistance = 60;
@@ -176,6 +337,12 @@ mxGraphUtils.setCompactTreeLayout = function(graph){
         if (cell.getChildCount() > 0) {
             return layout;
         }
+
+
+        // if(graph.model.getOutgoingEdges(cell).length > 0){
+        //     return layout;
+        // }
+
     };
     return layout;
 }
@@ -262,6 +429,7 @@ mxGraphUtils.regTreeNodeShape = function(graph, layout){
 
     // 定义显示折叠图标的条件
     graph.isCellFoldable = function (cell) {
+                // return this.model.getOutgoingEdges(cell).length > 0;
         return this.model.getOutgoingEdges(cell).length > 0;
     };
 
@@ -304,8 +472,11 @@ mxGraphUtils.regTreeNodeShape = function(graph, layout){
 
     // 实现点击折叠图标的操作
     graph.foldCells = function (collapse, recurse, cells) {
+        console.log("sss");
+        alert("abc");
         this.model.beginUpdate();
         try {
+            debugger
             toggleSubtree(this, cells[0], !collapse);
             this.model.setCollapsed(cells[0], collapse);
 
@@ -378,12 +549,13 @@ mxGraphUtils.initStyles = function(graph){
         graph.getStylesheet().putCellStyle(
             mxGraphUtils.getStyleNameByStep("nodeTopBg", step),
             {
-                'fillColor': mxGraphUtils.getColorByStep(step),// 蓝色
-                'strokeColor': mxGraphUtils.getColorByStep(step),
-                'strokeWidth': 1,
-                'rounded': true,
-                'arcSize': 1,
-            });
+            'fillColor': mxGraphUtils.getColorByStep(step),// 蓝色
+            'strokeColor': mxGraphUtils.getColorByStep(step),
+            'strokeWidth': 1,
+            'rounded': true,
+            'arcSize': 1,
+            'shape':'rectangle',
+        });
 
         // 标题前 点 处理
         graph.getStylesheet().putCellStyle(mxGraphUtils.getStyleNameByStep('nodeTitlePoint', step), {
@@ -399,6 +571,7 @@ mxGraphUtils.initStyles = function(graph){
             'fillColor': 'transparent',
             'fontColor': 'black',
             'fontSize': 16,
+            'shape':'rectangle',
             // 'fillColor': 'white',
             // 'strokeColor': 'none',
             // 'fontStyle': 1,
@@ -419,7 +592,8 @@ mxGraphUtils.initStyles = function(graph){
                 'fontSize': 12,
                 'align': 'right',
                 'verticalAlign': 'middle',
-                'spacingRight': 10
+                'spacingRight': 10,
+                'shape':'rectangle',
             });
 
     }
@@ -443,7 +617,8 @@ mxGraphUtils.initStyles = function(graph){
         'fontSize': 18,
         'fontStyle': 1,
         'align': 'left',
-        'verticalAlign': 'middle'
+        'verticalAlign': 'middle',
+        'shape':'rectangle',
     });
 
 
@@ -454,7 +629,8 @@ mxGraphUtils.initStyles = function(graph){
         'fontColor': 'white',
         'fontSize': 14,
         'rounded': true,
-        'arcSize': 20
+        'arcSize': 20,
+        'shape':'rectangle',
     });
 
     // 文本
@@ -465,7 +641,8 @@ mxGraphUtils.initStyles = function(graph){
         'fontSize': 14,
         // 'fontStyle': 1,
         'align': 'left',
-        'verticalAlign': 'middle'
+        'verticalAlign': 'middle',
+        'shape':'rectangle',
     });
 
 
@@ -558,7 +735,7 @@ mxGraphUtils.newMyNode = function(conf){
 
 
     // // 流程号
-    var subTitle = graph.insertVertex(mainBodyBg, null, 'ZQYW2024112956293', 0, 0, 0, 0,
+    var subTitle = graph.insertVertex(mainBodyBg, null, '20250701', 0, 0, 0, 0,
         'nodeBodySubTitle',true);
     graph.updateCellSize(subTitle);
     subTitle.geometry.offset = new mxPoint(bodyMarginLR, bodyMarginTB);

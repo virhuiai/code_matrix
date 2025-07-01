@@ -1,0 +1,356 @@
+<!--
+  Copyright (c) 2006-2013, JGraph Ltd
+  
+  Tree example for mxGraph. This example demonstrates folding
+  of subtrees in a acyclic graph (tree).
+-->
+<html>
+<head>
+	<title>Tree example for mxGraph</title>
+
+	<!-- 设置mxGraph库的基础路径，如果不在同一目录下 -->
+	<script type="text/javascript">
+		mxBasePath = '../src';
+	</script>
+
+	<!-- 加载并初始化mxGraph库 -->
+	<script type="text/javascript" src="../src/js/mxClient.js"></script>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<script type="text/javascript" src="./mxGraphUtils.js"></script>
+	<script type="text/javascript">
+		/*
+			Defines a custom shape for the tree node that includes the
+			upper half of the outgoing edge(s).
+		*/
+		// 定义树节点的自定义形状，包含出边的上半部分
+		function TreeNodeShape() { };
+
+		// 继承自mxCylinder基类
+		TreeNodeShape.prototype = new mxCylinder();
+		TreeNodeShape.prototype.constructor = TreeNodeShape;
+
+		// 定义上部边缘段的长度
+		TreeNodeShape.prototype.segment = 20;
+
+		// 需要访问单元格状态进行渲染
+		TreeNodeShape.prototype.apply = function(state)
+		{
+			mxCylinder.prototype.apply.apply(this, arguments);
+			this.state = state;
+		};
+		
+		// 重绘路径方法
+		TreeNodeShape.prototype.redrawPath = function(path, x, y, w, h, isForeground)
+		{
+			var graph = this.state.view.graph;
+			// 检查是否有子节点
+			var hasChildren = graph.model.getOutgoingEdges(this.state.cell).length > 0;
+			
+			if (isForeground)
+			{
+				if (hasChildren)
+				{
+					// 这里使用了在顶点边界外绘制的方法
+					path.moveTo(w / 2, h + this.segment);
+					path.lineTo(w / 2, h);
+					path.end();
+				}	
+			}
+			else
+			{
+				// 绘制背景路径
+				path.moveTo(0, 0);
+				path.lineTo(w, 0);
+				path.lineTo(w, h);
+				path.lineTo(0, h);
+				path.close();
+			}
+		};
+		
+		// 注册自定义形状
+		mxCellRenderer.registerShape('treenode', TreeNodeShape);
+
+		// 为树节点定义自定义连接点
+		mxGraphView.prototype.updateFloatingTerminalPoint = function(edge, start, end, source)
+		{
+			var pt = null;
+			
+			if (source)
+			{
+				// 源节点的连接点位置
+				pt = new mxPoint(start.x + start.width / 2,
+						start.y + start.height + TreeNodeShape.prototype.segment);
+			}
+			else
+			{
+				// 目标节点的连接点位置
+				pt = new mxPoint(start.x + start.width / 2, start.y);
+			}
+
+			edge.setAbsoluteTerminalPoint(pt, source);
+		};
+	</script>
+
+	<!-- 示例代码 -->
+	<script type="text/javascript">
+		// 程序入口。在指定ID的DOM节点中创建示例图形
+		// 该函数由文档的onLoad事件处理器调用（见下方）
+		function main()
+		{
+			// 检查浏览器是否支持
+			if (!mxClient.isBrowserSupported())
+			{
+				// 如果浏览器不支持，显示错误信息
+				mxUtils.error('Browser is not supported!', 200, false);
+			}
+			else
+			{
+				// 设置折叠和展开图标。以下是默认值，
+				// 但如果你需要替换它们，可以这样操作
+				mxGraph.prototype.collapsedImage = new mxImage(mxClient.imageBasePath + '/collapsed.gif', 9, 9);
+				mxGraph.prototype.expandedImage = new mxImage(mxClient.imageBasePath + '/expanded.gif', 9, 9);
+				
+				// 针对IE浏览器的样式处理
+				var container = document.createElement('div');
+				container.style.position = 'absolute';
+				container.style.overflow = 'hidden';
+				container.style.left = '0px';
+				container.style.top = '0px';
+				container.style.right = '0px';
+				container.style.bottom = '0px';
+				
+				// 如果是IE浏览器，添加div大小调整器
+				if (mxClient.IS_IE)
+				{
+					new mxDivResizer(container);
+				}
+				
+				// 将容器添加到body中
+				document.body.appendChild(container);
+			
+				// 在容器中创建图形
+				var graph = new mxGraph(container);
+                // 存储节点的折叠状态
+                // 定义对象用于记录每个节点的折叠/展开状态
+                var nodeStates = {};
+                // 为图形添加点击事件监听器，处理节点交互
+                graph.addListener(mxEvent.CLICK, function(sender, evt) {
+                    var cell = evt.getProperty('cell');
+                    // 获取点击的单元格
+                    mxGraphUtils.clickCellHandle(cell,graph, nodeStates);
+                    evt.consume();
+                    // 消费事件，防止进一步传播
+                });
+				
+				// 避免边和折叠图标重叠
+				graph.keepEdgesInBackground = true;
+
+				// 设置默认顶点样式
+				var style = graph.getStylesheet().getDefaultVertexStyle();
+				style[mxConstants.STYLE_SHAPE] = 'treenode';
+				// style[mxConstants.STYLE_GRADIENTCOLOR] = 'white';
+				// style[mxConstants.STYLE_SHADOW] = true;
+				
+				// 设置默认边样式
+				style = graph.getStylesheet().getDefaultEdgeStyle();
+				style[mxConstants.STYLE_EDGE] = mxEdgeStyle.TopToBottom;
+				style[mxConstants.STYLE_ROUNDED] = true;
+				
+				// 启用编辑后自动调整顶点大小
+				// 以及使用鼠标左键平移图形
+				graph.setAutoSizeCells(true);
+				graph.setPanning(true);
+				graph.panningHandler.useLeftButtonForPanning = true;
+
+				// 设置按回车或ESC键停止编辑
+				var keyHandler = new mxKeyHandler(graph);
+				
+				// 启用自动布局，并为所有组安装树布局，
+				// 当子节点被更改、添加或删除时触发
+				var layout = new mxCompactTreeLayout(graph, false);
+				layout.useBoundingBox = false;
+				layout.edgeRouting = false;
+				layout.levelDistance = 30;  // 层级间距
+				layout.nodeDistance = 10;  // 节点间距
+
+				// 创建布局管理器
+				var layoutMgr = new mxLayoutManager(graph);
+				
+				// 获取单元格的布局
+				layoutMgr.getLayout = function(cell)
+				{
+					if (cell.getChildCount() > 0)
+					{
+						return layout;
+					}
+				};
+
+				// 禁止任何选择操作
+				graph.setCellsSelectable(false);
+
+				// 定义显示折叠图标的条件
+				graph.isCellFoldable = function(cell)
+				{
+					return this.model.getOutgoingEdges(cell).length > 0;
+				};
+
+                // 定义折叠图标的位置
+				// Define the position of the collapse icon
+                graph.cellRenderer.getControlBounds = function (state) {
+                    // 当状态控制不为空时
+                    if (state.control != null) {
+                        // 获取原始缩放比例
+                        var oldScale = state.control.scale;
+                        // 计算宽度和高度，考虑原始缩放比例
+                        var w = state.control.bounds.width / oldScale;
+                        var h = state.control.bounds.height / oldScale;
+                        // 获取当前视图的缩放比例
+                        var s = state.view.scale;
+
+                        // 返回新的矩形位置，考虑当前缩放比例和节点高度
+                        return new mxRectangle(state.x + state.width / 2 - w / 2 * s,
+                            state.y + state.height + TreeNodeShape.prototype.segment * s - h / 2 * s,
+                            w * s, h * s);
+                    }
+
+                    // 如果状态控制为空，返回null
+                    return null;
+                };
+
+				// 实现折叠图标的点击功能
+				graph.foldCells = function(collapse, recurse, cells)
+				{
+				    //cells[0] 点击的折叠图标的所在的节点
+				    // console.log("foldCells:" + mxGraphUtils.JSONstringify(cells));
+
+					this.model.beginUpdate();
+					try
+					{
+						toggleSubtree(this, cells[0], !collapse);
+						this.model.setCollapsed(cells[0], collapse);
+                        // mxGraphUtils.clickCellHandle
+
+						// 执行新图形的布局，因为可见性和折叠状态的更改
+						// 不会触发当前管理器中的布局
+						layout.execute(graph.getDefaultParent());
+					}
+					finally
+					{
+						this.model.endUpdate();
+					}
+				};
+				
+				// 获取插入新单元格的默认父级
+				// 通常是根的第一个子级（即第0层）
+				var parent = graph.getDefaultParent();
+
+                mxGraphUtils.initStyles(graph);
+
+				// 添加树的根顶点
+				graph.getModel().beginUpdate();
+				try
+				{
+					var w = graph.container.offsetWidth;
+					// 插入根节点
+					var root = graph.insertVertex(parent, 'treeRoot', 'Root', w/2 - 30, 20, 60, 40);
+
+					var v1 = graph.insertVertex(parent, 'v1', 'Child 1', 0, 0, 60, 40);
+					graph.insertEdge(parent, null, '', root, v1);
+
+                    var node1 = mxGraphUtils.newMyNode({
+                        'graph':graph,
+                        'parent':parent,
+                        'step':0,
+                        'w1':320,
+                        'h1':200,
+
+                    });
+                    graph.insertEdge(parent, null, '', v1, node1);
+
+                    var node2 = mxGraphUtils.newMyNode({
+                        'graph':graph,
+                        'parent':parent,
+                        'step':1,
+                        'w1':320,
+                        'h1':200,
+
+                    });
+                    graph.insertEdge(parent, null, '', node1, node2);
+                    var node3 = mxGraphUtils.newMyNode({
+                        'graph':graph,
+                        'parent':parent,
+                        'step':2,
+                        'w1':320,
+                        'h1':200,
+
+                    });
+                    graph.insertEdge(parent, null, '', node1, node3);
+					
+					var v2 = graph.insertVertex(parent, 'v2', 'Child 2', 0, 0, 60, 40);
+					graph.insertEdge(parent, null, '', root, v2);
+
+					var v3 = graph.insertVertex(parent, 'v3', 'Child 3', 0, 0, 60, 40);
+                    graph.insertVertex(v3, 'v333333333', 'Child v333333333', 0, 0, 60, 40);
+					graph.insertEdge(parent, null, '', root, v3);
+					
+					var v11 = graph.insertVertex(parent, 'v11', 'Child 1.1', 0, 0, 60, 40);
+					graph.insertEdge(parent, null, '', v1, v11);
+					
+					var v12 = graph.insertVertex(parent, 'v12', 'Child 1.2', 0, 0, 60, 40);
+					graph.insertEdge(parent, null, '', v1, v12);
+					
+					var v21 = graph.insertVertex(parent, 'v21', 'Child 2.1', 0, 0, 60, 40);
+					graph.insertEdge(parent, null, '', v2, v21);
+					
+					var v22 = graph.insertVertex(parent, 'v22', 'Child 2.2', 0, 0, 60, 40);
+					graph.insertEdge(parent, null, '', v2, v22);
+					
+					var v221 = graph.insertVertex(parent, 'v221', 'Child 2.2.1', 0, 0, 60, 40);
+					graph.insertEdge(parent, null, '', v22, v221);
+					
+					var v222 = graph.insertVertex(parent, 'v222', 'Child 2.2.2', 0, 0, 60, 40);
+					graph.insertEdge(parent, null, '', v22, v222);
+
+					var v31 = graph.insertVertex(parent, 'v31', 'Child 3.1', 0, 0, 60, 40);
+					graph.insertEdge(parent, null, '', v3, v31);
+
+
+				}
+				finally
+				{
+					// 更新显示
+					graph.getModel().endUpdate();
+				}
+			}
+		};
+
+		// 更新给定子树的可见状态，考虑遍历分支的折叠状态
+		function toggleSubtree(graph, cell, show)
+		{
+			show = (show != null) ? show : true;
+			var cells = [];
+			
+			// 遍历图形
+			graph.traverse(cell, true, function(vertex)
+			{
+				if (vertex != cell)
+				{
+                        cells.push(vertex);
+				}
+
+				// 如果遇到折叠的单元格，停止递归
+				return vertex == cell || !graph.isCellCollapsed(vertex);
+			});
+
+            console.log("cells:" + mxGraphUtils.JSONstringify(cells));
+
+			// 切换单元格的可见性
+			graph.toggleCells(show, cells, true);
+		};
+	</script>
+</head>
+
+<!-- 页面加载后调用main函数。容器是动态创建的。 -->
+<body onload="main();">
+</body>
+</html>

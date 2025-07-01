@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>mxGraph 节点折叠示例</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+    <!-- Sets the basepath for the library if not in same directory -->
+    <!-- 设置 mxGraph 库的基础路径，如果库文件不在同一目录下 -->
+    <script type="text/javascript">
+        mxBasePath = '../src';
+        // 定义 mxGraph 库的相对路径，确保正确加载库文件
+    </script>
+
+    <!-- Loads and initializes the library -->
+    <!-- 加载并初始化 mxGraph 库 -->
+    <script type="text/javascript" src="../src/js/mxClient.js"></script>
+    <script type="text/javascript" src="./mxGraphUtils.js"></script>
+    <!-- 引入 mxGraph 的核心 JavaScript 文件以支持图形功能 -->
+
+</head>
+<body>
+
+<div id="graphContainer"></div>
+
+<script type="text/javascript">
+    // 创建主函数
+    // 定义主函数，负责初始化 mxGraph 并创建图形
+    function main(container) {
+        // 检查浏览器支持
+        // 验证浏览器是否支持 mxGraph 库
+        if (!mxClient.isBrowserSupported()) {
+            mxUtils.error('浏览器不支持!', 200, false);
+            // 如果浏览器不支持，显示错误提示，宽度200像素，不自动关闭
+            return;
+        }
+
+        // 创建图形编辑器
+        // 初始化 mxGraph 图形编辑器，绑定到指定容器
+        var graph = new mxGraph(container);
+        graph.setConnectable(false);
+        // 禁用节点连接功能，防止用户手动创建连接
+        graph.setPanning(true);
+        // 启用平移功能，允许用户拖动画布
+
+        // 启用折叠功能
+        // 开启节点折叠功能，允许节点显示/隐藏子节点或连接
+        // graph.foldingEnabled = true;
+
+        // 禁止任何选择操作
+        graph.setCellsSelectable(false);
+        // 存储节点的折叠状态
+        // 定义对象用于记录每个节点的折叠/展开状态
+        var nodeStates = {};
+
+
+        mxGraphUtils.initStyles(graph);
+        // 启用图的自动布局
+        var layout = mxGraphUtils.setCompactTreeLayout(graph);
+        // 允许布局移动节点，即使在图中节点不可移动
+        layout.isVertexMovable = function (cell) {
+            return true;
+        };
+        // mxGraphUtils.regTreeNodeShape(graph, layout);
+
+// 获取插入新单元的默认父级。这通常是root的第一个子节点（即层0）。
+        var parent = graph.getDefaultParent();
+
+        // 开始更新
+        // 开始批量更新图形模型，以优化性能
+        graph.getModel().beginUpdate();
+
+        try {
+            var node1 = mxGraphUtils.newMyNode({
+                'graph':graph,
+                'parent':parent,
+                'step':0,
+                'w1':320,
+                'h1':200,
+
+            });
+
+            var node2 = mxGraphUtils.newMyNode({
+                'graph':graph,
+                'parent':parent,
+                'step':1,
+                'w1':320,
+                'h1':200,
+
+            });
+
+            var node3 = mxGraphUtils.newMyNode({
+                'graph':graph,
+                'parent':parent,
+                'step':2,
+                'w1':320,
+                'h1':200,
+
+            });
+
+
+            // 创建连接线
+            graph.insertEdge(parent, null, '', node1, node2);
+            graph.insertEdge(parent, null, '', node1, node3);
+
+            // graph.insertEdge(parent, null, '', node1, node22);
+
+        } finally {
+            // 结束更新
+            // 完成批量更新，确保图形刷新
+            graph.getModel().endUpdate();
+        }
+
+        layout.execute();
+
+        mxGraph.prototype.collapsedImage = null;
+        mxGraph.prototype.expandedImage = null;
+
+        // 添加点击事件处理
+        // 为图形添加点击事件监听器，处理节点交互
+        graph.addListener(mxEvent.CLICK, function(sender, evt) {
+            var cell = evt.getProperty('cell');
+            // 获取点击的单元格
+            mxGraphUtils.clickCellHandle(cell,graph, nodeStates);
+            evt.consume();
+            // 消费事件，防止进一步传播
+        });
+
+
+        // 禁用右键菜单
+        // 禁用容器上的右键菜单，防止默认上下文菜单
+        mxEvent.disableContextMenu(container);
+
+        // 居中显示
+        // 将图形居中显示在容器内
+        // graph.center();
+    }
+
+    // 页面加载完成后初始化
+    // 在页面加载完成后调用主函数初始化图形
+    window.onload = function() {
+        main(document.getElementById('graphContainer'));
+        // 获取图形容器并传入主函数
+    };
+</script>
+</body>
+</html>
