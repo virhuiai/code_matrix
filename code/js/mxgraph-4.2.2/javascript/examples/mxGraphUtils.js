@@ -200,7 +200,7 @@ mxGraphUtils.clickCellHandle = function(cell, graph, nodeStates){
 
 
 
-            /// todo 
+            /// todo
             var overlay = new mxCellOverlay(
                 new mxImage('editors/images/overlays/check.png', 16, 16),
                 'Overlay tooltip');
