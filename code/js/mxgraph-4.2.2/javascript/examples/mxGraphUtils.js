@@ -182,6 +182,8 @@ mxGraphUtils.clickCellHandle = function(cell, graph, nodeStates){
                     graph.model.setVisible(target, !hasVisibleTargets);
                     // 设置目标节点的可见性
 
+                    // graph.model.setCollapsed(cell, hasVisibleTargets);
+
                     if (hasVisibleTargets) {
                         mxGraphUtils.hideConnectedNodes(graph, target);
                         // 如果目标可见，隐藏连接
@@ -267,6 +269,7 @@ mxGraphUtils.clickPassUpCellHandle = function (cell, graph, nodeStates) {
         * 如果父节点是默认父节点，停止事件传递，直接调用 clickCellHandle 处理当前节点的点击逻辑。
         */
         mxGraphUtils.clickCellHandle(cell, graph, nodeStates);
+        // graph.model.setCollapsed(cell, !graph.isCellCollapsed(cell));
     }
 }
 
@@ -417,148 +420,6 @@ mxGraphUtils.setCompactTreeLayout = function(graph){
     return layout;
 }
 
-/**
- * 定义一个自定义形状用于树节点，包括外出边的上半部分。
- */
-mxGraphUtils.regTreeNodeShape = function(graph, layout){
-    /*
-        定义一个自定义形状用于树节点，包括外出边的上半部分。
-    */
-    function TreeNodeShape() {
-    };
-
-    TreeNodeShape.prototype = new mxCylinder();
-    TreeNodeShape.prototype.constructor = TreeNodeShape;
-
-    // 定义上边段的长度。
-    TreeNodeShape.prototype.segment = 20;
-
-    // 渲染时需要访问单元状态
-    TreeNodeShape.prototype.apply = function (state) {
-        mxCylinder.prototype.apply.apply(this, arguments);
-        this.state = state;
-    };
-
-    TreeNodeShape.prototype.redrawPath = function (path, x, y, w, h, isForeground) {
-        var graph = this.state.view.graph;
-        var hasChildren = graph.model.getOutgoingEdges(this.state.cell).length > 0;
-
-        if (isForeground) {
-            if (hasChildren) {
-                // 在顶点边界外绘制
-                path.moveTo(w / 2, h + this.segment);
-                path.lineTo(w / 2, h);
-                path.end();
-            }
-        }
-        else {
-            path.moveTo(0, 0);
-            path.lineTo(w, 0);
-            path.lineTo(w, h);
-            path.lineTo(0, h);
-            path.close();
-        }
-    };
-
-
-    mxCellRenderer.registerShape('treenode', TreeNodeShape);
-
-    // 为树中的节点定义自定义周长
-    mxGraphView.prototype.updateFloatingTerminalPoint = function (edge, start, end, source) {
-        var pt = null;
-
-        if (source) {
-            pt = new mxPoint(start.x + start.width / 2,
-                start.y + start.height + TreeNodeShape.prototype.segment);
-        }
-        else {
-            pt = new mxPoint(start.x + start.width / 2, start.y);
-        }
-
-        edge.setAbsoluteTerminalPoint(pt, source);
-    };
-
-    // 设置折叠和展开图标。以下是默认值，但如果您需要替换它们，可以按照以下方式操作。
-    mxGraph.prototype.collapsedImage = new mxImage(mxClient.imageBasePath + '/collapsed.gif', 9, 9);// todo 路径
-    mxGraph.prototype.expandedImage = new mxImage(mxClient.imageBasePath + '/expanded.gif', 9, 9);// todo 路径
-
-    // 避免边和折叠图标重叠
-    graph.keepEdgesInBackground = true;
-    // 设置一些样式表选项以控制视觉外观
-    var style = graph.getStylesheet().getDefaultVertexStyle();
-    style[mxConstants.STYLE_SHAPE] = 'treenode'; // 设置节点形状为树节点
-
-    style = graph.getStylesheet().getDefaultEdgeStyle();
-    style[mxConstants.STYLE_EDGE] = mxEdgeStyle.TopToBottom; // 设置边的样式为从上到下
-    style[mxConstants.STYLE_ROUNDED] = true; // 设置边为圆角样式
-
-    // 启用自动调整顶点大小、平移功能
-    graph.setAutoSizeCells(true); // 编辑后自动调整顶点大小
-    graph.setPanning(true); // 启用平移功能
-
-
-    // 定义显示折叠图标的条件
-    graph.isCellFoldable = function (cell) {
-                // return this.model.getOutgoingEdges(cell).length > 0;
-        return this.model.getOutgoingEdges(cell).length > 0;
-    };
-
-    // 定义折叠图标的显示位置
-    graph.cellRenderer.getControlBounds = function (state) {
-        if (state.control != null) {
-            var oldScale = state.control.scale;
-            var w = state.control.bounds.width / oldScale;
-            var h = state.control.bounds.height / oldScale;
-            var s = state.view.scale;
-
-            return new mxRectangle(state.x + state.width / 2 - w / 2 * s,
-                state.y + state.height + TreeNodeShape.prototype.segment * s - h / 2 * s,
-                w * s, h * s);
-        }
-
-        return null;
-    };
-
-
-    // 更新给定子树的可见状态，考虑遍历分支的折叠状态
-    function toggleSubtree(graph, cell, show) {
-        show = (show != null) ? show : true; // 默认展开状态为true
-        var cells = []; // 用于存储需要更新可见状态的单元格
-
-        // 遍历子树
-        graph.traverse(cell, true, function (vertex) {
-            if (vertex != cell) {
-                cells.push(vertex); // 将当前单元格添加到cells数组中
-            }
-
-            // 如果遇到折叠的单元格，则停止递归
-            return vertex == cell || !graph.isCellCollapsed(vertex);
-        });
-
-        // 更新cells数组中单元格的可见状态
-        graph.toggleCells(show, cells, true);
-    };
-
-
-    // 实现点击折叠图标的操作
-    graph.foldCells = function (collapse, recurse, cells) {
-        //console.log("sss");
-        // alert("abc");
-        this.model.beginUpdate();
-        try {
-            debugger
-            toggleSubtree(this, cells[0], !collapse);
-            this.model.setCollapsed(cells[0], collapse);
-
-            // 执行新图的布局，因为对可见性和折叠状态的更改不会触发当前管理器中的布局。
-            layout.execute(graph.getDefaultParent());
-        } finally {
-            this.model.endUpdate();
-        }
-    };
-
-    return TreeNodeShape;
-}
 
 /////
 /**

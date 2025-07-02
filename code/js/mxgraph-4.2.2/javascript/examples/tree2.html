@@ -45,7 +45,7 @@
 			var graph = this.state.view.graph;
 			// 检查是否有子节点
 			var hasChildren = graph.model.getOutgoingEdges(this.state.cell).length > 0;
-			
+
 			if (isForeground)
 			{
 				if (hasChildren)
@@ -54,7 +54,7 @@
 					path.moveTo(w / 2, h + this.segment);
 					path.lineTo(w / 2, h);
 					path.end();
-				}	
+				}
 			}
 			else
 			{
@@ -112,6 +112,8 @@
 				mxGraph.prototype.collapsedImage = new mxImage(mxClient.imageBasePath + '/collapsed.gif', 9, 9);
 				mxGraph.prototype.expandedImage = new mxImage(mxClient.imageBasePath + '/expanded.gif', 9, 9);
 
+				mxGraph.prototype.nodePointImage = new mxImage('images/handle-main.png', 9, 9);
+
 				// mxGraph.prototype.collapsedImage = null;
 				// mxGraph.prototype.expandedImage = null;
 
@@ -139,14 +141,14 @@
                 // 定义对象用于记录每个节点的折叠/展开状态
                 var nodeStates = {};
                 // 为图形添加点击事件监听器，处理节点交互
-                graph.addListener(mxEvent.CLICK, function(sender, evt) {
-                    var cell = evt.getProperty('cell');
-                    // 获取点击的单元格
-                    // mxGraphUtils.clickCellHandle(cell,graph, nodeStates);
-					mxGraphUtils.clickPassUpCellHandle(cell, graph, nodeStates);
-                    evt.consume();
-                    // 消费事件，防止进一步传播
-                });
+                // graph.addListener(mxEvent.CLICK, function(sender, evt) {
+                //     var cell = evt.getProperty('cell');
+                //     // 获取点击的单元格
+                //     // mxGraphUtils.clickCellHandle(cell,graph, nodeStates);
+				// 	mxGraphUtils.clickPassUpCellHandle(cell, graph, nodeStates);
+                //     evt.consume();
+                //     // 消费事件，防止进一步传播
+                // });
 
 				// 避免边和折叠图标重叠
 				graph.keepEdgesInBackground = true;
@@ -280,10 +282,12 @@
 				graph.getFoldingImageOld = graph.getFoldingImage;
 				graph.getFoldingImage = function(state)
 				{
+					// return null;
 					if(graph.getModel().isEdge(state.cell)){
 						console.log("graph.getFoldingImage---null-isEdge:" + state.cell.id)
 						return null;
 					}
+
 					//console.log("graph.getFoldingImage:" + state.cell.id);
 					if(graph.model.getParent(state.cell) !== graph.getDefaultParent()){
 						console.log("graph.getFoldingImage---null:" + state.cell.id)
@@ -292,12 +296,18 @@
 					// && this.foldingEnabled &&
 
 					var rs = graph.getFoldingImageOld(state);
-					console.log("graph.getFoldingImage---" +
-							((rs == mxGraph.prototype.expandedImage) ? "展开减号-" : "折叠加号+")
-
-
-							+ ":" + state.cell.id)
+					if(null != rs){
+						return mxGraph.prototype.nodePointImage;
+					}
 					return rs;
+
+
+					// console.log("graph.getFoldingImage---" +
+					// 		((rs == mxGraph.prototype.expandedImage) ? "展开减号-" : "折叠加号+")
+					//
+					//
+					// 		+ ":" + state.cell.id)
+					// return rs;
 				};
 
 
@@ -323,17 +333,24 @@
                     return null;
                 };
 
-				// 实现折叠图标的点击功能
-				graph.foldCells = function(collapse, recurse, cells)
+				// 实现折叠图标的点击功能 collapse, recurse, cells, checkFoldable, evt
+				graph.foldCells = function(collapse, recurse, cells, checkFoldable, evt)
 				{
+					// alert("graph.foldCells");
+
 				    //cells[0] 点击的折叠图标的所在的节点
 				    // //console.log("foldCells:" + mxGraphUtils.JSONstringify(cells));
 
 					this.model.beginUpdate();
 					try
 					{
-						toggleSubtree(this, cells[0], !collapse);
-						this.model.setCollapsed(cells[0], collapse);
+						// evt
+						// toggleSubtree(this, cells[0], !collapse);
+						mxGraphUtils.clickPassUpCellHandle(cells[0], graph, nodeStates);
+
+						// 消费事件，防止进一步传播
+
+						// this.model.setCollapsed(cells[0], collapse);
                         // mxGraphUtils.clickCellHandle
 
 						// 执行新图形的布局，因为可见性和折叠状态的更改
@@ -438,6 +455,7 @@
 			{
 				if (vertex != cell)
 				{
+					console.log("toggleSubtree:vertex" + vertex.id);
                         cells.push(vertex);
 				}
 
