@@ -30,7 +30,7 @@
 		TreeNodeShape.prototype.constructor = TreeNodeShape;
 
 		// 定义上部边缘段的长度
-		TreeNodeShape.prototype.segment = 20;
+		TreeNodeShape.prototype.segment = 0;
 
 		// 需要访问单元格状态进行渲染
 		TreeNodeShape.prototype.apply = function(state)
@@ -282,7 +282,8 @@
 				graph.getFoldingImageOld = graph.getFoldingImage;
 				graph.getFoldingImage = function(state)
 				{
-					// return null;
+
+					return null;
 					if(graph.getModel().isEdge(state.cell)){
 						console.log("graph.getFoldingImage---null-isEdge:" + state.cell.id)
 						return null;
