@@ -112,6 +112,9 @@
 				mxGraph.prototype.collapsedImage = new mxImage(mxClient.imageBasePath + '/collapsed.gif', 9, 9);
 				mxGraph.prototype.expandedImage = new mxImage(mxClient.imageBasePath + '/expanded.gif', 9, 9);
 
+				// mxGraph.prototype.collapsedImage = null;
+				// mxGraph.prototype.expandedImage = null;
+
 				// 针对IE浏览器的样式处理
 				var container = document.createElement('div');
 				container.style.position = 'absolute';
@@ -192,13 +195,100 @@
 				graph.setCellsSelectable(false);
 
 				// 定义显示折叠图标的条件
-				graph.isCellFoldable = function(cell)
+				// 限制 isCellFoldable 仅适用于顶级节点，确保 newMyNode 中的子顶点不显示折叠图标。
+				// graph.isCellFoldable = function(cell)
+				// {
+				// 	// return this.model.getOutgoingEdges(cell).length > 0;
+				// 	// 仅对具有出边且非子节点的节点显示折叠图标
+				// 	return this.model.getOutgoingEdges(cell).length > 0 && this.model.getParent(cell) === this.getDefaultParent();
+				// };
+
+				graph.isCellFoldable = function(cell) {
+
+					// // 首先检查是否有子节点 - 内部节点
+					// var childCount = this.model.getChildCount(cell);
+					// var hasChildren = childCount > 0;
+
+					// 然后检查是否有出边 - 外部连接
+					var edgeCount = this.model.getOutgoingEdges(cell).length;
+					var hasEdges = edgeCount > 0;
+					//console.log(cell.id + "----graph.isCellFoldable:" + hasEdges)
+					return hasEdges;
+
+					// // 检查当前展开/折叠状态，确保图标显示正确
+					// var isCollapsed = this.model.isCollapsed(cell);
+					// if(isCollapsed){
+					// 	return false;
+					// }
+					//
+					// return this.model.getOutgoingEdges(cell).length > 0 && this.model.getParent(cell) === this.getDefaultParent();
+					//
+					// // 当单元格是子节点的父级或有外部连接时显示折叠图标
+					// // 返回true表示节点可折叠
+					// return (hasChildrenhasChildren && this.model.isVertex(cell)) ||
+					// 		(hasEdges && this.model.getParent(cell) === this.getDefaultParent());
+				}
+
+
+				/**
+				 * Function: getFoldingImage
+				 *
+				 * Returns the <mxImage> used to display the collapsed state of
+				 * the specified cell state. This returns null for all edges.
+				 *
+				 * 中文注释：
+				 * 方法名称：getFoldingImage
+				 * 功能：返回用于显示指定单元格状态的折叠或展开图标（mxImage 对象）。
+				 *       对于所有边（edge）返回 null，仅对顶点（vertex）处理折叠状态。
+				 * 方法目的：根据单元格的折叠状态（折叠或展开）选择正确的图标（加号或减号），用于树形图的交互。
+				 * 参数说明：
+				 *   - state: mxCellState 对象，表示单元格的当前状态，包含单元格的几何信息和样式。
+				 * 关键步骤：
+				 *   1. 检查输入状态是否有效、折叠功能是否启用、以及单元格是否为顶点（非边）。
+				 *   2. 获取单元格的当前折叠状态（isCellCollapsed）。
+				 *   3. 判断单元格是否可折叠（isCellFoldable），并根据折叠状态返回对应图标。
+				 *   4. 如果条件不满足，返回 null。
+				 * 返回值：
+				 *   - mxImage 对象（collapsedImage 或 expandedImage）或 null。
+				 * 重要配置参数：
+				 *   - this.foldingEnabled: 布尔值，控制是否启用折叠功能，默认 true，禁用时不显示折叠图标。
+				 *   - this.collapsedImage: mxImage 对象，表示折叠状态图标（通常为加号，collapsed.gif）。
+				 *   - this.expandedImage: mxImage 对象，表示展开状态图标（通常为减号，expanded.gif）。
+				 * 事件处理逻辑：
+				 *   - 该方法由 mxCellRenderer 调用，用于在渲染节点时决定是否显示折叠图标。
+				 *   - 不直接处理点击事件，但与折叠图标的点击交互（通过 graph.foldCells）间接相关。
+				 * 交互逻辑：
+				 *   - 当节点可折叠（isCellFoldable 返回 true）且折叠功能启用时，根据折叠状态显示：
+				 *     - 折叠状态（isCellCollapsed 为 true）：显示 collapsedImage（加号）。
+				 *     - 展开状态（isCellCollapsed 为 false）：显示 expandedImage（减号）。
+				 *   - 点击折叠图标触发 graph.foldCells，切换折叠状态，进而调用此方法更新图标。
+				 * 特殊处理注意事项：
+				 *   - 仅对顶点（vertex）处理，边（edge）始终返回 null，避免边显示折叠图标。
+				 *   - 如果 foldingEnabled 为 false，方法返回 null，禁用折叠功能。
+				 *   - 依赖 collapsedImage 和 expandedImage 的正确配置（路径和尺寸），否则可能导致图标无法显示。
+				 * 样式设置：
+				 *   - 不直接设置样式，但依赖 collapsedImage 和 expandedImage 的 mxImage 配置（通常为 9x9 像素的 GIF 图像）。
+				 *   - 图标位置由 graph.cellRenderer.getControlBounds 控制，需确保其正确实现。
+				 * 关键变量和函数用途：
+				 *   - state: 单元格状态对象，包含 cell（单元格对象）和视图信息。
+				 *   - this.foldingEnabled: 控制折叠功能的全局开关。
+				 *   - this.isCellCollapsed(state.cell): 检查单元格是否处于折叠状态。
+				 *   - this.isCellFoldable(state.cell, !tmp): 判断单元格是否可折叠（通常要求有子节点或出边）。
+				 *   - this.collapsedImage: 折叠状态的图标（加号，collapsed.gif）。
+				 *   - this.expandedImage: 展开状态的图标（减号，expanded.gif）。
+				 */
+				graph.getFoldingImageOld = graph.getFoldingImage;
+				graph.getFoldingImage = function(state)
 				{
-					return this.model.getOutgoingEdges(cell).length > 0;
+					//console.log("graph.getFoldingImage:" + state.cell.id);
+					if(this.model.getParent(state.cell) !== this.getDefaultParent()){
+						return null;
+					}
+					return graph.getFoldingImageOld(state);
 				};
 
-                // 定义折叠图标的位置
-				// Define the position of the collapse icon
+
+
                 graph.cellRenderer.getControlBounds = function (state) {
                     // 当状态控制不为空时
                     if (state.control != null) {
@@ -224,7 +314,7 @@
 				graph.foldCells = function(collapse, recurse, cells)
 				{
 				    //cells[0] 点击的折叠图标的所在的节点
-				    // console.log("foldCells:" + mxGraphUtils.JSONstringify(cells));
+				    // //console.log("foldCells:" + mxGraphUtils.JSONstringify(cells));
 
 					this.model.beginUpdate();
 					try
@@ -256,9 +346,11 @@
 					var w = graph.container.offsetWidth;
 					// 插入根节点
 					var root = graph.insertVertex(parent, 'treeRoot', 'Root', w/2 - 30, 20, 60, 40);
+					//console.log("Root.id:" + root.id);
 
 					var v1 = graph.insertVertex(parent, 'v1', 'Child 1', 0, 0, 60, 40);
 					graph.insertEdge(parent, null, '', root, v1);
+					//console.log("Child 1.id:" + v1.id);
 
                     var node1 = mxGraphUtils.newMyNode({
                         'graph':graph,
@@ -268,6 +360,7 @@
                         'h1':200,
 
                     });
+					//console.log("node1.id:" + node1.id);
                     graph.insertEdge(parent, null, '', v1, node1);
 
                     var node2 = mxGraphUtils.newMyNode({
@@ -278,6 +371,7 @@
                         'h1':200,
 
                     });
+					//console.log("node2.id:" + node2.id);
                     graph.insertEdge(parent, null, '', node1, node2);
                     var node3 = mxGraphUtils.newMyNode({
                         'graph':graph,
@@ -287,32 +381,20 @@
                         'h1':200,
 
                     });
+					//console.log("node3.id:" + node3.id);
                     graph.insertEdge(parent, null, '', node1, node3);
 
 					var v2 = graph.insertVertex(parent, 'v2', 'Child 2', 0, 0, 60, 40);
 					graph.insertEdge(parent, null, '', root, v2);
 
+
 					var v3 = graph.insertVertex(parent, 'v3', 'Child 3', 0, 0, 60, 40);
-                    graph.insertVertex(v3, 'v333333333', 'Child v333333333', 0, 0, 60, 40);
+					//console.log("v3.id:" + v3.id);
+					var v3Child = graph.insertVertex(v3, 'v333333333', 'Child v333333333', 0, 0, 60, 40);
+					//console.log("v3Child.id:" + v3Child.id);
 					graph.insertEdge(parent, null, '', root, v3);
 
-					var v11 = graph.insertVertex(parent, 'v11', 'Child 1.1', 0, 0, 60, 40);
-					graph.insertEdge(parent, null, '', v1, v11);
-
-					var v12 = graph.insertVertex(parent, 'v12', 'Child 1.2', 0, 0, 60, 40);
-					graph.insertEdge(parent, null, '', v1, v12);
-
-					var v21 = graph.insertVertex(parent, 'v21', 'Child 2.1', 0, 0, 60, 40);
-					graph.insertEdge(parent, null, '', v2, v21);
-
-					var v22 = graph.insertVertex(parent, 'v22', 'Child 2.2', 0, 0, 60, 40);
-					graph.insertEdge(parent, null, '', v2, v22);
-
-					var v221 = graph.insertVertex(parent, 'v221', 'Child 2.2.1', 0, 0, 60, 40);
-					graph.insertEdge(parent, null, '', v22, v221);
-
-					var v222 = graph.insertVertex(parent, 'v222', 'Child 2.2.2', 0, 0, 60, 40);
-					graph.insertEdge(parent, null, '', v22, v222);
+					
 
 					var v31 = graph.insertVertex(parent, 'v31', 'Child 3.1', 0, 0, 60, 40);
 					graph.insertEdge(parent, null, '', v3, v31);
@@ -343,9 +425,10 @@
 
 				// 如果遇到折叠的单元格，停止递归
 				return vertex == cell || !graph.isCellCollapsed(vertex);
+				// return vertex == cell || !graph.isCellCollapsed(vertex) || this.model.getParent(cell) === this.getDefaultParent();
 			});
 
-            console.log("cells:" + mxGraphUtils.JSONstringify(cells));
+            // //console.log("cells:" + mxGraphUtils.JSONstringify(cells));
 
 			// 切换单元格的可见性
 			graph.toggleCells(show, cells, true);

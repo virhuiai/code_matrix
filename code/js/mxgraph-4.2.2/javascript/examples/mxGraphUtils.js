@@ -147,9 +147,9 @@ mxGraphUtils.showConnectedNodes = function(graph, node, nodeStates){
  * @param cell
  */
 mxGraphUtils.clickCellHandle = function(cell, graph, nodeStates){
-    // console.log("graph.model.isCollapsed(cell):" + graph.model.isCollapsed(cell));
+    // //console.log("graph.model.isCollapsed(cell):" + graph.model.isCollapsed(cell));
     if (cell != null && graph.model.isVertex(cell) && !graph.model.isCollapsed(cell)) {
-        console.log("graph.model.isCollapsed(cell):" + graph.model.isCollapsed(cell));
+        //console.log("graph.model.isCollapsed(cell):" + graph.model.isCollapsed(cell));
         // 确保点击的是节点且未折叠
         // 确保不是子节点
         // if (graph.model.getParent(cell) === graph.getDefaultParent()) {
@@ -248,7 +248,10 @@ mxGraphUtils.clickCellHandle = function(cell, graph, nodeStates){
  */
 mxGraphUtils.clickPassUpCellHandle = function (cell, graph, nodeStates) {
     var parent = graph.model.getParent(cell);
-    console.log("parent.id:" + parent.id)
+    if(!parent){
+        return;
+    }
+    //console.log("parent.id:" + parent.id)
     if (parent !== graph.getDefaultParent()) {
         // // 触发父节点的
         /*
@@ -538,7 +541,7 @@ mxGraphUtils.regTreeNodeShape = function(graph, layout){
 
     // 实现点击折叠图标的操作
     graph.foldCells = function (collapse, recurse, cells) {
-        console.log("sss");
+        //console.log("sss");
         alert("abc");
         this.model.beginUpdate();
         try {
@@ -780,8 +783,8 @@ mxGraphUtils.newMyNode = function(conf){
     var tag = graph.insertVertex(oneNode, null, '已办结', 0, 0, 0, 0, mxGraphUtils.getStyleNameByStep('nodeTitleTag', step), true);
     // 更新大小以适应其内容
     graph.updateCellSize(tag);
-    // console.log("tag.geometry.width " + tag.geometry.width )
-    // console.log("tag.geometry.height " + tag.geometry.height )
+    // //console.log("tag.geometry.width " + tag.geometry.width )
+    // //console.log("tag.geometry.height " + tag.geometry.height )
     tag.geometry.offset = new mxPoint(oneNode.geometry.width - tag.geometry.width ,  y1Current - lastVertex.geometry.height);
     ///////////////////////////////标题 END
 
@@ -821,8 +824,8 @@ mxGraphUtils.newMyNode = function(conf){
     // 第一行
     cellVertex = graph.insertVertex(mainBodyBg, null, '标签1：内容1', 0, 0, 0, 14, 'nodeBodyRow', true);
     // graph.updateCellSize(cellVertex);
-    console.log("cell.geometry.x:" + cellVertex.geometry.x);
-    console.log("cell.geometry.y:" + cellVertex.geometry.y);
+    //console.log("cell.geometry.x:" + cellVertex.geometry.x);
+    //console.log("cell.geometry.y:" + cellVertex.geometry.y);
     // cellVertex.geometry.x = 0;
     // cellVertex.geometry.y = 10;
     cellVertex.geometry.offset = new mxPoint(bodyMarginLR, y2current + cellVertex.geometry.height);
@@ -833,8 +836,8 @@ mxGraphUtils.newMyNode = function(conf){
     // 一行2个的
     cellVertex = graph.insertVertex(mainBodyBg, null, '标签2.1：内容2.1', 0, 0, 0, 14, 'nodeBodyRow', true);
     // graph.updateCellSize(cellVertex);
-    console.log("cell.geometry.x:" + cellVertex.geometry.x);
-    console.log("cell.geometry.y:" + cellVertex.geometry.y);
+    //console.log("cell.geometry.x:" + cellVertex.geometry.x);
+    //console.log("cell.geometry.y:" + cellVertex.geometry.y);
     // cellVertex.geometry.x = 0;
     // cellVertex.geometry.y = 10;
     cellVertex.geometry.offset = new mxPoint(bodyMarginLR, y2current + cellVertex.geometry.height);
@@ -843,8 +846,8 @@ mxGraphUtils.newMyNode = function(conf){
 
     cellVertex = graph.insertVertex(mainBodyBg, null, '标签2.2：内容2.2', 0, 0, 0, 14, 'nodeBodyRow', true);
     // graph.updateCellSize(cellVertex);
-    console.log("cell.geometry.x:" + cellVertex.geometry.x);
-    console.log("cell.geometry.y:" + cellVertex.geometry.y);
+    //console.log("cell.geometry.x:" + cellVertex.geometry.x);
+    //console.log("cell.geometry.y:" + cellVertex.geometry.y);
     // cellVertex.geometry.x = 0;
     // cellVertex.geometry.y = 10;
     cellVertex.geometry.offset = new mxPoint(mainBodyBg.geometry.width / 2, y2current - lastVertex.geometry.height);
@@ -853,8 +856,8 @@ mxGraphUtils.newMyNode = function(conf){
     // 一行2个的
     cellVertex = graph.insertVertex(mainBodyBg, null, '标签3.1：内容3.1', 0, 0, 0, 14, 'nodeBodyRow', true);
     // graph.updateCellSize(cellVertex);
-    console.log("cell.geometry.x:" + cellVertex.geometry.x);
-    console.log("cell.geometry.y:" + cellVertex.geometry.y);
+    //console.log("cell.geometry.x:" + cellVertex.geometry.x);
+    //console.log("cell.geometry.y:" + cellVertex.geometry.y);
     // cellVertex.geometry.x = 0;
     // cellVertex.geometry.y = 10;
     cellVertex.geometry.offset = new mxPoint(bodyMarginLR, y2current + cellVertex.geometry.height);
@@ -863,8 +866,8 @@ mxGraphUtils.newMyNode = function(conf){
 
     cellVertex = graph.insertVertex(mainBodyBg, null, '标签3.2：内容3.2', 0, 0, 0, 14, 'nodeBodyRow', true);
     // graph.updateCellSize(cellVertex);
-    console.log("cell.geometry.x:" + cellVertex.geometry.x);
-    console.log("cell.geometry.y:" + cellVertex.geometry.y);
+    //console.log("cell.geometry.x:" + cellVertex.geometry.x);
+    //console.log("cell.geometry.y:" + cellVertex.geometry.y);
     // cellVertex.geometry.x = 0;
     // cellVertex.geometry.y = 10;
     cellVertex.geometry.offset = new mxPoint(mainBodyBg.geometry.width / 2, y2current - lastVertex.geometry.height);
