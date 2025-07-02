@@ -280,11 +280,20 @@
 				graph.getFoldingImageOld = graph.getFoldingImage;
 				graph.getFoldingImage = function(state)
 				{
-					//console.log("graph.getFoldingImage:" + state.cell.id);
-					if(this.model.getParent(state.cell) !== this.getDefaultParent()){
+					if(graph.getModel().isEdge(state.cell)){
+						console.log("graph.getFoldingImage---null-isEdge:" + state.cell.id)
 						return null;
 					}
-					return graph.getFoldingImageOld(state);
+					//console.log("graph.getFoldingImage:" + state.cell.id);
+					if(graph.model.getParent(state.cell) !== graph.getDefaultParent()){
+						console.log("graph.getFoldingImage---null:" + state.cell.id)
+						return null;
+					}
+					// && this.foldingEnabled &&
+
+					var rs = graph.getFoldingImageOld(state);
+					console.log("graph.getFoldingImage---展开减号" + (rs == mxGraph.prototype.expandedImage) + ":" + state.cell.id)
+					return rs;
 				};
 
 
