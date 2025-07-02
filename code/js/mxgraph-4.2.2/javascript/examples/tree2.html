@@ -141,14 +141,14 @@
                 // 定义对象用于记录每个节点的折叠/展开状态
                 var nodeStates = {};
                 // 为图形添加点击事件监听器，处理节点交互
-                // graph.addListener(mxEvent.CLICK, function(sender, evt) {
-                //     var cell = evt.getProperty('cell');
-                //     // 获取点击的单元格
-                //     // mxGraphUtils.clickCellHandle(cell,graph, nodeStates);
-				// 	mxGraphUtils.clickPassUpCellHandle(cell, graph, nodeStates);
-                //     evt.consume();
-                //     // 消费事件，防止进一步传播
-                // });
+                graph.addListener(mxEvent.CLICK, function(sender, evt) {
+                    var cell = evt.getProperty('cell');
+                    // 获取点击的单元格
+                    // mxGraphUtils.clickCellHandle(cell,graph, nodeStates);
+					mxGraphUtils.clickPassUpCellHandle(cell, graph, nodeStates);
+                    evt.consume();
+                    // 消费事件，防止进一步传播
+                });
 
 				// 避免边和折叠图标重叠
 				graph.keepEdgesInBackground = true;

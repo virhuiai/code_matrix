@@ -198,6 +198,31 @@ mxGraphUtils.clickCellHandle = function(cell, graph, nodeStates){
             // 记录节点的显示/隐藏状态
             nodeStates[cell.id] = !hasVisibleTargets;
 
+
+
+            /// todo 
+            var overlay = new mxCellOverlay(
+                new mxImage('editors/images/overlays/check.png', 16, 16),
+                'Overlay tooltip');
+
+            overlay.addListener(mxEvent.CLICK, function(sender, evt2)
+            {
+                mxUtils.alert('Overlay clicked');
+                // 覆盖层被单击时显示警告
+            });
+
+            // Sets the overlay for the cell in the graph
+            // 为图形的单元格设置覆盖层
+            graph.addCellOverlay(cell, overlay);
+//
+//             ----
+//
+// // Removes all overlays from the cell
+//                 // 从单元格中移除所有覆盖层
+//                 graph.removeCellOverlays(cell);
+
+
+
         } finally {
             graph.model.endUpdate();
             // 结束模型更新
