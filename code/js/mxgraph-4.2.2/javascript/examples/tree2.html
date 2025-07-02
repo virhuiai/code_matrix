@@ -93,6 +93,26 @@
 
 	<!-- 示例代码 -->
 	<script type="text/javascript">
+
+        // 自定义点击事件处理函数
+        function clickCellHandle(cell, graph, nodeStates) {
+            if (!cell || !graph.isCellFoldable(cell)) {
+                // 如果点击的不是可折叠节点，找到其直接父节点
+                var parent = graph.model.getParent(cell);
+                if (parent && parent !== graph.getDefaultParent()) {
+                    // // 触发父节点的折叠/展开逻辑
+                    // var isCollapsed = graph.isCellCollapsed(parent);
+                    // graph.foldCells(!isCollapsed, false, [parent]);
+					clickCellHandle(parent, graph, nodeStates);
+                }
+            } else {
+                // // 如果点击的是可折叠节点，直接处理折叠/展开
+                // var isCollapsed = graph.isCellCollapsed(cell);
+                // graph.foldCells(!isCollapsed, false, [cell]);
+				mxGraphUtils.clickCellHandle(cell,graph, nodeStates);
+            }
+        }
+
 		// 程序入口。在指定ID的DOM节点中创建示例图形
 		// 该函数由文档的onLoad事件处理器调用（见下方）
 		function main()
@@ -137,7 +157,8 @@
                 graph.addListener(mxEvent.CLICK, function(sender, evt) {
                     var cell = evt.getProperty('cell');
                     // 获取点击的单元格
-                    mxGraphUtils.clickCellHandle(cell,graph, nodeStates);
+                    // mxGraphUtils.clickCellHandle(cell,graph, nodeStates);
+                    clickCellHandle(cell, graph, nodeStates);
                     evt.consume();
                     // 消费事件，防止进一步传播
                 });
