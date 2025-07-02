@@ -292,7 +292,11 @@
 					// && this.foldingEnabled &&
 
 					var rs = graph.getFoldingImageOld(state);
-					console.log("graph.getFoldingImage---展开减号" + (rs == mxGraph.prototype.expandedImage) + ":" + state.cell.id)
+					console.log("graph.getFoldingImage---" +
+							((rs == mxGraph.prototype.expandedImage) ? "展开减号-" : "折叠加号+")
+
+
+							+ ":" + state.cell.id)
 					return rs;
 				};
 
@@ -417,6 +421,8 @@
 					// 更新显示
 					graph.getModel().endUpdate();
 				}
+
+				layout.execute(graph.getDefaultParent());
 			}
 		};
 

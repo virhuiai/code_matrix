@@ -147,6 +147,7 @@ mxGraphUtils.showConnectedNodes = function(graph, node, nodeStates){
  * @param cell
  */
 mxGraphUtils.clickCellHandle = function(cell, graph, nodeStates){
+    console.log("mxGraphUtils.clickCellHandle:" + cell.id);
     // //console.log("graph.model.isCollapsed(cell):" + graph.model.isCollapsed(cell));
     if (cell != null && graph.model.isVertex(cell) && !graph.model.isCollapsed(cell)) {
         //console.log("graph.model.isCollapsed(cell):" + graph.model.isCollapsed(cell));
