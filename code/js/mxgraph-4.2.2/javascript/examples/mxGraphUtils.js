@@ -140,6 +140,8 @@ mxGraphUtils.showConnectedNodes = function(graph, node, nodeStates){
     }
 }
 
+
+
 /**
  * 点击节点事件处理
  * @param cell
@@ -200,6 +202,70 @@ mxGraphUtils.clickCellHandle = function(cell, graph, nodeStates){
         // }
     }
 }
+
+/**
+ * Handles the click event on a cell and passes it up to the parent cell.
+ * This method is useful for propagating events through nested cells, allowing
+ * for interaction with the graph structure in a hierarchical manner. It ensures
+ * that if a child cell is clicked, the event can be processed by its parent,
+ * facilitating more complex event handling and interactivity within the graph.
+ *
+ * @param {mxEvent} evt - The event object containing information about the click.
+ * @param {mxCell} cell - The cell on which the click occurred.
+ * @param {mxGraph} graph - The graph instance where the cell resides.
+ * @return {boolean} Returns true if the event was successfully passed up to a parent cell, false otherwise.
+ */
+/*
+ * 中文注释：
+ * 处理单元格的点击事件，并将事件传递到父节点。
+ * 该方法用于在嵌套单元格中实现事件向上传播，支持以层级方式与图形结构交互。
+ * 当点击子节点时，事件可由其父节点处理，支持复杂的交互逻辑。
+ *
+ * 参数说明：
+ * @param {mxEvent} evt - 点击事件对象，包含点击相关信息（在原始代码中未使用）。
+ * @param {mxCell} cell - 被点击的单元格对象。
+ * @param {mxGraph} graph - 包含单元格的图形实例。
+ * @param {Object} nodeStates - 存储节点状态的对象，用于跟踪折叠/展开状态。
+ * @return {boolean} 如果事件成功传递到父节点，返回 true；否则返回 false。
+ *
+ * 事件处理逻辑：
+ * 1. 获取点击单元格的父节点。
+ * 2. 如果父节点 不是图形的默认父节点（graph.getDefaultParent()），递归调用自身，将事件传递到父节点。
+ * 3. 如果到达默认父节点，调用 clickCellHandle 处理当前节点的点击逻辑。
+ *
+ * 方法目的：
+ * 实现点击事件的层级传递，确保子节点的点击可以触发父节点的处理逻辑，但不传递到顶层默认父节点。
+ *
+ * 关键变量和函数用途：
+ * - parent: 被点击单元格的直接父节点，用于事件传递。
+ * - graph.getDefaultParent(): 图形的顶层父节点，作为事件传递的终止条件。
+ * - mxGraphUtils.clickCellHandle: 处理单元格点击的核心函数（未在代码中定义，假设在 mxGraphUtils.js 中实现）。
+ *
+ * 特殊处理注意事项：
+ * - 递归调用可能导致性能问题，需确保图形层级不过深。
+ * - nodeStates 用于跟踪节点状态（如折叠/展开），需确保其正确初始化。
+ * - clickCellHandle 的实现需与本函数逻辑一致，避免重复处理或冲突。
+ */
+mxGraphUtils.clickPassUpCellHandle = function (cell, graph, nodeStates) {
+    var parent = graph.model.getParent(cell);
+    console.log("parent.id:" + parent.id)
+    if (parent !== graph.getDefaultParent()) {
+        // // 触发父节点的
+        /*
+        * 中文注释：
+        * 如果父节点不是图形的默认父节点（顶层节点），递归调用 clickPassUpCellHandle，
+        * 将点击事件传递到父节点。
+        */
+        mxGraphUtils.clickPassUpCellHandle(parent, graph, nodeStates);
+    } else {
+        /*
+        * 中文注释：
+        * 如果父节点是默认父节点，停止事件传递，直接调用 clickCellHandle 处理当前节点的点击逻辑。
+        */
+        mxGraphUtils.clickCellHandle(cell, graph, nodeStates);
+    }
+}
+
 
 /**
  * 获取节点形状

@@ -94,24 +94,6 @@
 	<!-- 示例代码 -->
 	<script type="text/javascript">
 
-        // 自定义点击事件处理函数
-        function clickCellHandle(cell, graph, nodeStates) {
-            if (!cell || !graph.isCellFoldable(cell)) {
-                // 如果点击的不是可折叠节点，找到其直接父节点
-                var parent = graph.model.getParent(cell);
-                if (parent && parent !== graph.getDefaultParent()) {
-                    // // 触发父节点的折叠/展开逻辑
-                    // var isCollapsed = graph.isCellCollapsed(parent);
-                    // graph.foldCells(!isCollapsed, false, [parent]);
-					clickCellHandle(parent, graph, nodeStates);
-                }
-            } else {
-                // // 如果点击的是可折叠节点，直接处理折叠/展开
-                // var isCollapsed = graph.isCellCollapsed(cell);
-                // graph.foldCells(!isCollapsed, false, [cell]);
-				mxGraphUtils.clickCellHandle(cell,graph, nodeStates);
-            }
-        }
 
 		// 程序入口。在指定ID的DOM节点中创建示例图形
 		// 该函数由文档的onLoad事件处理器调用（见下方）
@@ -129,7 +111,7 @@
 				// 但如果你需要替换它们，可以这样操作
 				mxGraph.prototype.collapsedImage = new mxImage(mxClient.imageBasePath + '/collapsed.gif', 9, 9);
 				mxGraph.prototype.expandedImage = new mxImage(mxClient.imageBasePath + '/expanded.gif', 9, 9);
-				
+
 				// 针对IE浏览器的样式处理
 				var container = document.createElement('div');
 				container.style.position = 'absolute';
@@ -138,16 +120,16 @@
 				container.style.top = '0px';
 				container.style.right = '0px';
 				container.style.bottom = '0px';
-				
+
 				// 如果是IE浏览器，添加div大小调整器
 				if (mxClient.IS_IE)
 				{
 					new mxDivResizer(container);
 				}
-				
+
 				// 将容器添加到body中
 				document.body.appendChild(container);
-			
+
 				// 在容器中创建图形
 				var graph = new mxGraph(container);
                 // 存储节点的折叠状态
@@ -158,11 +140,11 @@
                     var cell = evt.getProperty('cell');
                     // 获取点击的单元格
                     // mxGraphUtils.clickCellHandle(cell,graph, nodeStates);
-                    clickCellHandle(cell, graph, nodeStates);
+					mxGraphUtils.clickPassUpCellHandle(cell, graph, nodeStates);
                     evt.consume();
                     // 消费事件，防止进一步传播
                 });
-				
+
 				// 避免边和折叠图标重叠
 				graph.keepEdgesInBackground = true;
 
@@ -171,12 +153,12 @@
 				style[mxConstants.STYLE_SHAPE] = 'treenode';
 				// style[mxConstants.STYLE_GRADIENTCOLOR] = 'white';
 				// style[mxConstants.STYLE_SHADOW] = true;
-				
+
 				// 设置默认边样式
 				style = graph.getStylesheet().getDefaultEdgeStyle();
 				style[mxConstants.STYLE_EDGE] = mxEdgeStyle.TopToBottom;
 				style[mxConstants.STYLE_ROUNDED] = true;
-				
+
 				// 启用编辑后自动调整顶点大小
 				// 以及使用鼠标左键平移图形
 				graph.setAutoSizeCells(true);
@@ -185,7 +167,7 @@
 
 				// 设置按回车或ESC键停止编辑
 				var keyHandler = new mxKeyHandler(graph);
-				
+
 				// 启用自动布局，并为所有组安装树布局，
 				// 当子节点被更改、添加或删除时触发
 				var layout = new mxCompactTreeLayout(graph, false);
@@ -196,7 +178,7 @@
 
 				// 创建布局管理器
 				var layoutMgr = new mxLayoutManager(graph);
-				
+
 				// 获取单元格的布局
 				layoutMgr.getLayout = function(cell)
 				{
@@ -260,7 +242,7 @@
 						this.model.endUpdate();
 					}
 				};
-				
+
 				// 获取插入新单元格的默认父级
 				// 通常是根的第一个子级（即第0层）
 				var parent = graph.getDefaultParent();
@@ -306,29 +288,29 @@
 
                     });
                     graph.insertEdge(parent, null, '', node1, node3);
-					
+
 					var v2 = graph.insertVertex(parent, 'v2', 'Child 2', 0, 0, 60, 40);
 					graph.insertEdge(parent, null, '', root, v2);
 
 					var v3 = graph.insertVertex(parent, 'v3', 'Child 3', 0, 0, 60, 40);
                     graph.insertVertex(v3, 'v333333333', 'Child v333333333', 0, 0, 60, 40);
 					graph.insertEdge(parent, null, '', root, v3);
-					
+
 					var v11 = graph.insertVertex(parent, 'v11', 'Child 1.1', 0, 0, 60, 40);
 					graph.insertEdge(parent, null, '', v1, v11);
-					
+
 					var v12 = graph.insertVertex(parent, 'v12', 'Child 1.2', 0, 0, 60, 40);
 					graph.insertEdge(parent, null, '', v1, v12);
-					
+
 					var v21 = graph.insertVertex(parent, 'v21', 'Child 2.1', 0, 0, 60, 40);
 					graph.insertEdge(parent, null, '', v2, v21);
-					
+
 					var v22 = graph.insertVertex(parent, 'v22', 'Child 2.2', 0, 0, 60, 40);
 					graph.insertEdge(parent, null, '', v2, v22);
-					
+
 					var v221 = graph.insertVertex(parent, 'v221', 'Child 2.2.1', 0, 0, 60, 40);
 					graph.insertEdge(parent, null, '', v22, v221);
-					
+
 					var v222 = graph.insertVertex(parent, 'v222', 'Child 2.2.2', 0, 0, 60, 40);
 					graph.insertEdge(parent, null, '', v22, v222);
 
@@ -350,7 +332,7 @@
 		{
 			show = (show != null) ? show : true;
 			var cells = [];
-			
+
 			// 遍历图形
 			graph.traverse(cell, true, function(vertex)
 			{
