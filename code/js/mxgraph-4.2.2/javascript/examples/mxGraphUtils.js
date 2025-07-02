@@ -542,7 +542,7 @@ mxGraphUtils.regTreeNodeShape = function(graph, layout){
     // 实现点击折叠图标的操作
     graph.foldCells = function (collapse, recurse, cells) {
         //console.log("sss");
-        alert("abc");
+        // alert("abc");
         this.model.beginUpdate();
         try {
             debugger
@@ -750,12 +750,13 @@ mxGraphUtils.newMyNode = function(conf){
 
     var w1 = conf.w1;
     var h1 = conf.h1;
+    var id = conf.id;
 
 
     var y1Current = 0;
     var lastVertex = null;
     // 主节点容器
-    var oneNode = graph.insertVertex(parent, null, '', 0, 0, w1, h1, 'nodeContainer');
+    var oneNode = graph.insertVertex(parent, id, '', 0, 0, w1, h1, 'nodeContainer');
 
     //top 背景
     var mainHeaderBg = graph.insertVertex(oneNode, null, '', 0, 0, oneNode.geometry.width, 25,

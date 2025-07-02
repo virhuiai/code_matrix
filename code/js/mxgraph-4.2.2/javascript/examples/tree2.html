@@ -345,10 +345,10 @@
 				{
 					var w = graph.container.offsetWidth;
 					// 插入根节点
-					var root = graph.insertVertex(parent, 'treeRoot', 'Root', w/2 - 30, 20, 60, 40);
+					var root = graph.insertVertex(parent, 'Root', 'Root', w/2 - 30, 20, 60, 40);
 					//console.log("Root.id:" + root.id);
 
-					var v1 = graph.insertVertex(parent, 'v1', 'Child 1', 0, 0, 60, 40);
+					var v1 = graph.insertVertex(parent, 'Child.1', 'Child.1', 0, 0, 60, 40);
 					graph.insertEdge(parent, null, '', root, v1);
 					//console.log("Child 1.id:" + v1.id);
 
@@ -358,7 +358,7 @@
                         'step':0,
                         'w1':320,
                         'h1':200,
-
+						'id':'node1',
                     });
 					//console.log("node1.id:" + node1.id);
                     graph.insertEdge(parent, null, '', v1, node1);
@@ -369,7 +369,7 @@
                         'step':1,
                         'w1':320,
                         'h1':200,
-
+						'id':'node2',
                     });
 					//console.log("node2.id:" + node2.id);
                     graph.insertEdge(parent, null, '', node1, node2);
@@ -379,24 +379,26 @@
                         'step':2,
                         'w1':320,
                         'h1':200,
+						'id':'node3',
 
                     });
 					//console.log("node3.id:" + node3.id);
                     graph.insertEdge(parent, null, '', node1, node3);
 
-					var v2 = graph.insertVertex(parent, 'v2', 'Child 2', 0, 0, 60, 40);
+					var v2 = graph.insertVertex(parent, 'Child.2', 'Child.2', 0, 0, 60, 40);
 					graph.insertEdge(parent, null, '', root, v2);
 
 
-					var v3 = graph.insertVertex(parent, 'v3', 'Child 3', 0, 0, 60, 40);
+					var v3 = graph.insertVertex(parent, 'Child.3', 'Child.3', 0, 0, 60, 40);
 					//console.log("v3.id:" + v3.id);
-					var v3Child = graph.insertVertex(v3, 'v333333333', 'Child v333333333', 0, 0, 60, 40);
+					var v3Child = graph.insertVertex(v3, 'Child.3.sub', 'Child.3.sub', 0, 0, 60, 40);
+					graph.updateCellSize(v3Child);
 					//console.log("v3Child.id:" + v3Child.id);
 					graph.insertEdge(parent, null, '', root, v3);
 
 					
 
-					var v31 = graph.insertVertex(parent, 'v31', 'Child 3.1', 0, 0, 60, 40);
+					var v31 = graph.insertVertex(parent, 'Child.3.next', 'Child.3.next', 0, 0, 60, 40);
 					graph.insertEdge(parent, null, '', v3, v31);
 
 
@@ -408,6 +410,7 @@
 				}
 			}
 		};
+
 
 		// 更新给定子树的可见状态，考虑遍历分支的折叠状态
 		function toggleSubtree(graph, cell, show)
