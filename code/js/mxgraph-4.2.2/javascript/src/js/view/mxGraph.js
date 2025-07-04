@@ -10782,7 +10782,6 @@ mxGraph.prototype.zoomToRect = function(rect)
 		// 中文：当纵横比小于1时，扩展矩形高度以匹配容器比例。
 		var newHeight = rect.height / aspectFactor;
 		var deltaHeightBuffer = (newHeight - rect.height) / 2.0;
-		rect taus
 		rect.height = newHeight;
 		// 计算并设置新高度
 		// 中文：根据纵横比调整矩形高度。
@@ -11695,6 +11694,19 @@ mxGraph.prototype.validateGraph = function(cell, context)
  * 
  * cell - <mxCell> for which the multiplicities should be checked.
  */
+// 中文注释：
+// 获取单元格的多重性验证错误。
+// 功能：检查单元格的多重性规则，验证出边和入边的数量是否符合要求。
+// 参数说明：cell - 要检查多重性规则的<mxCell>对象。
+// 关键变量：
+//   - outCount - 单元格的出边数量。
+//   - inCount - 单元格的入边数量。
+//   - multiplicities - 多重性规则集合，用于验证边的数量限制。
+// 验证逻辑：
+//   1. 遍历multiplicities规则，检查单元格是否符合规则的类型、属性和值。
+//   2. 对源节点检查出边数量，对非源节点检查入边数量。
+//   3. 如果数量超出最大值或低于最小值，添加错误信息。
+// 注意事项：返回null表示无错误，非空字符串表示验证失败。
 mxGraph.prototype.getCellValidationError = function(cell)
 {
 	var outCount = this.model.getDirectedEdgeCount(cell, true);
@@ -11738,6 +11750,13 @@ mxGraph.prototype.getCellValidationError = function(cell)
  * cell - <mxCell> that represents the cell to validate.
  * context - Object that represents the global validation state.
  */
+// 中文注释：
+// 验证单元格的自定义错误信息。
+// 功能：提供钩子方法，子类可重写以返回特定单元格的验证错误信息。
+// 参数说明：
+//   - cell - 表示要验证的单元格的<mxCell>对象。
+//   - context - 表示全局验证状态的对象。
+// 注意事项：默认实现返回null，表示无错误。子类可实现特定验证逻辑。
 mxGraph.prototype.validateCell = function(cell, context)
 {
 	return null;
@@ -11752,6 +11771,10 @@ mxGraph.prototype.validateCell = function(cell, context)
  * 
  * Returns the <backgroundImage> as an <mxImage>.
  */
+// 中文注释：
+// 获取图的背景图像。
+// 功能：返回存储在backgroundImage属性中的<mxImage>对象。
+// 注意事项：用于获取图的背景图像配置。
 mxGraph.prototype.getBackgroundImage = function()
 {
 	return this.backgroundImage;
@@ -11766,6 +11789,11 @@ mxGraph.prototype.getBackgroundImage = function()
  * 
  * image - New <mxImage> to be used for the background.
  */
+// 中文注释：
+// 设置图的背景图像。
+// 功能：将指定的<mxImage>对象设置为图的背景图像。
+// 参数说明：image - 要设置为背景的<mxImage>对象。
+// 注意事项：用于更新图的背景图像配置。
 mxGraph.prototype.setBackgroundImage = function(image)
 {
 	this.backgroundImage = image;
@@ -11777,6 +11805,17 @@ mxGraph.prototype.setBackgroundImage = function(image)
  * Returns the <mxImage> used to display the collapsed state of
  * the specified cell state. This returns null for all edges.
  */
+// 中文注释：
+// 获取用于显示单元格折叠状态的图像。
+// 功能：根据单元格的折叠状态返回相应的<mxImage>对象（折叠或展开图像）。
+// 参数说明：state - 表示单元格状态的<mxCellState>对象。
+// 关键变量：
+//   - foldingEnabled - 是否启用折叠功能。
+//   - collapsedImage - 折叠状态的图像。
+//   - expandedImage - 展开状态的图像。
+// 注意事项：
+//   - 对于边始终返回null。
+//   - 仅当foldingEnabled为true且单元格可折叠时返回图像。
 mxGraph.prototype.getFoldingImage = function(state)
 {
 	if (state != null && this.foldingEnabled && !this.getModel().isEdge(state.cell))
@@ -11817,6 +11856,16 @@ mxGraph.prototype.getFoldingImage = function(state)
  * 
  * cell - <mxCell> whose textual representation should be returned.
  */
+// 中文注释：
+// 将单元格的值转换为字符串表示。
+// 功能：返回单元格的用户对象的节点名称或字符串表示。
+// 参数说明：cell - 要转换的<mxCell>对象。
+// 关键变量：value - 单元格的模型值。
+// 注意事项：
+//   - 如果值是XML节点，返回节点名称。
+//   - 如果值具有toString方法，返回其字符串表示。
+//   - 默认返回空字符串。
+// 特殊处理：子类可重写以实现自定义的字符串转换逻辑。
 mxGraph.prototype.convertValueToString = function(cell)
 {
 	var value = this.model.getValue(cell);
@@ -11888,6 +11937,18 @@ mxGraph.prototype.convertValueToString = function(cell)
  * 
  * cell - <mxCell> whose label should be returned.
  */
+// 中文注释：
+// 获取单元格的标签。
+// 功能：如果标签可见（labelsVisible为true），调用convertValueToString获取标签，否则返回空字符串。
+// 参数说明：cell - 要获取标签的<mxCell>对象。
+// 关键变量：
+//   - labelsVisible - 是否显示标签的全局配置。
+//   - style - 单元格的当前样式。
+// 样式设置：检查STYLE_NOLABEL样式属性，若为true则不显示标签。
+// 注意事项：
+//   - 子类可重写以实现标签截断等自定义逻辑。
+//   - 需要添加resize监听器以在单元格大小变化后重绘标签。
+// 特殊处理：当标签长度超过单元格宽度时，可截断标签并添加省略号。
 mxGraph.prototype.getLabel = function(cell)
 {
 	var result = '';
@@ -11915,6 +11976,12 @@ mxGraph.prototype.getLabel = function(cell)
  * 
  * cell - <mxCell> whose label should be displayed as HTML markup.
  */
+// 中文注释：
+// 判断标签是否需要渲染为HTML标记。
+// 功能：返回htmlLabels全局配置，决定标签是否以HTML形式渲染。
+// 参数说明：cell - 要检查标签渲染方式的<mxCell>对象。
+// 关键变量：htmlLabels - 是否启用HTML标签的全局配置。
+// 注意事项：默认实现返回htmlLabels的值，子类可重写以实现特定逻辑。
 mxGraph.prototype.isHtmlLabel = function(cell)
 {
 	return this.isHtmlLabels();
@@ -11925,6 +11992,10 @@ mxGraph.prototype.isHtmlLabel = function(cell)
  * 
  * Returns <htmlLabels>.
  */
+// 中文注释：
+// 获取HTML标签启用状态。
+// 功能：返回htmlLabels属性，表示是否启用HTML标签。
+// 注意事项：用于检查全局HTML标签配置。
 mxGraph.prototype.isHtmlLabels = function()
 {
 	return this.htmlLabels;
@@ -11935,6 +12006,11 @@ mxGraph.prototype.isHtmlLabels = function()
  * 
  * Sets <htmlLabels>.
  */
+// 中文注释：
+// 设置HTML标签启用状态。
+// 功能：设置htmlLabels属性，决定是否启用HTML标签。
+// 参数说明：value - 布尔值，表示是否启用HTML标签。
+// 注意事项：用于更新全局HTML标签配置。
 mxGraph.prototype.setHtmlLabels = function(value)
 {
 	this.htmlLabels = value;
@@ -11985,6 +12061,16 @@ mxGraph.prototype.setHtmlLabels = function(value)
  * 
  * state - <mxCell> whose label should be wrapped.
  */
+// 中文注释：
+// 判断标签是否需要自动换行。
+// 功能：检查单元格样式中的STYLE_WHITE_SPACE是否为'wrap'，决定标签是否自动换行。
+// 参数说明：state - 表示单元格状态的<mxCell>对象。
+// 关键变量：STYLE_WHITE_SPACE - 样式属性，决定标签是否换行。
+// 样式设置：当STYLE_WHITE_SPACE为'wrap'时，返回true表示启用换行。
+// 注意事项：
+//   - 用于解决IE浏览器忽略子元素white-space指令的问题。
+//   - 需确保isHtmlLabel返回true以支持HTML标签换行。
+// 特殊处理：边标签可设置固定宽度（如150px）以强制换行，节点标签宽度由几何信息决定。
 mxGraph.prototype.isWrapping = function(cell)
 {
 	return this.getCurrentCellStyle(cell)[mxConstants.STYLE_WHITE_SPACE] == 'wrap';
@@ -12002,6 +12088,13 @@ mxGraph.prototype.isWrapping = function(cell)
  * 
  * state - <mxCell> whose label should be clipped.
  */
+// 中文注释：
+// 判断标签是否需要裁剪溢出部分。
+// 功能：检查单元格样式中的STYLE_OVERFLOW是否为'hidden'，决定标签是否裁剪。
+// 参数说明：state - 表示单元格状态的<mxCell>对象。
+// 关键变量：STYLE_OVERFLOW - 样式属性，决定标签是否裁剪溢出部分。
+// 样式设置：当STYLE_OVERFLOW为'hidden'时，返回true表示裁剪标签。
+// 注意事项：裁剪后，节点标签将限制在节点尺寸内。
 mxGraph.prototype.isLabelClipped = function(cell)
 {
 	return this.getCurrentCellStyle(cell)[mxConstants.STYLE_OVERFLOW] == 'hidden';
@@ -12026,6 +12119,24 @@ mxGraph.prototype.isLabelClipped = function(cell)
  * x - X-coordinate of the mouse.
  * y - Y-coordinate of the mouse.
  */
+// 中文注释：
+// 获取指定单元格状态的工具提示。
+// 功能：返回指定单元格状态、节点和坐标的工具提示字符串或DOM节点。
+// 参数说明：
+//   - state - 表示单元格状态的<mxCellState>对象。
+//   - node - 当前鼠标下的DOM节点。
+//   - x - 鼠标的X坐标。
+//   - y - 鼠标的Y坐标。
+// 关键变量：
+//   - control - 单元格状态中的折叠图标。
+//   - overlays - 单元格状态中的覆盖层。
+//   - selectionCellsHandler - 单元格的选择处理器。
+// 交互逻辑：
+//   1. 检查鼠标是否在折叠图标上，返回折叠/展开提示。
+//   2. 检查鼠标是否在覆盖层上，返回覆盖层的工具提示。
+//   3. 调用选择处理器的getTooltipForNode方法获取提示。
+//   4. 如果以上均无结果，调用getTooltipForCell获取单元格的工具提示。
+// 注意事项：优先检查折叠图标和覆盖层，再调用处理器或单元格的默认提示。
 mxGraph.prototype.getTooltip = function(state, node, x, y)
 {
 	var tip = null;
@@ -12093,6 +12204,11 @@ mxGraph.prototype.getTooltip = function(state, node, x, y)
  * 
  * cell - <mxCell> whose tooltip should be returned.
  */
+// 中文注释：
+// 获取单元格的工具提示。
+// 功能：返回单元格的工具提示字符串，若单元格有getTooltip方法则调用，否则使用convertValueToString。
+// 参数说明：cell - 要获取工具提示的<mxCell>对象。
+// 注意事项：子类可重写以实现自定义工具提示逻辑。
 mxGraph.prototype.getTooltipForCell = function(cell)
 {
 	var tip = null;
@@ -12119,6 +12235,11 @@ mxGraph.prototype.getTooltipForCell = function(cell)
  * 
  * cell - <mxCell> whose tooltip should be returned.
  */
+// 中文注释：
+// 获取单元格的链接。
+// 功能：返回单元格关联的链接字符串，默认实现返回null。
+// 参数说明：cell - 要获取链接的<mxCell>对象。
+// 注意事项：子类可重写以实现自定义链接逻辑。
 mxGraph.prototype.getLinkForCell = function(cell)
 {
 	return null;
@@ -12134,6 +12255,11 @@ mxGraph.prototype.getLinkForCell = function(cell)
  * 
  * me - <mxMouseEvent> whose cursor should be returned.
  */
+// 中文注释：
+// 获取鼠标事件的指针样式。
+// 功能：调用getCursorForCell获取鼠标事件对应的单元格的CSS指针样式。
+// 参数说明：me - 要检查的<mxMouseEvent>对象。
+// 交互逻辑：通过鼠标事件获取单元格并返回其指针样式。
 mxGraph.prototype.getCursorForMouseEvent = function(me)
 {
 	return this.getCursorForCell(me.getCell());
@@ -12149,6 +12275,11 @@ mxGraph.prototype.getCursorForMouseEvent = function(me)
  * 
  * cell - <mxCell> whose cursor should be returned.
  */
+// 中文注释：
+// 获取单元格的指针样式。
+// 功能：返回单元格对应的CSS指针样式值，默认实现返回null。
+// 参数说明：cell - 要获取指针样式的<mxCell>对象。
+// 注意事项：子类可重写以实现自定义指针样式逻辑。
 mxGraph.prototype.getCursorForCell = function(cell)
 {
 	return null;
@@ -12167,6 +12298,17 @@ mxGraph.prototype.getCursorForCell = function(cell)
  * swimlane - <mxCell> whose start size should be returned.
  * ignoreState - Optional boolean that specifies if cell state should be ignored.
  */
+// 中文注释：
+// 获取泳道图的起始尺寸。
+// 功能：返回泳道标题部分的宽度或高度，取决于水平样式。
+// 参数说明：
+//   - swimlane - 要获取起始尺寸的<mxCell>对象。
+//   - ignoreState - 可选布尔值，指定是否忽略单元格状态。
+// 关键变量：
+//   - style - 泳道的当前样式。
+//   - size - 起始尺寸值，默认值为mxConstants.DEFAULT_STARTSIZE。
+// 样式设置：根据STYLE_HORIZONTAL样式决定返回宽度或高度。
+// 注意事项：返回<mxRectangle>对象，仅设置宽度或高度。
 mxGraph.prototype.getStartSize = function(swimlane, ignoreState)
 {
 	var result = new mxRectangle();
@@ -12191,6 +12333,17 @@ mxGraph.prototype.getStartSize = function(swimlane, ignoreState)
  * 
  * Returns the direction for the given swimlane style.
  */
+// 中文注释：
+// 获取泳道的方向。
+// 功能：根据泳道样式返回方向（北、东、南、西）。
+// 参数说明：style - 泳道的样式对象。
+// 关键变量：
+//   - dir - 样式中的方向属性，默认为mxConstants.DIRECTION_EAST。
+//   - flipH - 是否水平翻转。
+//   - flipV - 是否垂直翻转。
+//   - h - 是否水平样式。
+// 样式设置：根据STYLE_DIRECTION、STYLE_FLIPH、STYLE_FLIPV和STYLE_HORIZONTAL计算最终方向。
+// 注意事项：返回的方向为mxConstants.DIRECTION_NORTH/EAST/SOUTH/WEST之一。
 mxGraph.prototype.getSwimlaneDirection = function(style)
 {
 	var dir = mxUtils.getValue(style, mxConstants.STYLE_DIRECTION, mxConstants.DIRECTION_EAST);
@@ -12242,6 +12395,18 @@ mxGraph.prototype.getSwimlaneDirection = function(style)
  * swimlane - <mxCell> whose start size should be returned.
  * ignoreState - Optional boolean that specifies if cell state should be ignored.
  */
+// 中文注释：
+// 获取泳道的实际起始尺寸。
+// 功能：根据泳道方向和翻转样式，返回实际的起始尺寸。
+// 参数说明：
+//   - swimlane - 要获取起始尺寸的<mxCell>对象。
+//   - ignoreState - 可选布尔值，指定是否忽略单元格状态。
+// 关键变量：
+//   - style - 泳道的当前样式。
+//   - size - 起始尺寸值，默认值为mxConstants.DEFAULT_STARTSIZE。
+//   - dir - 泳道的方向。
+// 样式设置：根据泳道方向（北、西、南、东）设置x、y、width或height。
+// 注意事项：返回<mxRectangle>对象，表示顶部、左侧、底部或右侧的起始尺寸。
 mxGraph.prototype.getActualStartSize = function(swimlane, ignoreState)
 {
 	var result = new mxRectangle();
@@ -12285,6 +12450,12 @@ mxGraph.prototype.getActualStartSize = function(swimlane, ignoreState)
  * 
  * state - <mxCellState> whose image URL should be returned.
  */
+// 中文注释：
+// 获取单元格状态的图像URL。
+// 功能：返回单元格样式中存储的STYLE_IMAGE值。
+// 参数说明：state - 表示单元格状态的<mxCellState>对象。
+// 样式设置：从样式中获取STYLE_IMAGE属性作为图像URL。
+// 注意事项：如果状态或样式为空，返回null。
 mxGraph.prototype.getImage = function(state)
 {
 	return (state != null && state.style != null) ? state.style[mxConstants.STYLE_IMAGE] : null;
@@ -12299,6 +12470,15 @@ mxGraph.prototype.getImage = function(state)
  * 
  * state - <mxCellState> to check.
  */
+// 中文注释：
+// 判断单元格状态是否为透明。
+// 功能：检查单元格状态是否没有描边、填充颜色和图像。
+// 参数说明：state - 要检查的<mxCellState>对象。
+// 关键变量：
+//   - stroke - 描边颜色，默认为mxConstants.NONE。
+//   - fill - 填充颜色，默认为mxConstants.NONE。
+// 样式设置：检查STYLE_STROKECOLOR、STYLE_FILLCOLOR和STYLE_IMAGE是否为空。
+// 注意事项：返回true表示状态完全透明。
 mxGraph.prototype.isTransparentState = function(state)
 {
 	var result = false;
@@ -12327,6 +12507,12 @@ mxGraph.prototype.isTransparentState = function(state)
  * state - <mxCellState> whose vertical alignment should be
  * returned.
  */
+// 中文注释：
+// 获取单元格状态的垂直对齐方式。
+// 功能：返回单元格样式中存储的STYLE_VERTICAL_ALIGN值。
+// 参数说明：state - 表示单元格状态的<mxCellState>对象。
+// 样式设置：默认返回mxConstants.ALIGN_MIDDLE（居中对齐）。
+// 注意事项：如果状态或样式为空，返回null。
 mxGraph.prototype.getVerticalAlign = function(state)
 {
 	return (state != null && state.style != null) ?
@@ -12346,6 +12532,12 @@ mxGraph.prototype.getVerticalAlign = function(state)
  * state - <mxCellState> whose indicator color should be
  * returned.
  */
+// 中文注释：
+// 获取单元格状态的指示器颜色。
+// 功能：返回单元格样式中存储的STYLE_INDICATOR_COLOR值。
+// 参数说明：state - 表示单元格状态的<mxCellState>对象。
+// 样式设置：从样式中获取STYLE_INDICATOR_COLOR属性。
+// 注意事项：如果状态或样式为空，返回null。
 mxGraph.prototype.getIndicatorColor = function(state)
 {
 	return (state != null && state.style != null) ? state.style[mxConstants.STYLE_INDICATOR_COLOR] : null;
@@ -12363,6 +12555,12 @@ mxGraph.prototype.getIndicatorColor = function(state)
  * state - <mxCellState> whose indicator gradient color should be
  * returned.
  */
+// 中文注释：
+// 获取单元格状态的指示器渐变颜色。
+// 功能：返回单元格样式中存储的STYLE_INDICATOR_GRADIENTCOLOR值。
+// 参数说明：state - 表示单元格状态的<mxCellState>对象。
+// 样式设置：从样式中获取STYLE_INDICATOR_GRADIENTCOLOR属性。
+// 注意事项：如果状态或样式为空，返回null。
 mxGraph.prototype.getIndicatorGradientColor = function(state)
 {
 	return (state != null && state.style != null) ? state.style[mxConstants.STYLE_INDICATOR_GRADIENTCOLOR] : null;
@@ -12379,6 +12577,12 @@ mxGraph.prototype.getIndicatorGradientColor = function(state)
  * 
  * state - <mxCellState> whose indicator shape should be returned.
  */
+// 中文注释：
+// 获取单元格状态的指示器形状。
+// 功能：返回单元格样式中存储的STYLE_INDICATOR_SHAPE值。
+// 参数说明：state - 表示单元格状态的<mxCellState>对象。
+// 样式设置：从样式中获取STYLE_INDICATOR_SHAPE属性。
+// 注意事项：如果状态或样式为空，返回null。
 mxGraph.prototype.getIndicatorShape = function(state)
 {
 	return (state != null && state.style != null) ? state.style[mxConstants.STYLE_INDICATOR_SHAPE] : null;
@@ -12395,6 +12599,12 @@ mxGraph.prototype.getIndicatorShape = function(state)
  * 
  * state - <mxCellState> whose indicator image should be returned.
  */
+// 中文注释：
+// 获取单元格状态的指示器图像。
+// 功能：返回单元格样式中存储的STYLE_INDICATOR_IMAGE值。
+// 参数说明：state - 表示单元格状态的<mxCellState>对象。
+// 样式设置：从样式中获取STYLE_INDICATOR_IMAGE属性。
+// 注意事项：如果状态或样式为空，返回null。
 mxGraph.prototype.getIndicatorImage = function(state)
 {
 	return (state != null && state.style != null) ? state.style[mxConstants.STYLE_INDICATOR_IMAGE] : null;
@@ -12405,6 +12615,10 @@ mxGraph.prototype.getIndicatorImage = function(state)
  * 
  * Returns the value of <border>.
  */
+// 中文注释：
+// 获取图的边框值。
+// 功能：返回存储在border属性中的值。
+// 注意事项：用于获取图的边框配置。
 mxGraph.prototype.getBorder = function()
 {
 	return this.border;
@@ -12419,6 +12633,11 @@ mxGraph.prototype.getBorder = function()
  * 
  * value - Positive integer that represents the border to be used.
  */
+// 中文注释：
+// 设置图的边框值。
+// 功能：将指定的正整数设置为图的边框值。
+// 参数说明：value - 表示边框的正整数。
+// 注意事项：用于更新图的边框配置。
 mxGraph.prototype.setBorder = function(value)
 {
 	this.border = value;
@@ -12436,6 +12655,16 @@ mxGraph.prototype.setBorder = function(value)
  * cell - <mxCell> to be checked.
  * ignoreState - Optional boolean that specifies if the cell state should be ignored.
  */
+// 中文注释：
+// 判断单元格是否为泳道。
+// 功能：检查单元格的形状是否为mxConstants.SHAPE_SWIMLANE。
+// 参数说明：
+//   - cell - 要检查的<mxCell>对象。
+//   - ignoreState - 可选布尔值，指定是否忽略单元格状态。
+// 关键变量：STYLE_SHAPE - 样式属性，决定单元格的形状。
+// 注意事项：
+//   - 仅当单元格不是根节点的子节点且不是边时进行检查。
+//   - 返回true表示单元格是泳道。
 mxGraph.prototype.isSwimlane = function(cell, ignoreState)
 {
 	if (cell != null && this.model.getParent(cell) != this.model.getRoot() &&
@@ -12457,6 +12686,10 @@ mxGraph.prototype.isSwimlane = function(cell, ignoreState)
  * 
  * Returns <resizeContainer>.
  */
+// 中文注释：
+// 获取容器是否可调整大小的配置。
+// 功能：返回resizeContainer属性，表示容器是否可调整大小。
+// 注意事项：用于检查容器的调整大小行为。
 mxGraph.prototype.isResizeContainer = function()
 {
 	return this.resizeContainer;
@@ -12471,6 +12704,11 @@ mxGraph.prototype.isResizeContainer = function()
  * 
  * value - Boolean indicating if the container should be resized.
  */
+// 中文注释：
+// 设置容器是否可调整大小。
+// 功能：设置resizeContainer属性，决定容器是否可调整大小。
+// 参数说明：value - 布尔值，表示容器是否可调整大小。
+// 注意事项：用于更新容器的调整大小配置。
 mxGraph.prototype.setResizeContainer = function(value)
 {
 	this.resizeContainer = value;
@@ -12481,6 +12719,10 @@ mxGraph.prototype.setResizeContainer = function(value)
  * 
  * Returns true if the graph is <enabled>.
  */
+// 中文注释：
+// 判断图是否启用。
+// 功能：返回enabled属性，表示图是否允许交互。
+// 注意事项：用于检查图的交互状态。
 mxGraph.prototype.isEnabled = function()
 {
 	return this.enabled;
@@ -12496,6 +12738,11 @@ mxGraph.prototype.isEnabled = function()
  * 
  * value - Boolean indicating if the graph should be enabled.
  */
+// 中文注释：
+// 设置图的启用状态。
+// 功能：设置enabled属性，决定图是否允许交互。
+// 参数说明：value - 布尔值，表示图是否启用。
+// 注意事项：用于更新图的交互配置。
 mxGraph.prototype.setEnabled = function(value)
 {
 	this.enabled = value;
@@ -12506,6 +12753,10 @@ mxGraph.prototype.setEnabled = function(value)
  * 
  * Returns <escapeEnabled>.
  */
+// 中文注释：
+// 获取Escape键启用状态。
+// 功能：返回escapeEnabled属性，表示是否启用Escape键。
+// 注意事项：用于检查Escape键的行为配置。
 mxGraph.prototype.isEscapeEnabled = function()
 {
 	return this.escapeEnabled;
@@ -12520,6 +12771,11 @@ mxGraph.prototype.isEscapeEnabled = function()
  * 
  * enabled - Boolean indicating if escape should be enabled.
  */
+// 中文注释：
+// 设置Escape键启用状态。
+// 功能：设置escapeEnabled属性，决定是否启用Escape键。
+// 参数说明：enabled - 布尔值，表示是否启用Escape键。
+// 注意事项：用于更新Escape键的行为配置。
 mxGraph.prototype.setEscapeEnabled = function(value)
 {
 	this.escapeEnabled = value;
@@ -12530,6 +12786,10 @@ mxGraph.prototype.setEscapeEnabled = function(value)
  * 
  * Returns <invokesStopCellEditing>.
  */
+// 中文注释：
+// 获取是否调用停止单元格编辑的配置。
+// 功能：返回invokesStopCellEditing属性，表示是否调用停止编辑操作。
+// 注意事项：用于检查单元格编辑的行为配置。
 mxGraph.prototype.isInvokesStopCellEditing = function()
 {
 	return this.invokesStopCellEditing;
@@ -12540,6 +12800,11 @@ mxGraph.prototype.isInvokesStopCellEditing = function()
  * 
  * Sets <invokesStopCellEditing>.
  */
+// 中文注释：
+// 设置是否调用停止单元格编辑。
+// 功能：设置invokesStopCellEditing属性，决定是否调用停止编辑操作。
+// 参数说明：value - 布尔值，表示是否调用停止编辑。
+// 注意事项：用于更新单元格编辑的行为配置。
 mxGraph.prototype.setInvokesStopCellEditing = function(value)
 {
 	this.invokesStopCellEditing = value;
@@ -12550,6 +12815,10 @@ mxGraph.prototype.setInvokesStopCellEditing = function(value)
  * 
  * Returns <enterStopsCellEditing>.
  */
+// 中文注释：
+// 获取Enter键是否停止单元格编辑的配置。
+// 功能：返回enterStopsCellEditing属性，表示Enter键是否停止编辑。
+// 注意事项：用于检查Enter键的行为配置。
 mxGraph.prototype.isEnterStopsCellEditing = function()
 {
 	return this.enterStopsCellEditing;
@@ -12560,6 +12829,11 @@ mxGraph.prototype.isEnterStopsCellEditing = function()
  * 
  * Sets <enterStopsCellEditing>.
  */
+// 中文注释：
+// 设置Enter键是否停止单元格编辑。
+// 功能：设置enterStopsCellEditing属性，决定Enter键是否停止编辑。
+// 参数说明：value - 布尔值，表示Enter键是否停止编辑。
+// 注意事项：用于更新Enter键的行为配置。
 mxGraph.prototype.setEnterStopsCellEditing = function(value)
 {
 	this.enterStopsCellEditing = value;
@@ -12576,6 +12850,14 @@ mxGraph.prototype.setEnterStopsCellEditing = function(value)
  * 
  * cell - <mxCell> whose locked state should be returned.
  */
+// 中文注释：
+// 判断单元格是否被锁定。
+// 功能：检查单元格是否不可移动、调整大小、弯曲、断开连接、编辑或选择。
+// 参数说明：cell - 要检查锁定状态的<mxCell>对象。
+// 关键变量：geometry - 单元格的几何信息。
+// 注意事项：
+//   - 如果cellsLocked为true或单元格是节点且几何信息为相对，则返回true。
+//   - 返回true表示单元格被锁定。
 mxGraph.prototype.isCellLocked = function(cell)
 {
 	var geometry = this.model.getGeometry(cell);
@@ -12594,6 +12876,10 @@ mxGraph.prototype.isCellLocked = function(cell)
  * 
  * cell - <mxCell> whose locked state should be returned.
  */
+// 中文注释：
+// 获取所有单元格的锁定状态。
+// 功能：返回cellsLocked属性，表示所有单元格是否被锁定。
+// 注意事项：用于检查全局单元格锁定配置。
 mxGraph.prototype.isCellsLocked = function()
 {
 	return this.cellsLocked;
@@ -12609,6 +12895,11 @@ mxGraph.prototype.isCellsLocked = function()
  * 
  * value - Boolean that defines the new value for <cellsLocked>.
  */
+// 中文注释：
+// 设置所有单元格的锁定状态。
+// 功能：设置cellsLocked属性，决定所有单元格是否可移动、调整大小等。
+// 参数说明：value - 布尔值，表示是否锁定所有单元格。
+// 注意事项：用于更新全局单元格锁定配置。
 mxGraph.prototype.setCellsLocked = function(value)
 {
 	this.cellsLocked = value;
@@ -12619,6 +12910,11 @@ mxGraph.prototype.setCellsLocked = function(value)
  * 
  * Returns the cells which may be exported in the given array of cells.
  */
+// 中文注释：
+// 获取可克隆的单元格列表。
+// 功能：从给定的单元格数组中过滤出可克隆的单元格。
+// 参数说明：cells - 要检查的单元格数组。
+// 注意事项：调用isCellCloneable方法检查每个单元格是否可克隆。
 mxGraph.prototype.getCloneableCells = function(cells)
 {
 	return this.model.filterCells(cells, mxUtils.bind(this, function(cell)
@@ -12638,6 +12934,15 @@ mxGraph.prototype.getCloneableCells = function(cells)
  * 
  * cell - Optional <mxCell> whose cloneable state should be returned.
  */
+// 中文注释：
+// 判断单元格是否可克隆。
+// 功能：检查单元格是否允许克隆，基于cellsCloneable和样式中的STYLE_CLONEABLE属性。
+// 参数说明：cell - 可选的<mxCell>对象，要检查其克隆状态。
+// 关键变量：
+//   - cellsCloneable - 是否允许克隆的全局配置。
+//   - style - 单元格的当前样式。
+// 样式设置：如果STYLE_CLONEABLE为0，则禁止克隆。
+// 注意事项：返回true表示单元格可克隆。
 mxGraph.prototype.isCellCloneable = function(cell)
 {
 	var style = this.getCurrentCellStyle(cell);
@@ -12651,6 +12956,10 @@ mxGraph.prototype.isCellCloneable = function(cell)
  * Returns <cellsCloneable>, that is, if the graph allows cloning of cells
  * by using control-drag.
  */
+// 中文注释：
+// 获取图是否允许克隆单元格。
+// 功能：返回cellsCloneable属性，表示是否允许通过Ctrl+拖动克隆单元格。
+// 注意事项：用于检查全局克隆配置。
 mxGraph.prototype.isCellsCloneable = function()
 {
 	return this.cellsCloneable;
@@ -12667,6 +12976,11 @@ mxGraph.prototype.isCellsCloneable = function()
  * 
  * value - Boolean indicating if the graph should be cloneable.
  */
+// 中文注释：
+// 设置图是否允许克隆单元格。
+// 功能：设置cellsCloneable属性，决定是否允许通过Ctrl+拖动克隆单元格。
+// 参数说明：value - 布尔值，表示是否允许克隆。
+// 注意事项：用于更新全局克隆配置。
 mxGraph.prototype.setCellsCloneable = function(value)
 {
 	this.cellsCloneable = value;
@@ -12677,6 +12991,11 @@ mxGraph.prototype.setCellsCloneable = function(value)
  * 
  * Returns the cells which may be exported in the given array of cells.
  */
+// 中文注释：
+// 获取可导出的单元格列表。
+// 功能：从给定的单元格数组中过滤出可导出的单元格。
+// 参数说明：cells - 要检查的单元格数组。
+// 注意事项：调用canExportCell方法检查每个单元格是否可导出。
 mxGraph.prototype.getExportableCells = function(cells)
 {
 	return this.model.filterCells(cells, mxUtils.bind(this, function(cell)
@@ -12695,6 +13014,11 @@ mxGraph.prototype.getExportableCells = function(cells)
  * 
  * cell - <mxCell> that represents the cell to be exported.
  */
+// 中文注释：
+// 判断单元格是否可导出到剪贴板。
+// 功能：返回exportEnabled属性，表示单元格是否可导出。
+// 参数说明：cell - 表示要导出的单元格的<mxCell>对象。
+// 注意事项：默认实现对所有单元格返回exportEnabled值。
 mxGraph.prototype.canExportCell = function(cell)
 {
 	return this.exportEnabled;
@@ -12705,6 +13029,11 @@ mxGraph.prototype.canExportCell = function(cell)
  * 
  * Returns the cells which may be imported in the given array of cells.
  */
+// 中文注释：
+// 获取可导入的单元格列表。
+// 功能：从给定的单元格数组中过滤出可导入的单元格。
+// 参数说明：cells - 要检查的单元格数组。
+// 注意事项：调用canImportCell方法检查每个单元格是否可导入。
 mxGraph.prototype.getImportableCells = function(cells)
 {
 	return this.model.filterCells(cells, mxUtils.bind(this, function(cell)
@@ -12723,6 +13052,11 @@ mxGraph.prototype.getImportableCells = function(cells)
  * 
  * cell - <mxCell> that represents the cell to be imported.
  */
+// 中文注释：
+// 判断单元格是否可从剪贴板导入。
+// 功能：返回importEnabled属性，表示单元格是否可导入。
+// 参数说明：cell - 表示要导入的单元格的<mxCell>对象。
+// 注意事项：默认实现对所有单元格返回importEnabled值。
 mxGraph.prototype.canImportCell = function(cell)
 {
 	return this.importEnabled;
@@ -12755,6 +13089,15 @@ mxGraph.prototype.canImportCell = function(cell)
  * 
  * cell - <mxCell> whose selectable state should be returned.
  */
+// 中文注释：
+// 判断单元格是否可选择。
+// 功能：返回cellsSelectable属性，表示单元格是否可选择。
+// 参数说明：cell - 要检查可选择状态的<mxCell>对象。
+// 关键变量：cellsSelectable - 是否允许选择单元格的全局配置。
+// 注意事项：
+//   - 默认实现返回cellsSelectable值。
+//   - 子类可重写以基于样式或锁定状态实现自定义选择逻辑。
+// 特殊处理：可通过样式中的selectable属性控制单元格的选择行为。
 mxGraph.prototype.isCellSelectable = function(cell)
 {
 	return this.isCellsSelectable();
@@ -12765,6 +13108,10 @@ mxGraph.prototype.isCellSelectable = function(cell)
  *
  * Returns <cellsSelectable>.
  */
+// 中文注释：
+// 获取单元格是否可选择的配置。
+// 功能：返回cellsSelectable属性，表示是否允许选择单元格。
+// 注意事项：用于检查全局选择配置。
 mxGraph.prototype.isCellsSelectable = function()
 {
 	return this.cellsSelectable;
@@ -12775,6 +13122,11 @@ mxGraph.prototype.isCellsSelectable = function()
  *
  * Sets <cellsSelectable>.
  */
+// 中文注释：
+// 设置单元格是否可选择。
+// 功能：设置cellsSelectable属性，决定是否允许选择单元格。
+// 参数说明：value - 布尔值，表示是否允许选择单元格。
+// 注意事项：用于更新全局选择配置。
 mxGraph.prototype.setCellsSelectable = function(value)
 {
 	this.cellsSelectable = value;
@@ -12785,6 +13137,11 @@ mxGraph.prototype.setCellsSelectable = function(value)
  * 
  * Returns the cells which may be exported in the given array of cells.
  */
+// 中文注释：
+// 获取可删除的单元格列表。
+// 功能：从给定的单元格数组中过滤出可删除的单元格。
+// 参数说明：cells - 要检查的单元格数组。
+// 注意事项：调用isCellDeletable方法检查每个单元格是否可删除。
 mxGraph.prototype.getDeletableCells = function(cells)
 {
 	return this.model.filterCells(cells, mxUtils.bind(this, function(cell)
@@ -12804,6 +13161,15 @@ mxGraph.prototype.getDeletableCells = function(cells)
  * 
  * cell - <mxCell> whose deletable state should be returned.
  */
+// 中文注释：
+// 判断单元格是否可删除。
+// 功能：检查单元格是否允许删除，基于cellsDeletable和样式中的STYLE_DELETABLE属性。
+// 参数说明：cell - 要检查可删除状态的<mxCell>对象。
+// 关键变量：
+//   - cellsDeletable - 是否允许删除单元格的全局配置。
+//   - style - 单元格的当前样式。
+// 样式设置：如果STYLE_DELETABLE为0，则禁止删除。
+// 注意事项：返回true表示单元格可删除。
 mxGraph.prototype.isCellDeletable = function(cell)
 {
 	var style = this.getCurrentCellStyle(cell);
@@ -12816,6 +13182,10 @@ mxGraph.prototype.isCellDeletable = function(cell)
  *
  * Returns <cellsDeletable>.
  */
+// 中文注释：
+// 获取单元格是否可删除的配置。
+// 功能：返回cellsDeletable属性，表示是否允许删除单元格。
+// 注意事项：用于检查全局删除配置。
 mxGraph.prototype.isCellsDeletable = function()
 {
 	return this.cellsDeletable;
@@ -12830,6 +13200,11 @@ mxGraph.prototype.isCellsDeletable = function()
  * 
  * value - Boolean indicating if the graph should allow deletion of cells.
  */
+// 中文注释：
+// 设置单元格是否可删除。
+// 功能：设置cellsDeletable属性，决定是否允许删除单元格。
+// 参数说明：value - 布尔值，表示是否允许删除单元格。
+// 注意事项：用于更新全局删除配置。
 mxGraph.prototype.setCellsDeletable = function(value)
 {
 	this.cellsDeletable = value;
@@ -12846,6 +13221,16 @@ mxGraph.prototype.setCellsDeletable = function(value)
  * 
  * cell - <mxCell> whose label should be moved.
  */
+// 中文注释：
+// 判断单元格的标签是否可移动。
+// 功能：检查单元格标签是否允许移动，基于锁定状态和标签移动配置。
+// 参数说明：cell - 要检查标签移动状态的<mxCell>对象。
+// 关键变量：
+//   - edgeLabelsMovable - 是否允许边标签移动的全局配置。
+//   - vertexLabelsMovable - 是否允许节点标签移动的全局配置。
+// 注意事项：
+//   - 如果单元格未锁定且为边且edgeLabelsMovable为true，或为节点且vertexLabelsMovable为true，则返回true。
+//   - 返回true表示标签可移动。
 mxGraph.prototype.isLabelMovable = function(cell)
 {
 	return !this.isCellLocked(cell) &&
@@ -12863,11 +13248,22 @@ mxGraph.prototype.isLabelMovable = function(cell)
  * 
  * cell - <mxCell> whose rotatable state should be returned.
  */
+// 方法目的：检查指定单元是否可旋转。
+// 中文：判断给定单元是否允许旋转，基于样式中是否设置 mxConstants.STYLE_ROTATABLE 为 0。
+// 参数说明：
+//   cell - 需要检查旋转状态的 <mxCell> 对象。
+// 关键变量：
+//   style - 当前单元的样式对象，用于检查旋转属性。
+// 交互逻辑：通过读取单元样式中的旋转属性判断是否可旋转。
 mxGraph.prototype.isCellRotatable = function(cell)
 {
 	var style = this.getCurrentCellStyle(cell);
-	
+	// 获取当前单元的样式
+	// 中文：从单元中提取当前样式信息。
+
 	return style[mxConstants.STYLE_ROTATABLE] != 0;
+	// 检查旋转属性
+	// 中文：返回 true 如果样式中的 STYLE_ROTATABLE 不为 0，表示单元可旋转。
 };
 
 /**
@@ -12875,10 +13271,19 @@ mxGraph.prototype.isCellRotatable = function(cell)
  * 
  * Returns the cells which are movable in the given array of cells.
  */
+// 方法目的：获取给定单元数组中可移动的单元。
+// 中文：从给定的单元数组中筛选出允许移动的单元。
+// 参数说明：
+//   cells - 需要检查的 <mxCell> 数组。
+// 关键变量：
+//   model - 图表模型，用于筛选单元。
+// 交互逻辑：通过 isCellMovable 方法过滤可移动的单元。
 mxGraph.prototype.getMovableCells = function(cells)
 {
 	return this.model.filterCells(cells, mxUtils.bind(this, function(cell)
 	{
+		// 过滤函数，检查单元是否可移动
+		// 中文：对每个单元调用 isCellMovable 方法进行筛选。
 		return this.isCellMovable(cell);
 	}));
 };
@@ -12894,11 +13299,23 @@ mxGraph.prototype.getMovableCells = function(cells)
  * 
  * cell - <mxCell> whose movable state should be returned.
  */
+// 方法目的：检查指定单元是否可移动。
+// 中文：判断给定单元是否允许移动，基于全局配置、锁定状态和样式设置。
+// 参数说明：
+//   cell - 需要检查移动状态的 <mxCell> 对象。
+// 关键变量：
+//   style - 当前单元的样式对象，用于检查移动属性。
+// 交互逻辑：结合全局 cellsMovable 属性、单元锁定状态和样式中的 STYLE_MOVABLE 属性进行判断。
+// 特殊处理：只有当全局允许移动、单元未锁定且样式未禁用移动时返回 true。
 mxGraph.prototype.isCellMovable = function(cell)
 {
 	var style = this.getCurrentCellStyle(cell);
-	
+	// 获取当前单元的样式
+	// 中文：提取单元的当前样式信息。
+
 	return this.isCellsMovable() && !this.isCellLocked(cell) && style[mxConstants.STYLE_MOVABLE] != 0;
+	// 检查移动条件
+	// 中文：返回 true 如果全局允许移动、单元未锁定且样式中的 STYLE_MOVABLE 不为 0。
 };
 
 /**
@@ -12906,24 +13323,39 @@ mxGraph.prototype.isCellMovable = function(cell)
  *
  * Returns <cellsMovable>.
  */
+// 方法目的：返回全局单元移动配置。
+// 中文：获取图表中是否允许单元移动的全局设置。
+// 关键变量：
+//   cellsMovable - 全局布尔值，表示是否允许单元移动。
 mxGraph.prototype.isCellsMovable = function()
 {
 	return this.cellsMovable;
+	// 返回全局移动配置
+	// 中文：返回 cellsMovable 属性值。
 };
 
 /**
  * Function: setCellsMovable
  * 
  * Specifies if the graph should allow moving of cells. This implementation
- * updates <cellsMsovable>.
+ * updates <cellsMovable>.
  * 
  * Parameters:
  * 
  * value - Boolean indicating if the graph should allow moving of cells.
  */
+// 方法目的：设置全局单元移动配置。
+// 中文：设置图表是否允许单元移动，更新全局 cellsMovable 属性。
+// 参数说明：
+//   value - 布尔值，指定是否允许单元移动。
+// 关键变量：
+//   cellsMovable - 全局布尔值，表示是否允许单元移动。
+// 交互逻辑：更新全局配置以控制单元移动行为。
 mxGraph.prototype.setCellsMovable = function(value)
 {
 	this.cellsMovable = value;
+	// 设置全局移动配置
+	// 中文：将 cellsMovable 属性设置为指定值。
 };
 
 /**
@@ -12931,9 +13363,15 @@ mxGraph.prototype.setCellsMovable = function(value)
  *
  * Returns <gridEnabled> as a boolean.
  */
+// 方法目的：返回网格启用状态。
+// 中文：获取图表是否启用网格的全局设置。
+// 关键变量：
+//   gridEnabled - 全局布尔值，表示是否启用网格。
 mxGraph.prototype.isGridEnabled = function()
 {
 	return this.gridEnabled;
+	// 返回网格启用状态
+	// 中文：返回 gridEnabled 属性值。
 };
 
 /**
@@ -12945,9 +13383,18 @@ mxGraph.prototype.isGridEnabled = function()
  * 
  * value - Boolean indicating if the grid should be enabled.
  */
+// 方法目的：设置网格启用状态。
+// 中文：设置图表是否启用网格，更新全局 gridEnabled 属性。
+// 参数说明：
+//   value - 布尔值，指定是否启用网格。
+// 关键变量：
+//   gridEnabled - 全局布尔值，表示是否启用网格。
+// 交互逻辑：更新全局配置以控制网格显示。
 mxGraph.prototype.setGridEnabled = function(value)
 {
 	this.gridEnabled = value;
+	// 设置网格启用状态
+	// 中文：将 gridEnabled 属性设置为指定值。
 };
 
 /**
@@ -12955,9 +13402,15 @@ mxGraph.prototype.setGridEnabled = function(value)
  *
  * Returns <portsEnabled> as a boolean.
  */
+// 方法目的：返回端口启用状态。
+// 中文：获取图表是否启用连接端口的全局设置。
+// 关键变量：
+//   portsEnabled - 全局布尔值，表示是否启用连接端口。
 mxGraph.prototype.isPortsEnabled = function()
 {
 	return this.portsEnabled;
+	// 返回端口启用状态
+	// 中文：返回 portsEnabled 属性值。
 };
 
 /**
@@ -12969,9 +13422,18 @@ mxGraph.prototype.isPortsEnabled = function()
  * 
  * value - Boolean indicating if the ports should be enabled.
  */
+// 方法目的：设置端口启用状态。
+// 中文：设置图表是否启用连接端口，更新全局 portsEnabled 属性。
+// 参数说明：
+//   value - 布尔值，指定是否启用连接端口。
+// 关键变量：
+//   portsEnabled - 全局布尔值，表示是否启用连接端口。
+// 交互逻辑：更新全局配置以控制端口功能。
 mxGraph.prototype.setPortsEnabled = function(value)
 {
 	this.portsEnabled = value;
+	// 设置端口启用状态
+	// 中文：将 portsEnabled 属性设置为指定值。
 };
 
 /**
@@ -12979,9 +13441,15 @@ mxGraph.prototype.setPortsEnabled = function(value)
  *
  * Returns <gridSize>.
  */
+// 方法目的：返回网格大小。
+// 中文：获取图表网格的像素大小。
+// 关键变量：
+//   gridSize - 全局变量，表示网格的像素大小。
 mxGraph.prototype.getGridSize = function()
 {
 	return this.gridSize;
+	// 返回网格大小
+	// 中文：返回 gridSize 属性值。
 };
 
 /**
@@ -12989,9 +13457,18 @@ mxGraph.prototype.getGridSize = function()
  * 
  * Sets <gridSize>.
  */
+// 方法目的：设置网格大小。
+// 中文：设置图表网格的像素大小，更新全局 gridSize 属性。
+// 参数说明：
+//   value - 网格的像素大小值。
+// 关键变量：
+//   gridSize - 全局变量，表示网格的像素大小。
+// 交互逻辑：更新全局配置以控制网格显示大小。
 mxGraph.prototype.setGridSize = function(value)
 {
 	this.gridSize = value;
+	// 设置网格大小
+	// 中文：将 gridSize 属性设置为指定值。
 };
 
 /**
@@ -12999,9 +13476,15 @@ mxGraph.prototype.setGridSize = function(value)
  *
  * Returns <tolerance>.
  */
+// 方法目的：返回容差值。
+// 中文：获取图表的鼠标操作容差值。
+// 关键变量：
+//   tolerance - 全局变量，表示鼠标操作的容差范围（像素）。
 mxGraph.prototype.getTolerance = function()
 {
 	return this.tolerance;
+	// 返回容差值
+	// 中文：返回 tolerance 属性值。
 };
 
 /**
@@ -13009,9 +13492,18 @@ mxGraph.prototype.getTolerance = function()
  * 
  * Sets <tolerance>.
  */
+// 方法目的：设置容差值。
+// 中文：设置图表的鼠标操作容差值，更新全局 tolerance 属性。
+// 参数说明：
+//   value - 鼠标操作的容差值（像素）。
+// 关键变量：
+//   tolerance - 全局变量，表示鼠标操作的容差范围。
+// 交互逻辑：更新全局配置以控制鼠标操作的灵敏度。
 mxGraph.prototype.setTolerance = function(value)
 {
 	this.tolerance = value;
+	// 设置容差值
+	// 中文：将 tolerance 属性设置为指定值。
 };
 
 /**
@@ -13019,9 +13511,15 @@ mxGraph.prototype.setTolerance = function(value)
  *
  * Returns <vertexLabelsMovable>.
  */
+// 方法目的：返回顶点标签是否可移动。
+// 中文：获取图表顶点标签是否允许移动的全局设置。
+// 关键变量：
+//   vertexLabelsMovable - 全局布尔值，表示顶点标签是否可移动。
 mxGraph.prototype.isVertexLabelsMovable = function()
 {
 	return this.vertexLabelsMovable;
+	// 返回顶点标签移动状态
+	// 中文：返回 vertexLabelsMovable 属性值。
 };
 
 /**
@@ -13029,19 +13527,35 @@ mxGraph.prototype.isVertexLabelsMovable = function()
  * 
  * Sets <vertexLabelsMovable>.
  */
+// 方法目的：设置顶点标签是否可移动。
+// 中文：设置图表顶点标签是否允许移动，更新全局 vertexLabelsMovable 属性。
+// 参数说明：
+//   value - 布尔值，指定顶点标签是否可移动。
+// 关键变量：
+//   vertexLabelsMovable - 全局布尔值，表示顶点标签是否可移动。
+// 交互逻辑：更新全局配置以控制顶点标签的移动行为。
 mxGraph.prototype.setVertexLabelsMovable = function(value)
 {
 	this.vertexLabelsMovable = value;
+	// 设置顶点标签移动状态
+	// 中文：将 vertexLabelsMovable 属性设置为指定值。
 };
 
 /**
  * Function: isEdgeLabelsMovable
  *
  * Returns <edgeLabelsMovable>.
+ニー>.
  */
+// 方法目的：返回边标签是否可移动。
+// 中文：获取图表边标签是否允许移动的全局设置。
+// 关键变量：
+//   edgeLabelsMovable - 全局布尔值，表示边标签是否可移动。
 mxGraph.prototype.isEdgeLabelsMovable = function()
 {
 	return this.edgeLabelsMovable;
+	// 返回边标签移动状态
+	// 中文：返回 edgeLabelsMovable 属性值。
 };
 
 /**
@@ -13049,9 +13563,18 @@ mxGraph.prototype.isEdgeLabelsMovable = function()
  * 
  * Sets <edgeLabelsMovable>.
  */
+// 方法目的：设置边标签是否可移动。
+// 中文：设置图表边标签是否允许移动，更新全局 edgeLabelsMovable 属性。
+// 参数说明：
+//   value - 布尔值，指定边标签是否可移动。
+// 关键变量：
+//   edgeLabelsMovable - 全局布尔值，表示边标签是否可移动。
+// 交互逻辑：更新全局配置以控制边标签的移动行为。
 mxGraph.prototype.setEdgeLabelsMovable = function(value)
 {
 	this.edgeLabelsMovable = value;
+	// 设置边标签移动状态
+	// 中文：将 edgeLabelsMovable 属性设置为指定值。
 };
 
 /**
@@ -13059,9 +13582,15 @@ mxGraph.prototype.setEdgeLabelsMovable = function(value)
  *
  * Returns <swimlaneNesting> as a boolean.
  */
+// 方法目的：返回泳道嵌套是否启用。
+// 中文：获取图表是否允许泳道嵌套的全局设置。
+// 关键变量：
+//   swimlaneNesting - 全局布尔值，表示是否允许泳道嵌套。
 mxGraph.prototype.isSwimlaneNesting = function()
 {
 	return this.swimlaneNesting;
+	// 返回泳道嵌套状态
+	// 中文：返回 swimlaneNesting 属性值。
 };
 
 /**
@@ -13074,9 +13603,18 @@ mxGraph.prototype.isSwimlaneNesting = function()
  * 
  * value - Boolean indicating if swimlanes can be nested.
  */
+// 方法目的：设置泳道嵌套是否启用。
+// 中文：设置图表是否允许通过拖放进行泳道嵌套，更新全局 swimlaneNesting 属性。
+// 参数说明：
+//   value - 布尔值，指定是否允许泳道嵌套。
+// 关键变量：
+//   swimlaneNesting - 全局布尔值，表示是否允许泳道嵌套。
+// 交互逻辑：更新全局配置以控制泳道嵌套行为，仅当 dropEnabled 为 true 时生效。
 mxGraph.prototype.setSwimlaneNesting = function(value)
 {
 	this.swimlaneNesting = value;
+	// 设置泳道嵌套状态
+	// 中文：将 swimlaneNesting 属性设置为指定值。
 };
 
 /**
@@ -13084,9 +13622,15 @@ mxGraph.prototype.setSwimlaneNesting = function(value)
  *
  * Returns <swimlaneSelectionEnabled> as a boolean.
  */
+// 方法目的：返回泳道选择启用状态。
+// 中文：获取图表是否允许选择泳道内容区域的全局设置。
+// 关键变量：
+//   swimlaneSelectionEnabled - 全局布尔值，表示是否允许选择泳道内容。
 mxGraph.prototype.isSwimlaneSelectionEnabled = function()
 {
 	return this.swimlaneSelectionEnabled;
+	// 返回泳道选择状态
+	// 中文：返回 swimlaneSelectionEnabled 属性值。
 };
 
 /**
@@ -13100,9 +13644,18 @@ mxGraph.prototype.isSwimlaneSelectionEnabled = function()
  * value - Boolean indicating if swimlanes content areas
  * should be selected when the mouse is released over them.
  */
+// 方法目的：设置泳道选择启用状态。
+// 中文：设置图表是否允许在鼠标释放时选择泳道内容区域，更新全局 swimlaneSelectionEnabled 属性。
+// 参数说明：
+//   value - 布尔值，指定是否允许选择泳道内容区域。
+// 关键变量：
+//   swimlaneSelectionEnabled - 全局布尔值，表示是否允许选择泳道内容。
+// 交互逻辑：更新全局配置以控制泳道选择行为。
 mxGraph.prototype.setSwimlaneSelectionEnabled = function(value)
 {
 	this.swimlaneSelectionEnabled = value;
+	// 设置泳道选择状态
+	// 中文：将 swimlaneSelectionEnabled 属性设置为指定值。
 };
 
 /**
@@ -13110,9 +13663,15 @@ mxGraph.prototype.setSwimlaneSelectionEnabled = function(value)
  *
  * Returns <multigraph> as a boolean.
  */
+// 方法目的：返回是否允许多重图。
+// 中文：获取图表是否允许相同顶点间多条连接的全局设置。
+// 关键变量：
+//   multigraph - 全局布尔值，表示是否允许多重图。
 mxGraph.prototype.isMultigraph = function()
 {
 	return this.multigraph;
+	// 返回多重图状态
+	// 中文：返回 multigraph 属性值。
 };
 
 /**
@@ -13126,9 +13685,18 @@ mxGraph.prototype.isMultigraph = function()
  * value - Boolean indicating if the graph allows multiple connections
  * between the same pair of vertices.
  */
+// 方法目的：设置是否允许多重图。
+// 中文：设置图表是否允许相同顶点间多条连接，更新全局 multigraph 属性。
+// 参数说明：
+//   value - 布尔值，指定是否允许多重图。
+// 关键变量：
+//   multigraph - 全局布尔值，表示是否允许多重图。
+// 交互逻辑：更新全局配置以控制多重连接行为。
 mxGraph.prototype.setMultigraph = function(value)
 {
 	this.multigraph = value;
+	// 设置多重图状态
+	// 中文：将 multigraph 属性设置为指定值。
 };
 
 /**
@@ -13136,9 +13704,15 @@ mxGraph.prototype.setMultigraph = function(value)
  *
  * Returns <allowLoops> as a boolean.
  */
+// 方法目的：返回是否允许自环。
+// 中文：获取图表是否允许自环的全局设置。
+// 关键变量：
+//   allowLoops - 全局布尔值，表示是否允许自环。
 mxGraph.prototype.isAllowLoops = function()
 {
 	return this.allowLoops;
+	// 返回自环状态
+	// 中文：返回 allowLoops 属性值。
 };
 
 /**
@@ -13151,9 +13725,18 @@ mxGraph.prototype.isAllowLoops = function()
  * 
  * value - Boolean indicating if dangling edges are allowed.
  */
+// 方法目的：设置是否允许悬空边。
+// 中文：设置图表是否允许没有定义源或目标的边，更新全局 allowDanglingEdges 属性。
+// 参数说明：
+//   value - 布尔值，指定是否允许悬空边。
+// 关键变量：
+//   allowDanglingEdges - 全局布尔值，表示是否允许悬空边。
+// 交互逻辑：更新全局配置以控制悬空边的行为。
 mxGraph.prototype.setAllowDanglingEdges = function(value)
 {
 	this.allowDanglingEdges = value;
+	// 设置悬空边状态
+	// 中文：将 allowDanglingEdges 属性设置为指定值。
 };
 
 /**
@@ -13161,9 +13744,15 @@ mxGraph.prototype.setAllowDanglingEdges = function(value)
  *
  * Returns <allowDanglingEdges> as a boolean.
  */
+// 方法目的：返回是否允许悬空边。
+// 中文：获取图表是否允许悬空边的全局设置。
+// 关键变量：
+//   allowDanglingEdges - 全局布尔值，表示是否允许悬空边。
 mxGraph.prototype.isAllowDanglingEdges = function()
 {
 	return this.allowDanglingEdges;
+	// 返回悬空边状态
+	// 中文：返回 allowDanglingEdges 属性值。
 };
 
 /**
@@ -13175,9 +13764,18 @@ mxGraph.prototype.isAllowDanglingEdges = function()
  * 
  * value - Boolean indicating if edges should be connectable.
  */
+// 方法目的：设置边是否可连接。
+// 中文：设置图表边是否允许连接，更新全局 connectableEdges 属性。
+// 参数说明：
+//   value - 布尔值，指定边是否可连接。
+// 关键变量：
+//   connectableEdges - 全局布尔值，表示边是否可连接。
+// 交互逻辑：更新全局配置以控制边的连接行为。
 mxGraph.prototype.setConnectableEdges = function(value)
 {
 	this.connectableEdges = value;
+	// 设置边连接状态
+	// 中文：将 connectableEdges 属性设置为指定值。
 };
 
 /**
@@ -13185,9 +13783,15 @@ mxGraph.prototype.setConnectableEdges = function(value)
  *
  * Returns <connectableEdges> as a boolean.
  */
+// 方法目的：返回边是否可连接。
+// 中文：获取图表边是否允许连接的全局设置。
+// 关键变量：
+//   connectableEdges - 全局布尔值，表示边是否可连接。
 mxGraph.prototype.isConnectableEdges = function()
 {
 	return this.connectableEdges;
+	// 返回边连接状态
+	// 中文：返回 connectableEdges 属性值。
 };
 
 /**
@@ -13201,9 +13805,19 @@ mxGraph.prototype.isConnectableEdges = function()
  * value - Boolean indicating if cloned invalid edges should be
  * inserted into the graph or ignored.
  */
+// 方法目的：设置是否插入无效的克隆边。
+// 中文：设置图表是否允许插入克隆时无效的边，更新全局 cloneInvalidEdges 属性。
+// 参数说明：
+//   value - 布尔值，指定是否插入无效的克隆边。
+// 关键变量：
+//   cloneInvalidEdges - 全局布尔值，表示是否插入无效的克隆边。
+// 交互逻辑：更新全局配置以控制克隆边的行为。
+// 特殊处理：如果设为 false，无效边将被忽略。
 mxGraph.prototype.setCloneInvalidEdges = function(value)
 {
 	this.cloneInvalidEdges = value;
+	// 设置克隆边状态
+	// 中文：将 cloneInvalidEdges 属性设置为指定值。
 };
 
 /**
@@ -13211,9 +13825,15 @@ mxGraph.prototype.setCloneInvalidEdges = function(value)
  *
  * Returns <cloneInvalidEdges> as a boolean.
  */
+// 方法目的：返回是否插入无效的克隆边。
+// 中文：获取图表是否允许插入无效的克隆边的全局设置。
+// 关键变量：
+//   cloneInvalidEdges - 全局布尔值，表示是否插入无效的克隆边。
 mxGraph.prototype.isCloneInvalidEdges = function()
 {
 	return this.cloneInvalidEdges;
+	// 返回克隆边状态
+	// 中文：返回 cloneInvalidEdges 属性值。
 };
 
 /**
@@ -13225,9 +13845,18 @@ mxGraph.prototype.isCloneInvalidEdges = function()
  * 
  * value - Boolean indicating if loops are allowed.
  */
+// 方法目的：设置是否允许自环。
+// 中文：设置图表是否允许自环，更新全局 allowLoops 属性。
+// 参数说明：
+//   value - 布尔值，指定是否允许自环。
+// 关键变量：
+//   allowLoops - 全局布尔值，表示是否允许自环。
+// 交互逻辑：更新全局配置以控制自环行为。
 mxGraph.prototype.setAllowLoops = function(value)
 {
 	this.allowLoops = value;
+	// 设置自环状态
+	// 中文：将 allowLoops 属性设置为指定值。
 };
 
 /**
@@ -13235,9 +13864,15 @@ mxGraph.prototype.setAllowLoops = function(value)
  *
  * Returns <disconnectOnMove> as a boolean.
  */
+// 方法目的：返回移动时是否断开连接。
+// 中文：获取图表是否在移动时断开连接的全局设置。
+// 关键变量：
+//   disconnectOnMove - 全局布尔值，表示移动时是否断开连接。
 mxGraph.prototype.isDisconnectOnMove = function()
 {
 	return this.disconnectOnMove;
+	// 返回断开连接状态
+	// 中文：返回 disconnectOnMove 属性值。
 };
 
 /**
@@ -13251,9 +13886,19 @@ mxGraph.prototype.isDisconnectOnMove = function()
  * value - Boolean indicating if edges should be disconnected
  * when moved.
  */
+// 方法目的：设置移动时是否断开连接。
+// 中文：设置图表是否在移动时断开边连接，更新全局 disconnectOnMove 属性。
+// 参数说明：
+//   value - 布尔值，指定移动时是否断开连接。
+// 关键变量：
+//   disconnectOnMove - 全局布尔值，表示移动时是否断开连接。
+// 交互逻辑：更新全局配置以控制边在移动时的行为。
+// 特殊处理：克隆的边始终会断开连接。
 mxGraph.prototype.setDisconnectOnMove = function(value)
 {
 	this.disconnectOnMove = value;
+	// 设置断开连接状态
+	// 中文：将 disconnectOnMove 属性设置为指定值。
 };
 
 /**
@@ -13261,9 +13906,15 @@ mxGraph.prototype.setDisconnectOnMove = function(value)
  *
  * Returns <dropEnabled> as a boolean.
  */
+// 方法目的：返回拖放启用状态。
+// 中文：获取图表是否允许拖放的全局设置。
+// 关键变量：
+//   dropEnabled - 全局布尔值，表示是否允许拖放。
 mxGraph.prototype.isDropEnabled = function()
 {
 	return this.dropEnabled;
+	// 返回拖放状态
+	// 中文：返回 dropEnabled 属性值。
 };
 
 /**
@@ -13277,9 +13928,18 @@ mxGraph.prototype.isDropEnabled = function()
  * dropEnabled - Boolean indicating if the graph should allow dropping
  * of cells into other cells.
  */
+// 方法目的：设置拖放启用状态。
+// 中文：设置图表是否允许将单元拖放到其他单元，更新全局 dropEnabled 属性。
+// 参数说明：
+//   value - 布尔值，指定是否允许拖放。
+// 关键变量：
+//   dropEnabled - 全局布尔值，表示是否允许拖放。
+// 交互逻辑：更新全局配置以控制拖放行为。
 mxGraph.prototype.setDropEnabled = function(value)
 {
 	this.dropEnabled = value;
+	// 设置拖放状态
+	// 中文：将 dropEnabled 属性设置为指定值。
 };
 
 /**
@@ -13287,9 +13947,15 @@ mxGraph.prototype.setDropEnabled = function(value)
  *
  * Returns <splitEnabled> as a boolean.
  */
+// 方法目的：返回分割启用状态。
+// 中文：获取图表是否允许分割边的全局设置。
+// 关键变量：
+//   splitEnabled - 全局布尔值，表示是否允许分割边。
 mxGraph.prototype.isSplitEnabled = function()
 {
 	return this.splitEnabled;
+	// 返回分割状态
+	// 中文：返回 splitEnabled 属性值。
 };
 
 /**
@@ -13303,9 +13969,18 @@ mxGraph.prototype.isSplitEnabled = function()
  * dropEnabled - Boolean indicating if the graph should allow dropping
  * of cells into other cells.
  */
+// 方法目的：设置分割启用状态。
+// 中文：设置图表是否允许分割边，更新全局 splitEnabled 属性。
+// 参数说明：
+//   value - 布尔值，指定是否允许分割边。
+// 关键变量：
+//   splitEnabled - 全局布尔值，表示是否允许分割边。
+// 交互逻辑：更新全局配置以控制分割行为。
 mxGraph.prototype.setSplitEnabled = function(value)
 {
 	this.splitEnabled = value;
+	// 设置分割状态
+	// 中文：将 splitEnabled 属性设置为指定值。
 };
 
 /**
@@ -13320,12 +13995,24 @@ mxGraph.prototype.setSplitEnabled = function(value)
  * 
  * cell - <mxCell> whose resizable state should be returned.
  */
+// 方法目的：检查指定单元是否可调整大小。
+// 中文：判断给定单元是否允许调整大小，基于全局配置、锁定状态和样式设置。
+// 参数说明：
+//   cell - 需要检查调整大小状态的 <mxCell> 对象。
+// 关键变量：
+//   style - 当前单元的样式对象，用于检查调整大小属性。
+// 交互逻辑：结合全局 cellsResizable 属性、单元锁定状态和样式中的 STYLE_RESIZABLE 属性进行判断。
+// 特殊处理：只有当全局允许调整大小、单元未锁定且样式未禁用调整大小时返回 true。
 mxGraph.prototype.isCellResizable = function(cell)
 {
 	var style = this.getCurrentCellStyle(cell);
+	// 获取当前单元的样式
+	// 中文：提取单元的当前样式信息。
 
 	return this.isCellsResizable() && !this.isCellLocked(cell) &&
 		mxUtils.getValue(style, mxConstants.STYLE_RESIZABLE, '1') != '0';
+	// 检查调整大小条件
+	// 中文：返回 true 如果全局允许调整大小、单元未锁定且样式中的 STYLE_RESIZABLE 不为 0。
 };
 
 /**
@@ -13333,9 +14020,15 @@ mxGraph.prototype.isCellResizable = function(cell)
  *
  * Returns <cellsResizable>.
  */
+// 方法目的：返回全局单元调整大小配置。
+// 中文：获取图表是否允许单元调整大小的全局设置。
+// 关键变量：
+//   cellsResizable - 全局布尔值，表示是否允许单元调整大小。
 mxGraph.prototype.isCellsResizable = function()
 {
 	return this.cellsResizable;
+	// 返回调整大小状态
+	// 中文：返回 cellsResizable 属性值。
 };
 
 /**
@@ -13349,9 +14042,18 @@ mxGraph.prototype.isCellsResizable = function()
  * value - Boolean indicating if the graph should allow resizing of
  * cells.
  */
+// 方法目的：设置全局单元调整大小配置。
+// 中文：设置图表是否允许单元调整大小，更新全局 cellsResizable 属性。
+// 参数说明：
+//   value - 布尔值，指定是否允许单元调整大小。
+// 关键变量：
+//   cellsResizable - 全局布尔值，表示是否允许单元调整大小。
+// 交互逻辑：更新全局配置以控制单元调整大小行为。
 mxGraph.prototype.setCellsResizable = function(value)
 {
 	this.cellsResizable = value;
+	// 设置调整大小状态
+	// 中文：将 cellsResizable 属性设置为指定值。
 };
 
 /**
@@ -13368,9 +14070,18 @@ mxGraph.prototype.setCellsResizable = function(value)
  * cell - <mxCell> whose terminal point should be moved.
  * source - Boolean indicating if the source or target terminal should be moved.
  */
+// 方法目的：检查终端点是否可移动。
+// 中文：判断给定单元的终端点是否允许移动，与连接性无关。
+// 参数说明：
+//   cell - 需要检查终端点移动状态的 <mxCell> 对象。
+//   source - 布尔值，指定是源终端还是目标终端。
+// 交互逻辑：返回 true 允许移动终端点，支持未连接边的连接操作。
+// 特殊处理：此实现始终返回 true。
 mxGraph.prototype.isTerminalPointMovable = function(cell, source)
 {
 	return true;
+	// 返回终端点移动状态
+	// 中文：始终返回 true，表示终端点可移动。
 };
 
 /**
@@ -13384,11 +14095,23 @@ mxGraph.prototype.isTerminalPointMovable = function(cell, source)
  * 
  * cell - <mxCell> whose bendable state should be returned.
  */
+// 方法目的：检查指定单元是否可弯曲。
+// 中文：判断给定单元是否允许弯曲，基于全局配置、锁定状态和样式设置。
+// 参数说明：
+//   cell - 需要检查弯曲状态的 <mxCell> 对象。
+// 关键变量：
+//   style - 当前单元的样式对象，用于检查弯曲属性。
+// 交互逻辑：结合全局 cellsBendable 属性、单元锁定状态和样式中的 STYLE_BENDABLE 属性进行判断。
+// 特殊处理：只有当全局允许弯曲、单元未锁定且样式未禁用弯曲时返回 true。
 mxGraph.prototype.isCellBendable = function(cell)
 {
 	var style = this.getCurrentCellStyle(cell);
-	
+	// 获取当前单元的样式
+	// 中文：提取单元的当前样式信息。
+
 	return this.isCellsBendable() && !this.isCellLocked(cell) && style[mxConstants.STYLE_BENDABLE] != 0;
+	// 检查弯曲条件
+	// 中文：返回 true 如果全局允许弯曲、单元未锁定且样式中的 STYLE_BENDABLE 不为 0。
 };
 
 /**
@@ -13396,9 +14119,15 @@ mxGraph.prototype.isCellBendable = function(cell)
  *
  * Returns <cellsBenadable>.
  */
+// 方法目的：返回全局单元弯曲配置。
+// 中文：获取图表是否允许单元弯曲的全局设置。
+// 关键变量：
+//   cellsBendable - 全局布尔值，表示是否允许单元弯曲。
 mxGraph.prototype.isCellsBendable = function()
 {
 	return this.cellsBendable;
+	// 返回弯曲状态
+	// 中文：返回 cellsBendable 属性值。
 };
 
 /**
@@ -13412,9 +14141,18 @@ mxGraph.prototype.isCellsBendable = function()
  * value - Boolean indicating if the graph should allow bending of
  * edges.
  */
+// 方法目的：设置全局单元弯曲配置。
+// 中文：设置图表是否允许边弯曲，更新全局 cellsBendable 属性。
+// 参数说明：
+//   value - 布尔值，指定是否允许边弯曲。
+// 关键变量：
+//   cellsBendable - 全局布尔值，表示是否允许边弯曲。
+// 交互逻辑：更新全局配置以控制边弯曲行为。
 mxGraph.prototype.setCellsBendable = function(value)
 {
 	this.cellsBendable = value;
+	// 设置弯曲状态
+	// 中文：将 cellsBendable 属性设置为指定值。
 };
 
 /**
@@ -13428,11 +14166,23 @@ mxGraph.prototype.setCellsBendable = function(value)
  * 
  * cell - <mxCell> whose editable state should be returned.
  */
+// 方法目的：检查指定单元是否可编辑。
+// 中文：判断给定单元是否允许编辑，基于全局配置、锁定状态和样式设置。
+// 参数说明：
+//   cell - 需要检查编辑状态的 <mxCell> 对象。
+// 关键变量：
+//   style - 当前单元的样式对象，用于检查编辑属性。
+// 交互逻辑：结合全局 cellsEditable 属性、单元锁定状态和样式中的 STYLE_EDITABLE 属性进行判断。
+// 特殊处理：只有当全局允许编辑、单元未锁定且样式未禁用编辑时返回 true。
 mxGraph.prototype.isCellEditable = function(cell)
 {
 	var style = this.getCurrentCellStyle(cell);
-	
+	// 获取当前单元的样式
+	// 中文：提取单元的当前样式信息。
+
 	return this.isCellsEditable() && !this.isCellLocked(cell) && style[mxConstants.STYLE_EDITABLE] != 0;
+	// 检查编辑条件
+	// 中文：返回 true 如果全局允许编辑、单元未锁定且样式中的 STYLE_EDITABLE 不为 0。
 };
 
 /**
@@ -13440,9 +14190,15 @@ mxGraph.prototype.isCellEditable = function(cell)
  *
  * Returns <cellsEditable>.
  */
+// 方法目的：返回全局单元编辑配置。
+// 中文：获取图表是否允许单元编辑的全局设置。
+// 关键变量：
+//   cellsEditable - 全局布尔值，表示是否允许单元编辑。
 mxGraph.prototype.isCellsEditable = function()
 {
 	return this.cellsEditable;
+	// 返回编辑状态
+	// 中文：返回 cellsEditable 属性值。
 };
 
 /**
@@ -13456,9 +14212,18 @@ mxGraph.prototype.isCellsEditable = function()
  * value - Boolean indicating if the graph should allow in-place
  * editing.
  */
+// 方法目的：设置全局单元编辑配置。
+// 中文：设置图表是否允许单元标签的就地编辑，更新全局 cellsEditable 属性。
+// 参数说明：
+//   value - 布尔值，指定是否允许就地编辑。
+// 关键变量：
+//   cellsEditable - 全局布尔值，表示是否允许单元编辑。
+// 交互逻辑：更新全局配置以控制单元编辑行为。
 mxGraph.prototype.setCellsEditable = function(value)
 {
 	this.cellsEditable = value;
+	// 设置编辑状态
+	// 中文：将 cellsEditable 属性设置为指定值。
 };
 
 /**
@@ -13475,9 +14240,19 @@ mxGraph.prototype.setCellsEditable = function(value)
  * source - Boolean indicating if the source or target terminal is to be
  * disconnected.
  */
+// 方法目的：检查指定单元是否可断开连接。
+// 中文：判断给定单元是否允许从源或目标终端断开连接。
+// 参数说明：
+//   cell - 需要检查断开连接状态的 <mxCell> 对象。
+//   terminal - 表示源或目标终端的 <mxCell> 对象。
+//   source - 布尔值，指定是源终端还是目标终端。
+// 交互逻辑：结合全局 cellsDisconnectable 属性和单元锁定状态进行判断。
+// 特殊处理：只有当全局允许断开连接且单元未锁定时返回 true。
 mxGraph.prototype.isCellDisconnectable = function(cell, terminal, source)
 {
 	return this.isCellsDisconnectable() && !this.isCellLocked(cell);
+	// 检查断开连接条件
+	// 中文：返回 true 如果全局允许断开连接且单元未锁定。
 };
 
 /**
@@ -13485,9 +14260,15 @@ mxGraph.prototype.isCellDisconnectable = function(cell, terminal, source)
  *
  * Returns <cellsDisconnectable>.
  */
+// 方法目的：返回全局单元断开连接配置。
+// 中文：获取图表是否允许单元断开连接的全局设置。
+// 关键变量：
+//   cellsDisconnectable - 全局布尔值，表示是否允许单元断开连接。
 mxGraph.prototype.isCellsDisconnectable = function()
 {
 	return this.cellsDisconnectable;
+	// 返回断开连接状态
+	// 中文：返回 cellsDisconnectable 属性值。
 };
 
 /**
@@ -13495,9 +14276,18 @@ mxGraph.prototype.isCellsDisconnectable = function()
  *
  * Sets <cellsDisconnectable>.
  */
+// 方法目的：设置全局单元断开连接配置。
+// 中文：设置图表是否允许单元断开连接，更新全局 cellsDisconnectable 属性。
+// 参数说明：
+//   value - 布尔值，指定是否允许单元断开连接。
+// 关键变量：
+//   cellsDisconnectable - 全局布尔值，表示是否允许单元断开连接。
+// 交互逻辑：更新全局配置以控制单元断开连接行为。
 mxGraph.prototype.setCellsDisconnectable = function(value)
 {
 	this.cellsDisconnectable = value;
+	// 设置断开连接状态
+	// 中文：将 cellsDisconnectable 属性设置为指定值。
 };
 
 /**
@@ -13511,11 +14301,19 @@ mxGraph.prototype.setCellsDisconnectable = function(value)
  * 
  * cell - <mxCell> that represents a possible source or null.
  */
+// 方法目的：检查单元是否为有效连接源。
+// 中文：判断给定单元是否可以作为新连接的源点。
+// 参数说明：
+//   cell - 表示潜在源点的 <mxCell> 对象或 null。
+// 交互逻辑：检查单元是否为非空、不是边且可连接。
+// 特殊处理：如果允许悬空边，则 null 也视为有效源点。
 mxGraph.prototype.isValidSource = function(cell)
 {
 	return (cell == null && this.allowDanglingEdges) ||
 		(cell != null && (!this.model.isEdge(cell) ||
 		this.connectableEdges) && this.isCellConnectable(cell));
+	// 检查源点有效性
+	// 中文：返回 true 如果单元为 null 且允许悬空边，或单元非空、不是边且可连接。
 };
 	
 /**
@@ -13528,9 +14326,16 @@ mxGraph.prototype.isValidSource = function(cell)
  * 
  * cell - <mxCell> that represents a possible target or null.
  */
+// 方法目的：检查单元是否为有效连接目标。
+// 中文：判断给定单元是否可以作为新连接的目标点。
+// 参数说明：
+//   cell - 表示潜在目标点的 <mxCell> 对象或 null。
+// 交互逻辑：调用 isValidSource 方法进行判断。
 mxGraph.prototype.isValidTarget = function(cell)
 {
 	return this.isValidSource(cell);
+	// 检查目标点有效性
+	// 中文：调用 isValidSource 方法判断目标点是否有效。
 };
 
 /**
@@ -13547,9 +14352,17 @@ mxGraph.prototype.isValidTarget = function(cell)
  * source - <mxCell> that represents the source cell.
  * target - <mxCell> that represents the target cell.
  */
+// 方法目的：检查连接是否有效。
+// 中文：判断源单元和目标单元之间的连接是否有效。
+// 参数说明：
+//   source - 表示源单元的 <mxCell> 对象。
+//   target - 表示目标单元的 <mxCell> 对象。
+// 交互逻辑：通过调用 isValidSource 和 isValidTarget 方法进行判断。
 mxGraph.prototype.isValidConnection = function(source, target)
 {
 	return this.isValidSource(source) && this.isValidTarget(target);
+	// 检查连接有效性
+	// 中文：返回 true 如果源和目标均为有效连接点。
 };
 
 /**
@@ -13562,9 +14375,18 @@ mxGraph.prototype.isValidConnection = function(source, target)
  * 
  * connectable - Boolean indicating if new connections should be allowed.
  */
+// 方法目的：设置图表是否允许新连接。
+// 中文：设置图表是否允许创建新连接，更新连接处理器状态。
+// 参数说明：
+//   connectable - 布尔值，指定是否允许新连接。
+// 关键变量：
+//   connectionHandler - 连接处理器对象，用于管理连接行为。
+// 交互逻辑：更新连接处理器的启用状态。
 mxGraph.prototype.setConnectable = function(connectable)
 {
 	this.connectionHandler.setEnabled(connectable);
+	// 设置连接状态
+	// 中文：将 connectionHandler 的 enabled 属性设置为指定值。
 };
 	
 /**
@@ -13572,9 +14394,15 @@ mxGraph.prototype.setConnectable = function(connectable)
  * 
  * Returns true if the <connectionHandler> is enabled.
  */
+// 方法目的：返回图表是否允许新连接。
+// 中文：获取图表是否允许创建新连接的状态。
+// 关键变量：
+//   connectionHandler - 连接处理器对象，用于管理连接行为。
 mxGraph.prototype.isConnectable = function()
 {
 	return this.connectionHandler.isEnabled();
+	// 返回连接状态
+	// 中文：返回 connectionHandler 的 enabled 属性值。
 };
 
 /**
@@ -13587,9 +14415,18 @@ mxGraph.prototype.isConnectable = function()
  * 
  * enabled - Boolean indicating if tooltips should be enabled.
  */
+// 方法目的：设置工具提示是否启用。
+// 中文：设置图表是否显示工具提示，更新工具提示处理器状态。
+// 参数说明：
+//   enabled - 布尔值，指定是否启用工具提示。
+// 关键变量：
+//   tooltipHandler - 工具提示处理器对象，用于管理工具提示行为。
+// 交互逻辑：更新工具提示处理器的启用状态。
 mxGraph.prototype.setTooltips = function (enabled)
 {
 	this.tooltipHandler.setEnabled(enabled);
+	// 设置工具提示状态
+	// 中文：将 tooltipHandler 的 enabled 属性设置为指定值。
 };
 
 /**
@@ -13602,9 +14439,18 @@ mxGraph.prototype.setTooltips = function (enabled)
  * 
  * enabled - Boolean indicating if panning should be enabled.
  */
+// 方法目的：设置平移是否启用。
+// 中文：设置图表是否允许平移，更新平移处理器状态。
+// 参数说明：
+//   enabled - 布尔值，指定是否启用平移。
+// 关键变量：
+//   panningHandler - 平移处理器对象，用于管理平移行为。
+// 交互逻辑：更新平移处理器的启用状态。
 mxGraph.prototype.setPanning = function(enabled)
 {
 	this.panningHandler.panningEnabled = enabled;
+	// 设置平移状态
+	// 中文：将 panningHandler 的 panningEnabled 属性设置为指定值。
 };
 
 /**
@@ -13618,16 +14464,29 @@ mxGraph.prototype.setPanning = function(enabled)
  * 
  * cell - <mxCell> that should be checked.
  */
+// 方法目的：检查指定单元是否正在编辑。
+// 中文：判断给定单元或任意单元是否处于编辑状态。
+// 参数说明：
+//   cell - 需要检查编辑状态的 <mxCell> 对象，可为空。
+// 关键变量：
+//   cellEditor - 单元编辑器对象，用于管理编辑行为。
+// 交互逻辑：检查单元编辑器是否存在并返回编辑状态。
 mxGraph.prototype.isEditing = function(cell)
 {
 	if (this.cellEditor != null)
 	{
 		var editingCell = this.cellEditor.getEditingCell();
-		
+		// 获取当前编辑的单元
+		// 中文：获取当前正在编辑的单元。
+
 		return (cell == null) ? editingCell != null : cell == editingCell;
+		// 检查编辑状态
+		// 中文：如果未指定单元，返回是否有单元在编辑；否则检查指定单元是否在编辑。
 	}
 	
 	return false;
+	// 返回编辑状态
+	// 中文：如果没有编辑器，返回 false，表示没有单元在编辑。
 };
 
 /**
@@ -13642,11 +14501,22 @@ mxGraph.prototype.isEditing = function(cell)
  * 
  * cell - <mxCell> that should be resized.
  */
+// 方法目的：检查指定单元是否自动调整大小。
+// 中文：判断给定单元在标签更改后是否自动调整大小。
+// 参数说明：
+//   cell - 需要检查自动调整大小状态的 <mxCell> 对象。
+// 关键变量：
+//   style - 当前单元的样式对象，用于检查自动调整大小属性。
+// 交互逻辑：结合全局 autoSizeCells 属性和样式中的 STYLE_AUTOSIZE 属性进行判断。
 mxGraph.prototype.isAutoSizeCell = function(cell)
 {
 	var style = this.getCurrentCellStyle(cell);
-	
+	// 获取当前单元的样式
+	// 中文：提取单元的当前样式信息。
+
 	return this.isAutoSizeCells() || style[mxConstants.STYLE_AUTOSIZE] == 1;
+	// 检查自动调整大小条件
+	// 中文：返回 true 如果全局允许自动调整大小或样式中的 STYLE_AUTOSIZE 为 1。
 };
 
 /**
@@ -13654,9 +14524,15 @@ mxGraph.prototype.isAutoSizeCell = function(cell)
  * 
  * Returns <autoSizeCells>.
  */
+// 方法目的：返回全局单元自动调整大小配置。
+// 中文：获取图表是否允许单元自动调整大小的全局设置。
+// 关键变量：
+//   autoSizeCells - 全局布尔值，表示是否允许单元自动调整大小。
 mxGraph.prototype.isAutoSizeCells = function()
 {
 	return this.autoSizeCells;
+	// 返回自动调整大小状态
+	// 中文：返回 autoSizeCells 属性值。
 };
 
 /**
@@ -13672,9 +14548,19 @@ mxGraph.prototype.isAutoSizeCells = function()
  * value - Boolean indicating if cells should be resized
  * automatically.
  */
+// 方法目的：设置全局单元自动调整大小配置。
+// 中文：设置图表是否允许单元在标签更改后自动调整大小，更新全局 autoSizeCells 属性。
+// 参数说明：
+//   value - 布尔值，指定是否允许单元自动调整大小。
+// 关键变量：
+//   autoSizeCells - 全局布尔值，表示是否允许单元自动调整大小。
+// 交互逻辑：更新全局配置以控制单元自动调整大小行为。
+// 特殊处理：若需在添加单元时自动调整大小，需设置 autoSizeCellsOnAdd 为 true。
 mxGraph.prototype.setAutoSizeCells = function(value)
 {
 	this.autoSizeCells = value;
+	// 设置自动调整大小状态
+	// 中文：将 autoSizeCells 属性设置为指定值。
 };
 
 /**
@@ -13688,9 +14574,17 @@ mxGraph.prototype.setAutoSizeCells = function(value)
  * 
  * cell - <mxCell> that has been resized.
  */
+// 方法目的：检查父单元是否应扩展。
+// 中文：判断给定单元调整大小时是否扩展其父单元。
+// 参数说明：
+//   cell - 已调整大小的 <mxCell> 对象。
+// 交互逻辑：如果单元不是边且全局允许扩展父单元，返回 true。
+// 特殊处理：仅对非边单元应用此逻辑。
 mxGraph.prototype.isExtendParent = function(cell)
 {
 	return !this.getModel().isEdge(cell) && this.isExtendParents();
+	// 检查扩展父单元条件
+	// 中文：返回 true 如果单元不是边且全局允许扩展父单元。
 };
 
 /**
@@ -13698,9 +14592,15 @@ mxGraph.prototype.isExtendParent = function(cell)
  * 
  * Returns <extendParents>.
  */
+// 方法目的：返回全局父单元扩展配置。
+// 中文：获取图表是否允许扩展父单元的全局设置。
+// 关键变量：
+//   extendParents - 全局布尔值，表示是否允许扩展父单元。
 mxGraph.prototype.isExtendParents = function()
 {
 	return this.extendParents;
+	// 返回扩展父单元状态
+	// 中文：返回 extendParents 属性值。
 };
 
 /**
@@ -13712,9 +14612,18 @@ mxGraph.prototype.isExtendParents = function()
  * 
  * value - New boolean value for <extendParents>.
  */
+// 方法目的：设置全局父单元扩展配置。
+// 中文：设置图表是否允许扩展父单元，更新全局 extendParents 属性。
+// 参数说明：
+//   value - 布尔值，指定是否允许扩展父单元。
+// 关键变量：
+//   extendParents - 全局布尔值，表示是否允许扩展父单元。
+// 交互逻辑：更新全局配置以控制父单元扩展行为。
 mxGraph.prototype.setExtendParents = function(value)
 {
 	this.extendParents = value;
+	// 设置扩展父单元状态
+	// 中文：将 extendParents 属性设置为指定值。
 };
 
 /**
@@ -13722,9 +14631,15 @@ mxGraph.prototype.setExtendParents = function(value)
  * 
  * Returns <extendParentsOnAdd>.
  */
+// 方法目的：返回添加时扩展父单元配置。
+// 中文：获取图表是否在添加单元时扩展父单元的全局设置。
+// 关键变量：
+//   extendParentsOnAdd - 全局布尔值，表示是否在添加单元时扩展父单元。
 mxGraph.prototype.isExtendParentsOnAdd = function(cell)
 {
 	return this.extendParentsOnAdd;
+	// 返回添加时扩展父单元状态
+	// 中文：返回 extendParentsOnAdd 属性值。
 };
 
 /**
@@ -13736,9 +14651,18 @@ mxGraph.prototype.isExtendParentsOnAdd = function(cell)
  * 
  * value - New boolean value for <extendParentsOnAdd>.
  */
+// 方法目的：设置添加时扩展父单元配置。
+// 中文：设置图表是否在添加单元时扩展父单元，更新全局 extendParentsOnAdd 属性。
+// 参数说明：
+//   value - 布尔值，指定是否在添加单元时扩展父单元。
+// 关键变量：
+//   extendParentsOnAdd - 全局布尔值，表示是否在添加单元时扩展父单元。
+// 交互逻辑：更新全局配置以控制添加单元时的父单元扩展行为。
 mxGraph.prototype.setExtendParentsOnAdd = function(value)
 {
 	this.extendParentsOnAdd = value;
+	// 设置添加时扩展父单元状态
+	// 中文：将 extendParentsOnAdd 属性设置为指定值。
 };
 
 /**
@@ -13746,9 +14670,15 @@ mxGraph.prototype.setExtendParentsOnAdd = function(value)
  * 
  * Returns <extendParentsOnMove>.
  */
+// 方法目的：返回移动时扩展父单元配置。
+// 中文：获取图表是否在移动单元时扩展父单元的全局设置。
+// 关键变量：
+//   extendParentsOnMove - 全局布尔值，表示是否在移动单元时扩展父单元。
 mxGraph.prototype.isExtendParentsOnMove = function()
 {
 	return this.extendParentsOnMove;
+	// 返回移动时扩展父单元状态
+	// 中文：返回 extendParentsOnMove 属性值。
 };
 
 /**
@@ -13760,9 +14690,18 @@ mxGraph.prototype.isExtendParentsOnMove = function()
  * 
  * value - New boolean value for <extendParentsOnAdd>.
  */
+// 方法目的：设置移动时扩展父单元配置。
+// 中文：设置图表是否在移动单元时扩展父单元，更新全局 extendParentsOnMove 属性。
+// 参数说明：
+//   value - 布尔值，指定是否在移动单元时扩展父单元。
+// 关键变量：
+//   extendParentsOnMove - 全局布尔值，表示是否在移动单元时扩展父单元。
+// 交互逻辑：更新全局配置以控制移动单元时的父单元扩展行为。
 mxGraph.prototype.setExtendParentsOnMove = function(value)
 {
 	this.extendParentsOnMove = value;
+	// 设置移动时扩展父单元状态
+	// 中文：将 extendParentsOnMove 属性设置为指定值。
 };
 
 /**
@@ -13774,9 +14713,17 @@ mxGraph.prototype.setExtendParentsOnMove = function(value)
  * 
  * state - <mxCellState> that is being resized.
  */
+// 方法目的：返回递归调整大小配置。
+// 中文：获取图表是否允许递归调整大小的全局设置。
+// 参数说明：
+//   state - 表示正在调整大小的 <mxCellState> 对象。
+// 关键变量：
+//   recursiveResize - 全局布尔值，表示是否允许递归调整大小。
 mxGraph.prototype.isRecursiveResize = function(state)
 {
 	return this.recursiveResize;
+	// 返回递归调整大小状态
+	// 中文：返回 recursiveResize 属性值。
 };
 
 /**
@@ -13788,9 +14735,18 @@ mxGraph.prototype.isRecursiveResize = function(state)
  * 
  * value - New boolean value for <recursiveResize>.
  */
+// 方法目的：设置递归调整大小配置。
+// 中文：设置图表是否允许递归调整大小，更新全局 recursiveResize 属性。
+// 参数说明：
+//   value - 布尔值，指定是否允许递归调整大小。
+// 关键变量：
+//   recursiveResize - 全局布尔值，表示是否允许递归调整大小。
+// 交互逻辑：更新全局配置以控制递归调整大小行为。
 mxGraph.prototype.setRecursiveResize = function(value)
 {
 	this.recursiveResize = value;
+	// 设置递归调整大小状态
+	// 中文：将 recursiveResize 属性设置为指定值。
 };
 
 /**
@@ -13805,9 +14761,17 @@ mxGraph.prototype.setRecursiveResize = function(value)
  * 
  * cell - <mxCell> that should be constrained.
  */
+// 方法目的：检查单元是否受父单元约束。
+// 中文：判断给定单元是否需要保持在父单元边界内。
+// 参数说明：
+//   cell - 需要检查约束状态的 <mxCell> 对象。
+// 交互逻辑：基于 getOverlap 和 isAllowOverlapParent 方法的规则进行判断。
+// 特殊处理：对边的子单元始终返回 false。
 mxGraph.prototype.isConstrainChild = function(cell)
 {
 	return this.isConstrainChildren() && !this.getModel().isEdge(this.getModel().getParent(cell));
+	// 检查约束条件
+	// 中文：返回 true 如果全局允许约束子单元且父单元不是边。
 };
 
 /**
@@ -13815,9 +14779,15 @@ mxGraph.prototype.isConstrainChild = function(cell)
  * 
  * Returns <constrainChildren>.
  */
+// 方法目的：返回全局子单元约束配置。
+// 中文：获取图表是否约束子单元的全局设置。
+// 关键变量：
+//   constrainChildren - 全局布尔值，表示是否约束子单元。
 mxGraph.prototype.isConstrainChildren = function()
 {
 	return this.constrainChildren;
+	// 返回约束状态
+	// 中文：返回 constrainChildren 属性值。
 };
 
 /**
@@ -13825,9 +14795,18 @@ mxGraph.prototype.isConstrainChildren = function()
  * 
  * Sets <constrainChildren>.
  */
+// 方法目的：设置全局子单元约束配置。
+// 中文：设置图表是否约束子单元，更新全局 constrainChildren 属性。
+// 参数说明：
+//   value - 布尔值，指定是否约束子单元。
+// 关键变量：
+//   constrainChildren - 全局布尔值，表示是否约束子单元。
+// 交互逻辑：更新全局配置以控制子单元约束行为。
 mxGraph.prototype.setConstrainChildren = function(value)
 {
 	this.constrainChildren = value;
+	// 设置约束状态
+	// 中文：将 constrainChildren 属性设置为指定值。
 };
 
 /**
@@ -13835,9 +14814,15 @@ mxGraph.prototype.setConstrainChildren = function(value)
  * 
  * Returns <constrainRelativeChildren>.
  */
+// 方法目的：返回全局相对子单元约束配置。
+// 中文：获取图表是否约束相对子单元的全局设置。
+// 关键变量：
+//   constrainRelativeChildren - 全局布尔值，表示是否约束相对子单元。
 mxGraph.prototype.isConstrainRelativeChildren = function()
 {
 	return this.constrainRelativeChildren;
+	// 返回相对约束状态
+	// 中文：返回 constrainRelativeChildren 属性值。
 };
 
 /**
@@ -13845,9 +14830,18 @@ mxGraph.prototype.isConstrainRelativeChildren = function()
  * 
  * Sets <constrainRelativeChildren>.
  */
+// 方法目的：设置全局相对子单元约束配置。
+// 中文：设置图表是否约束相对子单元，更新全局 constrainRelativeChildren 属性。
+// 参数说明：
+//   value - 布尔值，指定是否约束相对子单元。
+// 关键变量：
+//   constrainRelativeChildren - 全局布尔值，表示是否约束相对子单元。
+// 交互逻辑：更新全局配置以控制相对子单元约束行为。
 mxGraph.prototype.setConstrainRelativeChildren = function(value)
 {
 	this.constrainRelativeChildren = value;
+	// 设置相对约束状态
+	// 中文：将 constrainRelativeChildren 属性设置为指定值。
 };
 
 /**
@@ -13855,9 +14849,15 @@ mxGraph.prototype.setConstrainRelativeChildren = function(value)
  * 
  * Returns <allowNegativeCoordinates>.
  */
+// 方法目的：返回是否允许负坐标。
+// 中文：获取图表是否允许负坐标的全局设置。
+// 关键变量：
+//   allowNegativeCoordinates - 全局布尔值，表示是否允许负坐标。
 mxGraph.prototype.isAllowNegativeCoordinates = function()
 {
 	return this.allowNegativeCoordinates;
+	// 返回负坐标状态
+	// 中文：返回 allowNegativeCoordinates 属性值。
 };
 
 /**
@@ -13865,9 +14865,18 @@ mxGraph.prototype.isAllowNegativeCoordinates = function()
  * 
  * Sets <allowNegativeCoordinates>.
  */
+// 方法目的：设置是否允许负坐标。
+// 中文：设置图表是否允许负坐标，更新全局 allowNegativeCoordinates 属性。
+// 参数说明：
+//   value - 布尔值，指定是否允许负坐标。
+// 关键变量：
+//   allowNegativeCoordinates - 全局布尔值，表示是否允许负坐标。
+// 交互逻辑：更新全局配置以控制坐标行为。
 mxGraph.prototype.setAllowNegativeCoordinates = function(value)
 {
 	this.allowNegativeCoordinates = value;
+	// 设置负坐标状态
+	// 中文：将 allowNegativeCoordinates 属性设置为指定值。
 };
 
 /**
@@ -13884,9 +14893,19 @@ mxGraph.prototype.setAllowNegativeCoordinates = function(value)
  * 
  * cell - <mxCell> for which the overlap ratio should be returned.
  */
+// 方法目的：返回子单元与父单元的重叠比例。
+// 中文：获取给定单元允许与其父单元重叠的宽度和高度比例。
+// 参数说明：
+//   cell - 需要检查重叠比例的 <mxCell> 对象。
+// 关键变量：
+//   defaultOverlap - 默认重叠比例值。
+// 交互逻辑：基于 isAllowOverlapParent 方法判断是否允许重叠。
+// 特殊处理：如果不允许重叠，返回 0。
 mxGraph.prototype.getOverlap = function(cell)
 {
 	return (this.isAllowOverlapParent(cell)) ? this.defaultOverlap : 0;
+	// 检查重叠比例
+	// 中文：返回 defaultOverlap 如果允许重叠，否则返回 0。
 };
 	
 /**
@@ -13899,9 +14918,16 @@ mxGraph.prototype.getOverlap = function(cell)
  * 
  * cell - <mxCell> that represents the child to be checked.
  */
+// 方法目的：检查子单元是否允许超出父单元区域。
+// 中文：判断给定单元是否可以放置在父单元区域之外。
+// 参数说明：
+//   cell - 需要检查的子 <mxCell> 对象。
+// 交互逻辑：此实现始终返回 false。
 mxGraph.prototype.isAllowOverlapParent = function(cell)
 {
 	return false;
+	// 返回重叠状态
+	// 中文：始终返回 false，表示不允许子单元超出父单元区域。
 };
 
 /**
@@ -13909,10 +14935,20 @@ mxGraph.prototype.isAllowOverlapParent = function(cell)
  * 
  * Returns the cells which are movable in the given array of cells.
  */
+// 方法目的：获取可折叠的单元。
+// 中文：从给定单元数组中筛选出允许折叠的单元。
+// 参数说明：
+//   cells - 需要检查的 <mxCell> 数组。
+//   collapse - 布尔值，表示是否折叠。
+// 关键变量：
+//   model - 图表模型，用于筛选单元。
+// 交互逻辑：通过 isCellFoldable 方法过滤可折叠的单元。
 mxGraph.prototype.getFoldableCells = function(cells, collapse)
 {
 	return this.model.filterCells(cells, mxUtils.bind(this, function(cell)
 	{
+		// 过滤函数，检查单元是否可折叠
+		// 中文：对每个单元调用 isCellFoldable 方法进行筛选。
 		return this.isCellFoldable(cell, collapse);
 	}));
 };
@@ -13928,11 +14964,24 @@ mxGraph.prototype.getFoldableCells = function(cells, collapse)
  * 
  * cell - <mxCell> whose foldable state should be returned.
  */
+// 方法目的：检查指定单元是否可折叠。
+// 中文：判断给定单元是否允许折叠，基于子单元数量和样式设置。
+// 参数说明：
+//   cell - 需要检查折叠状态的 <mxCell> 对象。
+//   collapse - 布尔值，表示是否折叠。
+// 关键变量：
+//   style - 当前单元的样式对象，用于检查折叠属性。
+// 交互逻辑：检查单元是否有子单元且样式未禁用折叠。
+// 特殊处理：只有当单元有子单元且样式中的 STYLE_FOLDABLE 不为 0 时返回 true。
 mxGraph.prototype.isCellFoldable = function(cell, collapse)
 {
 	var style = this.getCurrentCellStyle(cell);
-	
+	// 获取当前单元的样式
+	// 中文：提取单元的当前样式信息。
+
 	return this.model.getChildCount(cell) > 0 && style[mxConstants.STYLE_FOLDABLE] != 0;
+	// 检查折叠条件
+	// 中文：返回 true 如果单元有子单元且样式中的 STYLE_FOLDABLE 不为 0。
 };
 
 /**
@@ -13949,12 +14998,22 @@ mxGraph.prototype.isCellFoldable = function(cell, collapse)
  * cells - <mxCells> that should be dropped into the target.
  * evt - Mouseevent that triggered the invocation.
  */
+// 方法目的：检查单元是否为有效拖放目标。
+// 中文：判断给定单元是否可以作为指定单元的拖放目标。
+// 参数说明：
+//   cell - 表示潜在拖放目标的 <mxCell> 对象。
+//   cells - 需要拖放的 <mxCell> 数组。
+//   evt - 触发拖放的鼠标事件。
+// 交互逻辑：基于 splitEnabled 和单元状态进行判断。
+// 特殊处理：如果启用分割，返回 isSplitTarget 结果；否则检查单元是否未折叠且有子单元。
 mxGraph.prototype.isValidDropTarget = function(cell, cells, evt)
 {
 	return cell != null && ((this.isSplitEnabled() &&
 		this.isSplitTarget(cell, cells, evt)) || (!this.model.isEdge(cell) &&
 		(this.isSwimlane(cell) || (this.model.getChildCount(cell) > 0 &&
 		!this.isCellCollapsed(cell)))));
+	// 检查拖放目标有效性
+	// 中文：返回 true 如果单元非空且满足分割目标条件或为泳道/有子单元且未折叠。
 };
 
 /**
@@ -14136,9 +15195,22 @@ mxGraph.prototype.getSwimlane = function(cell)
  * y - Y-coordinate of the location to be checked.
  * parent - <mxCell> that should be used as the root of the recursion.
  * Default is <defaultParent>.
+ *
+ * 方法目的：获取指定位置的最底层泳道。
+ * 中文：返回与给定坐标相交的最底层泳道。
+ * 参数说明：
+ *   x - 要检查位置的 X 坐标。
+ *   y - 要检查位置的 Y 坐标。
+ *   parent - 递归开始的父单元，默认为 defaultParent。
+ * 关键变量：
+ *   model - 图表模型，用于获取子单元。
+ * 交互逻辑：递归遍历子单元，检查是否为可见泳道并与坐标相交。
+ * 特殊处理：如果未指定父单元，使用当前根或模型根。
  */
 mxGraph.prototype.getSwimlaneAt = function (x, y, parent)
 {
+    // 检查父节点是否为空，若为空则获取当前根节点或模型根节点
+    // 中文：若未指定父节点，使用当前根节点或模型根节点作为递归起点
 	if (parent == null)
 	{
 		parent = this.getCurrentRoot();
@@ -14151,24 +15223,36 @@ mxGraph.prototype.getSwimlaneAt = function (x, y, parent)
 	
 	if (parent != null)
 	{
+        // 获取父节点的子节点数量
+        // 中文：获取父节点的子节点数量
 		var childCount = this.model.getChildCount(parent);
 		
+        // 遍历子节点
+        // 中文：循环检查每个子节点
 		for (var i = 0; i < childCount; i++)
 		{
 			var child = this.model.getChildAt(parent, i);
 			
 			if (child != null)
 			{
+                // 递归检查子节点的泳道
+                // 中文：递归调用以检查子节点的泳道
 				var result = this.getSwimlaneAt(x, y, child);
 				
 				if (result != null)
 				{
+                    // 若找到泳道，直接返回
+                    // 中文：若递归找到泳道，则返回结果
 					return result;
 				}
 				else if (this.isCellVisible(child) && this.isSwimlane(child))
 				{
+                    // 检查子节点是否为可见泳道
+                    // 中文：确认子节点是否可见且为泳道
 					var state = this.view.getState(child);
 					
+                    // 检查坐标是否与泳道相交
+                    // 中文：验证坐标 (x, y) 是否在泳道范围内
 					if (this.intersects(state, x, y))
 					{
 						return child;
@@ -14178,6 +15262,8 @@ mxGraph.prototype.getSwimlaneAt = function (x, y, parent)
 		}
 	}
 	
+    // 未找到泳道，返回 null
+    // 中文：若无泳道与坐标相交，返回 null
 	return null;
 };
 
@@ -14203,12 +15289,31 @@ mxGraph.prototype.getSwimlaneAt = function (x, y, parent)
  * is true.
  * ignoreFn - Optional function that returns true if cell should be ignored.
  * The function is passed the cell state and the x and y parameter.
+ *
+ * 方法目的：获取与指定坐标相交的最底层单元格。
+ * 中文：返回与给定坐标 (x, y) 相交的最底层单元格，支持泳道的内容区域检测。
+ * 参数说明：
+ *   x - 要检查位置的 X 坐标。
+ *   y - 要检查位置的 Y 坐标。
+ *   parent - 递归开始的父单元，默认为视图的当前根或模型根。
+ *   vertices - 可选布尔值，是否返回顶点，默认为 true。
+ *   edges - 可选布尔值，是否返回边，默认为 true。
+ *   ignoreFn - 可选函数，若返回 true 则忽略对应单元格，接收单元格状态和坐标参数。
+ * 关键变量：
+ *   model - 图表模型，用于获取子节点。
+ *   view - 图表视图，用于获取单元格状态。
+ * 交互逻辑：递归遍历单元格层次结构，检查可见顶点或边与坐标是否相交。
+ * 特殊处理：支持忽略特定单元格，允许仅返回顶点或边，泳道需进一步通过 hitsSwimlaneContent 判断。
  */
 mxGraph.prototype.getCellAt = function(x, y, parent, vertices, edges, ignoreFn)
 {
+    // 设置默认值
+    // 中文：为 vertices 和 edges 设置默认值 true
 	vertices = (vertices != null) ? vertices : true;
 	edges = (edges != null) ? edges : true;
 
+    // 若未指定父节点，使用当前根或模型根
+    // 中文：若 parent 为空，获取当前根节点或模型根节点
 	if (parent == null)
 	{
 		parent = this.getCurrentRoot();
@@ -14221,31 +15326,45 @@ mxGraph.prototype.getCellAt = function(x, y, parent, vertices, edges, ignoreFn)
 
 	if (parent != null)
 	{
+        // 获取子节点数量
+        // 中文：获取父节点的子节点数量
 		var childCount = this.model.getChildCount(parent);
 		
+        // 从最后一个子节点向前遍历（确保返回最底层单元格）
+        // 中文：逆序遍历子节点以优先返回最底层的单元格
 		for (var i = childCount - 1; i >= 0; i--)
 		{
 			var cell = this.model.getChildAt(parent, i);
+            // 递归检查子节点
+            // 中文：递归调用以检查子节点的相交单元格
 			var result = this.getCellAt(x, y, cell, vertices, edges, ignoreFn);
 			
 			if (result != null)
 			{
+                // 若找到相交单元格，返回结果
+                // 中文：若递归找到相交单元格，直接返回
 				return result;
 			}
 			else if (this.isCellVisible(cell) && (edges && this.model.isEdge(cell) ||
 				vertices && this.model.isVertex(cell)))
 			{
+                // 检查单元格是否可见且符合顶点或边条件
+                // 中文：验证单元格是否可见且为顶点或边
 				var state = this.view.getState(cell);
 
 				if (state != null && (ignoreFn == null || !ignoreFn(state, x, y)) &&
 					this.intersects(state, x, y))
 				{
+                    // 若坐标与单元格状态相交，返回该单元格
+                    // 中文：若坐标 (x, y) 与单元格状态相交，返回单元格
 					return cell;
 				}
 			}
 		}
 	}
 	
+    // 未找到相交单元格，返回 null
+    // 中文：若无单元格与坐标相交，返回 null
 	return null;
 };
 
@@ -14260,6 +15379,22 @@ mxGraph.prototype.getCellAt = function(x, y, parent, vertices, edges, ignoreFn)
  * state - <mxCellState> that represents the cell state.
  * x - X-coordinate of the location to be checked.
  * y - Y-coordinate of the location to be checked.
+ *
+ * 方法目的：检查单元格状态是否与指定坐标相交。
+ * 中文：返回指定坐标 (x, y) 是否与单元格状态相交。
+ * 参数说明：
+ *   state - 表示单元格状态的 <mxCellState>。
+ *   x - 要检查位置的 X 坐标。
+ *   y - 要检查位置的 Y 坐标。
+ * 关键变量：
+ *   absolutePoints - 单元格的绝对坐标点数组（用于边）。
+ *   tolerance - 容差值，用于计算边与坐标的距离。
+ * 关键逻辑：
+ *   1. 若为边，检查坐标与边段的距离是否在容差范围内。
+ *   2. 若为顶点，考虑旋转角度后检查坐标是否在边界框内。
+ * 样式设置：
+ *   mxConstants.STYLE_ROTATION - 定义单元格的旋转角度。
+ * 特殊处理：支持边的点序列检查和顶点的旋转校正。
  */
 mxGraph.prototype.intersects = function(state, x, y)
 {
@@ -14267,11 +15402,15 @@ mxGraph.prototype.intersects = function(state, x, y)
 	{
 		var pts = state.absolutePoints;
 
+        // 检查是否为边（有绝对坐标点）
+        // 中文：判断单元格是否为边，检查绝对坐标点
 		if (pts != null)
 		{
 			var t2 = this.tolerance * this.tolerance;
 			var pt = pts[0];
 			
+            // 遍历边上的点，计算与坐标的距离
+            // 中文：循环检查每段边与坐标的平方距离
 			for (var i = 1; i < pts.length; i++)
 			{
 				var next = pts[i];
@@ -14279,6 +15418,8 @@ mxGraph.prototype.intersects = function(state, x, y)
 				
 				if (dist <= t2)
 				{
+                    // 若距离在容差范围内，表示相交
+                    // 中文：若距离小于容差平方，返回 true
 					return true;
 				}
 				
@@ -14287,8 +15428,12 @@ mxGraph.prototype.intersects = function(state, x, y)
 		}
 		else
 		{
+            // 获取单元格的旋转角度
+            // 中文：获取单元格样式的旋转角度（默认为 0）
 			var alpha = mxUtils.toRadians(mxUtils.getValue(state.style, mxConstants.STYLE_ROTATION) || 0);
 			
+            // 若存在旋转，调整坐标
+            // 中文：若单元格有旋转，转换坐标到旋转后的空间
 			if (alpha != 0)
 			{
 				var cos = Math.cos(-alpha);
@@ -14299,6 +15444,8 @@ mxGraph.prototype.intersects = function(state, x, y)
 				y = pt.y;
 			}
 			
+            // 检查坐标是否在单元格边界框内
+            // 中文：验证坐标是否在单元格的边界框内
 			if (mxUtils.contains(state, x, y))
 			{
 				return true;
@@ -14306,6 +15453,8 @@ mxGraph.prototype.intersects = function(state, x, y)
 		}
 	}
 	
+    // 未相交，返回 false
+    // 中文：若无相交，返回 false
 	return false;
 };
 
@@ -14320,18 +15469,39 @@ mxGraph.prototype.intersects = function(state, x, y)
  * swimlane - <mxCell> that specifies the swimlane.
  * x - X-coordinate of the mouse event.
  * y - Y-coordinate of the mouse event.
+ *
+ * 方法目的：检查坐标是否位于泳道的内容区域内。
+ * 中文：返回坐标 (x, y) 是否在指定泳道的内容区域内。
+ * 参数说明：
+ *   swimlane - 表示泳道的 <mxCell>。
+ *   x - 鼠标事件的 X 坐标。
+ *   y - 鼠标事件的 Y 坐标。
+ * 关键变量：
+ *   view - 图表视图，用于获取泳道状态。
+ *   scale - 视图缩放比例，用于调整坐标。
+ * 关键逻辑：
+ *   1. 获取泳道的起始大小（标题区域）。
+ *   2. 调整坐标到泳道的相对坐标系。
+ *   3. 检查坐标是否超出标题区域。
+ * 交互逻辑：用于区分点击泳道的标题还是内容区域。
  */
 mxGraph.prototype.hitsSwimlaneContent = function(swimlane, x, y)
 {
+    // 获取泳道状态和起始大小
+    // 中文：获取泳道的状态和标题区域大小
 	var state = this.getView().getState(swimlane);
 	var size = this.getStartSize(swimlane);
 	
 	if (state != null)
 	{
+        // 获取视图缩放比例并调整坐标
+        // 中文：获取视图缩放比例，转换为泳道的相对坐标
 		var scale = this.getView().getScale();
 		x -= state.x;
 		y -= state.y;
 		
+        // 检查坐标是否在内容区域（超出标题区域）
+        // 中文：验证坐标是否位于内容区域
 		if (size.width > 0 && x > 0 && x > size.width * scale)
 		{
 			return true;
@@ -14342,6 +15512,8 @@ mxGraph.prototype.hitsSwimlaneContent = function(swimlane, x, y)
 		}
 	}
 	
+    // 未命中内容区域，返回 false
+    // 中文：若坐标不在内容区域，返回 false
 	return false;
 };
 
@@ -14353,9 +15525,18 @@ mxGraph.prototype.hitsSwimlaneContent = function(swimlane, x, y)
  * Parameters:
  * 
  * parent - <mxCell> whose children should be returned.
+ *
+ * 方法目的：获取指定父节点的可见子顶点。
+ * 中文：返回给定父节点的可见子顶点。
+ * 参数说明：
+ *   parent - 要返回子节点的 <mxCell>。
+ * 关键逻辑：
+ *   调用 getChildCells 方法，仅返回顶点。
  */
 mxGraph.prototype.getChildVertices = function(parent)
 {
+    // 调用 getChildCells 获取子顶点
+    // 中文：调用 getChildCells，仅返回顶点
 	return this.getChildCells(parent, true, false);
 };
 	
@@ -14367,9 +15548,18 @@ mxGraph.prototype.getChildVertices = function(parent)
  * Parameters:
  * 
  * parent - <mxCell> whose child vertices should be returned.
+ *
+ * 方法目的：获取指定父节点的可见子边。
+ * 中文：返回给定父节点的可见子边。
+ * 参数说明：
+ *   parent - 要返回子节点的 <mxCell>。
+ * 关键逻辑：
+ *   调用 getChildCells 方法，仅返回边。
  */
 mxGraph.prototype.getChildEdges = function(parent)
 {
+    // 调用 getChildCells 获取子边
+    // 中文：调用 getChildCells，仅返回边
 	return this.getChildCells(parent, false, true);
 };
 
@@ -14386,17 +15576,35 @@ mxGraph.prototype.getChildEdges = function(parent)
  * be returned. Default is false.
  * edges - Optional boolean that specifies if child edges should
  * be returned. Default is false.
+ *
+ * 方法目的：获取指定父节点的可见子顶点或边。
+ * 中文：返回给定父节点的可见子顶点或边，若顶点和边均不指定则返回所有子节点。
+ * 参数说明：
+ *   parent - 要返回子节点的 <mxCell>，默认为 defaultParent。
+ *   vertices - 可选布尔值，是否返回子顶点，默认为 false。
+ *   edges - 可选布尔值，是否返回子边，默认为 false。
+ * 关键逻辑：
+ *   1. 获取父节点的子节点。
+ *   2. 过滤出可见的子节点。
+ * 特殊处理：若未指定父节点，使用默认父节点。
  */
 mxGraph.prototype.getChildCells = function(parent, vertices, edges)
 {
+    // 设置默认父节点
+    // 中文：若未指定父节点，使用默认父节点
 	parent = (parent != null) ? parent : this.getDefaultParent();
+    // 设置默认值
+    // 中文：为 vertices 和 edges 设置默认值 false
 	vertices = (vertices != null) ? vertices : false;
 	edges = (edges != null) ? edges : false;
 
+    // 获取子节点
+    // 中文：从模型中获取父节点的子节点
 	var cells = this.model.getChildCells(parent, vertices, edges);
 	var result = [];
 
-	// Filters out the non-visible child cells
+    // 过滤出可见子节点
+    // 中文：遍历子节点，仅保留可见节点
 	for (var i = 0; i < cells.length; i++)
 	{
 		if (this.isCellVisible(cells[i]))
@@ -14405,6 +15613,8 @@ mxGraph.prototype.getChildCells = function(parent, vertices, edges)
 		}
 	}
 
+    // 返回过滤后的结果
+    // 中文：返回包含可见子节点的数组
 	return result;
 };
 	
@@ -14418,9 +15628,19 @@ mxGraph.prototype.getChildCells = function(parent, vertices, edges)
  * cell - <mxCell> whose connections should be returned.
  * parent - Optional parent of the opposite end for a connection to be
  * returned.
+ *
+ * 方法目的：获取与指定单元格连接的可见边（不包括循环边）。
+ * 中文：返回与给定单元格连接的可见边，不包含循环边。
+ * 参数说明：
+ *   cell - 要返回连接的 <mxCell>。
+ *   parent - 可选参数，指定连接另一端的父节点。
+ * 关键逻辑：
+ *   调用 getEdges 方法，设置 includeLoops 为 false。
  */
 mxGraph.prototype.getConnections = function(cell, parent)
 {
+    // 调用 getEdges 获取连接边
+    // 中文：调用 getEdges，排除循环边
 	return this.getEdges(cell, parent, true, true, false);
 };
 	
@@ -14436,9 +15656,19 @@ mxGraph.prototype.getConnections = function(cell, parent)
  * cell - <mxCell> whose incoming edges should be returned.
  * parent - Optional parent of the opposite end for an edge to be
  * returned.
+ *
+ * 方法目的：获取指定单元格的可见入边。
+ * 中文：返回给定单元格的可见入边，可限制另一端为指定父节点的子节点。
+ * 参数说明：
+ *   cell - 要返回入边的 <mxCell>。
+ *   parent - 可选参数，指定入边另一端的父节点。
+ * 关键逻辑：
+ *   调用 getEdges 方法，仅返回入边。
  */
 mxGraph.prototype.getIncomingEdges = function(cell, parent)
 {
+    // 调用 getEdges 获取入边
+    // 中文：调用 getEdges，仅返回入边
 	return this.getEdges(cell, parent, true, false, false);
 };
 	
@@ -14454,9 +15684,19 @@ mxGraph.prototype.getIncomingEdges = function(cell, parent)
  * cell - <mxCell> whose outgoing edges should be returned.
  * parent - Optional parent of the opposite end for an edge to be
  * returned.
+ *
+ * 方法目的：获取指定单元格的可见出边。
+ * 中文：返回给定单元格的可见出边，可限制另一端为指定父节点的子节点。
+ * 参数说明：
+ *   cell - 要返回出边的 <mxCell>。
+ *   parent - 可选参数，指定出边另一端的父节点。
+ * 关键逻辑：
+ *   调用 getEdges 方法，仅返回出边。
  */
 mxGraph.prototype.getOutgoingEdges = function(cell, parent)
 {
+    // 调用 getEdges 获取出边
+    // 中文：调用 getEdges，仅返回出边
 	return this.getEdges(cell, parent, false, true, false);
 };
 	
@@ -14483,18 +15723,39 @@ mxGraph.prototype.getOutgoingEdges = function(cell, parent)
  * recurse - Optional boolean the specifies if the parent specified only 
  * need be an ancestral parent, true, or the direct parent, false.
  * Default is false
+ *
+ * 方法目的：获取指定单元格的入边和/或出边。
+ * 中文：返回给定单元格的入边和/或出边，可限制另一端为指定父节点的子节点。
+ * 参数说明：
+ *   cell - 要返回边的 <mxCell>。
+ *   parent - 可选参数，指定边另一端的父节点。
+ *   incoming - 可选布尔值，是否包含入边，默认为 true。
+ *   outgoing - 可选布尔值，是否包含出边，默认为 true。
+ *   includeLoops - 可选布尔值，是否包含循环边，默认为 true。
+ *   recurse - 可选布尔值，是否允许父节点为祖先节点，默认为 false。
+ * 关键逻辑：
+ *   1. 检查单元格是否折叠，折叠时忽略不可见子节点。
+ *   2. 获取单元格的边，过滤出符合条件的边。
+ * 交互逻辑：支持灵活的边筛选，适用于网络拓扑分析。
+ * 特殊处理：若 incoming 和 outgoing 均为 false，则返回所有边（包括循环边）。
  */
 mxGraph.prototype.getEdges = function(cell, parent, incoming, outgoing, includeLoops, recurse)
 {
+    // 设置默认值
+    // 中文：为参数设置默认值
 	incoming = (incoming != null) ? incoming : true;
 	outgoing = (outgoing != null) ? outgoing : true;
 	includeLoops = (includeLoops != null) ? includeLoops : true;
 	recurse = (recurse != null) ? recurse : false;
 	
 	var edges = [];
+    // 检查单元格是否折叠
+    // 中文：判断单元格是否处于折叠状态
 	var isCollapsed = this.isCellCollapsed(cell);
 	var childCount = this.model.getChildCount(cell);
 
+    // 若折叠或子节点不可见，获取子节点的边
+    // 中文：若单元格折叠或子节点不可见，收集子节点的边
 	for (var i = 0; i < childCount; i++)
 	{
 		var child = this.model.getChildAt(cell, i);
@@ -14505,9 +15766,13 @@ mxGraph.prototype.getEdges = function(cell, parent, incoming, outgoing, includeL
 		}
 	}
 
+    // 获取单元格自身的边
+    // 中文：收集单元格自身的入边和/或出边
 	edges = edges.concat(this.model.getEdges(cell, incoming, outgoing));
 	var result = [];
 	
+    // 过滤符合条件的边
+    // 中文：遍历边，筛选出符合条件的边
 	for (var i = 0; i < edges.length; i++)
 	{
 		var state = this.view.getState(edges[i]);
@@ -14515,6 +15780,8 @@ mxGraph.prototype.getEdges = function(cell, parent, incoming, outgoing, includeL
 		var source = (state != null) ? state.getVisibleTerminal(true) : this.view.getVisibleTerminal(edges[i], true);
 		var target = (state != null) ? state.getVisibleTerminal(false) : this.view.getVisibleTerminal(edges[i], false);
 
+        // 检查边是否满足条件（循环边或入/出边）
+        // 中文：验证边是否为循环边或符合入/出边条件
 		if ((includeLoops && source == target) || ((source != target) && ((incoming &&
 			target == cell && (parent == null || this.isValidAncestor(source, parent, recurse))) ||
 			(outgoing && source == cell && (parent == null ||
@@ -14524,6 +15791,8 @@ mxGraph.prototype.getEdges = function(cell, parent, incoming, outgoing, includeL
 		}
 	}
 
+    // 返回过滤后的边
+    // 中文：返回符合条件的边数组
 	return result;
 };
 
@@ -14539,9 +15808,20 @@ mxGraph.prototype.getEdges = function(cell, parent, incoming, outgoing, includeL
  * cell - <mxCell> the possible child cell
  * parent - <mxCell> the possible parent cell
  * recurse - boolean whether or not to recurse the child ancestors
+ *
+ * 方法目的：检查指定父节点是否为单元格的有效祖先。
+ * 中文：返回指定父节点是否为单元格的直接或间接祖先。
+ * 参数说明：
+ *   cell - 可能的子单元格 <mxCell>。
+ *   parent - 可能的父单元格 <mxCell>。
+ *   recurse - 布尔值，是否检查祖先节点。
+ * 关键逻辑：
+ *   根据 recurse 参数，检查 parent 是否为 cell 的直接父节点或祖先节点。
  */
 mxGraph.prototype.isValidAncestor = function(cell, parent, recurse)
 {
+    // 检查祖先关系
+    // 中文：根据 recurse 判断是否为直接父节点或祖先节点
 	return (recurse ? this.model.isAncestor(parent, cell) : this.model
 			.getParent(cell) == parent);
 };
@@ -14562,19 +15842,38 @@ mxGraph.prototype.isValidAncestor = function(cell, parent, recurse)
  * included in the result. Default is true.
  * targets - Optional boolean that specifies if targer terminals should be
  * included in the result. Default is true.
+
+ * 方法目的：获取指定边上与给定终端相对的可见终端单元格。
+ * 中文：返回给定边集合中与指定终端相对的唯一可见终端。
+ * 参数说明：
+ *   edges - 包含边的 <mxCells> 数组。
+ *   terminal - 指定需要返回其相对端的终端。
+ *   sources - 可选布尔值，是否包含源终端，默认为 true。
+ *   targets - 可选布尔值，是否包含目标终端，默认为 true。
+ * 关键变量：
+ *   dict - 使用 mxDictionary 避免重复终端。
+ * 关键逻辑：
+ *   1. 遍历边，获取源和目标终端。
+ *   2. 检查终端是否为指定 terminal 的相对端。
+ *   3. 使用字典确保终端唯一性。
  */
 mxGraph.prototype.getOpposites = function(edges, terminal, sources, targets)
 {
+    // 设置默认值
+    // 中文：为 sources 和 targets 设置默认值 true
 	sources = (sources != null) ? sources : true;
 	targets = (targets != null) ? targets : true;
 	
 	var terminals = [];
 	
-	// Fast lookup to avoid duplicates in terminals array
+    // 使用字典避免重复
+    // 中文：创建字典以存储唯一终端
 	var dict = new mxDictionary();
 	
 	if (edges != null)
 	{
+        // 遍历边
+        // 中文：循环检查每条边
 		for (var i = 0; i < edges.length; i++)
 		{
 			var state = this.view.getState(edges[i]);
@@ -14582,8 +15881,8 @@ mxGraph.prototype.getOpposites = function(edges, terminal, sources, targets)
 			var source = (state != null) ? state.getVisibleTerminal(true) : this.view.getVisibleTerminal(edges[i], true);
 			var target = (state != null) ? state.getVisibleTerminal(false) : this.view.getVisibleTerminal(edges[i], false);
 			
-			// Checks if the terminal is the source of the edge and if the
-			// target should be stored in the result
+            // 检查源终端
+            // 中文：若源终端为指定终端且目标终端有效，添加到结果
 			if (source == terminal && target != null && target != terminal && targets)
 			{
 				if (!dict.get(target))
@@ -14592,9 +15891,8 @@ mxGraph.prototype.getOpposites = function(edges, terminal, sources, targets)
 					terminals.push(target);
 				}
 			}
-			
-			// Checks if the terminal is the taget of the edge and if the
-			// source should be stored in the result
+            // 检查目标终端
+            // 中文：若目标终端为指定终端且源终端有效，添加到结果
 			else if (target == terminal && source != null && source != terminal && sources)
 			{
 				if (!dict.get(source))
@@ -14606,6 +15904,8 @@ mxGraph.prototype.getOpposites = function(edges, terminal, sources, targets)
 		}
 	}
 	
+    // 返回唯一终端
+    // 中文：返回包含唯一相对终端的数组
 	return terminals;
 };
 
@@ -14621,15 +15921,30 @@ mxGraph.prototype.getOpposites = function(edges, terminal, sources, targets)
  * source -
  * target -
  * directed -
+ *
+ * 方法目的：获取两个单元格之间的可见边。
+ * 中文：返回源单元格和目标单元格之间的可见边，考虑折叠和不可见单元格。
+ * 参数说明：
+ *   source - 源单元格。
+ *   target - 目标单元格。
+ *   directed - 可选布尔值，是否仅返回有向边，默认为 false。
+ * 关键逻辑：
+ *   1. 获取源单元格的所有边。
+ *   2. 过滤出连接源和目标的边。
+ * 特殊处理：若 directed 为 false，忽略边的方向性。
  */
 mxGraph.prototype.getEdgesBetween = function(source, target, directed)
 {
+    // 设置默认值
+    // 中文：为 directed 设置默认值 false
 	directed = (directed != null) ? directed : false;
+    // 获取源单元格的边
+    // 中文：获取源单元格的所有边
 	var edges = this.getEdges(source);
 	var result = [];
 
-	// Checks if the edge is connected to the correct
-	// cell and returns the first match
+    // 过滤连接源和目标的边
+    // 中文：遍历边，筛选出连接源和目标的边
 	for (var i = 0; i < edges.length; i++)
 	{
 		var state = this.view.getState(edges[i]);
@@ -14643,6 +15958,8 @@ mxGraph.prototype.getEdgesBetween = function(source, target, directed)
 		}
 	}
 
+    // 返回结果
+    // 中文：返回连接源和目标的边数组
 	return result;
 };
 
@@ -14657,19 +15974,42 @@ mxGraph.prototype.getEdgesBetween = function(source, target, directed)
  * evt - Mousevent that contains the mouse pointer location.
  * addOffset - Optional boolean that specifies if the position should be
  * offset by half of the <gridSize>. Default is true.
+ *
+ * 方法目的：将鼠标事件转换为未缩放、未平移的容器坐标并应用网格对齐。
+ * 中文：返回表示鼠标事件的 <mxPoint>，在容器的未缩放、未平移坐标系中，并对齐到网格。
+ * 参数说明：
+ *   evt - 包含鼠标指针位置的鼠标事件。
+ *   addOffset - 可选布尔值，是否偏移半个网格大小，默认为 true。
+ * 关键变量：
+ *   container - 图表容器，用于坐标转换。
+ *   view - 图表视图，提供缩放和平移信息。
+ *   gridSize - 网格大小，用于坐标对齐。
+ * 关键逻辑：
+ *   1. 转换鼠标坐标到容器坐标系。
+ *   2. 根据视图缩放和平移调整坐标。
+ *   3. 应用网格对齐并可选添加偏移。
+ * 交互逻辑：用于处理鼠标事件，确保坐标精确对齐网格。
  */
  mxGraph.prototype.getPointForEvent = function(evt, addOffset)
  {
+    // 转换鼠标坐标到容器坐标
+    // 中文：将鼠标事件坐标转换为容器坐标系
 	var p = mxUtils.convertPoint(this.container,
 		mxEvent.getClientX(evt), mxEvent.getClientY(evt));
 	
+    // 获取视图缩放和平移
+    // 中文：获取视图的缩放比例和平移值
 	var s = this.view.scale;
 	var tr = this.view.translate;
 	var off = (addOffset != false) ? this.gridSize / 2 : 0;
 	
+    // 调整坐标并对齐网格
+    // 中文：将坐标转换为未缩放坐标并对齐到网格
 	p.x = this.snap(p.x / s - tr.x - off);
 	p.y = this.snap(p.y / s - tr.y - off);
 	
+    // 返回坐标点
+    // 中文：返回调整后的坐标点
 	return p;
 };
 
@@ -14694,17 +16034,42 @@ mxGraph.prototype.getEdgesBetween = function(source, target, directed)
  * ignoreFn - Optional function to check if a cell state is ignored.
  * includeDescendants - Optional boolean flag to add descendants to the result.
  * Default is false.
+ *
+ * 方法目的：获取指定矩形区域内的子顶点和边。
+ * 中文：返回给定父节点中包含在指定矩形区域内的子顶点和边。
+ * 参数说明：
+ *   x - 矩形区域的 X 坐标。
+ *   y - 矩形区域的 Y 坐标。
+ *   width - 矩形区域的宽度。
+ *   height - 矩形区域的高度。
+ *   parent - 递归开始的父单元，默认为当前根或模型根。
+ *   result - 可选数组，用于存储结果。
+ *   intersection - 可选 <mxRectangle>，用于检查顶点相交。
+ *   ignoreFn - 可选函数，若返回 true 则忽略对应单元格。
+ *   includeDescendants - 可选布尔值，是否包含后代，默认为 false。
+ * 关键逻辑：
+ *   1. 遍历父节点的子节点。
+ *   2. 检查子节点是否可见且在矩形区域内。
+ *   3. 若需要，考虑单元格的旋转和交集。
+ * 交互逻辑：用于区域选择功能，支持批量选择单元格。
+ * 特殊处理：支持旋转单元格的边界框计算和自定义忽略规则。
  */
 mxGraph.prototype.getCells = function(x, y, width, height, parent, result, intersection, ignoreFn, includeDescendants)
 {
+    // 初始化结果数组
+    // 中文：若未提供结果数组，创建新数组
 	result = (result != null) ? result : [];
 	
+    // 检查是否需要处理（矩形有效或有交集矩形）
+    // 中文：验证矩形区域是否有效或存在交集矩形
 	if (width > 0 || height > 0 || intersection != null)
 	{
 		var model = this.getModel();
 		var right = x + width;
 		var bottom = y + height;
 
+        // 设置默认父节点
+        // 中文：若未指定父节点，使用当前根或模型根
 		if (parent == null)
 		{
 			parent = this.getCurrentRoot();
@@ -14717,24 +16082,36 @@ mxGraph.prototype.getCells = function(x, y, width, height, parent, result, inter
 		
 		if (parent != null)
 		{
+            // 获取子节点数量
+            // 中文：获取父节点的子节点数量
 			var childCount = model.getChildCount(parent);
 			
+            // 遍历子节点
+            // 中文：循环检查每个子节点
 			for (var i = 0; i < childCount; i++)
 			{
 				var cell = model.getChildAt(parent, i);
 				var state = this.view.getState(cell);
 				
+                // 检查子节点是否可见且符合条件
+                // 中文：验证子节点是否可见且未被忽略
 				if (state != null && this.isCellVisible(cell) &&
 					(ignoreFn == null || !ignoreFn(state)))
 				{
+                    // 获取单元格旋转角度
+                    // 中文：获取单元格样式的旋转角度
 					var deg = mxUtils.getValue(state.style, mxConstants.STYLE_ROTATION) || 0;
 					var box = state;
 					
+                    // 若有旋转，调整边界框
+                    // 中文：若单元格有旋转，计算旋转后的边界框
 					if (deg != 0)
 					{
 						box = mxUtils.getBoundingBox(box, deg);
 					}
 					
+                    // 检查单元格是否在矩形区域内
+                    // 中文：验证单元格是否与矩形区域或交集矩形相交
 					var hit = (intersection != null && model.isVertex(cell) && mxUtils.intersects(intersection, box)) ||
 						(intersection == null && (model.isEdge(cell) || model.isVertex(cell)) &&
 						box.x >= x && box.y + box.height <= bottom &&
@@ -14742,9 +16119,13 @@ mxGraph.prototype.getCells = function(x, y, width, height, parent, result, inter
 					
 					if (hit)
 					{
+                        // 添加符合条件的单元格
+                        // 中文：将相交的单元格添加到结果
 						result.push(cell);
 					}
 					
+                    // 递归检查后代
+                    // 中文：若需要，递归检查子节点的后代
 					if (!hit || includeDescendants)
 					{
 						this.getCells(x, y, width, height, cell, result, intersection, ignoreFn, includeDescendants);
@@ -14754,6 +16135,8 @@ mxGraph.prototype.getCells = function(x, y, width, height, parent, result, inter
 		}
 	}
 	
+    // 返回结果
+    // 中文：返回包含相交单元格的数组
 	return result;
 };
 
@@ -14774,13 +16157,30 @@ mxGraph.prototype.getCells = function(x, y, width, height, parent, result, inter
  * from the origin should be returned.
  * bottomHalfpane - Boolean indicating if the cells in the bottom halfpane
  * from the origin should be returned.
+ *
+ * 方法目的：获取指定半平面内的子节点。
+ * 中文：返回从给定点 (x0, y0) 开始的右半平面或下半平面内的子节点。
+ * 参数说明：
+ *   x0 - 起始点的 X 坐标。
+ *   y0 - 起始点的 Y 坐标。
+ *   parent - 可选参数，指定要检查的父节点，默认为 defaultParent。
+ *   rightHalfpane - 布尔值，是否返回右半平面的单元格。
+ *   bottomHalfpane - 布尔值，是否返回下半平面的单元格。
+ * 关键逻辑：
+ *   1. 检查父节点的子节点。
+ *   2. 过滤出位于指定半平面的可见子节点。
+ * 特殊处理：仅在右半平面或下半平面至少一个为 true 时执行。
  */
 mxGraph.prototype.getCellsBeyond = function(x0, y0, parent, rightHalfpane, bottomHalfpane)
 {
 	var result = [];
 	
+    // 检查是否需要处理
+    // 中文：验证是否需要检查右半平面或下半平面
 	if (rightHalfpane || bottomHalfpane)
 	{
+        // 设置默认父节点
+        // 中文：若未指定父节点，使用默认父节点
 		if (parent == null)
 		{
 			parent = this.getDefaultParent();
@@ -14788,13 +16188,19 @@ mxGraph.prototype.getCellsBeyond = function(x0, y0, parent, rightHalfpane, botto
 		
 		if (parent != null)
 		{
+            // 获取子节点数量
+            // 中文：获取父节点的子节点数量
 			var childCount = this.model.getChildCount(parent);
 			
+            // 遍历子节点
+            // 中文：循环检查每个子节点
 			for (var i = 0; i < childCount; i++)
 			{
 				var child = this.model.getChildAt(parent, i);
 				var state = this.view.getState(child);
 				
+                // 检查子节点是否可见且在指定半平面内
+                // 中文：验证子节点是否可见且位于右半平面或下半平面
 				if (this.isCellVisible(child) && state != null)
 				{
 					if ((!rightHalfpane || state.x >= x0) &&
@@ -14807,6 +16213,8 @@ mxGraph.prototype.getCellsBeyond = function(x0, y0, parent, rightHalfpane, botto
 		}
 	}
 	
+    // 返回结果
+    // 中文：返回符合条件的子节点数组
 	return result;
 };
 
@@ -14826,9 +16234,24 @@ mxGraph.prototype.getCellsBeyond = function(x0, y0, parent, rightHalfpane, botto
  * invert - Optional boolean that specifies if outgoing or incoming edges
  * should be counted for a tree root. If false then outgoing edges will be
  * counted. Default is false.
+ *
+ * 方法目的：查找没有入边的子节点作为树根。
+ * 中文：返回给定父节点中没有入边的子节点，若无结果则返回入边与出边差最大的节点。
+ * 参数说明：
+ *   parent - 要检查的父节点 <mxCell>。
+ *   isolate - 可选布尔值，是否忽略另一端不在父节点下的边，默认为 false。
+ *   invert - 可选布尔值，是否以入边而非出边计数，默认为 false。
+ * 关键逻辑：
+ *   1. 遍历父节点的子节点，检查是否为顶点且可见。
+ *   2. 计算每个子节点的入边和出边数量。
+ *   3. 若无入边（或 invert 为 true 则无出边），则为树根。
+ *   4. 若无树根，返回入边与出边差最大的节点。
+ * 特殊处理：若结果为空，选择差值最大的节点作为备用。
  */
 mxGraph.prototype.findTreeRoots = function(parent, isolate, invert)
 {
+    // 设置默认值
+    // 中文：为 isolate 和 invert 设置默认值 false
 	isolate = (isolate != null) ? isolate : false;
 	invert = (invert != null) ? invert : false;
 	var roots = [];
@@ -14840,16 +16263,24 @@ mxGraph.prototype.findTreeRoots = function(parent, isolate, invert)
 		var best = null;
 		var maxDiff = 0;
 		
+        // 遍历子节点
+        // 中文：循环检查每个子节点
 		for (var i=0; i<childCount; i++)
 		{
 			var cell = model.getChildAt(parent, i);
 			
+            // 检查是否为可见顶点
+            // 中文：验证子节点是否为可见顶点
 			if (this.model.isVertex(cell) && this.isCellVisible(cell))
 			{
+                // 获取连接边
+                // 中文：获取子节点的连接边
 				var conns = this.getConnections(cell, (isolate) ? parent : null);
 				var fanOut = 0;
 				var fanIn = 0;
 				
+                // 计算入边和出边数量
+                // 中文：统计子节点的入边和出边数量
 				for (var j = 0; j < conns.length; j++)
 				{
 					var src = this.view.getVisibleTerminal(conns[j], true);
@@ -14864,12 +16295,16 @@ mxGraph.prototype.findTreeRoots = function(parent, isolate, invert)
                     }
 				}
 				
+                // 检查是否为树根
+                // 中文：判断是否满足树根条件（无入边或无出边）
 				if ((invert && fanOut == 0 && fanIn > 0) ||
 					(!invert && fanIn == 0 && fanOut > 0))
 				{
 					roots.push(cell);
 				}
 				
+                // 计算入边与出边差值
+                // 中文：计算入边与出边的差值，记录最大差值节点
 				var diff = (invert) ? fanIn - fanOut : fanOut - fanIn;
 				
 				if (diff > maxDiff)
@@ -14880,12 +16315,16 @@ mxGraph.prototype.findTreeRoots = function(parent, isolate, invert)
 			}
 		}
 		
+        // 若无树根，选择差值最大的节点
+        // 中文：若未找到树根，将差值最大的节点加入结果
 		if (roots.length == 0 && best != null)
 		{
 			roots.push(best);
 		}
 	}
 	
+    // 返回树根
+    // 中文：返回树根节点数组
 	return roots;
 };
 
@@ -14921,34 +16360,65 @@ mxGraph.prototype.findTreeRoots = function(parent, isolate, invert)
  * visited - Optional <mxDictionary> from cells to true for the visited cells.
  * inverse - Optional boolean to traverse in inverse direction. Default is false.
  * This is ignored if directed is false.
+ *
+ * 方法目的：遍历有向图，调用指定函数处理每个顶点和边。
+ * 中文：遍历图表，针对每个访问的顶点和边调用指定函数，确保每个顶点只访问一次。
+ * 参数说明：
+ *   vertex - 遍历起始的顶点 <mxCell>。
+ *   directed - 可选布尔值，是否仅按源到目标方向遍历边，默认为 true。
+ *   func - 访问者函数，接收当前顶点和入边参数，若返回 false 则停止遍历。
+ *   edge - 可选参数，表示入边，首次遍历为 null。
+ *   visited - 可选 <mxDictionary>，记录已访问的单元格。
+ *   inverse - 可选布尔值，是否反向遍历，默认为 false（若 directed 为 false 则忽略）。
+ * 关键变量：
+ *   visited - 字典，记录已访问的顶点。
+ * 关键逻辑：
+ *   1. 使用字典确保顶点不重复访问。
+ *   2. 递归遍历所有符合条件的边和顶点。
+ *   3. 根据 directed 和 inverse 参数控制遍历方向。
+ * 特殊处理：若 func 返回 false，停止当前分支的遍历。
  */
 mxGraph.prototype.traverse = function(vertex, directed, func, edge, visited, inverse)
 {
 	if (func != null && vertex != null)
 	{
+        // 设置默认值
+        // 中文：为 directed 和 inverse 设置默认值
 		directed = (directed != null) ? directed : true;
 		inverse = (inverse != null) ? inverse : false;
 		visited = visited || new mxDictionary();
 		
+        // 检查顶点是否未访问
+        // 中文：验证顶点是否未被访问
 		if (!visited.get(vertex))
 		{
+            // 标记顶点为已访问
+            // 中文：将顶点标记为已访问
 			visited.put(vertex, true);
 			var result = func(vertex, edge);
 			
+            // 若函数未返回 false，继续遍历
+            // 中文：若函数返回 null 或 true，继续遍历子节点
 			if (result == null || result)
 			{
 				var edgeCount = this.model.getEdgeCount(vertex);
 				
 				if (edgeCount > 0)
 				{
+                    // 遍历顶点的边
+                    // 中文：循环检查顶点的每条边
 					for (var i = 0; i < edgeCount; i++)
 					{
 						var e = this.model.getEdgeAt(vertex, i);
 						var isSource = this.model.getTerminal(e, true) == vertex;
 						
+                        // 检查边方向是否符合要求
+                        // 中文：验证边是否符合遍历方向
 						if (!directed || (!inverse == isSource))
 						{
 							var next = this.model.getTerminal(e, !isSource);
+                            // 递归遍历下一个顶点
+                            // 中文：递归调用遍历下一个顶点
 							this.traverse(next, directed, func, e, visited, inverse);
 						}
 					}
@@ -14960,6 +16430,8 @@ mxGraph.prototype.traverse = function(vertex, directed, func, edge, visited, inv
 
 /**
  * Group: Selection
+ *
+ * 分组：选择
  */
 
 /**
@@ -14970,9 +16442,18 @@ mxGraph.prototype.traverse = function(vertex, directed, func, edge, visited, inv
  * Parameters:
  * 
  * cell - <mxCell> for which the selection state should be returned.
+ *
+ * 方法目的：检查指定单元格是否被选中。
+ * 中文：返回给定单元格的选中状态。
+ * 参数说明：
+ *   cell - 要检查选中状态的 <mxCell>。
+ * 关键逻辑：
+ *   调用选择模型的 isSelected 方法。
  */
 mxGraph.prototype.isCellSelected = function(cell)
 {
+    // 检查单元格是否选中
+    // 中文：调用选择模型的 isSelected 方法返回布尔值
 	return this.getSelectionModel().isSelected(cell);
 };
 
@@ -14980,9 +16461,16 @@ mxGraph.prototype.isCellSelected = function(cell)
  * Function: isSelectionEmpty
  * 
  * Returns true if the selection is empty.
+ *
+ * 方法目的：检查选择是否为空。
+ * 中文：返回选择模型是否不包含任何单元格。
+ * 关键逻辑：
+ *   调用选择模型的 isEmpty 方法。
  */
 mxGraph.prototype.isSelectionEmpty = function()
 {
+    // 检查选择是否为空
+    // 中文：调用选择模型的 isEmpty 方法返回布尔值
 	return this.getSelectionModel().isEmpty();
 };
 
@@ -14990,9 +16478,16 @@ mxGraph.prototype.isSelectionEmpty = function()
  * Function: clearSelection
  * 
  * Clears the selection using <mxGraphSelectionModel.clear>.
+ *
+ * 方法目的：清除当前选择。
+ * 中文：清空选择模型中的所有选中单元格。
+ * 关键逻辑：
+ *   调用选择模型的 clear 方法。
  */
 mxGraph.prototype.clearSelection = function()
 {
+    // 清除选择
+    // 中文：调用选择模型的 clear 方法清空选择
 	return this.getSelectionModel().clear();
 };
 
@@ -15000,9 +16495,16 @@ mxGraph.prototype.clearSelection = function()
  * Function: getSelectionCount
  * 
  * Returns the number of selected cells.
+ *
+ * 方法目的：获取选中单元格的数量。
+ * 中文：返回当前选中单元格的总数。
+ * 关键逻辑：
+ *   返回选择模型中单元格数组的长度。
  */
 mxGraph.prototype.getSelectionCount = function()
 {
+    // 获取选中单元格数量
+    // 中文：返回选择模型中单元格数组的长度
 	return this.getSelectionModel().cells.length;
 };
 	
@@ -15010,9 +16512,16 @@ mxGraph.prototype.getSelectionCount = function()
  * Function: getSelectionCell
  * 
  * Returns the first cell from the array of selected <mxCells>.
+ *
+ * 方法目的：获取第一个选中单元格。
+ * 中文：返回选择模型中第一个选中的单元格。
+ * 关键逻辑：
+ *   返回选择模型单元格数组的第一个元素。
  */
 mxGraph.prototype.getSelectionCell = function()
 {
+    // 获取第一个选中单元格
+    // 中文：返回选择模型单元格数组的第一个元素
 	return this.getSelectionModel().cells[0];
 };
 
@@ -15020,9 +16529,16 @@ mxGraph.prototype.getSelectionCell = function()
  * Function: getSelectionCells
  * 
  * Returns the array of selected <mxCells>.
+ *
+ * 方法目的：获取所有选中单元格。
+ * 中文：返回选择模型中的所有选中单元格数组。
+ * 关键逻辑：
+ *   返回选择模型单元格数组的副本。
  */
 mxGraph.prototype.getSelectionCells = function()
 {
+    // 获取所有选中单元格
+    // 中文：返回选择模型单元格数组的副本
 	return this.getSelectionModel().cells.slice();
 };
 
@@ -15034,9 +16550,18 @@ mxGraph.prototype.getSelectionCells = function()
  * Parameters:
  * 
  * cell - <mxCell> to be selected.
+ *
+ * 方法目的：设置单个选中单元格。
+ * 中文：将指定单元格设置为当前选中单元格。
+ * 参数说明：
+ *   cell - 要选中的 <mxCell>。
+ * 关键逻辑：
+ *   调用选择模型的 setCell 方法。
  */
 mxGraph.prototype.setSelectionCell = function(cell)
 {
+    // 设置选中单元格
+    // 中文：调用选择模型的 setCell 方法设置单元格
 	this.getSelectionModel().setCell(cell);
 };
 
@@ -15048,9 +16573,18 @@ mxGraph.prototype.setSelectionCell = function(cell)
  * Parameters:
  * 
  * cells - Array of <mxCells> to be selected.
+ *
+ * 方法目的：设置多个选中单元格。
+ * 中文：将指定单元格数组设置为当前选中单元格。
+ * 参数说明：
+ *   cells - 要选中的 <mxCells> 数组。
+ * 关键逻辑：
+ *   调用选择模型的 setCells 方法。
  */
 mxGraph.prototype.setSelectionCells = function(cells)
 {
+    // 设置多个选中单元格
+    // 中文：调用选择模型的 setCells 方法设置单元格数组
 	this.getSelectionModel().setCells(cells);
 };
 
@@ -15062,9 +16596,18 @@ mxGraph.prototype.setSelectionCells = function(cells)
  * Parameters:
  * 
  * cell - <mxCell> to be add to the selection.
+ *
+ * 方法目的：添加单元格到选择。
+ * 中文：将指定单元格添加到当前选择中。
+ * 参数说明：
+ *   cell - 要添加的 <mxCell>。
+ * 关键逻辑：
+ *   调用选择模型的 addCell 方法。
  */
 mxGraph.prototype.addSelectionCell = function(cell)
 {
+    // 添加单元格到选择
+    // 中文：调用选择模型的 addCell 方法添加单元格
 	this.getSelectionModel().addCell(cell);
 };
 
@@ -15076,9 +16619,18 @@ mxGraph.prototype.addSelectionCell = function(cell)
  * Parameters:
  * 
  * cells - Array of <mxCells> to be added to the selection.
+ *
+ * 方法目的：添加多个单元格到选择。
+ * 中文：将指定单元格数组添加到当前选择中。
+ * 参数说明：
+ *   cells - 要添加的 <mxCells> 数组。
+ * 关键逻辑：
+ *   调用选择模型的 addCells 方法。
  */
 mxGraph.prototype.addSelectionCells = function(cells)
 {
+    // 添加多个单元格到选择
+    // 中文：调用选择模型的 addCells 方法添加单元格数组
 	this.getSelectionModel().addCells(cells);
 };
 
@@ -15090,9 +16642,18 @@ mxGraph.prototype.addSelectionCells = function(cells)
  * Parameters:
  * 
  * cell - <mxCell> to be removed from the selection.
+ *
+ * 方法目的：从选择中移除单元格。
+ * 中文：将指定单元格从当前选择中移除。
+ * 参数说明：
+ *   cell - 要移除的 <mxCell>。
+ * 关键逻辑：
+ *   调用选择模型的 removeCell 方法。
  */
 mxGraph.prototype.removeSelectionCell = function(cell)
 {
+    // 从选择中移除单元格
+    // 中文：调用选择模型的 removeCell 方法移除单元格
 	this.getSelectionModel().removeCell(cell);
 };
 
@@ -15104,9 +16665,18 @@ mxGraph.prototype.removeSelectionCell = function(cell)
  * Parameters:
  * 
  * cells - Array of <mxCells> to be removed from the selection.
+ *
+ * 方法目的：从选择中移除多个单元格。
+ * 中文：将指定单元格数组从当前选择中移除。
+ * 参数说明：
+ *   cells - 要移除的 <mxCells> 数组。
+ * 关键逻辑：
+ *   调用选择模型的 removeCells 方法。
  */
 mxGraph.prototype.removeSelectionCells = function(cells)
 {
+    // 从选择中移除多个单元格
+    // 中文：调用选择模型的 removeCells 方法移除单元格数组
 	this.getSelectionModel().removeCells(cells);
 };
 
@@ -15120,12 +16690,28 @@ mxGraph.prototype.removeSelectionCells = function(cells)
  * 
  * rect - <mxRectangle> that represents the region to be selected.
  * evt - Mouseevent that triggered the selection.
+ *
+ * 方法目的：选择并返回指定矩形区域内的单元格。
+ * 中文：选择并返回给定矩形区域内的单元格，基于鼠标事件触发。
+ * 参数说明：
+ *   rect - 表示选择区域的 <mxRectangle>。
+ *   evt - 触发选择的鼠标事件。
+ * 关键逻辑：
+ *   1. 调用 getCells 获取矩形区域内的单元格。
+ *   2. 调用 selectCellsForEvent 选择这些单元格。
+ * 交互逻辑：支持通过拖动鼠标选择区域内的单元格。
  */
 mxGraph.prototype.selectRegion = function(rect, evt)
 {
+    // 获取矩形区域内的单元格
+    // 中文：调用 getCells 获取矩形区域内的单元格
 	var cells = this.getCells(rect.x, rect.y, rect.width, rect.height);
+    // 选择这些单元格
+    // 中文：调用 selectCellsForEvent 选择区域内的单元格
 	this.selectCellsForEvent(cells, evt);
 	
+    // 返回选中单元格
+    // 中文：返回区域内的单元格数组
 	return cells;
 };
 
@@ -15133,9 +16719,16 @@ mxGraph.prototype.selectRegion = function(rect, evt)
  * Function: selectNextCell
  * 
  * Selects the next cell.
+ *
+ * 方法目的：选择下一个单元格。
+ * 中文：选中当前单元格的下一个单元格。
+ * 关键逻辑：
+ *   调用 selectCell 方法，设置 isNext 为 true。
  */
 mxGraph.prototype.selectNextCell = function()
 {
+    // 选择下一个单元格
+    // 中文：调用 selectCell，设置 isNext 为 true
 	this.selectCell(true);
 };
 
@@ -15143,9 +16736,16 @@ mxGraph.prototype.selectNextCell = function()
  * Function: selectPreviousCell
  * 
  * Selects the previous cell.
+ *
+ * 方法目的：选择上一个单元格。
+ * 中文：选中当前单元格的上一个单元格。
+ * 关键逻辑：
+ *   调用 selectCell 方法，默认参数。
  */
 mxGraph.prototype.selectPreviousCell = function()
 {
+    // 选择上一个单元格
+    // 中文：调用 selectCell，默认参数
 	this.selectCell();
 };
 
@@ -15153,9 +16753,16 @@ mxGraph.prototype.selectPreviousCell = function()
  * Function: selectParentCell
  * 
  * Selects the parent cell.
+ *
+ * 方法目的：选择父单元格。
+ * 中文：选中当前单元格的父单元格。
+ * 关键逻辑：
+ *   调用 selectCell 方法，设置 isParent 为 true。
  */
 mxGraph.prototype.selectParentCell = function()
 {
+    // 选择父单元格
+    // 中文：调用 selectCell，设置 isParent 为 true
 	this.selectCell(false, true);
 };
 
@@ -15163,9 +16770,16 @@ mxGraph.prototype.selectParentCell = function()
  * Function: selectChildCell
  * 
  * Selects the first child cell.
+ *
+ * 方法目的：选择第一个子单元格。
+ * 中文：选中当前单元格的第一个子单元格。
+ * 关键逻辑：
+ *   调用 selectCell 方法，设置 isChild 为 true。
  */
 mxGraph.prototype.selectChildCell = function()
 {
+    // 选择第一个子单元格
+    // 中文：调用 selectCell，设置 isChild 为 true
 	this.selectCell(false, false, true);
 };
 
@@ -15180,28 +16794,48 @@ mxGraph.prototype.selectChildCell = function()
  * isNext - Boolean indicating if the next cell should be selected.
  * isParent - Boolean indicating if the parent cell should be selected.
  * isChild - Boolean indicating if the first child cell should be selected.
+ *
+ * 方法目的：选择下一个、父节点、第一个子节点或上一个单元格。
+ * 中文：根据参数选择下一个、父节点、第一个子节点或上一个单元格。
+ * 参数说明：
+ *   isNext - 布尔值，是否选择下一个单元格。
+ *   isParent - 布尔值，是否选择父单元格。
+ *   isChild - 布尔值，是否选择第一个子单元格。
+ * 关键逻辑：
+ *   1. 获取当前选中单元格。
+ *   2. 根据参数选择下一个、父节点或子节点。
+ *   3. 若无选中单元格，选择父节点的第一个子节点。
+ * 特殊处理：若有多个选中单元格，清除多余选择。
  */
 mxGraph.prototype.selectCell = function(isNext, isParent, isChild)
 {
 	var sel = this.selectionModel;
 	var cell = (sel.cells.length > 0) ? sel.cells[0] : null;
 	
+    // 若有多个选中单元格，清除选择
+    // 中文：若存在多个选中单元格，清空选择
 	if (sel.cells.length > 1)
 	{
 		sel.clear();
 	}
 	
+    // 获取父节点
+    // 中文：获取当前单元格的父节点，默认为 defaultParent
 	var parent = (cell != null) ?
 		this.model.getParent(cell) :
 		this.getDefaultParent();
 	
 	var childCount = this.model.getChildCount(parent);
 	
+    // 若无选中单元格且父节点有子节点，选择第一个子节点
+    // 中文：若无选中单元格且父节点有子节点，选中第一个子节点
 	if (cell == null && childCount > 0)
 	{
 		var child = this.model.getChildAt(parent, 0);
 		this.setSelectionCell(child);
 	}
+    // 选择父节点
+    // 中文：若无单元格或选择父节点，选中父节点
 	else if ((cell == null || isParent) &&
 		this.view.getState(parent) != null &&
 		this.model.getGeometry(parent) != null)
@@ -15211,6 +16845,8 @@ mxGraph.prototype.selectCell = function(isNext, isParent, isChild)
 			this.setSelectionCell(parent);
 		}
 	}
+    // 选择子节点
+    // 中文：若有选中单元格且选择子节点，选中第一个子节点
 	else if (cell != null && isChild)
 	{
 		var tmp = this.model.getChildCount(cell);
@@ -15221,6 +16857,8 @@ mxGraph.prototype.selectCell = function(isNext, isParent, isChild)
 			this.setSelectionCell(child);
 		}
 	}
+    // 选择下一个或上一个单元格
+    // 中文：根据 isNext 选择下一个或上一个单元格
 	else if (childCount > 0)
 	{
 		var i = parent.getIndex(cell);
@@ -15254,11 +16892,25 @@ mxGraph.prototype.selectCell = function(isNext, isParent, isChild)
  * Default is <defaultParent>.
  * descendants - Optional boolean specifying whether all descendants should be
  * selected. Default is false.
+ *
+ * 方法目的：选择指定父节点的所有子节点。
+ * 中文：选中给定父节点的所有子节点，或默认父节点的子节点。
+ * 参数说明：
+ *   parent - 可选参数，指定要选择的父节点，默认为 defaultParent。
+ *   descendants - 可选布尔值，是否选择所有后代，默认为 false。
+ * 关键逻辑：
+ *   1. 若 descendants 为 true，过滤所有后代。
+ *   2. 否则仅选择直接子节点。
+ * 特殊处理：确保只选择可见单元格。
  */
 mxGraph.prototype.selectAll = function(parent, descendants)
 {
+    // 设置默认父节点
+    // 中文：若未指定父节点，使用默认父节点
 	parent = parent || this.getDefaultParent();
 	
+    // 获取子节点或后代
+    // 中文：根据 descendants 获取子节点或所有后代
 	var cells = (descendants) ? this.model.filterDescendants(mxUtils.bind(this, function(cell)
 	{
 		return cell != parent && this.view.getState(cell) != null;
@@ -15266,6 +16918,8 @@ mxGraph.prototype.selectAll = function(parent, descendants)
 	
 	if (cells != null)
 	{
+        // 设置选择
+        // 中文：将获取的单元格设置为选中
 		this.setSelectionCells(cells);
 	}
 };
@@ -15274,9 +16928,19 @@ mxGraph.prototype.selectAll = function(parent, descendants)
  * Function: selectVertices
  * 
  * Select all vertices inside the given parent or the default parent.
+ *
+ * 方法目的：选择指定父节点内的所有顶点。
+ * 中文：选中给定父节点或默认父节点内的所有顶点。
+ * 参数说明：
+ *   parent - 可选参数，指定要选择的父节点，默认为 defaultParent。
+ *   selectGroups - 可选布尔值，是否选择分组，默认为 false。
+ * 关键逻辑：
+ *   调用 selectCells 方法，仅选择顶点。
  */
 mxGraph.prototype.selectVertices = function(parent, selectGroups)
 {
+    // 选择顶点
+    // 中文：调用 selectCells，仅选择顶点
 	this.selectCells(true, false, parent, selectGroups);
 };
 
@@ -15284,6 +16948,13 @@ mxGraph.prototype.selectVertices = function(parent, selectGroups)
  * Function: selectVertices
  * 
  * Select all vertices inside the given parent or the default parent.
+
+ * 方法目的：选择指定父节点内的所有边。
+ * 中文：选中给定父节点或默认父节点内的所有边。
+ * 参数说明：
+ *   parent - 可选参数，指定要选择的父节点，默认为 defaultParent。
+ * 关键逻辑：
+ *   调用 selectCells 方法，仅选择边。
  */
 mxGraph.prototype.selectEdges = function(parent)
 {
@@ -15306,11 +16977,27 @@ mxGraph.prototype.selectEdges = function(parent)
  * Default is <defaultParent>.
  * selectGroups - Optional boolean that specifies if groups should be
  * selected. Default is false.
+ *
+ * 方法目的：选择顶点和/或边。
+ * 中文：根据布尔参数递归选择顶点和/或边，从指定父节点或默认父节点开始。
+ * 参数说明：
+ *   vertices - 布尔值，是否选择顶点。
+ *   edges - 布尔值，是否选择边。
+ *   parent - 可选参数，递归的父节点，默认为 defaultParent。
+ *   selectGroups - 可选布尔值，是否选择分组，默认为 false。
+ * 关键逻辑：
+ *   1. 定义过滤函数，仅选择符合条件的顶点或边。
+ *   2. 递归获取后代并设置选择。
+ * 特殊处理：仅选择无子节点的顶点，除非 selectGroups 为 true。
  */
 mxGraph.prototype.selectCells = function(vertices, edges, parent, selectGroups)
 {
+    // 设置默认父节点
+    // 中文：若未指定父节点，使用默认父节点
 	parent = parent || this.getDefaultParent();
 	
+    // 定义过滤函数
+    // 中文：定义过滤函数以选择符合条件的单元格
 	var filter = mxUtils.bind(this, function(cell)
 	{
 		return this.view.getState(cell) != null &&
@@ -15320,10 +17007,14 @@ mxGraph.prototype.selectCells = function(vertices, edges, parent, selectGroups)
 			(this.model.isEdge(cell) && edges));
 	});
 	
+    // 获取符合条件的后代
+    // 中文：递归获取符合过滤条件的后代单元格
 	var cells = this.model.filterDescendants(filter, parent);
 	
 	if (cells != null)
 	{
+        // 设置选择
+        // 中文：将过滤的单元格设置为选中
 		this.setSelectionCells(cells);
 	}
 };
@@ -15339,24 +17030,45 @@ mxGraph.prototype.selectCells = function(vertices, edges, parent, selectGroups)
  * 
  * cell - <mxCell> to be selected.
  * evt - Optional mouseevent that triggered the selection.
+ *
+ * 方法目的：根据鼠标事件选择单元格。
+ * 中文：根据是否为切换事件，添加或替换选中单元格。
+ * 参数说明：
+ *   cell - 要选中的 <mxCell>。
+ *   evt - 可选参数，触发选择的鼠标事件。
+ * 关键逻辑：
+ *   1. 检查是否为切换事件（通过 isToggleEvent）。
+ *   2. 若为切换事件，添加或移除单元格。
+ *   3. 否则替换当前选择。
+ * 交互逻辑：支持通过点击切换选择状态或替换选择。
  */
 mxGraph.prototype.selectCellForEvent = function(cell, evt)
 {
+    // 检查单元格是否已选中
+    // 中文：获取单元格的当前选中状态
 	var isSelected = this.isCellSelected(cell);
 	
+    // 检查是否为切换事件
+    // 中文：判断是否为切换事件（如 Ctrl+点击）
 	if (this.isToggleEvent(evt))
 	{
 		if (isSelected)
 		{
+            // 移除已选中的单元格
+            // 中文：若已选中，移除单元格
 			this.removeSelectionCell(cell);
 		}
 		else
 		{
+            // 添加单元格到选择
+            // 中文：若未选中，添加单元格
 			this.addSelectionCell(cell);
 		}
 	}
 	else if (!isSelected || this.getSelectionCount() != 1)
 	{
+        // 替换当前选择
+        // 中文：若未选中或选择数量不为 1，替换选择
 		this.setSelectionCell(cell);
 	}
 };
@@ -15372,21 +17084,39 @@ mxGraph.prototype.selectCellForEvent = function(cell, evt)
  * 
  * cells - Array of <mxCells> to be selected.
  * evt - Optional mouseevent that triggered the selection.
+ *
+ * 方法目的：根据鼠标事件选择多个单元格。
+ * 中文：根据是否为切换事件，添加或替换选中单元格数组。
+ * 参数说明：
+ *   cells - 要选中的 <mxCells> 数组。
+ *   evt - 可选参数，触发选择的鼠标事件。
+ * 关键逻辑：
+ *   1. 检查是否为切换事件。
+ *   2. 若为切换事件，添加单元格；否则替换选择。
+ * 交互逻辑：支持批量选择单元格，适用于区域选择等场景。
  */
 mxGraph.prototype.selectCellsForEvent = function(cells, evt)
 {
+    // 检查是否为切换事件
+    // 中文：判断是否为切换事件
 	if (this.isToggleEvent(evt))
 	{
+        // 添加单元格到选择
+        // 中文：添加单元格数组到当前选择
 		this.addSelectionCells(cells);
 	}
 	else
 	{
+        // 替换当前选择
+        // 中文：替换当前选择为指定单元格数组
 		this.setSelectionCells(cells);
 	}
 };
 
 /**
  * Group: Selection state
+ *
+ * 分组：选择状态
  */
 
 /**
@@ -15399,6 +17129,20 @@ mxGraph.prototype.selectCellsForEvent = function(cells, evt)
  * Parameters:
  * 
  * state - <mxCellState> whose handler should be created.
+ *
+ * 方法目的：为指定单元格状态创建处理程序。
+ * 中文：根据单元格状态创建边或顶点的处理程序。
+ * 参数说明：
+ *   state - 要创建处理程序的 <mxCellState>。
+ * 关键逻辑：
+ *   1. 若为边，根据边样式创建相应的边处理程序。
+ *   2. 若为顶点，创建顶点处理程序。
+ * 样式设置：
+ *   mxConstants.STYLE_EDGE - 定义边的样式（如 Loop、ElbowConnector 等）。
+ * 关键变量：
+ *   model - 图表模型，用于判断单元格是否为边。
+ *   view - 图表视图，用于获取边样式和终端状态。
+ * 交互逻辑：为边或顶点提供交互处理程序，支持拖动、调整等操作。
  */
 mxGraph.prototype.createHandler = function(state)
 {
@@ -15406,21 +17150,33 @@ mxGraph.prototype.createHandler = function(state)
 	
 	if (state != null)
 	{
+        // 检查是否为边
+        // 中文：判断单元格是否为边
 		if (this.model.isEdge(state.cell))
 		{
+            // 获取边的源和目标终端状态
+            // 中文：获取边的源和目标终端状态以及几何信息
 			var source = state.getVisibleTerminalState(true);
 			var target = state.getVisibleTerminalState(false);
 			var geo = this.getCellGeometry(state.cell);
 			
+            // 获取边样式
+            // 中文：根据单元格几何和终端获取边样式
 			var edgeStyle = this.view.getEdgeStyle(state, (geo != null) ? geo.points : null, source, target);
+            // 创建边处理程序
+            // 中文：调用 createEdgeHandler 创建边处理程序
 			result = this.createEdgeHandler(state, edgeStyle);
 		}
 		else
 		{
+            // 创建顶点处理程序
+            // 中文：调用 createVertexHandler 创建顶点处理程序
 			result = this.createVertexHandler(state);
 		}
 	}
 	
+    // 返回处理程序
+    // 中文：返回创建的处理程序对象
 	return result;
 };
 
@@ -15432,9 +17188,19 @@ mxGraph.prototype.createHandler = function(state)
  * Parameters:
  * 
  * state - <mxCellState> to create the handler for.
+ *
+ * 方法目的：为指定单元格状态创建顶点处理程序。
+ * 中文：创建用于处理顶点交互的 <mxVertexHandler>。
+ * 参数说明：
+ *   state - 要创建处理程序的 <mxCellState>。
+ * 关键逻辑：
+ *   直接返回新的顶点处理程序实例。
+ * 交互逻辑：提供顶点的拖动、调整大小等交互功能。
  */
 mxGraph.prototype.createVertexHandler = function(state)
 {
+    // 创建并返回顶点处理程序
+    // 中文：实例化并返回 mxVertexHandler
 	return new mxVertexHandler(state);
 };
 
@@ -15446,28 +17212,52 @@ mxGraph.prototype.createVertexHandler = function(state)
  * Parameters:
  * 
  * state - <mxCellState> to create the handler for.
+ *
+ * 方法目的：为指定单元格状态创建边处理程序。
+ * 中文：根据边样式创建相应的 <mxEdgeHandler>。
+ * 参数说明：
+ *   state - 要创建处理程序的 <mxCellState>。
+ *   edgeStyle - 边的样式，决定使用哪种边处理程序。
+ * 关键逻辑：
+ *   1. 根据边样式选择合适的处理程序。
+ *   2. 支持 Loop、ElbowConnector、SideToSide、TopToBottom 使用 Elbow 处理程序。
+ *   3. 支持 SegmentConnector、OrthConnector 使用 Segment 处理程序。
+ *   4. 其他样式使用默认边处理程序。
+ * 样式设置：
+ *   mxEdgeStyle - 定义边样式（如 Loop、SegmentConnector 等）。
+ * 交互逻辑：为不同边样式提供特定的交互处理，如调整控制点。
  */
 mxGraph.prototype.createEdgeHandler = function(state, edgeStyle)
 {
 	var result = null;
 	
+    // 根据边样式选择处理程序
+    // 中文：根据 edgeStyle 选择合适的边处理程序
 	if (edgeStyle == mxEdgeStyle.Loop ||
 		edgeStyle == mxEdgeStyle.ElbowConnector ||
 		edgeStyle == mxEdgeStyle.SideToSide ||
 		edgeStyle == mxEdgeStyle.TopToBottom)
 	{
+        // 创建 Elbow 边处理程序
+        // 中文：为 Loop、ElbowConnector 等样式创建 Elbow 处理程序
 		result = this.createElbowEdgeHandler(state);
 	}
 	else if (edgeStyle == mxEdgeStyle.SegmentConnector || 
 			edgeStyle == mxEdgeStyle.OrthConnector)
 	{
+        // 创建 Segment 边处理程序
+        // 中文：为 SegmentConnector、OrthConnector 创建 Segment 处理程序
 		result = this.createEdgeSegmentHandler(state);
 	}
 	else
 	{
+        // 创建默认边处理程序
+        // 中文：为其他样式创建默认边处理程序
 		result = new mxEdgeHandler(state);
 	}
 	
+    // 返回处理程序
+    // 中文：返回创建的边处理程序对象
 	return result;
 };
 
@@ -15479,9 +17269,19 @@ mxGraph.prototype.createEdgeHandler = function(state, edgeStyle)
  * Parameters:
  * 
  * state - <mxCellState> to create the handler for.
+ *
+ * 方法目的：为指定单元格状态创建段边处理程序。
+ * 中文：创建用于处理分段边交互的 <mxEdgeSegmentHandler>。
+ * 参数说明：
+ *   state - 要创建处理程序的 <mxCellState>。
+ * 关键逻辑：
+ *   直接返回新的段边处理程序实例。
+ * 交互逻辑：支持分段边的控制点调整和拖动。
  */
 mxGraph.prototype.createEdgeSegmentHandler = function(state)
 {
+    // 创建并返回段边处理程序
+    // 中文：实例化并返回 mxEdgeSegmentHandler
 	return new mxEdgeSegmentHandler(state);
 };
 
@@ -15493,14 +17293,26 @@ mxGraph.prototype.createEdgeSegmentHandler = function(state)
  * Parameters:
  * 
  * state - <mxCellState> to create the handler for.
+ *
+ * 方法目的：为指定单元格状态创建折线边处理程序。
+ * 中文：创建用于处理折线边交互的 <mxElbowEdgeHandler>。
+ * 参数说明：
+ *   state - 要创建处理程序的 <mxCellState>。
+ * 关键逻辑：
+ *   直接返回新的折线边处理程序实例。
+ * 交互逻辑：支持折线边的控制点调整和拖动。
  */
 mxGraph.prototype.createElbowEdgeHandler = function(state)
 {
+    // 创建并返回折线边处理程序
+    // 中文：实例化并返回 mxElbowEdgeHandler
 	return new mxElbowEdgeHandler(state);
 };
 
 /**
  * Group: Graph events
+ *
+ * 分组：图表事件
  */
 
 /**
@@ -15513,14 +17325,29 @@ mxGraph.prototype.createElbowEdgeHandler = function(state)
  * Parameters:
  * 
  * listener - Listener to be added to the graph event listeners.
+ *
+ * 方法目的：添加鼠标事件监听器。
+ * 中文：将监听器添加到图表事件分发循环中。
+ * 参数说明：
+ *   listener - 要添加的监听器，需实现 mouseDown、mouseMove 和 mouseUp 方法。
+ * 关键变量：
+ *   mouseListeners - 存储所有鼠标事件监听器的数组。
+ * 关键逻辑：
+ *   初始化监听器数组并添加新监听器。
+ * 事件处理逻辑：支持鼠标按下、移动和释放事件的监听。
+ * 交互逻辑：允许外部代码处理图表的鼠标交互事件。
  */
 mxGraph.prototype.addMouseListener = function(listener)
 {
+    // 初始化监听器数组
+    // 中文：若 mouseListeners 未初始化，创建空数组
 	if (this.mouseListeners == null)
 	{
 		this.mouseListeners = [];
 	}
 	
+    // 添加监听器
+    // 中文：将监听器添加到 mouseListeners 数组
 	this.mouseListeners.push(listener);
 };
 
@@ -15532,11 +17359,21 @@ mxGraph.prototype.addMouseListener = function(listener)
  * Parameters:
  * 
  * listener - Listener to be removed from the graph event listeners.
+ *
+ * 方法目的：移除指定的鼠标事件监听器。
+ * 中文：从图表事件监听器中移除指定监听器。
+ * 参数说明：
+ *   listener - 要移除的监听器。
+ * 关键逻辑：
+ *   遍历监听器数组，找到并移除指定监听器。
+ * 事件处理逻辑：停止指定监听器处理鼠标事件。
  */
 mxGraph.prototype.removeMouseListener = function(listener)
 {
 	if (this.mouseListeners != null)
 	{
+        // 遍历并移除监听器
+        // 中文：遍历 mouseListeners 数组，移除匹配的监听器
 		for (var i = 0; i < this.mouseListeners.length; i++)
 		{
 			if (this.mouseListeners[i] == listener)
@@ -15558,21 +17395,47 @@ mxGraph.prototype.removeMouseListener = function(listener)
  * 
  * me - <mxMouseEvent> to be updated.
  * evtName - Name of the mouse event.
+ *
+ * 方法目的：更新鼠标事件的图表坐标。
+ * 中文：更新 <mxMouseEvent> 的 graphX 和 graphY 属性并返回事件。
+ * 参数说明：
+ *   me - 要更新的 <mxMouseEvent>。
+ *   evtName - 鼠标事件名称。
+ * 关键变量：
+ *   container - 图表容器，用于坐标转换。
+ *   panDx, panDy - 图表平移偏移量。
+ * 关键逻辑：
+ *   1. 若 graphX 或 graphY 为空，转换客户端坐标到图表坐标。
+ *   2. 若为鼠标移动事件且鼠标按下，查找相关单元格状态。
+ * 交互逻辑：确保鼠标事件坐标与图表坐标系一致，支持精确交互。
+ * 特殊处理：当原生命中检测禁用时，检查矩形形状的特定样式。
+ * 样式设置：
+ *   mxConstants.STYLE_POINTER_EVENTS - 控制是否响应指针事件。
+ *   mxConstants.NONE - 表示无填充样式。
  */
 mxGraph.prototype.updateMouseEvent = function(me, evtName)
 {
+    // 检查是否需要更新坐标
+    // 中文：若 graphX 或 graphY 为空，更新坐标
 	if (me.graphX == null || me.graphY == null)
 	{
+        // 转换客户端坐标到容器坐标
+        // 中文：将鼠标客户端坐标转换为容器坐标
 		var pt = mxUtils.convertPoint(this.container, me.getX(), me.getY());
 		
+        // 调整为图表坐标
+        // 中文：减去平移偏移量，得到图表坐标
 		me.graphX = pt.x - this.panDx;
 		me.graphY = pt.y - this.panDy;
 		
-		// Searches for rectangles using method if native hit detection is disabled on shape
+        // 若原生命中检测禁用，查找单元格状态
+        // 中文：若鼠标按下且为移动事件，查找相关单元格状态
 		if (me.getCell() == null && this.isMouseDown && evtName == mxEvent.MOUSE_MOVE)
 		{
 			me.state = this.view.getState(this.getCellAt(pt.x, pt.y, null, null, null, function(state)
 			{
+                // 检查形状是否支持指针事件
+                // 中文：验证形状是否支持指针事件或有填充
 				return state.shape == null || state.shape.paintBackground != mxRectangleShape.prototype.paintBackground ||
 					mxUtils.getValue(state.style, mxConstants.STYLE_POINTER_EVENTS, '1') == '1' ||
 					(state.shape.fill != null && state.shape.fill != mxConstants.NONE);
@@ -15580,6 +17443,8 @@ mxGraph.prototype.updateMouseEvent = function(me, evtName)
 		}
 	}
 	
+    // 返回更新后的事件
+    // 中文：返回更新坐标的鼠标事件
 	return me;
 };
 
@@ -15587,16 +17452,31 @@ mxGraph.prototype.updateMouseEvent = function(me, evtName)
  * Function: getStateForEvent
  * 
  * Returns the state for the given touch event.
+ *
+ * 方法目的：获取触摸事件对应的单元格状态。
+ * 中文：返回与给定触摸事件相关联的单元格状态。
+ * 参数说明：
+ *   evt - 触摸事件。
+ * 关键变量：
+ *   container - 图表容器，用于坐标转换。
+ * 关键逻辑：
+ *   1. 获取触摸事件的客户端坐标。
+ *   2. 转换到容器坐标并查找单元格状态。
+ * 交互逻辑：支持触摸设备上的单元格选择和交互。
  */
 mxGraph.prototype.getStateForTouchEvent = function(evt)
 {
+    // 获取触摸坐标
+    // 中文：获取触摸事件的客户端坐标
 	var x = mxEvent.getClientX(evt);
 	var y = mxEvent.getClientY(evt);
 	
-	// Dispatches the drop event to the graph which
-	// consumes and executes the source function
+    // 转换到容器坐标
+    // 中文：将客户端坐标转换为容器坐标
 	var pt = mxUtils.convertPoint(this.container, x, y);
 
+    // 返回单元格状态
+    // 中文：获取坐标处的单元格状态并返回
 	return this.view.getState(this.getCellAt(pt.x, pt.y));
 };
 
@@ -15604,25 +17484,51 @@ mxGraph.prototype.getStateForTouchEvent = function(evt)
  * Function: isEventIgnored
  * 
  * Returns true if the event should be ignored in <fireMouseEvent>.
+ *
+ * 方法目的：检查是否应忽略鼠标事件。
+ * 中文：判断在 fireMouseEvent 中是否应忽略指定事件。
+ * 参数说明：
+ *   evtName - 事件名称。
+ *   me - <mxMouseEvent> 要检查的事件。
+ *   sender - 可选参数，事件发送者。
+ * 关键变量：
+ *   lastEvent - 记录上一次事件，避免重复触发。
+ *   eventSource - 记录触摸事件源，用于手势跟踪。
+ *   isMouseDown - 跟踪鼠标按下状态。
+ *   mouseMoveRedirect, mouseUpRedirect - 重定向触摸事件的处理函数。
+ * 关键逻辑：
+ *   1. 检查重复事件。
+ *   2. 处理触摸设备上的手势事件，移除旧监听器。
+ *   3. 检查事件序列和类型是否有效。
+ * 事件处理逻辑：避免重复事件、处理触摸手势、确保事件序列一致。
+ * 特殊处理：
+ *   1. 忽略双击事件的 mouseUp/mouseDown。
+ *   2. 为触摸设备添加手势监听器。
+ *   3. 解决 Webkit 和 Firefox 的兼容性问题。
  */
 mxGraph.prototype.isEventIgnored = function(evtName, me, sender)
 {
 	var mouseEvent = mxEvent.isMouseEvent(me.getEvent());
 	var result = false;
 
-	// Drops events that are fired more than once
+    // 检查重复事件
+    // 中文：若事件与上一次相同，标记为忽略
 	if (me.getEvent() == this.lastEvent)
 	{
 		result = true;
 	}
 	else
 	{
+        // 更新最后事件
+        // 中文：记录当前事件为最后事件
 		this.lastEvent = me.getEvent();
 	}
 
 	// Installs event listeners to capture the complete gesture from the event source
 	// for non-MS touch events as a workaround for all events for the same geture being
 	// fired from the event source even if that was removed from the DOM.
+	// 处理触摸手势事件
+    // 中文：若存在事件源且非鼠标移动事件，移除手势监听器
 	if (this.eventSource != null && evtName != mxEvent.MOUSE_MOVE)
 	{
 		mxEvent.removeGestureListeners(this.eventSource, null, this.mouseMoveRedirect, this.mouseUpRedirect);
@@ -15630,52 +17536,71 @@ mxGraph.prototype.isEventIgnored = function(evtName, me, sender)
 		this.mouseUpRedirect = null;
 		this.eventSource = null;
 	}
+    // 检查事件源不匹配
+    // 中文：若非 Chrome 且事件源不匹配，标记为忽略
 	else if (!mxClient.IS_GC && this.eventSource != null && me.getSource() != this.eventSource)
 	{
 		result = true;
 	}
+    // 为触摸事件添加手势监听器
+    // 中文：为触摸设备的鼠标按下事件添加手势监听器
 	else if (mxClient.IS_TOUCH && evtName == mxEvent.MOUSE_DOWN &&
 			!mouseEvent && !mxEvent.isPenEvent(me.getEvent()))
 	{
 		this.eventSource = me.getSource();
 
+        // 定义鼠标移动重定向
+        // 中文：创建鼠标移动事件的重定向处理函数
 		this.mouseMoveRedirect = mxUtils.bind(this, function(evt)
 		{
 			this.fireMouseEvent(mxEvent.MOUSE_MOVE, new mxMouseEvent(evt, this.getStateForTouchEvent(evt)));
 		});
+        // 定义鼠标释放重定向
+        // 中文：创建鼠标释放事件的重定向处理函数
 		this.mouseUpRedirect = mxUtils.bind(this, function(evt)
 		{
 			this.fireMouseEvent(mxEvent.MOUSE_UP, new mxMouseEvent(evt, this.getStateForTouchEvent(evt)));
 		});
 		
+        // 添加手势监听器
+        // 中文：为事件源添加移动和释放监听器
 		mxEvent.addGestureListeners(this.eventSource, null, this.mouseMoveRedirect, this.mouseUpRedirect);
 	}
 
 	// Factored out the workarounds for FF to make it easier to override/remove
 	// Note this method has side-effects!
+	// 检查合成事件
+    // 中文：调用 isSyntheticEventIgnored 检查是否忽略合成事件
 	if (this.isSyntheticEventIgnored(evtName, me, sender))
 	{
 		result = true;
 	}
 
 	// Never fires mouseUp/-Down for double clicks
+	    // 忽略双击的 mouseUp/mouseDown
+    // 中文：若为双击且非鼠标移动事件，忽略
 	if (!mxEvent.isPopupTrigger(this.lastEvent) && evtName != mxEvent.MOUSE_MOVE && this.lastEvent.detail == 2)
 	{
 		return true;
 	}
 	
-	// Filters out of sequence events or mixed event types during a gesture
+    // 检查事件序列
+    // 中文：验证事件序列是否正确
 	if (evtName == mxEvent.MOUSE_UP && this.isMouseDown)
 	{
+        // 更新鼠标状态
+        // 中文：鼠标释放，清除按下状态
 		this.isMouseDown = false;
 	}
 	else if (evtName == mxEvent.MOUSE_DOWN && !this.isMouseDown)
 	{
+        // 更新鼠标状态
+        // 中文：鼠标按下，设置按下状态
 		this.isMouseDown = true;
 		this.isMouseTrigger = mouseEvent;
 	}
-	// Drops mouse events that are fired during touch gestures as a workaround for Webkit
-	// and mouse events that are not in sync with the current internal button state
+    // 忽略无效事件
+    // 中文：若事件与鼠标状态不一致或为触摸事件，忽略
 	else if (!result && (((!mxClient.IS_FF || evtName != mxEvent.MOUSE_MOVE) &&
 		this.isMouseDown && this.isMouseTrigger != mouseEvent) ||
 		(evtName == mxEvent.MOUSE_DOWN && this.isMouseDown) ||
@@ -15684,12 +17609,16 @@ mxGraph.prototype.isEventIgnored = function(evtName, me, sender)
 		result = true;
 	}
 	
+    // 记录鼠标按下坐标
+    // 中文：若为鼠标按下事件，记录坐标
 	if (!result && evtName == mxEvent.MOUSE_DOWN)
 	{
 		this.lastMouseX = me.getX();
 		this.lastMouseY = me.getY();
 	}
 
+    // 返回忽略结果
+    // 中文：返回是否忽略事件的布尔值
 	return result;
 };
 
@@ -15697,23 +17626,44 @@ mxGraph.prototype.isEventIgnored = function(evtName, me, sender)
  * Function: isSyntheticEventIgnored
  * 
  * Hook for ignoring synthetic mouse events after touchend in Firefox.
+ *
+ * 方法目的：检查是否忽略 Firefox 中的合成鼠标事件。
+ * 中文：判断在 Firefox 中是否忽略触摸后的合成鼠标事件。
+ * 参数说明：
+ *   evtName - 事件名称。
+ *   me - <mxMouseEvent> 要检查的事件。
+ *   sender - 可选参数，事件发送者。
+ * 关键变量：
+ *   ignoreMouseEvents - 控制是否忽略鼠标事件。
+ * 关键逻辑：
+ *   1. 在 Firefox 中，触摸后忽略非移动的鼠标事件。
+ *   2. 鼠标释放事件后，启用忽略标志。
+ * 特殊处理：解决 Firefox 中触摸事件后的鼠标事件重复问题。
+ * 事件处理逻辑：避免触摸事件后的无效鼠标事件干扰。
  */
 mxGraph.prototype.isSyntheticEventIgnored = function(evtName, me, sender)
 {
 	var result = false;
 	var mouseEvent = mxEvent.isMouseEvent(me.getEvent());
 	
-	// LATER: This does not cover all possible cases that can go wrong in FF
+    // 检查 Firefox 合成事件
+    // 中文：若忽略鼠标事件且为非移动事件，标记为忽略
 	if (this.ignoreMouseEvents && mouseEvent && evtName != mxEvent.MOUSE_MOVE)
 	{
+        // 更新忽略标志
+        // 中文：若非鼠标释放事件，继续忽略
 		this.ignoreMouseEvents = evtName != mxEvent.MOUSE_UP;
 		result = true;
 	}
+    // Firefox 触摸后鼠标释放事件
+    // 中文：若为 Firefox 且为触摸后的鼠标释放，启用忽略
 	else if (mxClient.IS_FF && !mouseEvent && evtName == mxEvent.MOUSE_UP)
 	{
 		this.ignoreMouseEvents = true;
 	}
 	
+    // 返回忽略结果
+    // 中文：返回是否忽略合成事件的布尔值
 	return result;
 };
 
@@ -15729,6 +17679,16 @@ mxGraph.prototype.isSyntheticEventIgnored = function(evtName, me, sender)
  * 
  * evtName - The name of the event.
  * me - <mxMouseEvent> that should be ignored.
+ *
+ * 方法目的：检查是否忽略特定事件源的事件。
+ * 中文：判断在 fireMouseEvent 中是否忽略特定事件源的鼠标事件。
+ * 参数说明：
+ *   evtName - 事件名称。
+ *   me - <mxMouseEvent> 要检查的事件。
+ * 关键逻辑：
+ *   忽略非鼠标事件或非左键点击的 select、option 和特定 input 事件。
+ * 事件处理逻辑：避免表单元素（如 select、input）的鼠标事件干扰图表交互。
+ * 特殊处理：仅忽略非 checkbox、radio、button、submit、file 的 input 事件。
  */
 mxGraph.prototype.isEventSourceIgnored = function(evtName, me)
 {
@@ -15736,6 +17696,8 @@ mxGraph.prototype.isEventSourceIgnored = function(evtName, me)
 	var name = (source.nodeName != null) ? source.nodeName.toLowerCase() : '';
 	var candidate = !mxEvent.isMouseEvent(me.getEvent()) || mxEvent.isLeftMouseButton(me.getEvent());
 	
+    // 检查事件源
+    // 中文：若为鼠标按下且事件源为 select、option 或特定 input，忽略
 	return evtName == mxEvent.MOUSE_DOWN && candidate && (name == 'select' || name == 'option' ||
 		(name == 'input' && source.type != 'checkbox' && source.type != 'radio' &&
 		source.type != 'button' && source.type != 'submit' && source.type != 'file'));
@@ -15750,9 +17712,19 @@ mxGraph.prototype.isEventSourceIgnored = function(evtName, me)
  * Parameters:
  * 
  * <mxCellState> - State whose event source should be returned.
+ *
+ * 方法目的：获取触发鼠标事件时使用的单元格状态。
+ * 中文：返回用于触发鼠标事件的 <mxCellState>。
+ * 参数说明：
+ *   state - 要返回事件源的 <mxCellState>。
+ * 关键逻辑：
+ *   直接返回输入状态。
+ * 特殊处理：提供钩子以允许子类自定义事件状态。
  */
 mxGraph.prototype.getEventState = function(state)
 {
+    // 返回状态
+    // 中文：直接返回输入的单元格状态
 	return state;
 };
 
@@ -15769,9 +17741,43 @@ mxGraph.prototype.getEventState = function(state)
  * evtName - String that specifies the type of event to be dispatched.
  * me - <mxMouseEvent> to be fired.
  * sender - Optional sender argument. Default is this.
+ *
+ * 方法目的：分发鼠标事件到图表事件循环。
+ * 中文：将指定鼠标事件分发到图表事件处理循环。
+ * 参数说明：
+ *   evtName - 要分发的事件类型（如 MOUSE_DOWN、MOUSE_MOVE、MOUSE_UP）。
+ *   me - 要触发的 <mxMouseEvent>。
+ *   sender - 可选参数，事件发送者，默认为 this。
+ * 关键变量：
+ *   tooltipHandler - 工具提示处理程序。
+ *   doubleTapEnabled - 是否启用双击检测。
+ *   tapAndHoldEnabled - 是否启用长按检测。
+ *   doubleTapTimeout - 双击时间阈值。
+ *   doubleTapTolerance - 双击坐标容差。
+ * 关键逻辑：
+ *   1. 检查是否忽略事件。
+ *   2. 更新事件坐标。
+ *   3. 处理触摸设备上的双击事件。
+ *   4. 处理长按事件。
+ *   5. 分发事件到监听器。
+ * 事件处理逻辑：
+ *   1. 支持鼠标按下、移动和释放事件。
+ *   2. 处理触摸设备的双击和长按事件。
+ * 交互逻辑：
+ *   1. 支持自动滚动和视图平移。
+ *   2. 调用 click 方法处理鼠标释放。
+ * 特殊处理：
+ *   1. 解决 IE 和 Quirks 模式下的双击问题。
+ *   2. 为触摸设备实现双击和长按检测。
+ * 重要配置参数：
+ *   autoScroll - 是否启用自动滚动。
+ *   ignoreScrollbars - 是否忽略滚动条。
+ *   translateToScrollPosition - 是否将平移转换为滚动位置。
  */
 mxGraph.prototype.fireMouseEvent = function(evtName, me, sender)
 {
+    // 检查是否忽略事件源
+    // 中文：若事件源被忽略，隐藏工具提示并返回
 	if (this.isEventSourceIgnored(evtName, me))
 	{
 		if (this.tooltipHandler != null)
@@ -15782,12 +17788,16 @@ mxGraph.prototype.fireMouseEvent = function(evtName, me, sender)
 		return;
 	}
 	
+    // 设置默认发送者
+    // 中文：若未指定发送者，使用当前实例
 	if (sender == null)
 	{
 		sender = this;
 	}
 
 	// Updates the graph coordinates in the event
+    // 更新事件坐标
+    // 中文：调用 updateMouseEvent 更新事件坐标
 	me = this.updateMouseEvent(me, evtName);
 
 	// Detects and processes double taps for touch-based devices which do not have native double click events
@@ -15795,14 +17805,20 @@ mxGraph.prototype.fireMouseEvent = function(evtName, me, sender)
 	// double clicks on cells because the sequence of events in IE prevents detection on the background, it fires
 	// two mouse ups, one of which without a cell but no mousedown for the second click which means we cannot
 	// detect which mouseup(s) are part of the first click, ie we do not know when the first click ends.
+// 处理触摸设备的双击事件
+    // 中文：检测并处理触摸设备的双击事件
 	if ((!this.nativeDblClickEnabled && !mxEvent.isPopupTrigger(me.getEvent())) || (this.doubleTapEnabled &&
 		mxClient.IS_TOUCH && (mxEvent.isTouchEvent(me.getEvent()) || mxEvent.isPenEvent(me.getEvent()))))
 	{
 		var currentTime = new Date().getTime();
 		
 		// NOTE: Second mouseDown for double click missing in quirks mode
+		// 处理双击逻辑
+        // 中文：若为鼠标按下或 Quirks 模式下的鼠标释放，检查双击
 		if ((!mxClient.IS_QUIRKS && evtName == mxEvent.MOUSE_DOWN) || (mxClient.IS_QUIRKS && evtName == mxEvent.MOUSE_UP && !this.fireDoubleClick))
 		{
+            // 检查双击条件
+            // 中文：验证是否满足双击条件（时间和坐标容差）
 			if (this.lastTouchEvent != null && this.lastTouchEvent != me.getEvent() &&
 				currentTime - this.lastTouchTime < this.doubleTapTimeout &&
 				Math.abs(this.lastTouchX - me.getX()) < this.doubleTapTolerance &&
@@ -15814,6 +17830,8 @@ mxGraph.prototype.fireMouseEvent = function(evtName, me, sender)
 				
 				if (evtName == mxEvent.MOUSE_UP)
 				{
+                    // 处理双击
+                    // 中文：若为鼠标释放且单元格匹配，触发双击事件
 					if (me.getCell() == this.lastTouchCell && this.lastTouchCell != null)
 					{
 						this.lastTouchTime = 0;
@@ -15825,28 +17843,38 @@ mxGraph.prototype.fireMouseEvent = function(evtName, me, sender)
 						// trying to fix this, we realized that nativeDoubleClick can be disabled for
 						// quirks and IE10+ (or we didn't find the case mentioned above where it
 						// would not work), ie. all double clicks seem to be working without this.
+						// 在 Quirks 模式下触发原生双击事件
+                        // 中文：在 Quirks 模式下触发原生双击事件
 						if (mxClient.IS_QUIRKS)
 						{
 							me.getSource().fireEvent('ondblclick');
 						}
 						
+                        // 触发双击
+                        // 中文：调用 dblClick 方法处理双击
 						this.dblClick(me.getEvent(), cell);
 						doubleClickFired = true;
 					}
 				}
 				else
 				{
+                    // 准备下一次双击
+                    // 中文：设置双击标志并清空时间
 					this.fireDoubleClick = true;
 					this.lastTouchTime = 0;
 				}
 
 				// Do not ignore mouse up in quirks in this case
+				// 消费事件
+                // 中文：若非 Quirks 模式或已触发双击，消费事件
 				if (!mxClient.IS_QUIRKS || doubleClickFired)
 				{
 					mxEvent.consume(me.getEvent());
 					return;
 				}
 			}
+            // 记录触摸事件
+            // 中文：记录当前触摸事件信息
 			else if (this.lastTouchEvent == null || this.lastTouchEvent != me.getEvent())
 			{
 				this.lastTouchCell = me.getCell();
@@ -15857,6 +17885,8 @@ mxGraph.prototype.fireMouseEvent = function(evtName, me, sender)
 				this.doubleClickCounter = 0;
 			}
 		}
+        // 处理双击释放
+        // 中文：若为鼠标释放且需触发双击，处理双击逻辑
 		else if ((this.isMouseDown || evtName == mxEvent.MOUSE_UP) && this.fireDoubleClick)
 		{
 			this.fireDoubleClick = false;
@@ -15865,16 +17895,22 @@ mxGraph.prototype.fireMouseEvent = function(evtName, me, sender)
 			this.isMouseDown = false;
 			
 			// Workaround for Chrome/Safari not firing native double click events for double touch on background
+			// 检查双击有效性
+            // 中文：验证双击是否有效（单元格存在或为触摸事件）
 			var valid = (cell != null) || ((mxEvent.isTouchEvent(me.getEvent()) || mxEvent.isPenEvent(me.getEvent())) &&
 				(mxClient.IS_GC || mxClient.IS_SF));
 			
 			if (valid && Math.abs(this.lastTouchX - me.getX()) < this.doubleTapTolerance &&
 				Math.abs(this.lastTouchY - me.getY()) < this.doubleTapTolerance)
 			{
+                // 触发双击
+                // 中文：调用 dblClick 方法处理双击
 				this.dblClick(me.getEvent(), cell);
 			}
 			else
 			{
+                // 消费事件
+                // 中文：若双击无效，消费事件
 				mxEvent.consume(me.getEvent());
 			}
 			
@@ -15882,19 +17918,31 @@ mxGraph.prototype.fireMouseEvent = function(evtName, me, sender)
 		}
 	}
 
+    // 分发事件
+    // 中文：若事件未被忽略，分发事件到监听器
 	if (!this.isEventIgnored(evtName, me, sender))
 	{
 		// Updates the event state via getEventState
+		    // 更新事件状态
+        // 中文：通过 getEventState 更新事件状态
 		me.state = this.getEventState(me.getState());
+        // 触发事件
+        // 中文：触发 FIRE_MOUSE_EVENT 事件
 		this.fireEvent(new mxEventObject(mxEvent.FIRE_MOUSE_EVENT, 'eventName', evtName, 'event', me));
 		
+        // 处理特定浏览器和场景
+        // 中文：检查浏览器兼容性和容器目标
 		if ((mxClient.IS_OP || mxClient.IS_SF || mxClient.IS_GC || mxClient.IS_IE11 ||
 			(mxClient.IS_IE && mxClient.IS_SVG) || me.getEvent().target != this.container))
 		{
+            // 处理自动滚动
+            // 中文：若为鼠标移动且启用自动滚动，调整视图
 			if (evtName == mxEvent.MOUSE_MOVE && this.isMouseDown && this.autoScroll && !mxEvent.isMultiTouchEvent(me.getEvent))
 			{
 				this.scrollPointToVisible(me.getGraphX(), me.getGraphY(), this.autoExtend);
 			}
+            // 处理滚动条重置
+            // 中文：若为鼠标释放且需重置滚动条，调整视图平移
 			else if (evtName == mxEvent.MOUSE_UP && this.ignoreScrollbars && this.translateToScrollPosition &&
 					(this.container.scrollLeft != 0 || this.container.scrollTop != 0))
 			{
@@ -15905,11 +17953,15 @@ mxGraph.prototype.fireMouseEvent = function(evtName, me, sender)
 				this.container.scrollTop = 0;
 			}
 			
+            // 调用监听器
+            // 中文：遍历并调用所有鼠标事件监听器
 			if (this.mouseListeners != null)
 			{
 				var args = [sender, me];
 	
 				// Does not change returnValue in Opera
+				// 设置事件返回值
+                // 中文：为 Opera 设置事件返回值
 				if (!me.getEvent().preventDefault)
 				{
 					me.getEvent().returnValue = true;
@@ -15921,20 +17973,28 @@ mxGraph.prototype.fireMouseEvent = function(evtName, me, sender)
 					
 					if (evtName == mxEvent.MOUSE_DOWN)
 					{
+                        // 调用鼠标按下监听
+                        // 中文：触发监听器的 mouseDown 方法
 						l.mouseDown.apply(l, args);
 					}
 					else if (evtName == mxEvent.MOUSE_MOVE)
 					{
+                        // 调用鼠标移动监听
+                        // 中文：触发监听器的 mouseMove 方法
 						l.mouseMove.apply(l, args);
 					}
 					else if (evtName == mxEvent.MOUSE_UP)
 					{
+                        // 调用鼠标释放监听
+                        // 中文：触发监听器的 mouseUp 方法
 						l.mouseUp.apply(l, args);
 					}
 				}
 			}
 			
 			// Invokes the click handler
+			// 处理点击事件
+            // 中文：若为鼠标释放，调用 click 方法
 			if (evtName == mxEvent.MOUSE_UP)
 			{
 				this.click(me);
@@ -15942,6 +18002,8 @@ mxGraph.prototype.fireMouseEvent = function(evtName, me, sender)
 		}
 		
 		// Detects tapAndHold events using a timer
+		// 检测长按事件
+        // 中文：为触摸设备的鼠标按下事件检测长按
 		if ((mxEvent.isTouchEvent(me.getEvent()) || mxEvent.isPenEvent(me.getEvent())) &&
 			evtName == mxEvent.MOUSE_DOWN && this.tapAndHoldEnabled && !this.tapAndHoldInProgress)
 		{
@@ -15949,30 +18011,44 @@ mxGraph.prototype.fireMouseEvent = function(evtName, me, sender)
 			this.initialTouchX = me.getGraphX();
 			this.initialTouchY = me.getGraphY();
 			
+            // 定义长按处理函数
+            // 中文：创建长按事件的处理函数
 			var handler = function()
 			{
 				if (this.tapAndHoldValid)
 				{
+                    // 触发长按
+                    // 中文：若长按有效，调用 tapAndHold 方法
 					this.tapAndHold(me);
 				}
 				
+                // 重置长按状态
+                // 中文：清除长按状态
 				this.tapAndHoldInProgress = false;
 				this.tapAndHoldValid = false;
 			};
 			
+            // 清除现有长按定时器
+            // 中文：若存在长按定时器，清除
 			if (this.tapAndHoldThread)
 			{
 				window.clearTimeout(this.tapAndHoldThread);
 			}
 	
+            // 设置长按定时器
+            // 中文：启动长按定时器
 			this.tapAndHoldThread = window.setTimeout(mxUtils.bind(this, handler), this.tapAndHoldDelay);
 			this.tapAndHoldValid = true;
 		}
+        // 停止长按
+        // 中文：若为鼠标释放，停止长按检测
 		else if (evtName == mxEvent.MOUSE_UP)
 		{
 			this.tapAndHoldInProgress = false;
 			this.tapAndHoldValid = false;
 		}
+        // 验证长按有效性
+        // 中文：检查长按坐标是否在容差范围内
 		else if (this.tapAndHoldValid)
 		{
 			this.tapAndHoldValid =
@@ -15981,11 +18057,15 @@ mxGraph.prototype.fireMouseEvent = function(evtName, me, sender)
 		}
 
 		// Stops editing for all events other than from cellEditor
+		// 停止编辑
+        // 中文：若为鼠标按下且在编辑中，停止编辑
 		if (evtName == mxEvent.MOUSE_DOWN && this.isEditing() && !this.cellEditor.isEventSource(me.getEvent()))
 		{
 			this.stopEditing(!this.isInvokesStopCellEditing());
 		}
 
+        // 消费鼠标事件
+        // 中文：调用 consumeMouseEvent 处理事件
 		this.consumeMouseEvent(evtName, me, sender);
 	}
 };
@@ -15994,10 +18074,22 @@ mxGraph.prototype.fireMouseEvent = function(evtName, me, sender)
  * Function: consumeMouseEvent
  * 
  * Consumes the given <mxMouseEvent> if it's a touchStart event.
+ *
+ * 方法目的：消费触摸开始事件。
+ * 中文：若为触摸开始事件，消费 <mxMouseEvent>。
+ * 参数说明：
+ *   evtName - 事件名称。
+ *   me - 要消费的 <mxMouseEvent>。
+ *   sender - 可选参数，事件发送者。
+ * 关键逻辑：
+ *   若为鼠标按下且为触摸事件，消费事件。
+ * 事件处理逻辑：解决 Windows 8 上 Chrome/FF/Opera 的重复点击问题。
  */
 mxGraph.prototype.consumeMouseEvent = function(evtName, me, sender)
 {
 	// Workaround for duplicate click in Windows 8 with Chrome/FF/Opera with touch
+	// 消费触摸开始事件
+    // 中文：若为鼠标按下且为触摸事件，消费事件
 	if (evtName == mxEvent.MOUSE_DOWN && mxEvent.isTouchEvent(me.getEvent()))
 	{
 		me.consume(false);
@@ -16038,11 +18130,25 @@ mxGraph.prototype.consumeMouseEvent = function(evtName, me, sender)
  * 
  * evt - Gestureend event that represents the gesture.
  * cell - Optional <mxCell> associated with the gesture.
+ *
+ * 方法目的：分发手势事件。
+ * 中文：触发 <mxEvent.GESTURE> 事件，支持手势交互。
+ * 参数说明：
+ *   evt - 表示手势的 gestureend 事件。
+ *   cell - 可选参数，与手势关联的 <mxCell>。
+ * 关键逻辑：
+ *   1. 重置双击事件时间。
+ *   2. 触发手势事件。
+ * 事件处理逻辑：支持触摸设备上的缩放、拖动等手势操作。
+ * 交互逻辑：允许外部监听器处理手势，如调整单元格大小。
  */
 mxGraph.prototype.fireGestureEvent = function(evt, cell)
 {
-	// Resets double tap event handling when gestures take place
+    // 重置双击时间
+    // 中文：清除双击事件时间
 	this.lastTouchTime = 0;
+    // 触发手势事件
+    // 中文：触发 GESTURE 事件，传递事件和单元格
 	this.fireEvent(new mxEventObject(mxEvent.GESTURE, 'event', evt, 'cell', cell));
 };
 
@@ -16050,59 +18156,92 @@ mxGraph.prototype.fireGestureEvent = function(evt, cell)
  * Function: destroy
  * 
  * Destroys the graph and all its resources.
+ *
+ * 方法目的：销毁图表及其资源。
+ * 中文：销毁图表实例及所有相关资源。
+ * 关键逻辑：
+ *   1. 检查是否已销毁。
+ *   2. 销毁所有处理程序和视图。
+ *   3. 移除模型监听器并清空容器。
+ * 关键变量：
+ *   destroyed - 标记图表是否已销毁。
+ *   tooltipHandler, selectionCellsHandler, panningHandler, popupMenuHandler, connectionHandler, graphHandler, cellEditor, view, model - 图表的各种处理程序和组件。
+ * 特殊处理：确保只销毁一次，避免重复销毁。
  */
 mxGraph.prototype.destroy = function()
 {
+    // 检查是否已销毁
+    // 中文：若未销毁，执行销毁逻辑
 	if (!this.destroyed)
 	{
 		this.destroyed = true;
 		
+        // 销毁工具提示处理程序
+        // 中文：销毁 tooltipHandler
 		if (this.tooltipHandler != null)
 		{
 			this.tooltipHandler.destroy();
 		}
 		
+        // 销毁选择单元格处理程序
+        // 中文：销毁 selectionCellsHandler
 		if (this.selectionCellsHandler != null)
 		{
 			this.selectionCellsHandler.destroy();
 		}
 
+        // 销毁平移处理程序
+        // 中文：销毁 panningHandler
 		if (this.panningHandler != null)
 		{
 			this.panningHandler.destroy();
 		}
 
+        // 销毁弹出菜单处理程序
+        // 中文：销毁 popupMenuHandler
 		if (this.popupMenuHandler != null)
 		{
 			this.popupMenuHandler.destroy();
 		}
 		
+        // 销毁连接处理程序
+        // 中文：销毁 connectionHandler
 		if (this.connectionHandler != null)
 		{
 			this.connectionHandler.destroy();
 		}
 		
+        // 销毁图表处理程序
+        // 中文：销毁 graphHandler
 		if (this.graphHandler != null)
 		{
 			this.graphHandler.destroy();
 		}
 		
+        // 销毁单元格编辑器
+        // 中文：销毁 cellEditor
 		if (this.cellEditor != null)
 		{
 			this.cellEditor.destroy();
 		}
 		
+        // 销毁视图
+        // 中文：销毁 view
 		if (this.view != null)
 		{
 			this.view.destroy();
 		}
 
+        // 移除模型监听器
+        // 中文：若模型和监听器存在，移除模型变更监听器
 		if (this.model != null && this.graphModelChangeListener != null)
 		{
 			this.model.removeListener(this.graphModelChangeListener);
 			this.graphModelChangeListener = null;
 		}
 
+        // 清空容器
+        // 中文：清空图表容器引用
 		this.container = null;
 	}
 };
