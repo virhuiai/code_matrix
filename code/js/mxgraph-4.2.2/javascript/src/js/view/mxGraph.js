@@ -633,6 +633,26 @@
  * performance. Default is mxConstants.DIALECT_MIXEDHTML (for IE).
  * stylesheet - Optional <mxStylesheet> to be used in the graph.
  */
+/**
+ * 构造函数：mxGraph
+ *
+ * 在指定容器中创建一个新的 mxGraph 实例。model 参数是可选的 mxGraphModel，如果未提供，则使用新的 mxGraphModel 实例作为模型。
+ * 在 Internet Explorer 中，调用此函数前，容器必须具有有效的 ownerDocument。
+ * renderHint 是一个字符串，用于影响 IE 中的显示性能和渲染效果（对基于 SVG 的浏览器无影响）。
+ * 该参数映射到 <dialect>，可能的值包括：
+ * - mxConstants.DIALECT_SVG：用于基于 SVG 的浏览器
+ * - mxConstants.DIALECT_STRICTHTML：最快的显示模式
+ * - mxConstants.DIALECT_PREFERHTML：较快的显示模式
+ * - mxConstants.DIALECT_MIXEDHTML：快速且默认用于 IE
+ * - mxConstants.DIALECT_VML：精确的显示模式（最慢）
+ * 默认值：SVG 浏览器为 DIALECT_SVG，IE 为 DIALECT_MIXEDHTML。
+ *
+ * 参数说明：
+ * - container：可选的 DOM 节点，作为图表的容器。如果为 null，可稍后通过 <init> 初始化。
+ * - model：可选的 mxGraphModel，定义图表的数据模型。
+ * - renderHint：可选字符串，指定 IE 的显示精度和性能，默认值为 mxConstants.DIALECT_MIXEDHTML。
+ * - stylesheet：可选的 mxStylesheet，定义图表的样式表。
+ */
 function mxGraph(container, model, renderHint, stylesheet)
 {
 	// Initializes the variable in case the prototype has been
@@ -640,9 +660,13 @@ function mxGraph(container, model, renderHint, stylesheet)
 	// the createHandlers call is executed regardless of the
 	// arguments passed into the ctor).
 	this.mouseListeners = null;
-	
+    // 中文注释：初始化 mouseListeners 变量，确保即使原型被修改也能正确处理鼠标事件监听器。
+    // 说明：此变量用于存储鼠标事件监听器数组，确保 createHandlers 方法能够正确初始化事件处理。
+
 	// Converts the renderHint into a dialect
 	this.renderHint = renderHint;
+    // 中文注释：将 renderHint 参数转换为对应的 dialect（渲染模式）。
+    // 说明：根据浏览器类型和 renderHint 的值，设置图表的渲染模式（dialect），以优化显示性能或精度。
 
 	if (mxClient.IS_SVG)
 	{
@@ -664,7 +688,10 @@ function mxGraph(container, model, renderHint, stylesheet)
 	{
 		this.dialect = mxConstants.DIALECT_MIXEDHTML;
 	}
-	
+    // 中文注释：根据浏览器类型和 renderHint 设置渲染模式（dialect）。
+    // 说明：为 SVG 浏览器设置 DIALECT_SVG，为 VML 浏览器根据 renderHint 设置不同的 HTML 或 VML 模式。
+    // 注意事项：SVG 浏览器优先，VML 浏览器根据性能需求选择合适的模式。
+
 	// Initializes the main members that do not require a container
 	this.model = (model != null) ? model : new mxGraphModel();
 	this.multiplicities = [];
@@ -673,25 +700,45 @@ function mxGraph(container, model, renderHint, stylesheet)
 	this.setSelectionModel(this.createSelectionModel());
 	this.setStylesheet((stylesheet != null) ? stylesheet : this.createStylesheet());
 	this.view = this.createGraphView();
-	
+    // 中文注释：初始化图表的主要成员，这些成员无需容器即可创建。
+    // 说明：
+    // - model：初始化图表的数据模型，默认创建新的 mxGraphModel。
+    // - multiplicities：初始化连接约束数组，用于定义连接规则。
+    // - imageBundles：初始化图片资源数组。
+    // - cellRenderer：创建单元渲染器，负责绘制图表中的单元（顶点和边）。
+    // - selectionModel：创建并设置选择模型，管理图表的选中状态。
+    // - stylesheet：创建并设置样式表，定义单元的外观样式。
+    // - view：创建图表视图，缓存单元的状态。
+
 	// Adds a graph model listener to update the view
 	this.graphModelChangeListener = mxUtils.bind(this, function(sender, evt)
 	{
 		this.graphModelChanged(evt.getProperty('edit').changes);
 	});
-	
+    // 中文注释：添加图表模型监听器，用于在模型更改时更新视图。
+    // 说明：当图表模型发生变化（通过 evt 获取 changes），调用 graphModelChanged 方法更新视图。
+    // 事件处理逻辑：监听 mxEvent.CHANGE 事件，确保视图与模型同步。
+
 	this.model.addListener(mxEvent.CHANGE, this.graphModelChangeListener);
+    // 中文注释：为模型注册 CHANGE 事件监听器。
+    // 说明：将 graphModelChangeListener 绑定到模型的 CHANGE 事件，确保模型变化时触发视图更新。
 
 	// Installs basic event handlers with disabled default settings.
 	this.createHandlers();
-	
+    // 中文注释：安装基本的事件处理器，并使用默认禁用设置。
+    // 说明：调用 createHandlers 方法，初始化默认的事件处理逻辑（如鼠标、键盘等交互）。
+
 	// Initializes the display if a container was specified
 	if (container != null)
 	{
 		this.init(container);
 	}
-	
+    // 中文注释：如果提供了容器，则初始化图表的显示。
+    // 说明：调用 init 方法，将图表绑定到指定的 DOM 容器，并完成初始渲染设置。
+
 	this.view.revalidate();
+    // 中文注释：重新验证图表视图。
+    // 说明：调用 view 的 revalidate 方法，确保视图的状态与模型一致，完成初始化。
 };
 
 /**
@@ -706,12 +753,20 @@ else
 {
 	mxClient.defaultBundles.push(mxClient.basePath + '/resources/graph');
 }
+/**
+ * 中文注释：加载类所需的语言资源。
+ * 说明：将语言资源（位于 /resources/graph）添加到 mxResources 或默认资源包，确保图表的国际化支持。
+ */
 
 /**
  * Extends mxEventSource.
  */
 mxGraph.prototype = new mxEventSource();
 mxGraph.prototype.constructor = mxGraph;
+/**
+ * 中文注释：扩展 mxEventSource 类。
+ * 说明：mxGraph 继承自 mxEventSource，具备事件触发和监听功能，用于处理图表的交互事件。
+ */
 
 /**
  * Group: Variables
@@ -722,12 +777,21 @@ mxGraph.prototype.constructor = mxGraph;
  * 
  * Holds the mouse event listeners. See <fireMouseEvent>.
  */
+/**
+ * 中文注释：mouseListeners 变量
+ * 说明：存储鼠标事件监听器的数组，用于在 fireMouseEvent 方法中处理鼠标相关事件（如点击、移动等）。
+ */
 mxGraph.prototype.mouseListeners = null;
 
 /**
  * Variable: isMouseDown
  * 
  * Holds the state of the mouse button.
+ */
+/**
+ * 中文注释：isMouseDown 变量
+ * 说明：表示鼠标按钮是否被按下的状态，用于跟踪鼠标交互的当前状态。
+ * 交互逻辑：用于判断鼠标按下/释放状态，影响事件处理逻辑。
  */
 mxGraph.prototype.isMouseDown = false;
 
@@ -736,12 +800,22 @@ mxGraph.prototype.isMouseDown = false;
  * 
  * Holds the <mxGraphModel> that contains the cells to be displayed.
  */
+/**
+ * 中文注释：model 变量
+ * 说明：存储 mxGraphModel 实例，包含图表中所有单元（顶点和边）的数据，用于管理图表结构。
+ * 关键变量用途：核心数据模型，定义图表的逻辑结构。
+ */
 mxGraph.prototype.model = null;
 
 /**
  * Variable: view
  * 
  * Holds the <mxGraphView> that caches the <mxCellStates> for the cells.
+ */
+/**
+ * 中文注释：view 变量
+ * 说明：存储 mxGraphView 实例，缓存单元的状态（mxCellStates），用于优化图表渲染。
+ * 关键变量用途：管理图表的视觉表示，提高渲染效率。
  */
 mxGraph.prototype.view = null;
 
@@ -762,12 +836,22 @@ mxGraph.prototype.view = null;
  * dec.decode(root, graph.stylesheet);
  * (end)
  */
+/**
+ * 中文注释：stylesheet 变量
+ * 说明：存储 mxStylesheet 实例，定义单元的外观样式（如形状、颜色等）。
+ * 样式设置：通过键值对形式定义样式，支持从 XML 文件加载样式表。
+ */
 mxGraph.prototype.stylesheet = null;
 	
 /**
  * Variable: selectionModel
  * 
  * Holds the <mxGraphSelectionModel> that models the current selection.
+ */
+/**
+ * 中文注释：selectionModel 变量
+ * 说明：存储 mxGraphSelectionModel 实例，管理图表的当前选中状态。
+ * 交互逻辑：处理单元的选择、取消选择等操作。
  */
 mxGraph.prototype.selectionModel = null;
 
@@ -776,12 +860,22 @@ mxGraph.prototype.selectionModel = null;
  * 
  * Holds the <mxCellEditor> that is used as the in-place editing.
  */
+/**
+ * 中文注释：cellEditor 变量
+ * 说明：存储 mxCellEditor 实例，用于单元的原地编辑功能（如双击编辑标签）。
+ * 交互逻辑：支持通过双击或 F2 键启动编辑，编辑后触发 labelChanged 事件。
+ */
 mxGraph.prototype.cellEditor = null;
 
 /**
  * Variable: cellRenderer
  * 
  * Holds the <mxCellRenderer> for rendering the cells in the graph.
+ */
+/**
+ * 中文注释：cellRenderer 变量
+ * 说明：存储 mxCellRenderer 实例，负责渲染图表中的单元（顶点和边）。
+ * 关键变量用途：控制图表的视觉绘制，支持自定义形状注册。
  */
 mxGraph.prototype.cellRenderer = null;
 
@@ -791,12 +885,22 @@ mxGraph.prototype.cellRenderer = null;
  * An array of <mxMultiplicities> describing the allowed
  * connections in a graph.
  */
+/**
+ * 中文注释：multiplicities 变量
+ * 说明：存储 mxMultiplicity 数组，定义图表中允许的连接规则（如最大连接数、目标类型等）。
+ * 用途：用于连接验证，确保图表的连接符合指定约束。
+ */
 mxGraph.prototype.multiplicities = null;
 
 /**
  * Variable: renderHint
  * 
  * RenderHint as it was passed to the constructor.
+ */
+/**
+ * 中文注释：renderHint 变量
+ * 说明：存储构造函数中传入的 renderHint 参数，影响 IE 浏览器的渲染性能和精度。
+ * 重要配置参数：支持 fast、faster、fastest 和 exact 模式，映射到对应的 dialect。
  */
 mxGraph.prototype.renderHint = null;
 
@@ -806,12 +910,22 @@ mxGraph.prototype.renderHint = null;
  * Dialect to be used for drawing the graph. Possible values are all
  * constants in <mxConstants> with a DIALECT-prefix.
  */
+/**
+ * 中文注释：dialect 变量
+ * 说明：定义图表绘制使用的渲染模式（dialect），如 SVG、VML 或 HTML。
+ * 重要配置参数：根据浏览器类型和 renderHint 确定，影响渲染性能和精度。
+ */
 mxGraph.prototype.dialect = null;
 
 /**
  * Variable: gridSize
  * 
  * Specifies the grid size. Default is 10.
+ */
+/**
+ * 中文注释：gridSize 变量
+ * 说明：指定网格大小，默认值为 10 像素，用于对齐单元位置（snap 方法）。
+ * 重要配置参数：影响图表的对齐精度。
  */
 mxGraph.prototype.gridSize = 10;
 	
@@ -821,6 +935,11 @@ mxGraph.prototype.gridSize = 10;
  * Specifies if the grid is enabled. This is used in <snap>. Default is
  * true.
  */
+/**
+ * 中文注释：gridEnabled 变量
+ * 说明：指定是否启用网格对齐功能，用于 snap 方法，默认值为 true。
+ * 重要配置参数：启用后，单元移动或调整大小时会自动对齐到网格。
+ */
 mxGraph.prototype.gridEnabled = true;
 
 /**
@@ -829,12 +948,22 @@ mxGraph.prototype.gridEnabled = true;
  * Specifies if ports are enabled. This is used in <cellConnected> to update
  * the respective style. Default is true.
  */
+/**
+ * 中文注释：portsEnabled 变量
+ * 说明：指定是否启用连接端口功能，用于 cellConnected 方法更新样式，默认值为 true。
+ * 重要配置参数：影响边连接到顶点的样式更新。
+ */
 mxGraph.prototype.portsEnabled = true;
 
 /**
- * Variable: nativeDoubleClickEnabled
+ * Variable: nativeDblClickEnabled
  * 
  * Specifies if native double click events should be detected. Default is true.
+ */
+/**
+ * 中文注释：nativeDblClickEnabled 变量
+ * 说明：指定是否检测原生双击事件，默认值为 true。
+ * 交互逻辑：启用后，双击事件将触发原生处理，否则可能由自定义逻辑处理。
  */
 mxGraph.prototype.nativeDblClickEnabled = true;
 
@@ -844,6 +973,11 @@ mxGraph.prototype.nativeDblClickEnabled = true;
  * Specifies if double taps on touch-based devices should be handled as a
  * double click. Default is true.
  */
+/**
+ * 中文注释：doubleTapEnabled 变量
+ * 说明：指定在触摸设备上是否将双击（double tap）视为双击事件，默认值为 true。
+ * 交互逻辑：启用后，触摸设备上的快速双击将触发双击事件。
+ */
 mxGraph.prototype.doubleTapEnabled = true;
 
 /**
@@ -851,6 +985,11 @@ mxGraph.prototype.doubleTapEnabled = true;
  * 
  * Specifies the timeout for double taps and non-native double clicks. Default
  * is 500 ms.
+ */
+/**
+ * 中文注释：doubleTapTimeout 变量
+ * 说明：指定双击和非原生双击事件的超时时间，默认值为 500 毫秒。
+ * 重要配置参数：控制双击事件的检测时间窗口。
  */
 mxGraph.prototype.doubleTapTimeout = 500;
 
@@ -860,6 +999,11 @@ mxGraph.prototype.doubleTapTimeout = 500;
  * Specifies the tolerance for double taps and double clicks in quirks mode.
  * Default is 25 pixels.
  */
+/**
+ * 中文注释：doubleTapTolerance 变量
+ * 说明：指定双击和怪异模式下双击的容差，默认值为 25 像素。
+ * 重要配置参数：控制双击检测的坐标范围，防止误判。
+ */
 mxGraph.prototype.doubleTapTolerance = 25;
 
 /**
@@ -867,12 +1011,23 @@ mxGraph.prototype.doubleTapTolerance = 25;
  * 
  * Holds the x-coordinate of the last touch event for double tap detection.
  */
-mxGraph.prototype.lastTouchY = 0;
+/**
+ * 中文注释：lastTouchX 变量
+ * 说明：存储上一次触摸事件的 X 坐标，用于双击检测。
+ * 交互逻辑：与 doubleTapTolerance 配合，判断是否为有效双击。
+ todo 这儿原来代码是Y，应该是写错了
+ */
+mxGraph.prototype.lastTouchX = 0;
 
 /**
- * Variable: lastTouchX
+ * Variable: lastTouchY
  * 
  * Holds the y-coordinate of the last touch event for double tap detection.
+ */
+/**
+ * 中文注释：lastTouchY 变量
+ * 说明：存储上一次触摸事件的 Y 坐标，用于双击检测。
+ * 交互逻辑：与 lastTouchX 一起用于判断双击事件的位置有效性。
  */
 mxGraph.prototype.lastTouchY = 0;
 
@@ -880,6 +1035,11 @@ mxGraph.prototype.lastTouchY = 0;
  * Variable: lastTouchTime
  * 
  * Holds the time of the last touch event for double click detection.
+ */
+/**
+ * 中文注释：lastTouchTime 变量
+ * 说明：存储上一次触摸事件的时间，用于双击检测。
+ * 交互逻辑：与 doubleTapTimeout 配合，判断是否在时间窗口内发生双击。
  */
 mxGraph.prototype.lastTouchTime = 0;
 
@@ -889,6 +1049,11 @@ mxGraph.prototype.lastTouchTime = 0;
  * Specifies if tap and hold should be used for starting connections on touch-based
  * devices. Default is true.
  */
+/**
+ * 中文注释：tapAndHoldEnabled 变量
+ * 说明：指定在触摸设备上是否启用长按（tap and hold）以启动连接，默认值为 true。
+ * 交互逻辑：启用后，长按可触发连接创建（如拖动创建边）。
+ */
 mxGraph.prototype.tapAndHoldEnabled = true;
 
 /**
@@ -896,12 +1061,22 @@ mxGraph.prototype.tapAndHoldEnabled = true;
  * 
  * Specifies the time for a tap and hold. Default is 500 ms.
  */
+/**
+ * 中文注释：tapAndHoldDelay 变量
+ * 说明：指定长按（tap and hold）的时间，默认值为 500 毫秒。
+ * 重要配置参数：控制长按事件的触发时间。
+ */
 mxGraph.prototype.tapAndHoldDelay = 500;
 
 /**
  * Variable: tapAndHoldInProgress
  * 
  * True if the timer for tap and hold events is running.
+ */
+/**
+ * 中文注释：tapAndHoldInProgress 变量
+ * 说明：表示长按事件计时器是否正在运行。
+ * 交互逻辑：用于跟踪长按事件的处理状态。
  */
 mxGraph.prototype.tapAndHoldInProgress = false;
 
@@ -911,19 +1086,34 @@ mxGraph.prototype.tapAndHoldInProgress = false;
  * True as long as the timer is running and the touch events
  * stay within the given <tapAndHoldTolerance>.
  */
+/**
+ * 中文注释：tapAndHoldValid 变量
+ * 说明：表示长按事件计时器运行期间，触摸事件是否在 tapAndHoldTolerance 范围内。
+ * 交互逻辑：确保长按期间触摸位置未超出容差范围。
+ */
 mxGraph.prototype.tapAndHoldValid = false;
 
 /**
  * Variable: initialTouchX
  * 
- * Holds the x-coordinate of the intial touch event for tap and hold.
+ * Holds the x-coordinate of the initial touch event for tap and hold.
+ */
+/**
+ * 中文注释：initialTouchX 变量
+ * 说明：存储长按事件初始触摸的 X 坐标。
+ * 交互逻辑：用于判断长按期间触摸位置是否有效。
  */
 mxGraph.prototype.initialTouchX = 0;
 
 /**
  * Variable: initialTouchY
  * 
- * Holds the y-coordinate of the intial touch event for tap and hold.
+ * Holds the y-coordinate of the initial touch event for tap and hold.
+ */
+/**
+ * 中文注释：initialTouchY 变量
+ * 说明：存储长按事件初始触摸的 Y 坐标。
+ * 交互逻辑：与 initialTouchX 配合，判断长按事件的有效性。
  */
 mxGraph.prototype.initialTouchY = 0;
 
@@ -932,6 +1122,11 @@ mxGraph.prototype.initialTouchY = 0;
  * 
  * Tolerance for a move to be handled as a single click.
  * Default is 4 pixels.
+ */
+/**
+ * 中文注释：tolerance 变量
+ * 说明：指定移动被视为单击的容差，默认值为 4 像素。
+ * 重要配置参数：控制鼠标或触摸移动的范围，判断是否为有效单击。
  */
 mxGraph.prototype.tolerance = 4;
 
@@ -943,6 +1138,11 @@ mxGraph.prototype.tolerance = 4;
  * <isConstrainChild> returns true. The value specifies the
  * portion of the child which is allowed to overlap the parent.
  */
+/**
+ * 中文注释：defaultOverlap 变量
+ * 说明：指定子单元允许与父单元重叠的比例，默认值为 0.5。
+ * 用途：当 isAllowOverlapParent 返回 true 时，getOverlap 使用此值约束子单元位置。
+ */
 mxGraph.prototype.defaultOverlap = 0.5;
 
 /**
@@ -951,6 +1151,11 @@ mxGraph.prototype.defaultOverlap = 0.5;
  * Specifies the default parent to be used to insert new cells.
  * This is used in <getDefaultParent>. Default is null.
  */
+/**
+ * 中文注释：defaultParent 变量
+ * 说明：指定插入新单元时使用的默认父单元，默认值为 null。
+ * 用途：getDefaultParent 方法返回此值，作为新单元的默认容器。
+ */
 mxGraph.prototype.defaultParent = null;
 
 /**
@@ -958,6 +1163,11 @@ mxGraph.prototype.defaultParent = null;
  * 
  * Specifies the alternate edge style to be used if the main control point
  * on an edge is being doubleclicked. Default is null.
+ */
+/**
+ * 中文注释：alternateEdgeStyle 变量
+ * 说明：指定边的主控制点被双击时使用的备用样式，默认值为 null。
+ * 交互逻辑：支持通过双击切换边的样式。
  */
 mxGraph.prototype.alternateEdgeStyle = null;
 
@@ -975,6 +1185,11 @@ mxGraph.prototype.alternateEdgeStyle = null;
  * graph.view.validate();
  * (end)
  */
+/**
+ * 中文注释：backgroundImage 变量
+ * 说明：指定图表的背景图片（mxImage 对象），由 getBackgroundImage 方法返回，默认值为 null。
+ * 样式设置：通过 setBackgroundImage 设置图片，需调用 view.validate() 刷新显示。
+ */
 mxGraph.prototype.backgroundImage = null;
 
 /**
@@ -982,6 +1197,11 @@ mxGraph.prototype.backgroundImage = null;
  *
  * Specifies if the background page should be visible. Default is false.
  * Not yet implemented.
+ */
+/**
+ * 中文注释：pageVisible 变量
+ * 说明：指定背景页面是否可见，默认值为 false（尚未实现）。
+ * 注意事项：此功能未完全实现，可能不生效。
  */
 mxGraph.prototype.pageVisible = false;
 
@@ -992,6 +1212,11 @@ mxGraph.prototype.pageVisible = false;
  * is false. If you change this value while a graph is being displayed then you
  * should call <sizeDidChange> to force an update of the display.
  */
+/**
+ * 中文注释：pageBreaksVisible 变量
+ * 说明：指定是否在多页之间绘制虚线分隔线，默认值为 false。
+ * 注意事项：更改此值后需调用 sizeDidChange 方法刷新显示。
+ */
 mxGraph.prototype.pageBreaksVisible = false;
 
 /**
@@ -999,12 +1224,22 @@ mxGraph.prototype.pageBreaksVisible = false;
  * 
  * Specifies the color for page breaks. Default is 'gray'.
  */
+/**
+ * 中文注释：pageBreakColor 变量
+ * 说明：指定页面分隔线的颜色，默认值为 'gray'。
+ * 样式设置：影响页面分隔线的视觉效果。
+ */
 mxGraph.prototype.pageBreakColor = 'gray';
 
 /**
  * Variable: pageBreakDashed
  * 
  * Specifies the page breaks should be dashed. Default is true.
+ */
+/**
+ * 中文注释：pageBreakDashed 变量
+ * 说明：指定页面分隔线是否为虚线，默认值为 true。
+ * 样式设置：控制页面分隔线的样式（实线或虚线）。
  */
 mxGraph.prototype.pageBreakDashed = true;
 
@@ -1014,6 +1249,11 @@ mxGraph.prototype.pageBreakDashed = true;
  * Specifies the minimum distance for page breaks to be visible. Default is
  * 20 (in pixels).
  */
+/**
+ * 中文注释：minPageBreakDist 变量
+ * 说明：指定页面分隔线可见的最小距离，默认值为 20 像素。
+ * 重要配置参数：控制分隔线的显示条件。
+ */
 mxGraph.prototype.minPageBreakDist = 20;
 
 /**
@@ -1022,6 +1262,11 @@ mxGraph.prototype.minPageBreakDist = 20;
  * Specifies if the graph size should be rounded to the next page number in
  * <sizeDidChange>. This is only used if the graph container has scrollbars.
  * Default is false.
+ */
+/**
+ * 中文注释：preferPageSize 变量
+ * 说明：指定图表大小是否四舍五入到下一个页面大小（在 sizeDidChange 中使用），仅在容器有滚动条时生效，默认值为 false。
+ * 注意事项：需结合滚动条使用，影响图表尺寸调整。
  */
 mxGraph.prototype.preferPageSize = false;
 
@@ -1033,6 +1278,11 @@ mxGraph.prototype.preferPageSize = false;
  * <mxPrintPreview> and for painting the background page if <pageVisible> is
  * true and the pagebreaks if <pageBreaksVisible> is true.
  */
+/**
+ * 中文注释：pageFormat 变量
+ * 说明：指定背景页面的页面格式，默认值为 mxConstants.PAGE_FORMAT_A4_PORTRAIT。
+ * 用途：用于 mxPrintPreview 和绘制背景页面（当 pageVisible 和 pageBreaksVisible 为 true 时）。
+ */
 mxGraph.prototype.pageFormat = mxConstants.PAGE_FORMAT_A4_PORTRAIT;
 
 /**
@@ -1041,12 +1291,22 @@ mxGraph.prototype.pageFormat = mxConstants.PAGE_FORMAT_A4_PORTRAIT;
  * Specifies the scale of the background page. Default is 1.5.
  * Not yet implemented.
  */
+/**
+ * 中文注释：pageScale 变量
+ * 说明：指定背景页面的缩放比例，默认值为 1.5（尚未实现）。
+ * 注意事项：此功能未完全实现，可能不生效。
+ */
 mxGraph.prototype.pageScale = 1.5;
 
 /**
  * Variable: enabled
  * 
  * Specifies the return value for <isEnabled>. Default is true.
+ */
+/**
+ * 中文注释：enabled 变量
+ * 说明：指定 isEnabled 方法的返回值，默认值为 true。
+ * 交互逻辑：控制图表是否启用交互功能。
  */
 mxGraph.prototype.enabled = true;
 
@@ -1055,6 +1315,11 @@ mxGraph.prototype.enabled = true;
  * 
  * Specifies if <mxKeyHandler> should invoke <escape> when the escape key
  * is pressed. Default is true.
+ */
+/**
+ * 中文注释：escapeEnabled 变量
+ * 说明：指定按下 Escape 键时是否调用 mxKeyHandler 的 escape 方法，默认值为 true。
+ * 交互逻辑：启用后，Escape 键可触发退出操作（如取消编辑）。
  */
 mxGraph.prototype.escapeEnabled = true;
 
@@ -1066,6 +1331,11 @@ mxGraph.prototype.escapeEnabled = true;
  * changes are saved. This is implemented in a focus handler in
  * <mxCellEditor>. Default is true.
  */
+/**
+ * 中文注释：invokesStopCellEditing 变量
+ * 说明：指定当编辑因选择更改、图表数据变化或其他原因停止时，是否调用 stopCellEditing 并保存更改，默认值为 true。
+ * 交互逻辑：在 mxCellEditor 的焦点处理器中实现，确保编辑状态正确终止。
+ */
 mxGraph.prototype.invokesStopCellEditing = true;
 
 /**
@@ -1075,6 +1345,12 @@ mxGraph.prototype.invokesStopCellEditing = true;
  * editing and accept the new value. This is used in <mxCellEditor> to stop
  * cell editing. Note: You can always use F2 and escape to stop editing.
  * Default is false.
+ */
+/**
+ * 中文注释：enterStopsCellEditing 变量
+ * 说明：指定是否在不按 Ctrl 或 Shift 的情况下按 Enter 键停止编辑并接受新值，默认值为 false。
+ * 交互逻辑：在 mxCellEditor 中实现，控制 Enter 键的行为。
+ * 注意事项：F2 和 Escape 键始终可用于停止编辑。
  */
 mxGraph.prototype.enterStopsCellEditing = false;
 
@@ -1086,12 +1362,22 @@ mxGraph.prototype.enterStopsCellEditing = false;
  * scrollbars appear because the graph is smaller than the container size,
  * then no panning occurs if this is true. Default is true.
  */
+/**
+ * 中文注释：useScrollbarsForPanning 变量
+ * 说明：指定当容器有滚动条时，是否在 panGraph 方法中使用滚动条进行平移，默认值为 true。
+ * 注意事项：如果容器无滚动条（图表小于容器），则不进行平移。
+ */
 mxGraph.prototype.useScrollbarsForPanning = true;
 
 /**
  * Variable: exportEnabled
  * 
  * Specifies the return value for <canExportCell>. Default is true.
+ */
+/**
+ * 中文注释：exportEnabled 变量
+ * 说明：指定 canExportCell 方法的返回值，默认值为 true。
+ * 用途：控制单元是否允许导出。
  */
 mxGraph.prototype.exportEnabled = true;
 
@@ -1100,6 +1386,11 @@ mxGraph.prototype.exportEnabled = true;
  * 
  * Specifies the return value for <canImportCell>. Default is true.
  */
+/**
+ * 中文注释：importEnabled 变量
+ * 说明：指定 canImportCell 方法的返回值，默认值为 true。
+ * 用途：控制单元是否允许导入。
+ */
 mxGraph.prototype.importEnabled = true;
 
 /**
@@ -1107,12 +1398,22 @@ mxGraph.prototype.importEnabled = true;
  * 
  * Specifies the return value for <isCellLocked>. Default is false.
  */
+/**
+ * 中文注释：cellsLocked 变量
+ * 说明：指定 isCellLocked 方法的返回值，默认值为 false。
+ * 交互逻辑：控制单元是否锁定，锁定后不可编辑或移动。
+ */
 mxGraph.prototype.cellsLocked = false;
 
 /**
  * Variable: cellsCloneable
  * 
  * Specifies the return value for <isCellCloneable>. Default is true.
+ */
+/**
+ * 中文注释：cellsCloneable 变量
+ * 说明：指定 isCellCloneable 方法的返回值，默认值为 true。
+ * 交互逻辑：控制单元是否允许克隆。
  */
 mxGraph.prototype.cellsCloneable = true;
 
@@ -1122,12 +1423,22 @@ mxGraph.prototype.cellsCloneable = true;
  * Specifies if folding (collapse and expand via an image icon in the graph
  * should be enabled). Default is true.
  */
+/**
+ * 中文注释：foldingEnabled 变量
+ * 说明：指定是否启用单元的折叠功能（通过图标折叠/展开），默认值为 true。
+ * 交互逻辑：启用后，单元可以通过图标折叠或展开。
+ */
 mxGraph.prototype.foldingEnabled = true;
 
 /**
  * Variable: cellsEditable
  * 
  * Specifies the return value for <isCellEditable>. Default is true.
+ */
+/**
+ * 中文注释：cellsEditable 变量
+ * 说明：指定 isCellEditable 方法的返回值，默认值为 true。
+ * 交互逻辑：控制单元是否允许编辑。
  */
 mxGraph.prototype.cellsEditable = true;
 		
@@ -1136,12 +1447,22 @@ mxGraph.prototype.cellsEditable = true;
  * 
  * Specifies the return value for <isCellDeletable>. Default is true.
  */
+/**
+ * 中文注释：cellsDeletable 变量
+ * 说明：指定 isCellDeletable 方法的返回值，默认值为 true。
+ * 交互逻辑：控制单元是否允许删除。
+ */
 mxGraph.prototype.cellsDeletable = true;
 
 /**
  * Variable: cellsMovable
  * 
  * Specifies the return value for <isCellMovable>. Default is true.
+ */
+/**
+ * 中文注释：cellsMovable 变量
+ * 说明：指定 isCellMovable 方法的返回值，默认值为 true。
+ * 交互逻辑：控制单元是否允许移动。
  */
 mxGraph.prototype.cellsMovable = true;
 	
@@ -1150,6 +1471,11 @@ mxGraph.prototype.cellsMovable = true;
  * 
  * Specifies the return value for edges in <isLabelMovable>. Default is true.
  */
+/**
+ * 中文注释：edgeLabelsMovable 变量
+ * 说明：指定边的标签是否允许移动（isLabelMovable 方法），默认值为 true。
+ * 交互逻辑：控制边标签的拖动行为。
+ */
 mxGraph.prototype.edgeLabelsMovable = true;
 	
 /**
@@ -1157,12 +1483,22 @@ mxGraph.prototype.edgeLabelsMovable = true;
  * 
  * Specifies the return value for vertices in <isLabelMovable>. Default is false.
  */
+/**
+ * 中文注释：vertexLabelsMovable 变量
+ * 说明：指定顶点的标签是否允许移动（isLabelMovable 方法），默认值为 false。
+ * 交互逻辑：默认情况下，顶点标签不可拖动。
+ */
 mxGraph.prototype.vertexLabelsMovable = false;
 
 /**
  * Variable: dropEnabled
  * 
  * Specifies the return value for <isDropEnabled>. Default is false.
+ */
+/**
+ * 中文注释：dropEnabled 变量
+ * 说明：指定 isDropEnabled 方法的返回值，默认值为 false。
+ * 交互逻辑：控制是否允许拖放操作（如拖放创建连接）。
  */
 mxGraph.prototype.dropEnabled = false;
 
@@ -1173,12 +1509,23 @@ mxGraph.prototype.dropEnabled = false;
  * <dropEnabled> is false. If enabled, it will call <splitEdge> to carry
  * out the drop operation. Default is true.
  */
+/**
+ * 中文注释：splitEnabled 变量
+ * 说明：指定是否允许将元素拖放到边上（触发 splitEdge 方法），默认值为 true。
+ * 交互逻辑：当 dropEnabled 为 true 时，启用后拖放操作可分割边。
+ * 注意事项：需 dropEnabled 为 true 才生效。
+ */
 mxGraph.prototype.splitEnabled = true;
 
 /**
  * Variable: cellsResizable
  * 
  * Specifies the return value for <isCellResizable>. Default is true.
+ */
+/**
+ * 中文注释：cellsResizable 变量
+ * 说明：指定 isCellResizable 方法的返回值，默认值为 true。
+ * 交互逻辑：控制单元是否允许调整大小。
  */
 mxGraph.prototype.cellsResizable = true;
 
@@ -1187,6 +1534,11 @@ mxGraph.prototype.cellsResizable = true;
  * 
  * Specifies the return value for <isCellsBendable>. Default is true.
  */
+/**
+ * 中文注释：cellsBendable 变量
+ * 说明：指定 isCellsBendable 方法的返回值，默认值为 true。
+ * 交互逻辑：控制边是否允许弯曲（如调整控制点）。
+ */
 mxGraph.prototype.cellsBendable = true;
 
 /**
@@ -1194,12 +1546,22 @@ mxGraph.prototype.cellsBendable = true;
  * 
  * Specifies the return value for <isCellSelectable>. Default is true.
  */
+/**
+ * 中文注释：cellsSelectable 变量
+ * 说明：指定 isCellSelectable 方法的返回值，默认值为 true。
+ * 交互逻辑：控制单元是否允许被选中。
+ */
 mxGraph.prototype.cellsSelectable = true;
 
 /**
  * Variable: cellsDisconnectable
  * 
  * Specifies the return value for <isCellDisconntable>. Default is true.
+ */
+/**
+ * 中文注释：cellsDisconnectable 变量
+ * 说明：指定 isCellDisconnectable 方法的返回值，默认值为 true。
+ * 交互逻辑：控制单元是否允许断开连接。
  */
 mxGraph.prototype.cellsDisconnectable = true;
 
@@ -1209,12 +1571,22 @@ mxGraph.prototype.cellsDisconnectable = true;
  * Specifies if the graph should automatically update the cell size after an
  * edit. This is used in <isAutoSizeCell>. Default is false.
  */
+/**
+ * 中文注释：autoSizeCells 变量
+ * 说明：指定编辑后是否自动更新单元大小（isAutoSizeCell 方法），默认值为 false。
+ * 交互逻辑：控制单元在编辑后是否自动调整尺寸。
+ */
 mxGraph.prototype.autoSizeCells = false;
 
 /**
  * Variable: autoSizeCellsOnAdd
  * 
  * Specifies if autoSize style should be applied when cells are added. Default is false.
+ */
+/**
+ * 中文注释：autoSizeCellsOnAdd 变量
+ * 说明：指定添加单元时是否应用自动调整大小的样式，默认值为 false。
+ * 交互逻辑：控制新添加的单元是否自动调整尺寸。
  */
 mxGraph.prototype.autoSizeCellsOnAdd = false;
 
@@ -1229,6 +1601,11 @@ mxGraph.prototype.autoSizeCellsOnAdd = false;
  * true. Please consult the <ignoreScrollbars> for details. In general, with
  * no scrollbars, the use of <allowAutoPanning> is recommended.
  */
+/**
+ * 中文注释：autoScroll 变量
+ * 说明：指定拖动时鼠标靠近容器边缘是否自动滚动，默认值为 true。
+ * 注意事项：仅在容器有滚动条时生效；无滚动条时，建议设置 ignoreScrollbars 为 true 或启用 allowAutoPanning。
+ */
 mxGraph.prototype.autoScroll = true;
 
 /**
@@ -1239,6 +1616,11 @@ mxGraph.prototype.autoScroll = true;
  * scroll positions (ie usually only rightwards and downwards). To avoid
  * possible conflicts with panning, set <translateToScrollPosition> to true.
  */
+/**
+ * 中文注释：ignoreScrollbars 变量
+ * 说明：指定是否忽略滚动条进行自动滚动，默认值为 false。
+ * 注意事项：启用后，容器将使用正值滚动（通常向右或向下）；建议与 translateToScrollPosition 配合使用，避免平移冲突。
+ */
 mxGraph.prototype.ignoreScrollbars = false;
 
 /**
@@ -1248,6 +1630,11 @@ mxGraph.prototype.ignoreScrollbars = false;
  * position to a translate in the graph view when a mouseUp event is received.
  * This can be used to avoid conflicts when using <autoScroll> and
  * <ignoreScrollbars> with no scrollbars in the container.
+ */
+/**
+ * 中文注释：translateToScrollPosition 变量
+ * 说明：指定在接收到 mouseUp 事件时，是否将当前滚动位置转换为图表视图的平移，默认值为 false。
+ * 注意事项：与 autoScroll 和 ignoreScrollbars 配合使用，避免无滚动条时的平移冲突。
  */
 mxGraph.prototype.translateToScrollPosition = false;
 
@@ -1260,6 +1647,11 @@ mxGraph.prototype.translateToScrollPosition = false;
  * disabled. It should only be used with a scroll buffer or when scollbars
  * are visible and scrollable in all directions. Default is false.
  */
+/**
+ * 中文注释：timerAutoScroll 变量
+ * 说明：指定是否通过 mxPanningManager 进行自动滚动（即使容器有滚动条），默认值为 false。
+ * 注意事项：启用后禁用 scrollPointToVisible，使用 mxPanningManager 进行滚动；建议在有滚动缓冲或滚动条可见时使用。
+ */
 mxGraph.prototype.timerAutoScroll = false;
 
 /**
@@ -1270,6 +1662,11 @@ mxGraph.prototype.timerAutoScroll = false;
  * inside the container, near the edge, set <mxPanningManager.border> to a
  * positive value. Default is false.
  */
+/**
+ * 中文注释：allowAutoPanning 变量
+ * 说明：指定当 scrollPointToVisible 无滚动条时，是否允许通过 panGraph 进行自动平移，默认值为 false。
+ * 注意事项：需设置 mxPanningManager.border 为正值以启用容器边缘的平移。
+ */
 mxGraph.prototype.allowAutoPanning = false;
 
 /**
@@ -1278,6 +1675,11 @@ mxGraph.prototype.allowAutoPanning = false;
  * Specifies if the size of the graph should be automatically extended if the
  * mouse goes near the container edge while dragging. This is only taken into
  * account if the container has scrollbars. Default is true. See <autoScroll>.
+ */
+/**
+ * 中文注释：autoExtend 变量
+ * 说明：指定拖动时鼠标靠近容器边缘是否自动扩展图表大小，默认值为 true。
+ * 注意事项：仅在容器有滚动条时生效，与 autoScroll 配合使用。
  */
 mxGraph.prototype.autoExtend = true;
 
@@ -1288,6 +1690,11 @@ mxGraph.prototype.autoExtend = true;
  * should be placed. Uses in <getMaximumGraphBounds>. Use a width or height of
  * 0 if you only want to give a upper, left corner.
  */
+/**
+ * 中文注释：maximumGraphBounds 变量
+ * 说明：指定图表中所有单元的放置区域（mxRectangle 对象），用于 getMaximumGraphBounds 方法。
+ * 注意事项：宽度或高度为 0 时，仅指定左上角位置。
+ */
 mxGraph.prototype.maximumGraphBounds = null;
 
 /**
@@ -1295,6 +1702,11 @@ mxGraph.prototype.maximumGraphBounds = null;
  * 
  * <mxRectangle> that specifies the minimum size of the graph. This is ignored
  * if the graph container has no scrollbars. Default is null.
+ */
+/**
+ * 中文注释：minimumGraphSize 变量
+ * 说明：指定图表的最小尺寸（mxRectangle 对象），无滚动条时忽略，默认值为 null。
+ * 用途：限制图表的最小边界。
  */
 mxGraph.prototype.minimumGraphSize = null;
 
@@ -1304,6 +1716,11 @@ mxGraph.prototype.minimumGraphSize = null;
  * <mxRectangle> that specifies the minimum size of the <container> if
  * <resizeContainer> is true.
  */
+/**
+ * 中文注释：minimumContainerSize 变量
+ * 说明：指定容器在 resizeContainer 为 true 时的最小尺寸（mxRectangle 对象）。
+ * 用途：限制容器的最小尺寸。
+ */
 mxGraph.prototype.minimumContainerSize = null;
 		
 /**
@@ -1311,6 +1728,11 @@ mxGraph.prototype.minimumContainerSize = null;
  * 
  * <mxRectangle> that specifies the maximum size of the container if
  * <resizeContainer> is true.
+ */
+/**
+ * 中文注释：maximumContainerSize 变量
+ * 说明：指定容器在 resizeContainer 为 true 时的最大尺寸（mxRectangle 对象）。
+ * 用途：限制容器的最大尺寸。
  */
 mxGraph.prototype.maximumContainerSize = null;
 
@@ -1320,6 +1742,11 @@ mxGraph.prototype.maximumContainerSize = null;
  * Specifies if the container should be resized to the graph size when
  * the graph size has changed. Default is false.
  */
+/**
+ * 中文注释：resizeContainer 变量
+ * 说明：指定图表大小变化时是否调整容器大小，默认值为 false。
+ * 注意事项：与 minimumContainerSize 和 maximumContainerSize 配合使用。
+ */
 mxGraph.prototype.resizeContainer = false;
 
 /**
@@ -1327,6 +1754,11 @@ mxGraph.prototype.resizeContainer = false;
  * 
  * Border to be added to the bottom and right side when the container is
  * being resized after the graph has been changed. Default is 0.
+ */
+/**
+ * 中文注释：border 变量
+ * 说明：指定容器调整大小时在底部和右侧添加的边距，默认值为 0。
+ * 用途：控制容器调整大小时的额外空间。
  */
 mxGraph.prototype.border = 0;
 		
@@ -1337,6 +1769,11 @@ mxGraph.prototype.border = 0;
  * in the model. If <keepEdgesInForeground> and <keepEdgesInBackground> are
  * both true then the normal order is applied. Default is false.
  */
+/**
+ * 中文注释：keepEdgesInForeground 变量
+ * 说明：指定边是否始终显示在前景（忽略模型中的顺序），默认值为 false。
+ * 注意事项：与 keepEdgesInBackground 同时为 true 时，使用正常顺序。
+ */
 mxGraph.prototype.keepEdgesInForeground = false;
 
 /**
@@ -1346,12 +1783,22 @@ mxGraph.prototype.keepEdgesInForeground = false;
  * in the model. If <keepEdgesInForeground> and <keepEdgesInBackground> are
  * both true then the normal order is applied. Default is false.
  */
+/**
+ * 中文注释：keepEdgesInBackground 变量
+ * 说明：指定边是否始终显示在背景（忽略模型中的顺序），默认值为 false。
+ * 注意事项：与 keepEdgesInForeground 同时为 true 时，使用正常顺序。
+ */
 mxGraph.prototype.keepEdgesInBackground = false;
 
 /**
  * Variable: allowNegativeCoordinates
  * 
  * Specifies if negative coordinates for vertices are allowed. Default is true.
+ */
+/**
+ * 中文注释：allowNegativeCoordinates 变量
+ * 说明：指定顶点是否允许使用负坐标，默认值为 true。
+ * 用途：控制顶点位置的合法性。
  */
 mxGraph.prototype.allowNegativeCoordinates = true;
 
@@ -1360,6 +1807,11 @@ mxGraph.prototype.allowNegativeCoordinates = true;
  * 
  * Specifies if a child should be constrained inside the parent bounds after a
  * move or resize of the child. Default is true.
+ */
+/**
+ * 中文注释：constrainChildren 变量
+ * 说明：指定子单元在移动或调整大小后是否限制在父单元边界内，默认值为 true。
+ * 用途：控制子单元的边界约束。
  */
 mxGraph.prototype.constrainChildren = true;
 
@@ -1370,6 +1822,11 @@ mxGraph.prototype.constrainChildren = true;
  * inside the parent bounds, if <constrainChildren> is true, and/or the
  * <maximumGraphBounds>. Default is false.
  */
+/**
+ * 中文注释：constrainRelativeChildren 变量
+ * 说明：指定具有相对几何的子单元是否限制在父单元或 maximumGraphBounds 内（当 constrainChildren 为 true 时），默认值为 false。
+ * 用途：控制相对几何子单元的边界约束。
+ */
 mxGraph.prototype.constrainRelativeChildren = false;
 
 /**
@@ -1377,6 +1834,11 @@ mxGraph.prototype.constrainRelativeChildren = false;
  * 
  * Specifies if a parent should contain the child bounds after a resize of
  * the child. Default is true. This has precedence over <constrainChildren>.
+ */
+/**
+ * 中文注释：extendParents 变量
+ * 说明：指定子单元调整大小后，父单元是否扩展以包含子单元边界，默认值为 true。
+ * 注意事项：优先级高于 constrainChildren。
  */
 mxGraph.prototype.extendParents = true;
 
@@ -1386,13 +1848,23 @@ mxGraph.prototype.extendParents = true;
  * Specifies if parents should be extended according to the <extendParents>
  * switch if cells are added. Default is true.
  */
+/**
+ * 中文注释：extendParentsOnAdd 变量
+ * 说明：指定添加单元时，父单元是否根据 extendParents 设置扩展，默认值为 true。
+ * 用途：控制添加单元时的父单元边界扩展。
+ */
 mxGraph.prototype.extendParentsOnAdd = true;
 
 /**
- * Variable: extendParentsOnAdd
+ * Variable: extendParentsOnMove
  * 
  * Specifies if parents should be extended according to the <extendParents>
- * switch if cells are added. Default is false for backwards compatiblity.
+ * switch if cells are added. Default is false for backwards compatibility.
+ */
+/**
+ * 中文注释：extendParentsOnMove 变量
+ * 说明：指定移动单元时，父单元是否根据 extendParents 设置扩展，默认值为 false（向后兼容）。
+ * 用途：控制移动单元时的父单元边界扩展。
  */
 mxGraph.prototype.extendParentsOnMove = false;
 
@@ -1400,7 +1872,12 @@ mxGraph.prototype.extendParentsOnMove = false;
  * Variable: recursiveResize
  * 
  * Specifies the return value for <isRecursiveResize>. Default is
- * false for backwards compatiblity.
+ * false for backwards compatibility.
+ */
+/**
+ * 中文注释：recursiveResize 变量
+ * 说明：指定 isRecursiveResize 方法的返回值，默认值为 false（向后兼容）。
+ * 用途：控制是否递归调整单元大小。
  */
 mxGraph.prototype.recursiveResize = false;
 
@@ -1410,6 +1887,11 @@ mxGraph.prototype.recursiveResize = false;
  * Specifies if the cell size should be changed to the preferred size when
  * a cell is first collapsed. Default is true.
  */
+/**
+ * 中文注释：collapseToPreferredSize 变量
+ * 说明：指定单元首次折叠时，是否调整为首选大小，默认值为 true。
+ * 用途：控制折叠单元时的尺寸调整。
+ */
 mxGraph.prototype.collapseToPreferredSize = true;
 
 /**
@@ -1417,6 +1899,11 @@ mxGraph.prototype.collapseToPreferredSize = true;
  * 
  * Specifies the factor used for <zoomIn> and <zoomOut>. Default is 1.2
  * (120%).
+ */
+/**
+ * 中文注释：zoomFactor 变量
+ * 说明：指定 zoomIn 和 zoomOut 方法的缩放因子，默认值为 1.2（120%）。
+ * 重要配置参数：控制图表的缩放比例。
  */
 mxGraph.prototype.zoomFactor = 1.2;
 
@@ -1426,6 +1913,11 @@ mxGraph.prototype.zoomFactor = 1.2;
  * Specifies if the viewport should automatically contain the selection cells
  * after a zoom operation. Default is false.
  */
+/**
+ * 中文注释：keepSelectionVisibleOnZoom 变量
+ * 说明：指定缩放操作后，视口是否自动包含选中单元，默认值为 false。
+ * 交互逻辑：控制缩放后选中单元的可见性。
+ */
 mxGraph.prototype.keepSelectionVisibleOnZoom = false;
 
 /**
@@ -1434,6 +1926,11 @@ mxGraph.prototype.keepSelectionVisibleOnZoom = false;
  * Specifies if the zoom operations should go into the center of the actual
  * diagram rather than going from top, left. Default is true.
  */
+/**
+ * 中文注释：centerZoom 变量
+ * 说明：指定缩放操作是否以图表中心为基准（而非左上角），默认值为 true。
+ * 交互逻辑：控制缩放操作的中心点。
+ */
 mxGraph.prototype.centerZoom = true;
 
 /**
@@ -1441,6 +1938,11 @@ mxGraph.prototype.centerZoom = true;
  * 
  * Specifies if the scale and translate should be reset if the root changes in
  * the model. Default is true.
+ */
+/**
+ * 中文注释：resetViewOnRootChange 变量
+ * 说明：指定模型根节点变化时，是否重置视图的缩放和平移，默认值为 true。
+ * 用途：确保根节点变化后视图状态一致。
  */
 mxGraph.prototype.resetViewOnRootChange = true;
 
