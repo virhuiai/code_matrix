@@ -52,23 +52,54 @@
  * 
  * graph - Reference to the enclosing <mxGraph>.
  */
+ // 中文注释：
+// 类：mxGraphView
+// 继承自 mxEventSource，用于实现图的视图。负责计算子节点的绝对坐标、边界点和边样式，并将它们缓存到 mxCellStates 中以加快检索速度。
+// 每当模型或视图状态（平移、缩放）发生变化时，状态会更新。缩放和平移会在边界中生效。
+// 事件：mxEvent.UNDO
+// 当通过 setCurrentRoot 更改根节点时触发。edit 属性包含 mxUndoableEdit，其中包含 mxCurrentRootChange。
+// 事件：mxEvent.SCALE_AND_TRANSLATE
+// 当通过 scaleAndTranslate 更改缩放和平移时触发。包含新的和之前的缩放（scale, previousScale）和平移（translate, previousTranslate）值。
+// 事件：mxEvent.SCALE
+// 当通过 setScale 更改缩放时触发。包含新的和之前的缩放值（scale, previousScale）。
+// 事件：mxEvent.TRANSLATE
+// 当通过 setTranslate 更改平移时触发。包含新的和之前的平移值（translate, previousTranslate）。
+// 事件：mxEvent.DOWN 和 mxEvent.UP
+// 当通过执行 mxCurrentRootChange 更改当前根节点时触发。事件名称取决于根节点在单元层次结构中的位置，root 和 previous 属性分别包含新的和之前的根节点。
+// 构造函数：mxGraphView
+// 为给定的 mxGraph 构造一个新视图。
+// 参数：
+// graph - 指向外部 mxGraph 的引用。
 function mxGraphView(graph)
 {
 	this.graph = graph;
 	this.translate = new mxPoint();
 	this.graphBounds = new mxRectangle();
 	this.states = new mxDictionary();
+    // 中文注释：
+    // 构造函数初始化：
+    // 1. graph: 保存对外部 mxGraph 的引用，用于后续操作。
+    // 2. translate: 初始化平移对象（mxPoint），用于视图的平移变换。
+    // 3. graphBounds: 初始化边界矩形（mxRectangle），缓存视图的缩放和平移边界。
+    // 4. states: 初始化状态字典（mxDictionary），用于存储单元ID到 mxCellStates 的映射。
 };
 
 /**
  * Extends mxEventSource.
  */
+// 中文注释：
+// 继承 mxEventSource，提供事件触发功能，允许视图触发和处理事件。
 mxGraphView.prototype = new mxEventSource();
 mxGraphView.prototype.constructor = mxGraphView;
 
 /**
+ * Variable: EMPTY_POINT
  *
+ * Specifies an empty <mxPoint> instance.
  */
+// 中文注释：
+// 变量：EMPTY_POINT
+// 定义一个空的 mxPoint 实例，用于默认或空值场景。
 mxGraphView.prototype.EMPTY_POINT = new mxPoint();
 
 /**
@@ -78,6 +109,10 @@ mxGraphView.prototype.EMPTY_POINT = new mxPoint();
  * If the resource for this key does not exist then the value is used as
  * the status message. Default is 'done'.
  */
+// 中文注释：
+// 变量：doneResource
+// 指定长时间操作后状态消息的资源键。如果资源键不存在，则使用该值作为状态消息。默认值为 'done'。
+// 注意：依赖 mxClient.language 来决定是否启用资源键。
 mxGraphView.prototype.doneResource = (mxClient.language != 'none') ? 'done' : '';
 
 /**
@@ -87,6 +122,10 @@ mxGraphView.prototype.doneResource = (mxClient.language != 'none') ? 'done' : ''
  * being updated. If the resource for this key does not exist then the
  * value is used as the status message. Default is 'updatingDocument'.
  */
+// 中文注释：
+// 变量：updatingDocumentResource
+// 指定文档更新时状态消息的资源键。如果资源键不存在，则使用该值作为状态消息。默认值为 'updatingDocument'。
+// 注意：依赖 mxClient.language 来决定是否启用资源键。
 mxGraphView.prototype.updatingDocumentResource = (mxClient.language != 'none') ? 'updatingDocument' : '';
 
 /**
@@ -97,6 +136,10 @@ mxGraphView.prototype.updatingDocumentResource = (mxClient.language != 'none') ?
  * to objects using <mxStyleRegistry>. Default is false. NOTE: Enabling this
  * switch carries a possible security risk.
  */
+// 中文注释：
+// 变量：allowEval
+// 指定是否使用 mxUtils.eval 评估单元样式中的字符串值，仅在字符串无法通过 mxStyleRegistry 映射到对象时使用。默认值为 false。
+// 注意：启用此选项可能存在安全风险，需谨慎使用。
 mxGraphView.prototype.allowEval = false;
 
 /**
@@ -105,6 +148,10 @@ mxGraphView.prototype.allowEval = false;
  * Specifies if a gesture should be captured when it goes outside of the
  * graph container. Default is true.
  */
+// 中文注释：
+// 变量：captureDocumentGesture
+// 指定当手势超出图容器时是否捕获。默认值为 true。
+// 注意：此配置影响交互逻辑，决定手势事件是否继续处理。
 mxGraphView.prototype.captureDocumentGesture = true;
 
 /**
@@ -114,6 +161,10 @@ mxGraphView.prototype.captureDocumentGesture = true;
  * mode and quirks mode. This will significantly improve rendering performance.
  * Default is true.
  */
+// 中文注释：
+// 变量：optimizeVmlReflows
+// 指定在 IE8 标准模式和怪异模式下渲染时是否隐藏 canvas，以显著提高渲染性能。默认值为 true。
+// 注意：此配置优化了 VML 渲染性能，但可能影响特定场景的显示。
 mxGraphView.prototype.optimizeVmlReflows = true;
 
 /**
@@ -122,6 +173,10 @@ mxGraphView.prototype.optimizeVmlReflows = true;
  * Specifies if shapes should be created, updated and destroyed using the
  * methods of <mxCellRenderer> in <graph>. Default is true.
  */
+// 中文注释：
+// 变量：rendering
+// 指定是否使用 graph 中的 mxCellRenderer 方法创建、更新和销毁形状。默认值为 true。
+// 注意：此配置决定是否通过渲染器管理形状的生命周期。
 mxGraphView.prototype.rendering = true;
 
 /**
@@ -129,6 +184,9 @@ mxGraphView.prototype.rendering = true;
  *
  * Reference to the enclosing <mxGraph>.
  */
+// 中文注释：
+// 变量：graph
+// 保存对外部 mxGraph 的引用，用于视图与图的交互。
 mxGraphView.prototype.graph = null;
 
 /**
@@ -136,6 +194,10 @@ mxGraphView.prototype.graph = null;
  *
  * <mxCell> that acts as the root of the displayed cell hierarchy.
  */
+// 中文注释：
+// 变量：currentRoot
+// 表示显示的单元层次结构的根节点（mxCell）。
+// 注意：此变量决定视图中显示的层次结构起点。
 mxGraphView.prototype.currentRoot = null;
 
 /**
@@ -143,6 +205,10 @@ mxGraphView.prototype.currentRoot = null;
  *
  * <mxRectangle> that caches the scales, translated bounds of the current view.
  */
+// 中文注释：
+// 变量：graphBounds
+// 缓存当前视图的缩放和平移边界（mxRectangle）。
+// 注意：用于快速访问视图的边界信息。
 mxGraphView.prototype.graphBounds = null;
 
 /**
@@ -150,6 +216,10 @@ mxGraphView.prototype.graphBounds = null;
  * 
  * Specifies the scale. Default is 1 (100%).
  */
+// 中文注释：
+// 变量：scale
+// 指定视图的缩放比例，默认值为 1（100%）。
+// 注意：此配置影响视图的显示大小。
 mxGraphView.prototype.scale = 1;
 	
 /**
@@ -158,6 +228,10 @@ mxGraphView.prototype.scale = 1;
  * <mxPoint> that specifies the current translation. Default is a new
  * empty <mxPoint>.
  */
+// 中文注释：
+// 变量：translate
+// 指定当前的平移（mxPoint），默认值为新的空 mxPoint。
+// 注意：此配置影响视图的平移变换。
 mxGraphView.prototype.translate = null;
 
 /**
@@ -165,6 +239,10 @@ mxGraphView.prototype.translate = null;
  * 
  * <mxDictionary> that maps from cell IDs to <mxCellStates>.
  */
+// 中文注释：
+// 变量：states
+// 从单元ID映射到 mxCellStates 的字典（mxDictionary）。
+// 注意：用于存储和管理单元的状态信息。
 mxGraphView.prototype.states = null;
 
 /**
@@ -174,6 +252,10 @@ mxGraphView.prototype.states = null;
  * is false then the style is only updated if the state is created or if the
  * style of the cell was changed. Default is false.
  */
+// 中文注释：
+// 变量：updateStyle
+// 指定是否在每次验证步骤中更新样式。如果为 false，则仅在创建状态或单元样式更改时更新。默认值为 false。
+// 注意：此配置影响样式更新的频率，优化性能。
 mxGraphView.prototype.updateStyle = false;
 
 /**
@@ -181,6 +263,10 @@ mxGraphView.prototype.updateStyle = false;
  * 
  * During validation, this contains the last DOM node that was processed.
  */
+// 中文注释：
+// 变量：lastNode
+// 在验证过程中，保存最后处理的 DOM 节点。
+// 注意：用于跟踪验证过程中的 DOM 节点。
 mxGraphView.prototype.lastNode = null;
 
 /**
@@ -188,6 +274,10 @@ mxGraphView.prototype.lastNode = null;
  * 
  * During validation, this contains the last HTML DOM node that was processed.
  */
+// 中文注释：
+// 变量：lastHtmlNode
+// 在验证过程中，保存最后处理的 HTML DOM 节点。
+// 注意：用于跟踪验证过程中的 HTML 节点。
 mxGraphView.prototype.lastHtmlNode = null;
 
 /**
@@ -195,6 +285,10 @@ mxGraphView.prototype.lastHtmlNode = null;
  * 
  * During validation, this contains the last edge's DOM node that was processed.
  */
+// 中文注释：
+// 变量：lastForegroundNode
+// 在验证过程中，保存最后处理的边的 DOM 节点。
+// 注意：用于跟踪边节点的处理状态。
 mxGraphView.prototype.lastForegroundNode = null;
 
 /**
@@ -202,6 +296,10 @@ mxGraphView.prototype.lastForegroundNode = null;
  * 
  * During validation, this contains the last edge HTML DOM node that was processed.
  */
+// 中文注释：
+// 变量：lastForegroundHtmlNode
+// 在验证过程中，保存最后处理的边的 HTML DOM 节点。
+// 注意：用于跟踪边节点的 HTML 处理状态。
 mxGraphView.prototype.lastForegroundHtmlNode = null;
 
 /**
@@ -209,6 +307,10 @@ mxGraphView.prototype.lastForegroundHtmlNode = null;
  *
  * Returns <graphBounds>.
  */
+// 中文注释：
+// 函数：getGraphBounds
+// 返回当前视图的边界（graphBounds）。
+// 用途：提供对视图边界的快速访问。
 mxGraphView.prototype.getGraphBounds = function()
 {
 	return this.graphBounds;
@@ -219,6 +321,12 @@ mxGraphView.prototype.getGraphBounds = function()
  *
  * Sets <graphBounds>.
  */
+// 中文注释：
+// 函数：setGraphBounds
+// 设置视图的边界（graphBounds）。
+// 参数：
+// value - 新的边界值（mxRectangle）。
+// 用途：更新视图的边界信息。
 mxGraphView.prototype.setGraphBounds = function(value)
 {
 	this.graphBounds = value;
@@ -233,6 +341,13 @@ mxGraphView.prototype.setGraphBounds = function(value)
  *
  * cells - Array of <mxCells> whose bounds should be returned.
  */
+// 中文注释：
+// 函数：getBounds
+// 返回给定 mxCells 数组中所有 mxCellStates 的边界联合。
+// 参数：
+// cells - 要计算边界的 mxCells 数组。
+// 用途：计算多个单元的边界，用于显示或布局。
+// 注意：仅处理顶点或边的单元，并忽略无状态的单元。
 mxGraphView.prototype.getBounds = function(cells)
 {
 	var result = null;
@@ -275,6 +390,17 @@ mxGraphView.prototype.getBounds = function(cells)
  *
  * root - <mxCell> that specifies the root of the displayed cell hierarchy.
  */
+// 中文注释：
+// 函数：setCurrentRoot
+// 设置并返回当前根节点，并在调用 mxGraph.sizeDidChange 之前触发 mxEvent.UNDO 事件。
+// 参数：
+// root - 指定显示单元层次结构的根节点（mxCell）。
+// 事件处理逻辑：
+// 1. 创建 mxCurrentRootChange 对象记录更改。
+// 2. 执行更改并触发 UNDO 事件，事件中包含 mxUndoableEdit。
+// 3. 调用 sizeDidChange 通知图大小变化。
+// 用途：更改视图的根节点并更新显示。
+// 注意：仅在根节点发生变化时执行操作。
 mxGraphView.prototype.setCurrentRoot = function(root)
 {
 	if (this.currentRoot != root)
@@ -302,6 +428,20 @@ mxGraphView.prototype.setCurrentRoot = function(root)
  * dx - X-coordinate of the translation.
  * dy - Y-coordinate of the translation.
  */
+// 中文注释：
+// 函数：scaleAndTranslate
+// 设置缩放和平移，并在调用 revalidate 和 mxGraph.sizeDidChange 之前触发 mxEvent.SCALE 和 mxEvent.TRANSLATE 事件。
+// 参数：
+// scale - 指定新缩放比例的十进制值（1 表示 100%）。
+// dx - 平移的 X 坐标。
+// dy - 平移的 Y 坐标。
+// 事件处理逻辑：
+// 1. 记录当前缩放和平移值。
+// 2. 如果缩放或平移发生变化，更新 scale 和 translate。
+// 3. 如果事件启用，调用 viewStateChanged 更新视图状态。
+// 4. 触发 SCALE_AND_TRANSLATE 事件，包含新旧缩放和平移值。
+// 用途：同时更新视图的缩放和平移，并通知相关变化。
+// 注意：仅在缩放或平移值发生变化时触发事件。
 mxGraphView.prototype.scaleAndTranslate = function(scale, dx, dy)
 {
 	var previousScale = this.scale;
@@ -330,6 +470,10 @@ mxGraphView.prototype.scaleAndTranslate = function(scale, dx, dy)
  * 
  * Returns the <scale>.
  */
+// 中文注释：
+// 函数：getScale
+// 返回当前的缩放比例（scale）。
+// 用途：提供对当前缩放比例的访问。
 mxGraphView.prototype.getScale = function()
 {
 	return this.scale;
@@ -345,6 +489,18 @@ mxGraphView.prototype.getScale = function()
  *
  * value - Decimal value that specifies the new scale (1 is 100%).
  */
+// 中文注释：
+// 函数：setScale
+// 设置缩放比例，并在调用 revalidate 和 mxGraph.sizeDidChange 之前触发 mxEvent.SCALE 事件。
+// 参数：
+// value - 指定新缩放比例的十进制值（1 表示 100%）。
+// 事件处理逻辑：
+// 1. 记录当前缩放值。
+// 2. 如果缩放值发生变化，更新 scale。
+// 3. 如果事件启用，调用 viewStateChanged 更新视图状态。
+// 4. 触发 SCALE 事件，包含新旧缩放值。
+// 用途：更新视图的缩放比例并通知变化。
+// 注意：仅在缩放值发生变化时触发事件。
 mxGraphView.prototype.setScale = function(value)
 {
 	var previousScale = this.scale;
@@ -368,6 +524,10 @@ mxGraphView.prototype.setScale = function(value)
  * 
  * Returns the <translate>.
  */
+// 中文注释：
+// 函数：getTranslate
+// 返回当前的平移（translate）。
+// 用途：提供对当前平移值的访问。
 mxGraphView.prototype.getTranslate = function()
 {
 	return this.translate;
@@ -385,6 +545,19 @@ mxGraphView.prototype.getTranslate = function()
  * dx - X-coordinate of the translation.
  * dy - Y-coordinate of the translation.
  */
+// 中文注释：
+// 函数：setTranslate
+// 设置平移，并在调用 revalidate 和 mxGraph.sizeDidChange 之前触发 mxEvent.TRANSLATE 事件。平移是原点的负值。
+// 参数：
+// dx - 平移的 X 坐标。
+// dy - 平移的 Y 坐标。
+// 事件处理逻辑：
+// 1. 记录当前平移值。
+// 2. 如果平移值发生变化，更新 translate。
+// 3. 如果事件启用，调用 viewStateChanged 更新视图状态。
+// 4. 触发 TRANSLATE 事件，包含新旧平移值。
+// 用途：更新视图的平移并通知变化。
+// 注意：仅在平移值发生变化时触发事件。
 mxGraphView.prototype.setTranslate = function(dx, dy)
 {
 	var previousTranslate = new mxPoint(this.translate.x, this.translate.y);
@@ -409,6 +582,13 @@ mxGraphView.prototype.setTranslate = function(dx, dy)
  * 
  * Invoked after <scale> and/or <translate> has changed.
  */
+// 中文注释：
+// 函数：viewStateChanged
+// 在 scale 或 translate 发生变化后调用。
+// 用途：更新视图状态并触发相关更新操作。
+// 关键步骤：
+// 1. 调用 revalidate 重新验证视图。
+// 2. 调用 mxGraph.sizeDidChange 通知图大小变化。
 mxGraphView.prototype.viewStateChanged = function()
 {
 	this.revalidate();
@@ -420,6 +600,13 @@ mxGraphView.prototype.viewStateChanged = function()
  *
  * Clears the view if <currentRoot> is not null and revalidates.
  */
+// 中文注释：
+// 函数：refresh
+// 如果 currentRoot 不为 null，则清除视图并重新验证。
+// 用途：刷新视图内容。
+// 关键步骤：
+// 1. 如果存在 currentRoot，调用 clear 清除视图。
+// 2. 调用 revalidate 重新验证视图。
 mxGraphView.prototype.refresh = function()
 {
 	if (this.currentRoot != null)
@@ -435,6 +622,13 @@ mxGraphView.prototype.refresh = function()
  *
  * Revalidates the complete view with all cell states.
  */
+// 中文注释：
+// 函数：revalidate
+// 重新验证整个视图，包括所有单元状态。
+// 用途：确保视图状态与模型一致。
+// 关键步骤：
+// 1. 调用 invalidate 使视图状态失效。
+// 2. 调用 validate 验证并更新视图。
 mxGraphView.prototype.revalidate = function()
 {
 	this.invalidate();
@@ -454,6 +648,18 @@ mxGraphView.prototype.revalidate = function()
  * force - Boolean indicating if the current root should be ignored for
  * recursion.
  */
+// 中文注释：
+// 函数：clear
+// 如果给定单元不是当前根节点，则移除给定单元及其所有子节点的状态。
+// 参数：
+// cell - 可选的 mxCell，指定要移除状态的单元，默认为模型的根节点。
+// force - 布尔值，指示是否忽略当前根节点进行递归。
+// 用途：清除指定单元及其子节点的状态。
+// 关键步骤：
+// 1. 默认使用模型的根节点。
+// 2. 调用 removeState 移除指定单元的状态。
+// 3. 如果允许递归且单元不是当前根节点，递归清除子节点状态。
+// 注意：force 参数用于控制是否强制清除当前根节点的状态。
 mxGraphView.prototype.clear = function(cell, force, recurse)
 {
 	var model = this.graph.getModel();
@@ -489,6 +695,18 @@ mxGraphView.prototype.clear = function(cell, force, recurse)
  * cell - Optional <mxCell> to be invalidated. Default is the root of the
  * model.
  */
+// 中文注释：
+// 函数：invalidate
+// 使给定单元及其所有子节点和连接边的状态失效。
+// 参数：
+// cell - 可选的 mxCell，指定要失效的单元，默认为模型的根节点。
+// 用途：标记单元状态为失效，以便后续重新验证。
+// 关键步骤：
+// 1. 默认使用模型的根节点。
+// 2. 获取单元状态并标记为失效。
+// 3. 递归使所有子节点状态失效（如果允许）。
+// 4. 使连接边的状态失效（如果允许）。
+// 注意：使用 invalidating 标志防止无限循环。
 mxGraphView.prototype.invalidate = function(cell, recurse, includeEdges)
 {
 	var model = this.graph.getModel();
@@ -547,6 +765,20 @@ mxGraphView.prototype.invalidate = function(cell, recurse, includeEdges)
  * cell - Optional <mxCell> to be used as the root of the validation.
  * Default is <currentRoot> or the root of the model.
  */
+// 中文注释：
+// 函数：validate
+// 调用 validateCell 和 validateCellState，并使用 getBoundingBox 更新 graphBounds，最后通过 validateBackground 验证背景。
+// 参数：
+// cell - 可选的 mxCell，用作验证的根节点，默认为 currentRoot 或模型的根节点。
+// 用途：验证整个视图，确保状态和显示一致。
+// 关键步骤：
+// 1. 重置验证状态。
+// 2. 在 IE8 标准模式或怪异模式下优化 VML 渲染性能，隐藏 canvas 并创建占位符。
+// 3. 验证单元状态并获取边界。
+// 4. 更新 graphBounds。
+// 5. 验证背景。
+// 6. 恢复 canvas 显示并清理临时节点。
+// 注意：优化 VML 渲染可能影响特定场景的显示。
 mxGraphView.prototype.validate = function(cell)
 {
 	var t0 = mxLog.enter('mxGraphView.validate');
@@ -615,6 +847,10 @@ mxGraphView.prototype.validate = function(cell)
  * Returns the bounds for an empty graph. This returns a rectangle at
  * <translate> with the size of 0 x 0.
  */
+// 中文注释：
+// 函数：getEmptyBounds
+// 返回空图的边界，返回一个位于 translate 位置、尺寸为 0x0 的矩形。
+// 用途：为没有内容的图提供默认边界。
 mxGraphView.prototype.getEmptyBounds = function()
 {
 	return new mxRectangle(this.translate.x * this.scale, this.translate.y * this.scale);
@@ -632,6 +868,18 @@ mxGraphView.prototype.getEmptyBounds = function()
  * recurse - Optional boolean indicating if the children should be included.
  * Default is true.
  */
+// 中文注释：
+// 函数：getBoundingBox
+// 返回给定 mxCellState 及其子节点的形状和标签的边界框（如果 recurse 为 true）。
+// 参数：
+// state - 要返回边界框的 mxCellState。
+// recurse - 可选布尔值，指示是否包含子节点，默认值为 true。
+// 用途：计算单元及其子节点的边界框，用于布局或显示。
+// 关键步骤：
+// 1. 如果状态存在，克隆形状的边界框。
+// 2. 添加标签的边界框（如果存在）。
+// 3. 如果允许递归，遍历子节点并合并它们的边界框。
+// 注意：仅处理有效状态和边界框。
 mxGraphView.prototype.getBoundingBox = function(state, recurse)
 {
 	recurse = (recurse != null) ? recurse : true;
@@ -693,6 +941,15 @@ mxGraphView.prototype.getBoundingBox = function(state, recurse)
  * 
  * bounds - <mxRectangle> that represents the bounds of the shape.
  */
+// 中文注释：
+// 函数：createBackgroundPageShape
+// 创建并返回用作背景页的形状。
+// 参数：
+// bounds - 表示形状边界的 mxRectangle。
+// 用途：生成背景页的矩形形状。
+// 样式设置：
+// - 填充颜色：白色
+// - 边框颜色：黑色
 mxGraphView.prototype.createBackgroundPageShape = function(bounds)
 {
 	return new mxRectangleShape(bounds, 'white', 'black');
@@ -703,6 +960,10 @@ mxGraphView.prototype.createBackgroundPageShape = function(bounds)
  *
  * Calls <validateBackgroundImage> and <validateBackgroundPage>.
  */
+// 中文注释：
+// 函数：validateBackground
+// 调用 validateBackgroundImage 和 validateBackgroundPage 验证背景。
+// 用途：确保背景图像和背景页的正确显示。
 mxGraphView.prototype.validateBackground = function()
 {
 	this.validateBackgroundImage();
@@ -714,6 +975,17 @@ mxGraphView.prototype.validateBackground = function()
  * 
  * Validates the background image.
  */
+// 中文注释：
+// 函数：validateBackgroundImage
+// 验证背景图像。
+// 用途：确保背景图像正确加载和显示。
+// 关键步骤：
+// 1. 获取图的背景图像。
+// 2. 如果图像存在且与当前背景图像不同，创建新的 mxImageShape。
+// 3. 初始化并重绘背景图像。
+// 4. 在 IE8 标准模式下为背景图像添加手势监听器。
+// 5. 如果背景图像不存在且当前有背景图像，销毁现有背景图像。
+// 注意：在 IE8 中需要特殊处理以确保事件正确触发。
 mxGraphView.prototype.validateBackgroundImage = function()
 {
 	var bg = this.graph.getBackgroundImage();
@@ -768,6 +1040,22 @@ mxGraphView.prototype.validateBackgroundImage = function()
  * 
  * Validates the background page.
  */
+// 中文注释：
+// 函数：validateBackgroundPage
+// 验证背景页。
+// 用途：确保背景页在需要时正确显示。
+// 关键步骤：
+// 1. 如果图的页面可见，获取背景页边界。
+// 2. 如果背景页形状不存在，创建新的 mxRectangleShape，设置缩放、阴影和方言，并初始化。
+// 3. 添加双击和手势监听器处理交互。
+// 4. 如果页面不可见且背景页存在，销毁背景页。
+// 样式设置：
+// - 缩放：与视图缩放一致。
+// - 阴影：启用。
+// 交互逻辑：
+// - 支持双击事件，调用图的 dblClick 方法。
+// - 支持鼠标按下、移动和释放事件，触发相应的图事件。
+// 注意：确保背景页的显示与图的 pageVisible 属性一致。
 mxGraphView.prototype.validateBackgroundPage = function()
 {
 	if (this.graph.pageVisible)
@@ -837,6 +1125,14 @@ mxGraphView.prototype.validateBackgroundPage = function()
  * 
  * Returns the bounds for the background page.
  */
+// 中文注释：
+// 函数：getBackgroundPageBounds
+// 返回背景页的边界。
+// 用途：计算背景页的边界框。
+// 关键步骤：
+// 1. 获取图的页面格式和缩放比例。
+// 2. 创建一个新的 mxRectangle，基于视图的缩放和平移。
+// 注意：边界基于页面格式和视图变换计算。
 mxGraphView.prototype.getBackgroundPageBounds = function()
 {
 	var fmt = this.graph.pageFormat;
@@ -874,6 +1170,18 @@ mxGraphView.prototype.getBackgroundPageBounds = function()
  * backgroundImage - <mxImageShape> that represents the background image.
  * bg - <mxImage> that specifies the image and its dimensions.
  */
+// 中文注释：
+// 函数：redrawBackgroundImage
+// 更新背景图像的边界并重绘。
+// 参数：
+// backgroundImage - 表示背景图像的 mxImageShape。
+// bg - 指定图像及其尺寸的 mxImage。
+// 用途：更新并重绘背景图像。
+// 关键步骤：
+// 1. 设置背景图像的缩放比例与视图一致。
+// 2. 根据视图的平移和缩放更新边界。
+// 3. 调用 redraw 方法重绘图像。
+// 注意：提供了不缩放背景图像的示例代码，可根据需要替换。
 mxGraphView.prototype.redrawBackgroundImage = function(backgroundImage, bg)
 {
 	backgroundImage.scale = this.scale;
@@ -898,6 +1206,19 @@ mxGraphView.prototype.redrawBackgroundImage = function(backgroundImage, bg)
  * visible - Optional boolean indicating if the cell should be visible. Default
  * is true.
  */
+// 中文注释：
+// 函数：validateCell
+// 如果 visible 为 true 且给定单元可见，则递归创建单元状态；如果单元不可见但状态存在，则使用 removeState 删除状态。
+// 参数：
+// cell - 要创建状态的 mxCell。
+// visible - 可选布尔值，指示单元是否应可见，默认值为 true。
+// 用途：验证并创建单元状态，确保视图显示正确。
+// 关键步骤：
+// 1. 检查单元可见性。
+// 2. 获取或创建单元状态。
+// 3. 如果单元不可见，移除状态。
+// 4. 递归验证子节点。
+// 注意：仅处理可见单元及其子节点。
 mxGraphView.prototype.validateCell = function(cell, visible)
 {
 	visible = (visible != null) ? visible : true;
@@ -938,6 +1259,19 @@ mxGraphView.prototype.validateCell = function(cell, visible)
  * recurse - Optional boolean indicating if the children of the cell should be
  * validated. Default is true.
  */
+// 中文注释：
+// 函数：validateCellState
+// 验证并重绘给定 mxCell 的 mxCellState。
+// 参数：
+// cell - 要验证状态的 mxCell。
+// recurse - 可选布尔值，指示是否验证子节点，默认值为 true。
+// 用途：验证单元状态并更新显示。
+// 关键步骤：
+// 1. 获取单元状态。
+// 2. 如果状态无效，更新样式并验证父节点和终端节点。
+// 3. 更新单元状态并重绘。
+// 4. 如果允许递归，验证子节点状态。
+// 注意：仅处理有效状态并避免重复绘制。
 mxGraphView.prototype.validateCellState = function(cell, recurse)
 {
 	recurse = (recurse != null) ? recurse : true;
@@ -1011,6 +1345,18 @@ mxGraphView.prototype.validateCellState = function(cell, recurse)
  * 
  * state - <mxCellState> to be updated.
  */
+// 中文注释：
+// 函数：updateCellState
+// 更新给定的 mxCellState。
+// 参数：
+// state - 要更新的 mxCellState。
+// 用途：更新单元状态的坐标、尺寸等信息。
+// 关键步骤：
+// 1. 重置状态的绝对偏移和原点。
+// 2. 如果单元不是当前根节点，计算父节点的原点偏移。
+// 3. 获取单元的几何信息并更新状态的坐标和尺寸。
+// 4. 根据单元类型（顶点或边）调用相应的更新方法。
+// 注意：处理相对和绝对坐标的转换。
 mxGraphView.prototype.updateCellState = function(state)
 {
 	state.absoluteOffset.x = 0;
@@ -1102,6 +1448,11 @@ mxGraphView.prototype.updateCellState = function(state)
  * view. This implementation uses <mxGraph.isCellVisible> but it can be
  * overidden to use a separate condition.
  */
+// 中文注释：
+// 函数：isCellCollapsed
+// 如果给定单元的子节点不应在视图中可见，则返回 true。
+// 用途：检查单元的子节点是否应隐藏。
+// 注意：默认使用 mxGraph.isCellVisible，可重写以使用其他条件。
 mxGraphView.prototype.isCellCollapsed = function(cell)
 {
 	return this.graph.isCellCollapsed(cell);
@@ -1112,6 +1463,14 @@ mxGraphView.prototype.isCellCollapsed = function(cell)
  * 
  * Validates the given cell state.
  */
+// 中文注释：
+// 函数：updateVertexState
+// 验证给定的单元状态（顶点）。
+// 用途：更新顶点状态的坐标和旋转。
+// 关键步骤：
+// 1. 如果几何是相对的且父节点不是边，应用父节点的旋转。
+// 2. 调用 updateVertexLabelOffset 更新标签偏移。
+// 注意：处理顶点的旋转和相对定位。
 mxGraphView.prototype.updateVertexState = function(state, geo)
 {
 	var model = this.graph.getModel();
@@ -1142,6 +1501,16 @@ mxGraphView.prototype.updateVertexState = function(state, geo)
  * 
  * Validates the given cell state.
  */
+// 中文注释：
+// 函数：updateEdgeState
+// 验证给定的单元状态（边）。
+// 用途：更新边的状态，包括终端点和路径点。
+// 关键步骤：
+// 1. 获取源和目标终端状态。
+// 2. 如果终端无效或没有终端点，清除边状态。
+// 3. 更新固定终端点、路径点和浮动终端点。
+// 4. 更新边的边界和标签偏移。
+// 注意：处理无效边的清除和路径点的更新。
 mxGraphView.prototype.updateEdgeState = function(state, geo)
 {
 	var source = state.getVisibleTerminalState(true);
@@ -1190,6 +1559,16 @@ mxGraphView.prototype.updateEdgeState = function(state, geo)
  * 
  * state - <mxCellState> whose absolute offset should be updated.
  */
+// 中文注释：
+// 函数：updateVertexLabelOffset
+// 更新给定顶点单元状态的绝对偏移，考虑标签位置样式。
+// 参数：
+// state - 要更新绝对偏移的 mxCellState。
+// 用途：调整顶点标签的偏移位置。
+// 样式设置：
+// - 根据 STYLE_LABEL_POSITION 调整水平偏移（左、中、右）。
+// - 根据 STYLE_VERTICAL_LABEL_POSITION 调整垂直偏移（上、中、下）。
+// 注意：处理标签宽度的缩放和对齐方式。
 mxGraphView.prototype.updateVertexLabelOffset = function(state)
 {
 	var h = mxUtils.getValue(state.style, mxConstants.STYLE_LABEL_POSITION, mxConstants.ALIGN_CENTER);
@@ -1256,6 +1635,12 @@ mxGraphView.prototype.updateVertexLabelOffset = function(state)
  *
  * Resets the current validation state.
  */
+// 中文注释：
+// 函数：resetValidationState
+// 重置当前验证状态。
+// 用途：清除验证过程中的临时节点引用。
+// 关键步骤：
+// 1. 重置 lastNode、lastHtmlNode、lastForegroundNode 和 lastForegroundHtmlNode。
 mxGraphView.prototype.resetValidationState = function()
 {
 	this.lastNode = null;
@@ -1274,6 +1659,16 @@ mxGraphView.prototype.resetValidationState = function()
  * 
  * state - <mxCellState> that represents the cell state.
  */
+// 中文注释：
+// 函数：stateValidated
+// 在 validatePoints 中处理完状态后调用，用于更新形状的 DOM 节点顺序。
+// 参数：
+// state - 表示单元状态的 mxCellState。
+// 用途：调整 DOM 节点的顺序以反映正确的显示层次。
+// 关键步骤：
+// 1. 根据单元类型（边或顶点）和 keepEdgesInForeground/Background 设置确定节点插入位置。
+// 2. 使用 cellRenderer.insertStateAfter 更新 DOM 节点顺序。
+// 注意：确保边的 DOM 节点顺序与显示需求一致。
 mxGraphView.prototype.stateValidated = function(state)
 {
 	var fg = (this.graph.getModel().isEdge(state.cell) && this.graph.keepEdgesInForeground) ||
@@ -1306,6 +1701,18 @@ mxGraphView.prototype.stateValidated = function(state)
  * source - <mxCellState> which represents the source terminal.
  * target - <mxCellState> which represents the target terminal.
  */
+ // 中文注释：
+// 函数：updateFixedTerminalPoints
+// 在计算边样式之前，设置给定状态的初始绝对终端点。
+// 参数：
+// edge - 要更新初始终端点的 mxCellState。
+// source - 表示源终端的 mxCellState。
+// target - 表示目标终端的 mxCellState。
+// 用途：为边的状态设置固定的源和目标终端点。
+// 关键步骤：
+// 1. 调用 updateFixedTerminalPoint 更新源终端点。
+// 2. 调用 updateFixedTerminalPoint 更新目标终端点。
+// 注意：使用图的连接约束（connection constraint）来确定终端点位置。
 mxGraphView.prototype.updateFixedTerminalPoints = function(edge, source, target)
 {
 	this.updateFixedTerminalPoint(edge, source, true,
@@ -1326,6 +1733,19 @@ mxGraphView.prototype.updateFixedTerminalPoints = function(edge, source, target)
  * source - Boolean that specifies if the terminal is the source.
  * constraint - <mxConnectionConstraint> that specifies the connection.
  */
+// 中文注释：
+// 函数：updateFixedTerminalPoint
+// 设置给定边的固定源或目标终端点。
+// 参数：
+// edge - 要更新终端点的 mxCellState。
+// terminal - 表示实际终端的 mxCellState。
+// source - 布尔值，指示终端是否为源终端。
+// constraint - 指定连接的 mxConnectionConstraint。
+// 用途：更新边的固定终端点位置。
+// 关键步骤：
+// 1. 调用 getFixedTerminalPoint 获取终端点。
+// 2. 使用 setAbsoluteTerminalPoint 设置边的绝对终端点。
+// 注意：终端点基于约束或几何信息计算。
 mxGraphView.prototype.updateFixedTerminalPoint = function(edge, terminal, source, constraint)
 {
 	edge.setAbsoluteTerminalPoint(this.getFixedTerminalPoint(edge, terminal, source, constraint), source);
@@ -1343,6 +1763,19 @@ mxGraphView.prototype.updateFixedTerminalPoint = function(edge, terminal, source
  * source - Boolean that specifies if the terminal is the source.
  * constraint - <mxConnectionConstraint> that specifies the connection.
  */
+// 中文注释：
+// 函数：getFixedTerminalPoint
+// 返回给定边的固定源或目标终端点。
+// 参数：
+// edge - 要返回终端点的 mxCellState。
+// terminal - 表示实际终端的 mxCellState。
+// source - 布尔值，指示终端是否为源终端。
+// constraint - 指定连接的 mxConnectionConstraint。
+// 用途：计算边的固定终端点位置。
+// 关键步骤：
+// 1. 如果存在约束，使用 graph.getConnectionPoint 计算终端点。
+// 2. 如果没有终端或约束，使用边的几何信息计算终端点。
+// 注意：考虑视图的缩放和平移对终端点坐标的影响。
 mxGraphView.prototype.getFixedTerminalPoint = function(edge, terminal, source, constraint)
 {
 	var pt = null;
@@ -1381,6 +1814,10 @@ mxGraphView.prototype.getFixedTerminalPoint = function(edge, terminal, source, c
  * 
  * edge - <mxCellState> whose bounds should be updated.
  */
+ // 中文注释：
+// 函数：updateBoundsFromStencil
+// 更新给定单元状态的边界以反映模板的边界（如果模板具有固定宽高比），并返回修改前的边界（mxRectangle）或 null。
+// 参数：
 mxGraphView.prototype.updateBoundsFromStencil = function(state)
 {
 	var previous = null;
