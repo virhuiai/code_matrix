@@ -7807,27 +7807,49 @@ mxGraph.prototype.cellsResized = function(cells, bounds, recurse)
  * ignoreRelative - Boolean that indicates if relative cells should be ignored.
  * recurse - Optional boolean that specifies if the children should be resized.
  */
+ // 函数：cellResized
+ // 递归调整父节点大小，确保包含调整后的子节点的完整区域
+ // 参数：
+ // cell - 要更改边界的 <mxCell> 对象
+ // bounds - 表示新边界的 <mxRectangles> 对象
+ // ignoreRelative - 布尔值，指示是否忽略相对定位的单元
+ // recurse - 可选布尔值，指定是否调整子节点大小
 mxGraph.prototype.cellResized = function(cell, bounds, ignoreRelative, recurse)
 {
 	var prev = this.model.getGeometry(cell);
 
+	// 获取当前单元的几何信息
+	// 中文：获取单元的当前几何信息并存储在 prev 中
+
 	if (prev != null && (prev.x != bounds.x || prev.y != bounds.y ||
 		prev.width != bounds.width || prev.height != bounds.height))
 	{
+		// 检查几何信息是否发生变化（位置或大小）
+		// 中文：判断单元的位置或大小是否与新边界不同
+
 		var geo = prev.clone();
+
+		// 克隆当前几何信息以进行修改
+		// 中文：克隆当前几何信息以便进行更改
 
 		if (!ignoreRelative && geo.relative)
 		{
+			// 处理相对定位的单元
+			// 中文：如果不忽略相对定位且单元为相对定位，调整偏移量
 			var offset = geo.offset;
 
 			if (offset != null)
 			{
+				// 更新偏移量以适应新位置
+				// 中文：根据新边界更新偏移量的 x 和 y 值
 				offset.x += bounds.x - geo.x;
 				offset.y += bounds.y - geo.y;
 			}
 		}
 		else
 		{
+			// 更新绝对定位单元的坐标
+			// 中文：直接将新边界的 x 和 y 值赋给几何信息
 			geo.x = bounds.x;
 			geo.y = bounds.y;
 		}
@@ -7835,30 +7857,48 @@ mxGraph.prototype.cellResized = function(cell, bounds, ignoreRelative, recurse)
 		geo.width = bounds.width;
 		geo.height = bounds.height;
 
+		// 更新几何信息的宽高
+		// 中文：将新边界的宽度和高度赋给几何信息
+
 		if (!geo.relative && this.model.isVertex(cell) && !this.isAllowNegativeCoordinates())
 		{
+			// 确保顶点单元的坐标非负
+			// 中文：如果单元为顶点且不允许负坐标，则将坐标限制为非负值
 			geo.x = Math.max(0, geo.x);
 			geo.y = Math.max(0, geo.y);
 		}
 
 		this.model.beginUpdate();
+		// 开始模型更新事务
+		// 中文：开启模型更新事务以确保一致性
 		try
 		{
 			if (recurse)
 			{
+				// 递归调整子节点大小
+				// 中文：如果需要递归，则调用 resizeChildCells 调整子节点
 				this.resizeChildCells(cell, geo);
 			}
 						
 			this.model.setGeometry(cell, geo);
+			// 更新单元的几何信息
+			// 中文：将修改后的几何信息应用到单元
+
 			this.constrainChildCells(cell);
+			// 约束子节点的位置
+			// 中文：调用 constrainChildCells 确保子节点符合约束
 		}
 		finally
 		{
 			this.model.endUpdate();
+			// 结束模型更新事务
+			// 中文：完成模型更新事务，提交更改
 		}
 	}
 	
 	return prev;
+	// 返回原始几何信息
+	// 中文：返回调整前的几何信息
 };
 
 /**
@@ -7872,15 +7912,30 @@ mxGraph.prototype.cellResized = function(cell, bounds, ignoreRelative, recurse)
  * cell - <mxCell> that has been resized.
  * newGeo - <mxGeometry> that represents the new bounds.
  */
+ // 函数：resizeChildCells
+ // 根据给定单元的新几何信息调整子节点大小
+ // 参数：
+ // cell - 已调整大小的 <mxCell> 对象
+ // newGeo - 表示新边界的 <mxGeometry> 对象
 mxGraph.prototype.resizeChildCells = function(cell, newGeo)
 {
 	var geo = this.model.getGeometry(cell);
+	// 获取当前单元的几何信息
+	// 中文：获取给定单元的当前几何信息
+
 	var dx = (geo.width != 0) ? newGeo.width / geo.width : 1;
 	var dy = (geo.height != 0) ? newGeo.height / geo.height : 1;
+	// 计算水平和垂直缩放因子
+	// 中文：根据新旧几何信息计算宽度和高度的缩放比例
+
 	var childCount = this.model.getChildCount(cell);
-	
+	// 获取子节点数量
+	// 中文：获取给定单元的子节点数量
+
 	for (var i = 0; i < childCount; i++)
 	{
+		// 遍历子节点并进行缩放
+		// 中文：循环遍历所有子节点，调用 scaleCell 进行缩放
 		this.scaleCell(this.model.getChildAt(cell, i), dx, dy, true);
 	}
 };
@@ -7894,12 +7949,20 @@ mxGraph.prototype.resizeChildCells = function(cell, newGeo)
  * 
  * cell - <mxCell> that has been resized.
  */
+ // 函数：constrainChildCells
+ // 使用 constrainChild 方法约束给定单元的子节点
+ // 参数：
+ // cell - 已调整大小的 <mxCell> 对象
 mxGraph.prototype.constrainChildCells = function(cell)
 {
 	var childCount = this.model.getChildCount(cell);
-	
+	// 获取子节点数量
+	// 中文：获取给定单元的子节点数量
+
 	for (var i = 0; i < childCount; i++)
 	{
+		// 遍历子节点并应用约束
+		// 中文：循环遍历所有子节点，调用 constrainChild 应用约束
 		this.constrainChild(this.model.getChildAt(cell, i));
 	}
 };
@@ -7917,59 +7980,93 @@ mxGraph.prototype.constrainChildCells = function(cell)
  * dy - Vertical scaling factor.
  * recurse - Boolean indicating if the child cells should be scaled.
  */
+ // 函数：scaleCell
+ // 根据给定的水平和垂直缩放因子调整单元的点、位置和大小
+ // 参数：
+ // cell - 要缩放几何信息的 <mxCell> 对象
+ // dx - 水平缩放因子
+ // dy - 垂直缩放因子
+ // recurse - 布尔值，指示是否递归缩放子节点
 mxGraph.prototype.scaleCell = function(cell, dx, dy, recurse)
 {
 	var geo = this.model.getGeometry(cell);
-	
+	// 获取单元的几何信息
+	// 中文：获取给定单元的几何信息
+
 	if (geo != null)
 	{
 		var style = this.getCurrentCellStyle(cell);
+		// 获取单元的当前样式
+		// 中文：获取单元的当前样式配置
+
 		geo = geo.clone();
-		
+		// 克隆几何信息以进行修改
+		// 中文：克隆几何信息以便进行更改
+
 		// Stores values for restoring based on style
 		var x = geo.x;
 		var y = geo.y
 		var w = geo.width;
 		var h = geo.height;
-		
+		// 保存原始位置和大小以便根据样式恢复
+		// 中文：保存原始 x、y 坐标及宽度、高度以便根据样式配置恢复
+
 		geo.scale(dx, dy, style[mxConstants.STYLE_ASPECT] == 'fixed');
-		
+		// 根据缩放因子调整几何信息
+		// 中文：根据缩放因子和样式中的纵横比设置调整几何信息
+
 		if (style[mxConstants.STYLE_RESIZE_WIDTH] == '1')
 		{
+			// 根据样式调整宽度
+			// 中文：如果样式允许调整宽度，则按缩放因子更新宽度
 			geo.width = w * dx;
 		}
 		else if (style[mxConstants.STYLE_RESIZE_WIDTH] == '0')
 		{
+			// 保持宽度不变
+			// 中文：如果样式禁止调整宽度，则保持原始宽度
 			geo.width = w;
 		}
 		
 		if (style[mxConstants.STYLE_RESIZE_HEIGHT] == '1')
 		{
+			// 根据样式调整高度
+			// 中文：如果样式允许调整高度，则按缩放因子更新高度
 			geo.height = h * dy;
 		}
 		else if (style[mxConstants.STYLE_RESIZE_HEIGHT] == '0')
 		{
+			// 保持高度不变
+			// 中文：如果样式禁止调整高度，则保持原始高度
 			geo.height = h;
 		}
 		
 		if (!this.isCellMovable(cell))
 		{
+			// 如果单元不可移动，恢复原始位置
+			// 中文：如果单元不可移动，则将坐标恢复为原始值
 			geo.x = x;
 			geo.y = y;
 		}
 		
 		if (!this.isCellResizable(cell))
 		{
+			// 如果单元不可调整大小，恢复原始尺寸
+			// 中文：如果单元不可调整大小，则将宽高恢复为原始值
 			geo.width = w;
 			geo.height = h;
 		}
 
 		if (this.model.isVertex(cell))
 		{
+			// 如果是顶点，递归调整大小
+			// 中文：如果单元是顶点，则调用 cellResized 递归调整
 			this.cellResized(cell, geo, true, recurse);
 		}
 		else
 		{
+			// 直接更新几何信息
+			// 中文：如果不是顶点，直接设置新的几何信息
 			this.model.setGeometry(cell, geo);
 		}
 	}
@@ -7985,27 +8082,45 @@ mxGraph.prototype.scaleCell = function(cell, dx, dy, recurse)
  * 
  * cell - <mxCell> that has been resized.
  */
+ // 函数：extendParent
+ // 递归调整父节点大小，确保包含调整后的子节点的完整区域
+ // 参数：
+ // cell - 已调整大小的 <mxCell> 对象
 mxGraph.prototype.extendParent = function(cell)
 {
 	if (cell != null)
 	{
 		var parent = this.model.getParent(cell);
 		var p = this.getCellGeometry(parent);
-		
+		// 获取父节点及其几何信息
+		// 中文：获取给定单元的父节点及其几何信息
+
 		if (parent != null && p != null && !this.isCellCollapsed(parent))
 		{
+			// 如果父节点存在且未折叠
+			// 中文：检查父节点是否存在、几何信息是否有效且未折叠
 			var geo = this.getCellGeometry(cell);
-			
+			// 获取子节点的几何信息
+			// 中文：获取子节点的几何信息
+
 			if (geo != null && !geo.relative &&
 				(p.width < geo.x + geo.width ||
 				p.height < geo.y + geo.height))
 			{
+				// 如果父节点区域不足以包含子节点
+				// 中文：检查父节点是否需要扩展以包含子节点的区域
 				p = p.clone();
-				
+				// 克隆父节点几何信息
+				// 中文：克隆父节点几何信息以便修改
+
 				p.width = Math.max(p.width, geo.x + geo.width);
 				p.height = Math.max(p.height, geo.y + geo.height);
-				
+				// 扩展父节点尺寸
+				// 中文：更新父节点的宽高以包含子节点的完整区域
+
 				this.cellsResized([parent], [p], false);
+				// 调整父节点大小
+				// 中文：调用 cellsResized 更新父节点几何信息
 			}
 		}
 	}
@@ -8014,6 +8129,8 @@ mxGraph.prototype.extendParent = function(cell)
 /**
  * Group: Cell moving
  */
+ // 分组：单元移动
+ // 中文：包含与单元移动相关的函数
 
 /**
  * Function: importCells
@@ -8031,9 +8148,20 @@ mxGraph.prototype.extendParent = function(cell)
  * evt - Mouseevent that triggered the invocation.
  * mapping - Optional mapping for existing clones.
  */
+ // 函数：importCells
+ // 克隆并插入给定单元到图形中，使用 move 方法，并返回插入的单元
+ // 参数：
+ // cells - 要导入的 <mxCells> 数组
+ // dx - 指定移动向量的 x 坐标，默认为 0
+ // dy - 指定移动向量的 y 坐标，默认为 0
+ // target - 表示新父节点的 <mxCell> 对象
+ // evt - 触发调用的鼠标事件
+ // mapping - 可选的现有克隆映射
 mxGraph.prototype.importCells = function(cells, dx, dy, target, evt, mapping)
 {	
 	return this.moveCells(cells, dx, dy, true, target, evt, mapping);
+	// 调用 moveCells 执行导入操作
+	// 中文：通过调用 moveCells 方法实现单元的克隆和插入
 };
 
 /**
@@ -8061,32 +8189,57 @@ mxGraph.prototype.importCells = function(cells, dx, dy, target, evt, mapping)
  * evt - Mouseevent that triggered the invocation.
  * mapping - Optional mapping for existing clones.
  */
+ // 函数：moveCells
+ // 移动或克隆指定单元，并按给定量移动，添加到可选的目标单元
+ // 参数：
+ // cells - 要移动、克隆或添加的 <mxCells> 数组
+ // dx - 指定移动向量的 x 坐标，默认为 0
+ // dy - 指定移动向量的 y 坐标，默认为 0
+ // clone - 布尔值，指示是否克隆单元，默认为 false
+ // target - 表示新父节点的 <mxCell> 对象
+ // evt - 触发调用的鼠标事件
+ // mapping - 可选的现有克隆映射
 mxGraph.prototype.moveCells = function(cells, dx, dy, clone, target, evt, mapping)
 {
 	dx = (dx != null) ? dx : 0;
 	dy = (dy != null) ? dy : 0;
 	clone = (clone != null) ? clone : false;
-	
+	// 设置默认值
+	// 中文：为 dx、dy 和 clone 参数设置默认值
+
 	if (cells != null && (dx != 0 || dy != 0 || clone || target != null))
 	{
+		// 检查是否需要执行移动操作
+		// 中文：验证是否有单元需要移动、克隆或目标不为空
+
 		// Removes descendants with ancestors in cells to avoid multiple moving
 		cells = this.model.getTopmostCells(cells);
 		var origCells = cells;
-		
+		// 移除包含祖先的子节点以避免重复移动
+		// 中文：获取最顶层单元，保存原始单元列表
+
 		this.model.beginUpdate();
+		// 开始模型更新事务
+		// 中文：开启模型更新事务以确保一致性
 		try
 		{
 			// Faster cell lookups to remove relative edge labels with selected
 			// terminals to avoid explicit and implicit move at same time
 			var dict = new mxDictionary();
-			
+			// 创建字典以加速单元查找
+			// 中文：使用字典存储单元以快速检查
+
 			for (var i = 0; i < cells.length; i++)
 			{
 				dict.put(cells[i], true);
+				// 将单元添加到字典
+				// 中文：将当前单元标记为已处理
 			}
 			
 			var isSelected = mxUtils.bind(this, function(cell)
 			{
+				// 检查单元是否在选中列表中
+				// 中文：定义函数检查单元或其祖先是否在选中列表中
 				while (cell != null)
 				{
 					if (dict.get(cell))
@@ -8102,29 +8255,41 @@ mxGraph.prototype.moveCells = function(cells, dx, dy, clone, target, evt, mappin
 			
 			// Removes relative edge labels with selected terminals
 			var checked = [];
-			
+			// 移除包含选中端点的相对边标签
+			// 中文：创建数组存储通过检查的单元
+
 			for (var i = 0; i < cells.length; i++)
 			{
 				var geo = this.getCellGeometry(cells[i]);
 				var parent = this.model.getParent(cells[i]);
-		
+				// 获取单元几何信息和父节点
+				// 中文：获取当前单元的几何信息和父节点
+
 				if ((geo == null || !geo.relative) || !this.model.isEdge(parent) ||
 					(!isSelected(this.model.getTerminal(parent, true)) &&
 					!isSelected(this.model.getTerminal(parent, false))))
 				{
+					// 过滤不需要移动的边标签
+					// 中文：检查单元是否为非相对定位或非边标签
 					checked.push(cells[i]);
 				}
 			}
 
 			cells = checked;
-			
+			// 更新单元列表
+			// 中文：将过滤后的单元列表赋值给 cells
+
 			if (clone)
 			{
+				// 克隆单元
+				// 中文：如果需要克隆，则调用 cloneCells 生成新单元
 				cells = this.cloneCells(cells, this.isCloneInvalidEdges(), mapping);
 
 				if (target == null)
 				{
 					target = this.getDefaultParent();
+					// 设置默认父节点
+					// 中文：如果未指定目标，则使用默认父节点
 				}
 			}
 
@@ -8133,35 +8298,51 @@ mxGraph.prototype.moveCells = function(cells, dx, dy, clone, target, evt, mappin
 			// Need to disable allowNegativeCoordinates if target not null to
 			// allow for temporary negative numbers until cellsAdded is called.
 			var previous = this.isAllowNegativeCoordinates();
-			
+			// 保存当前是否允许负坐标的设置
+			// 中文：记录当前是否允许负坐标的配置
+
 			if (target != null)
 			{
 				this.setAllowNegativeCoordinates(true);
+				// 临时允许负坐标
+				// 中文：如果有目标节点，临时允许负坐标
 			}
 			
 			this.cellsMoved(cells, dx, dy, !clone && this.isDisconnectOnMove()
 					&& this.isAllowDanglingEdges(), target == null,
 					this.isExtendParentsOnMove() && target == null);
-			
+			// 执行单元移动
+			// 中文：调用 cellsMoved 方法移动单元，处理断开连接和扩展父节点
+
 			this.setAllowNegativeCoordinates(previous);
+			// 恢复负坐标设置
+			// 中文：恢复原始的负坐标配置
 
 			if (target != null)
 			{
 				var index = this.model.getChildCount(target);
 				this.cellsAdded(cells, target, index, null, null, true);
-				
+				// 将单元添加到目标节点
+				// 中文：将移动后的单元添加到目标父节点
+
 				// Restores parent edge on cloned edge labels
 				if (clone)
 				{
+					// 恢复克隆边标签的父节点
+					// 中文：对克隆的边标签恢复其原始父节点
 					for (var i = 0; i < cells.length; i++)
 					{
 						var geo = this.getCellGeometry(cells[i]);
 						var parent = this.model.getParent(origCells[i]);
-						
+						// 获取几何信息和原始父节点
+						// 中文：获取克隆单元的几何信息和原始单元的父节点
+
 						if (geo != null && geo.relative &&
 							this.model.isEdge(parent) &&
 							this.model.contains(parent))
 						{
+							// 将克隆单元添加回原始父节点
+							// 中文：如果单元为相对定位且父节点为边，则添加回父节点
 							this.model.add(parent, cells[i]);
 						}
 					}
@@ -8171,14 +8352,20 @@ mxGraph.prototype.moveCells = function(cells, dx, dy, clone, target, evt, mappin
 			// Dispatches a move event
 			this.fireEvent(new mxEventObject(mxEvent.MOVE_CELLS, 'cells', cells,
 				'dx', dx, 'dy', dy, 'clone', clone, 'target', target, 'event', evt));
+			// 触发移动事件
+			// 中文：触发 MOVE_CELLS 事件，传递单元、位移、克隆状态等信息
 		}
 		finally
 		{
 			this.model.endUpdate();
+			// 结束模型更新事务
+			// 中文：完成模型更新事务，提交所有更改
 		}
 	}
 
 	return cells;
+	// 返回移动后的单元
+	// 中文：返回处理后的单元列表
 };
 
 /**
@@ -8188,45 +8375,75 @@ mxGraph.prototype.moveCells = function(cells, dx, dy, clone, target, evt, mappin
  * using disconnectGraph is disconnect is true. This method fires
  * <mxEvent.CELLS_MOVED> while the transaction is in progress.
  */
+ // 函数：cellsMoved
+ // 按给定向量移动指定单元，如果 disconnect 为 true 则断开连接
+ // 参数：
+ // cells - 要移动的 <mxCells> 数组
+ // dx - 移动向量的 x 坐标
+ // dy - 移动向量的 y 坐标
+ // disconnect - 布尔值，指示是否断开连接
+ // constrain - 布尔值，指示是否约束子节点
+ // extend - 布尔值，指示是否扩展父节点
 mxGraph.prototype.cellsMoved = function(cells, dx, dy, disconnect, constrain, extend)
 {
 	if (cells != null && (dx != 0 || dy != 0))
 	{
+		// 检查是否需要移动
+		// 中文：验证是否有单元需要移动且位移不为零
+
 		extend = (extend != null) ? extend : false;
+		// 设置扩展父节点的默认值
+		// 中文：为 extend 参数设置默认值
 
 		this.model.beginUpdate();
+		// 开始模型更新事务
+		// 中文：开启模型更新事务以确保一致性
 		try
 		{
 			if (disconnect)
 			{
+				// 断开单元连接
+				// 中文：如果需要断开连接，则调用 disconnectGraph
 				this.disconnectGraph(cells);
 			}
 
 			for (var i = 0; i < cells.length; i++)
 			{
+				// 遍历单元并移动
+				// 中文：循环遍历所有单元，调用 translateCell 移动
 				this.translateCell(cells[i], dx, dy);
 				
 				if (extend && this.isExtendParent(cells[i]))
 				{
+					// 扩展父节点
+					// 中文：如果需要扩展父节点，则调用 extendParent
 					this.extendParent(cells[i]);
 				}
 				else if (constrain)
 				{
+					// 约束子节点
+					// 中文：如果需要约束，则调用 constrainChild
 					this.constrainChild(cells[i]);
 				}
 			}
 
 			if (this.resetEdgesOnMove)
 			{
+				// 重置边
+				// 中文：如果设置了 resetEdgesOnMove，则重置相关边
 				this.resetEdges(cells);
 			}
 			
 			this.fireEvent(new mxEventObject(mxEvent.CELLS_MOVED,
 				'cells', cells, 'dx', dx, 'dy', dy, 'disconnect', disconnect));
+			// 触发单元移动事件
+			// 中文：触发 CELLS_MOVED 事件，传递单元、位移等信息
 		}
 		finally
 		{
 			this.model.endUpdate();
+			// 结束模型更新事务
+			// 中文：完成模型更新事务，提交所有更改
 		}
 	}
 };
@@ -8237,32 +8454,42 @@ mxGraph.prototype.cellsMoved = function(cells, dx, dy, disconnect, constrain, ex
  * Translates the geometry of the given cell and stores the new,
  * translated geometry in the model as an atomic change.
  */
+// 方法目的：平移指定单元格的几何位置，并将新的几何信息存储到模型中，作为原子性变更。
+// 关键变量说明：cell（待平移的单元格），dx（x轴平移距离），dy（y轴平移距离）。
 mxGraph.prototype.translateCell = function(cell, dx, dy)
 {
 	var geo = this.model.getGeometry(cell);
+    // 获取单元格的几何信息，存储在 geo 变量中。
 
 	if (geo != null)
 	{
 		dx = parseFloat(dx);
 		dy = parseFloat(dy);
+        // 将输入的平移距离转换为浮点数，确保数值有效性。
 		geo = geo.clone();
+        // 克隆几何对象，防止直接修改原始数据。
 		geo.translate(dx, dy);
+        // 执行平移操作，将几何对象沿 x 和 y 轴移动 dx 和 dy。
 
 		if (!geo.relative && this.model.isVertex(cell) && !this.isAllowNegativeCoordinates())
 		{
 			geo.x = Math.max(0, parseFloat(geo.x));
 			geo.y = Math.max(0, parseFloat(geo.y));
+            // 特殊处理：若几何对象不是相对定位且单元格是顶点，且不允许负坐标，
+            // 则确保 x 和 y 坐标不小于 0。
 		}
 		
 		if (geo.relative && !this.model.isEdge(cell))
 		{
 			var parent = this.model.getParent(cell);
 			var angle = 0;
-			
+            // 若几何对象是相对定位且单元格不是边，则获取父单元格及其旋转角度。
+
 			if (this.model.isVertex(parent))
 			{
 				var style = this.getCurrentCellStyle(parent);
 				angle = mxUtils.getValue(style, mxConstants.STYLE_ROTATION, 0);
+                // 获取父单元格的样式，提取旋转角度（默认为 0）。
 			}
 			
 			if (angle != 0)
@@ -8273,20 +8500,24 @@ mxGraph.prototype.translateCell = function(cell, dx, dy)
 				var pt = mxUtils.getRotatedPoint(new mxPoint(dx, dy), cos, sin, new mxPoint(0, 0));
 				dx = pt.x;
 				dy = pt.y;
+                // 若存在旋转角度，将平移距离 (dx, dy) 按父单元格的旋转角度进行旋转变换。
 			}
 			
 			if (geo.offset == null)
 			{
 				geo.offset = new mxPoint(dx, dy);
+                // 若几何对象无偏移量，则创建新的偏移点。
 			}
 			else
 			{
 				geo.offset.x = parseFloat(geo.offset.x) + dx;
 				geo.offset.y = parseFloat(geo.offset.y) + dy;
+                // 若存在偏移量，则累加平移距离。
 			}
 		}
 
 		this.model.setGeometry(cell, geo);
+        // 将更新后的几何信息存储到模型中。
 	}
 };
 
@@ -8299,23 +8530,28 @@ mxGraph.prototype.translateCell = function(cell, dx, dy)
  * 
  * cell - <mxCell> for which the area should be returned.
  */
+// 方法目的：返回指定单元格应保持在内的矩形区域。
+// 参数说明：cell（需要获取包含区域的单元格）。
 mxGraph.prototype.getCellContainmentArea = function(cell)
 {
 	if (cell != null && !this.model.isEdge(cell))
 	{
 		var parent = this.model.getParent(cell);
-		
+        // 获取单元格的父节点，确保单元格不是边。
+
 		if (parent != null && parent != this.getDefaultParent())
 		{
 			var g = this.model.getGeometry(parent);
-			
+            // 获取父节点的几何信息。
+
 			if (g != null)
 			{
 				var x = 0;
 				var y = 0;
 				var w = g.width;
 				var h = g.height;
-				
+                // 初始化包含区域的坐标和尺寸，基于父节点的几何信息。
+
 				if (this.isSwimlane(parent))
 				{
 					var size = this.getStartSize(parent);
@@ -8323,12 +8559,15 @@ mxGraph.prototype.getCellContainmentArea = function(cell)
 					var dir = mxUtils.getValue(style, mxConstants.STYLE_DIRECTION, mxConstants.DIRECTION_EAST);
 					var flipH = mxUtils.getValue(style, mxConstants.STYLE_FLIPH, 0) == 1;
 					var flipV = mxUtils.getValue(style, mxConstants.STYLE_FLIPV, 0) == 1;
-					
+                    // 若父节点是泳道，获取其起始尺寸、样式、方向和翻转设置。
+                    // 重要配置参数：STYLE_DIRECTION（泳道方向，默认为东），STYLE_FLIPH/V（水平/垂直翻转）。
+
 					if (dir == mxConstants.DIRECTION_SOUTH || dir == mxConstants.DIRECTION_NORTH)
 					{
 						var tmp = size.width;
 						size.width = size.height;
 						size.height = tmp;
+                        // 若方向为南北，交换宽度和高度以适应布局。
 					}
 					
 					if ((dir == mxConstants.DIRECTION_EAST && !flipV) || (dir == mxConstants.DIRECTION_NORTH && !flipH) ||
@@ -8336,18 +8575,22 @@ mxGraph.prototype.getCellContainmentArea = function(cell)
 					{
 						x = size.width;
 						y = size.height;
+                        // 根据方向和翻转设置调整包含区域的起始坐标。
 					}
 
 					w -= size.width;
 					h -= size.height;
+                    // 减去起始尺寸，得到实际可用的包含区域。
 				}
 				
 				return new mxRectangle(x, y, w, h);
+                // 返回计算得到的包含区域矩形。
 			}
 		}
 	}
 	
 	return null;
+    // 若无有效父节点或几何信息，返回 null。
 };
 
 /**
@@ -8356,9 +8599,11 @@ mxGraph.prototype.getCellContainmentArea = function(cell)
  * Returns the bounds inside which the diagram should be kept as an
  * <mxRectangle>.
  */
+// 方法目的：返回图表应保持在内的边界矩形。
 mxGraph.prototype.getMaximumGraphBounds = function()
 {
 	return this.maximumGraphBounds;
+    // 直接返回图表的边界属性 maximumGraphBounds。
 };
 
 /**
@@ -8374,42 +8619,52 @@ mxGraph.prototype.getMaximumGraphBounds = function()
  * cells - <mxCell> which should be constrained.
  * sizeFirst - Specifies if the size should be changed first. Default is true.
  */
+// 方法目的：将指定单元格约束在父节点的包含区域内，遵循 getOverlap 和 isConstrainChild 规则，直接修改几何信息。
+// 参数说明：cell（待约束的单元格），sizeFirst（是否优先调整尺寸，默认为 true）。
+// 关键变量说明：geo（单元格几何信息），pgeo（父节点几何信息），max（最大边界矩形）。
 mxGraph.prototype.constrainChild = function(cell, sizeFirst)
 {
 	sizeFirst = (sizeFirst != null) ? sizeFirst : true;
-	
+    // 设置 sizeFirst 参数，控制尺寸调整优先级，默认为 true。
+
 	if (cell != null)
 	{
 		var geo = this.getCellGeometry(cell);
-		
+        // 获取单元格的几何信息。
+
 		if (geo != null && (this.isConstrainRelativeChildren() || !geo.relative))
 		{
 			var parent = this.model.getParent(cell);
 			var pgeo = this.getCellGeometry(parent);
 			var max = this.getMaximumGraphBounds();
-			
+            // 获取父节点、父节点几何信息和图表最大边界。
+
 			// Finds parent offset
 			if (max != null)
 			{
 				var off = this.getBoundingBoxFromGeometry([parent], false);
-				
+                // 计算父节点的边界框，用于调整最大边界。
+
 				if (off != null)
 				{
 					max = mxRectangle.fromRectangle(max);
 					
 					max.x -= off.x;
 					max.y -= off.y;
+                    // 调整最大边界，考虑父节点的偏移量。
 				}
 			}
 			
 			if (this.isConstrainChild(cell))
 			{
 				var tmp = this.getCellContainmentArea(cell);
-				
+                // 获取单元格的包含区域。
+
 				if (tmp != null)
 				{
 					var overlap = this.getOverlap(cell);
-	
+                    // 获取单元格的重叠比例，用于调整包含区域。
+
 					if (overlap > 0)
 					{
 						tmp = mxRectangle.fromRectangle(tmp);
@@ -8418,17 +8673,20 @@ mxGraph.prototype.constrainChild = function(cell, sizeFirst)
 						tmp.y -= tmp.height * overlap;
 						tmp.width += 2 * tmp.width * overlap;
 						tmp.height += 2 * tmp.height * overlap;
+                        // 若存在重叠比例，扩展包含区域以允许部分超出。
 					}
 					
 					// Find the intersection between max and tmp
 					if (max == null)
 					{
 						max = tmp;
+                        // 若无最大边界，直接使用包含区域。
 					}
 					else
 					{
 						max = mxRectangle.fromRectangle(max);
 						max.intersect(tmp);
+                        // 计算最大边界与包含区域的交集。
 					}
 				}
 			}
@@ -8436,62 +8694,75 @@ mxGraph.prototype.constrainChild = function(cell, sizeFirst)
 			if (max != null)
 			{
 				var cells = [cell];
-				
+                // 初始化包含当前单元格的数组。
+
 				if (!this.isCellCollapsed(cell))
 				{
 					var desc = this.model.getDescendants(cell);
-					
+                    // 若单元格未折叠，获取其所有后代节点。
+
 					for (var i = 0; i < desc.length; i++)
 					{
 						if (this.isCellVisible(desc[i]))
 						{
 							cells.push(desc[i]);
+                            // 将可见的后代节点添加到单元格数组。
 						}
 					}
 				}
 				
 				var bbox = this.getBoundingBoxFromGeometry(cells, false);
-				
+                // 计算包含所有单元格的边界框。
+
 				if (bbox != null)
 				{
 					geo = geo.clone();
-					
+                    // 克隆几何对象，防止直接修改原始数据。
+
 					// Cumulative horizontal movement
 					var dx = 0;
-					
+                    // 初始化水平移动距离。
+
 					if (geo.width > max.width)
 					{
 						dx = geo.width - max.width;
 						geo.width -= dx;
+                        // 若单元格宽度超出最大边界，调整宽度并记录移动距离。
 					}
 					
 					if (bbox.x + bbox.width > max.x + max.width)
 					{
 						dx -= bbox.x + bbox.width - max.x - max.width - dx;
+                        // 若边界框超出最大边界右边缘，计算水平调整距离。
 					}
 					
 					// Cumulative vertical movement
 					var dy = 0;
-					
+                    // 初始化垂直移动距离。
+
 					if (geo.height > max.height)
 					{
 						dy = geo.height - max.height;
 						geo.height -= dy;
+                        // 若单元格高度超出最大边界，调整高度并记录移动距离。
 					}
 					
 					if (bbox.y + bbox.height > max.y + max.height)
 					{
 						dy -= bbox.y + bbox.height - max.y - max.height - dy;
+                        // 若边界框超出最大边界下边缘，计算垂直调整距离。
 					}
 					
 					if (bbox.x < max.x)
 					{
 						dx -= bbox.x - max.x;
+                        // 若边界框左侧超出最大边界，调整水平距离。
 					}
 					
 					if (bbox.y < max.y)
 					{
 						dy -= bbox.y - max.y;
+                        // 若边界框顶部超出最大边界，调整垂直距离。
 					}
 					
 					if (dx != 0 || dy != 0)
@@ -8502,19 +8773,23 @@ mxGraph.prototype.constrainChild = function(cell, sizeFirst)
 							if (geo.offset == null)
 							{
 								geo.offset = new mxPoint();
+                                // 若几何对象是相对定位且无偏移量，创建新的偏移点。
 							}
 						
 							geo.offset.x += dx;
 							geo.offset.y += dy;
+                            // 累加偏移量以调整相对位置。
 						}
 						else
 						{
 							geo.x += dx;
 							geo.y += dy;
+                            // 直接调整绝对坐标。
 						}
 					}
 					
 					this.model.setGeometry(cell, geo);
+                    // 将更新后的几何信息存储到模型中。
 				}
 			}
 		}
@@ -8532,48 +8807,59 @@ mxGraph.prototype.constrainChild = function(cell, sizeFirst)
  * cells - Array of <mxCells> for which the connected edges should be
  * reset.
  */
+// 方法目的：重置连接到指定单元格的边的控制点，仅当边的两端不在给定单元格数组中时生效。
+// 参数说明：cells（需要重置边的单元格数组）。
 mxGraph.prototype.resetEdges = function(cells)
 {
 	if (cells != null)
 	{
 		// Prepares faster cells lookup
 		var dict = new mxDictionary();
-		
+        // 创建字典以加速单元格查找。
+
 		for (var i = 0; i < cells.length; i++)
 		{
 			dict.put(cells[i], true);
+            // 将单元格添加到字典中，标记为存在。
 		}
 		
 		this.model.beginUpdate();
+        // 开始模型更新事务，确保原子性操作。
 		try
 		{
 			for (var i = 0; i < cells.length; i++)
 			{
 				var edges = this.model.getEdges(cells[i]);
-				
+                // 获取与当前单元格连接的所有边。
+
 				if (edges != null)
 				{
 					for (var j = 0; j < edges.length; j++)
 					{
 						var state = this.view.getState(edges[j]);
-						
+                        // 获取边的状态。
+
 						var source = (state != null) ? state.getVisibleTerminal(true) : this.view.getVisibleTerminal(edges[j], true);
 						var target = (state != null) ? state.getVisibleTerminal(false) : this.view.getVisibleTerminal(edges[j], false);
-						
+                        // 获取边的源端和目标端点。
+
 						// Checks if one of the terminals is not in the given array
 						if (!dict.get(source) || !dict.get(target))
 						{
 							this.resetEdge(edges[j]);
+                            // 若边的任一端点不在给定数组中，重置该边的控制点。
 						}
 					}
 				}
 				
 				this.resetEdges(this.model.getChildren(cells[i]));
+                // 递归处理子节点的边。
 			}
 		}
 		finally
 		{
 			this.model.endUpdate();
+            // 结束模型更新事务。
 		}
 	}
 };
@@ -8587,19 +8873,25 @@ mxGraph.prototype.resetEdges = function(cells)
  * 
  * edge - <mxCell> whose points should be reset.
  */
+// 方法目的：重置指定边的控制点。
+// 参数说明：edge（需要重置控制点的边）。
 mxGraph.prototype.resetEdge = function(edge)
 {
 	var geo = this.model.getGeometry(edge);
-	
+    // 获取边的几何信息。
+
 	// Resets the control points
 	if (geo != null && geo.points != null && geo.points.length > 0)
 	{
 		geo = geo.clone();
 		geo.points = [];
+        // 克隆几何对象并清空控制点数组。
 		this.model.setGeometry(edge, geo);
+        // 更新边的几何信息。
 	}
 	
 	return edge;
+    // 返回更新后的边。
 };
 
 /**
@@ -8611,13 +8903,17 @@ mxGraph.prototype.resetEdge = function(edge)
  * 
  * Returns the constraint used to connect to the outline of the given state.
  */
+// 方法目的：返回用于连接到指定状态轮廓的约束。
+// 参数说明：point（连接点坐标），terminalState（终端状态），me（鼠标事件）。
 mxGraph.prototype.getOutlineConstraint = function(point, terminalState, me)
 {
 	if (terminalState.shape != null)
 	{
 		var bounds = this.view.getPerimeterBounds(terminalState);
 		var direction = terminalState.style[mxConstants.STYLE_DIRECTION];
-		
+        // 获取终端状态的边界和方向样式。
+        // 重要配置参数：STYLE_DIRECTION（形状方向）。
+
 		if (direction == mxConstants.DIRECTION_NORTH || direction == mxConstants.DIRECTION_SOUTH)
 		{
 			bounds.x += bounds.width / 2 - bounds.height / 2;
@@ -8625,10 +8921,12 @@ mxGraph.prototype.getOutlineConstraint = function(point, terminalState, me)
 			var tmp = bounds.width;
 			bounds.width = bounds.height;
 			bounds.height = tmp;
+            // 若方向为南北，调整边界框，交换宽度和高度以适应方向。
 		}
 	
 		var alpha = mxUtils.toRadians(terminalState.shape.getShapeRotation());
-		
+        // 获取形状的旋转角度并转换为弧度。
+
 		if (alpha != 0)
 		{
 			var cos = Math.cos(-alpha);
@@ -8636,24 +8934,29 @@ mxGraph.prototype.getOutlineConstraint = function(point, terminalState, me)
 	
 			var ct = new mxPoint(bounds.getCenterX(), bounds.getCenterY());
 			point = mxUtils.getRotatedPoint(point, cos, sin, ct);
+            // 若存在旋转角度，将连接点按旋转角度进行变换。
 		}
 
 		var sx = 1;
 		var sy = 1;
 		var dx = 0;
 		var dy = 0;
-		
+        // 初始化缩放和偏移参数。
+
 		// LATER: Add flipping support for image shapes
 		if (this.getModel().isVertex(terminalState.cell))
 		{
 			var flipH = terminalState.style[mxConstants.STYLE_FLIPH];
 			var flipV = terminalState.style[mxConstants.STYLE_FLIPV];
-			
+            // 获取水平和垂直翻转样式。
+            // 重要配置参数：STYLE_FLIPH/V（水平/垂直翻转）。
+
 			// Legacy support for stencilFlipH/V
 			if (terminalState.shape != null && terminalState.shape.stencil != null)
 			{
 				flipH = mxUtils.getValue(terminalState.style, 'stencilFlipH', 0) == 1 || flipH;
 				flipV = mxUtils.getValue(terminalState.style, 'stencilFlipV', 0) == 1 || flipV;
+                // 支持旧版模板翻转样式，兼容 stencilFlipH/V。
 			}
 			
 			if (direction == mxConstants.DIRECTION_NORTH || direction == mxConstants.DIRECTION_SOUTH)
@@ -8661,30 +8964,37 @@ mxGraph.prototype.getOutlineConstraint = function(point, terminalState, me)
 				var tmp = flipH;
 				flipH = flipV;
 				flipV = tmp;
+                // 若方向为南北，交换水平和垂直翻转设置。
 			}
 			
 			if (flipH)
 			{
 				sx = -1;
 				dx = -bounds.width;
+                // 若水平翻转，设置 x 轴缩放为 -1 并调整偏移。
 			}
 			
 			if (flipV)
 			{
 				sy = -1;
 				dy = -bounds.height ;
+                // 若垂直翻转，设置 y 轴缩放为 -1 并调整偏移。
 			}
 		}
 		
 		point = new mxPoint((point.x - bounds.x) * sx - dx + bounds.x, (point.y - bounds.y) * sy - dy + bounds.y);
-		
+        // 根据缩放和偏移调整连接点坐标。
+
 		var x = (bounds.width == 0) ? 0 : Math.round((point.x - bounds.x) * 1000 / bounds.width) / 1000;
 		var y = (bounds.height == 0) ? 0 : Math.round((point.y - bounds.y) * 1000 / bounds.height) / 1000;
-		
+        // 计算连接点的相对坐标（归一化到 0-1 范围）。
+
 		return new mxConnectionConstraint(new mxPoint(x, y), false);
+        // 返回新的连接约束，包含相对坐标点，禁用周界约束。
 	}
 	
 	return null;
+    // 若无有效形状，返回 null。
 };
 
 /**
@@ -8699,14 +9009,18 @@ mxGraph.prototype.getOutlineConstraint = function(point, terminalState, me)
  * terminal - <mxCellState> that represents the terminal.
  * source - Boolean that specifies if the terminal is the source or target.
  */
+// 方法目的：返回指定终端的所有连接约束数组，若终端形状为模板形状，则返回对应模板的约束。
+// 参数说明：terminal（终端状态），source（是否为源终端）。
 mxGraph.prototype.getAllConnectionConstraints = function(terminal, source)
 {
 	if (terminal != null && terminal.shape != null && terminal.shape.stencil != null)
 	{
 		return terminal.shape.stencil.constraints;
+        // 若终端存在且具有模板形状，返回模板的约束数组。
 	}
 
 	return null;
+    // 否则返回 null。
 };
 
 /**
@@ -8721,38 +9035,52 @@ mxGraph.prototype.getAllConnectionConstraints = function(terminal, source)
  * terminal - <mxCellState> that represents the terminal.
  * source - Boolean indicating if the terminal is the source or target.
  */
+// 方法目的：返回描述指定连接点的连接约束，可用于 getConnectionPoint 方法。
+// 参数说明：edge（边状态），terminal（终端状态），source（是否为源终端）。
 mxGraph.prototype.getConnectionConstraint = function(edge, terminal, source)
 {
 	var point = null;
 	var x = edge.style[(source) ? mxConstants.STYLE_EXIT_X : mxConstants.STYLE_ENTRY_X];
+    // 获取边的出口或入口 x 坐标。
+    // 重要配置参数：STYLE_EXIT_X/ENTRY_X（边的出口/入口 x 坐标）。
 
 	if (x != null)
 	{
 		var y = edge.style[(source) ? mxConstants.STYLE_EXIT_Y : mxConstants.STYLE_ENTRY_Y];
-		
+        // 获取边的出口或入口 y 坐标。
+        // 重要配置参数：STYLE_EXIT_Y/ENTRY_Y（边的出口/入口 y 坐标）。
+
 		if (y != null)
 		{
 			point = new mxPoint(parseFloat(x), parseFloat(y));
+            // 若 x 和 y 坐标有效，创建连接点。
 		}
 	}
 	
 	var perimeter = false;
 	var dx = 0, dy = 0;
-	
+    // 初始化周界约束和偏移量。
+
 	if (point != null)
 	{
 		perimeter = mxUtils.getValue(edge.style, (source) ? mxConstants.STYLE_EXIT_PERIMETER :
 			mxConstants.STYLE_ENTRY_PERIMETER, true);
+        // 获取周界约束设置（默认为 true）。
+        // 重要配置参数：STYLE_EXIT_PERIMETER/ENTRY_PERIMETER（是否使用周界约束）。
 
 		//Add entry/exit offset
 		dx = parseFloat(edge.style[(source) ? mxConstants.STYLE_EXIT_DX : mxConstants.STYLE_ENTRY_DX]);
 		dy = parseFloat(edge.style[(source) ? mxConstants.STYLE_EXIT_DY : mxConstants.STYLE_ENTRY_DY]);
-		
+        // 获取出口或入口的偏移量。
+        // 重要配置参数：STYLE_EXIT_DX/ENTRY_DX（x 轴偏移），STYLE_EXIT_DY/ENTRY_DY（y 轴偏移）。
+
 		dx = isFinite(dx)? dx : 0;
 		dy = isFinite(dy)? dy : 0;
+        // 确保偏移量为有限值，否则设为 0。
 	}
 
 	return new mxConnectionConstraint(point, perimeter, null, dx, dy);
+    // 返回新的连接约束，包含连接点、周界设置和偏移量。
 };
 
 /**
@@ -8770,12 +9098,15 @@ mxGraph.prototype.getConnectionConstraint = function(edge, terminal, source)
  * constraint - Optional <mxConnectionConstraint> to be used for this
  * connection.
  */
+// 方法目的：设置指定连接点的连接约束，若无约束则不更改，若需移除约束则传入空约束。
+// 参数说明：edge（边），terminal（终端），source（是否为源终端），constraint（可选的连接约束）。
+// 事件处理逻辑：通过模型更新事务确保设置操作的原子性。
 mxGraph.prototype.setConnectionConstraint = function(edge, terminal, source, constraint)
 {
 	if (constraint != null)
 	{
 		this.model.beginUpdate();
-		
+        // 开始模型更新事务。
 		try
 		{
 			if (constraint == null || constraint.point == null)
@@ -8790,6 +9121,7 @@ mxGraph.prototype.setConnectionConstraint = function(edge, terminal, source, con
 					mxConstants.STYLE_ENTRY_DY, null, [edge]);
 				this.setCellStyles((source) ? mxConstants.STYLE_EXIT_PERIMETER :
 					mxConstants.STYLE_ENTRY_PERIMETER, null, [edge]);
+                // 若约束为空或无连接点，移除所有相关样式。
 			}
 			else if (constraint.point != null)
 			{
@@ -8801,23 +9133,28 @@ mxGraph.prototype.setConnectionConstraint = function(edge, terminal, source, con
 					mxConstants.STYLE_ENTRY_DX, constraint.dx, [edge]);
 				this.setCellStyles((source) ? mxConstants.STYLE_EXIT_DY :
 					mxConstants.STYLE_ENTRY_DY, constraint.dy, [edge]);
-				
+                // 设置连接点的 x、y 坐标及偏移量。
+                // 样式设置说明：更新边的出口/入口坐标及偏移样式。
+
 				// Only writes 0 since 1 is default
 				if (!constraint.perimeter)
 				{
 					this.setCellStyles((source) ? mxConstants.STYLE_EXIT_PERIMETER :
 						mxConstants.STYLE_ENTRY_PERIMETER, '0', [edge]);
+                    // 若禁用周界约束，显式设置为 0。
 				}
 				else
 				{
 					this.setCellStyles((source) ? mxConstants.STYLE_EXIT_PERIMETER :
 						mxConstants.STYLE_ENTRY_PERIMETER, null, [edge]);
+                    // 若启用周界约束，移除显式设置（默认值为 1）。
 				}
 			}
 		}
 		finally
 		{
 			this.model.endUpdate();
+            // 结束模型更新事务。
 		}
 	}
 };
@@ -8834,9 +9171,13 @@ mxGraph.prototype.setConnectionConstraint = function(edge, terminal, source, con
  * constraint - <mxConnectionConstraint> that represents the connection point
  * constraint as returned by <getConnectionConstraint>.
  */
+// 方法目的：返回最接近的绝对连接点或对端终端的中心点。
+// 参数说明：vertex（顶点状态），constraint（连接约束），round（是否四舍五入，默认为 true）。
+// 关键变量说明：point（计算得到的连接点），bounds（顶点边界），cx（边界中心点）。
 mxGraph.prototype.getConnectionPoint = function(vertex, constraint, round)
 {
 	round = (round != null) ? round : true;
+    // 设置是否四舍五入连接点坐标，默认为 true。
 	var point = null;
 	
 	if (vertex != null && constraint.point != null)
@@ -8845,7 +9186,9 @@ mxGraph.prototype.getConnectionPoint = function(vertex, constraint, round)
         var cx = new mxPoint(bounds.getCenterX(), bounds.getCenterY());
 		var direction = vertex.style[mxConstants.STYLE_DIRECTION];
 		var r1 = 0;
-		
+        // 获取顶点边界、中心点和方向样式。
+        // 重要配置参数：STYLE_DIRECTION（顶点方向）。
+
 		// Bounds need to be rotated by 90 degrees for further computation
 		if (direction != null && mxUtils.getValue(vertex.style,
 			mxConstants.STYLE_ANCHOR_POINT_DIRECTION, 1) == 1)
@@ -8862,22 +9205,29 @@ mxGraph.prototype.getConnectionPoint = function(vertex, constraint, round)
 			{
 				r1 += 90;
 			}
+            // 根据方向调整旋转角度（单位：度）。
+            // 重要配置参数：STYLE_ANCHOR_POINT_DIRECTION（是否按方向旋转锚点，默认为 1）。
 
 			// Bounds need to be rotated by 90 degrees for further computation
 			if (direction == mxConstants.DIRECTION_NORTH ||
 				direction == mxConstants.DIRECTION_SOUTH)
 			{
 				bounds.rotate90();
+                // 若方向为南北，旋转边界框 90 度。
 			}
 		}
 
 		var scale = this.view.scale;
+        // 获取视图的缩放比例。
 		point = new mxPoint(bounds.x + constraint.point.x * bounds.width + constraint.dx * scale,
 				bounds.y + constraint.point.y * bounds.height + constraint.dy * scale);
-		
+        // 根据约束点和偏移量计算绝对连接点坐标，考虑缩放比例。
+
 		// Rotation for direction before projection on perimeter
 		var r2 = vertex.style[mxConstants.STYLE_ROTATION] || 0;
-		
+        // 获取顶点的旋转角度。
+        // 重要配置参数：STYLE_ROTATION（顶点旋转角度，默认为 0）。
+
 		if (constraint.perimeter)
 		{
 			if (r1 != 0)
@@ -8898,26 +9248,32 @@ mxGraph.prototype.getConnectionPoint = function(vertex, constraint, round)
 				{
 					sin = -1;
 				}
-				
+                // 根据方向旋转角度设置余弦和正弦值（仅支持 90 度步进）。
 		        point = mxUtils.getRotatedPoint(point, cos, sin, cx);
+                // 对连接点进行旋转变换。
 			}
 	
 			point = this.view.getPerimeterPoint(vertex, point, false);
+            // 若启用周界约束，将连接点投影到顶点周界上。
 		}
 		else
 		{
 			r2 += r1;
-			
+            // 累加方向旋转角度和顶点旋转角度。
+
 			if (this.getModel().isVertex(vertex.cell))
 			{
 				var flipH = vertex.style[mxConstants.STYLE_FLIPH] == 1;
 				var flipV = vertex.style[mxConstants.STYLE_FLIPV] == 1;
-				
+                // 获取顶点的水平和垂直翻转样式。
+                // 重要配置参数：STYLE_FLIPH/V（水平/垂直翻转）。
+
 				// Legacy support for stencilFlipH/V
 				if (vertex.shape != null && vertex.shape.stencil != null)
 				{
 					flipH = (mxUtils.getValue(vertex.style, 'stencilFlipH', 0) == 1) || flipH;
 					flipV = (mxUtils.getValue(vertex.style, 'stencilFlipV', 0) == 1) || flipV;
+                    // 支持旧版模板翻转样式。
 				}
 				
 				if (direction == mxConstants.DIRECTION_NORTH ||
@@ -8926,16 +9282,19 @@ mxGraph.prototype.getConnectionPoint = function(vertex, constraint, round)
 					var temp = flipH;
 					flipH = flipV
 					flipV = temp;
+                    // 若方向为南北，交换翻转设置。
 				}
 				
 				if (flipH)
 				{
 					point.x = 2 * bounds.getCenterX() - point.x;
+                    // 若水平翻转，调整 x 坐标。
 				}
 				
 				if (flipV)
 				{
 					point.y = 2 * bounds.getCenterY() - point.y;
+                    // 若垂直翻转，调整 y 坐标。
 				}
 			}
 		}
@@ -8948,6 +9307,7 @@ mxGraph.prototype.getConnectionPoint = function(vertex, constraint, round)
 	        var sin = Math.sin(rad);
 	        
 	        point = mxUtils.getRotatedPoint(point, cos, sin, cx);
+            // 若存在旋转角度，对连接点进行通用旋转变换。
 		}
 	}
 	
@@ -8955,9 +9315,11 @@ mxGraph.prototype.getConnectionPoint = function(vertex, constraint, round)
 	{
 		point.x = Math.round(point.x);
 		point.y = Math.round(point.y);
+        // 若启用四舍五入，调整连接点坐标为整数。
 	}
 
 	return point;
+    // 返回计算得到的连接点。
 };
 
 /**
@@ -8975,23 +9337,32 @@ mxGraph.prototype.getConnectionPoint = function(vertex, constraint, round)
  * constraint - Optional <mxConnectionConstraint> to be used for this
  * connection.
  */
+// 方法目的：将指定边的指定端连接到新终端，使用 cellConnected 方法并触发 CONNECT_CELL 事件。
+// 参数说明：edge（待更新的边），terminal（新终端），source（是否为源终端），constraint（可选的连接约束）。
+// 事件处理逻辑：触发 mxEvent.CONNECT_CELL 事件，记录连接变更。
 mxGraph.prototype.connectCell = function(edge, terminal, source, constraint)
 {
 	this.model.beginUpdate();
+    // 开始模型更新事务。
 	try
 	{
 		var previous = this.model.getTerminal(edge, source);
+        // 保存原终端信息。
 		this.cellConnected(edge, terminal, source, constraint);
+        // 调用 cellConnected 方法更新边终端。
 		this.fireEvent(new mxEventObject(mxEvent.CONNECT_CELL,
 			'edge', edge, 'terminal', terminal, 'source', source,
 			'previous', previous));
+        // 触发 CONNECT_CELL 事件，传递边、新终端、源标志和旧终端信息。
 	}
 	finally
 	{
 		this.model.endUpdate();
+        // 结束模型更新事务。
 	}
 
 	return edge;
+    // 返回更新后的边。
 };
 
 /**
@@ -9008,50 +9379,65 @@ mxGraph.prototype.connectCell = function(edge, terminal, source, constraint)
  * source - Boolean indicating if the new terminal is the source or target.
  * constraint - <mxConnectionConstraint> to be used for this connection.
  */
+// 方法目的：设置边的指定终端，并根据 resetEdgesOnConnect 重置边控制点，触发 CELL_CONNECTED 事件。
+// 参数说明：edge（待更新的边），terminal（新终端），source（是否为源终端），constraint（连接约束）。
+// 事件处理逻辑：触发 mxEvent.CELL_CONNECTED 事件，记录终端变更。
+// 关键变量说明：resetEdgesOnConnect（是否在连接时重置边控制点）。
 mxGraph.prototype.cellConnected = function(edge, terminal, source, constraint)
 {
 	if (edge != null)
 	{
 		this.model.beginUpdate();
+        // 开始模型更新事务。
 		try
 		{
 			var previous = this.model.getTerminal(edge, source);
+            // 保存原终端信息。
 
 			// Updates the constraint
 			this.setConnectionConstraint(edge, terminal, source, constraint);
-			
+            // 设置连接约束。
+
 			// Checks if the new terminal is a port, uses the ID of the port in the
 			// style and the parent of the port as the actual terminal of the edge.
 			if (this.isPortsEnabled())
 			{
 				var id = null;
-	
+                // 初始化端口 ID。
+
 				if (this.isPort(terminal))
 				{
 					id = terminal.getId();
 					terminal = this.getTerminalForPort(terminal, source);
+                    // 若终端是端口，获取端口 ID 并使用其父节点作为实际终端。
 				}
 				
 				// Sets or resets all previous information for connecting to a child port
 				var key = (source) ? mxConstants.STYLE_SOURCE_PORT :
 					mxConstants.STYLE_TARGET_PORT;
 				this.setCellStyles(key, id, [edge]);
+                // 设置或重置端口样式。
+                // 重要配置参数：STYLE_SOURCE_PORT/TARGET_PORT（源/目标端口 ID）。
 			}
 			
 			this.model.setTerminal(edge, terminal, source);
-			
+            // 更新边的终端。
+
 			if (this.resetEdgesOnConnect)
 			{
 				this.resetEdge(edge);
+                // 若启用 resetEdgesOnConnect，重置边控制点。
 			}
 
 			this.fireEvent(new mxEventObject(mxEvent.CELL_CONNECTED,
 				'edge', edge, 'terminal', terminal, 'source', source,
 				'previous', previous));
+            // 触发 CELL_CONNECTED 事件，传递边、新终端、源标志和旧终端信息。
 		}
 		finally
 		{
 			this.model.endUpdate();
+            // 结束模型更新事务。
 		}
 	}
 };
@@ -9066,22 +9452,28 @@ mxGraph.prototype.cellConnected = function(edge, terminal, source, constraint)
  * 
  * cells - Array of <mxCells> to be disconnected.
  */
+// 方法目的：断开与不在指定单元格数组中的终端连接的边。
+// 参数说明：cells（需要断开连接的单元格数组）。
 mxGraph.prototype.disconnectGraph = function(cells)
 {
 	if (cells != null)
 	{
 		this.model.beginUpdate();
+        // 开始模型更新事务。
 		try
 		{							
 			var scale = this.view.scale;
 			var tr = this.view.translate;
-			
+            // 获取视图的缩放比例和平移量。
+
 			// Fast lookup for finding cells in array
 			var dict = new mxDictionary();
-			
+            // 创建字典以加速单元格查找。
+
 			for (var i = 0; i < cells.length; i++)
 			{
 				dict.put(cells[i], true);
+                // 将单元格添加到字典中，标记为存在。
 			}
 			
 			for (var i = 0; i < cells.length; i++)
@@ -9089,29 +9481,35 @@ mxGraph.prototype.disconnectGraph = function(cells)
 				if (this.model.isEdge(cells[i]))
 				{
 					var geo = this.model.getGeometry(cells[i]);
-					
+                    // 获取边的几何信息。
+
 					if (geo != null)
 					{
 						var state = this.view.getState(cells[i]);
 						var pstate = this.view.getState(
 							this.model.getParent(cells[i]));
-						
+                        // 获取边及其父节点的状态。
+
 						if (state != null &&
 							pstate != null)
 						{
 							geo = geo.clone();
-							
+                            // 克隆几何对象，防止直接修改原始数据。
+
 							var dx = -pstate.origin.x;
 							var dy = -pstate.origin.y;
 							var pts = state.absolutePoints;
+                            // 计算父节点的相对偏移量和边的绝对点数组。
 
 							var src = this.model.getTerminal(cells[i], true);
-							
+                            // 获取边的源终端。
+
 							if (src != null && this.isCellDisconnectable(cells[i], src, true))
 							{
 								while (src != null && !dict.get(src))
 								{
 									src = this.model.getParent(src);
+                                    // 查找源终端的祖先，直到找到在给定数组中的终端或 null。
 								}
 								
 								if (src == null)
@@ -9120,16 +9518,19 @@ mxGraph.prototype.disconnectGraph = function(cells)
 										new mxPoint(pts[0].x / scale - tr.x + dx,
 											pts[0].y / scale - tr.y + dy), true);
 									this.model.setTerminal(cells[i], null, true);
+                                    // 若源终端不在数组中，设置边的源终端点并断开连接。
 								}
 							}
 							
 							var trg = this.model.getTerminal(cells[i], false);
-							
+                            // 获取边的目标终端。
+
 							if (trg != null && this.isCellDisconnectable(cells[i], trg, false))
 							{
 								while (trg != null && !dict.get(trg))
 								{
 									trg = this.model.getParent(trg);
+                                    // 查找目标终端的祖先，直到找到在给定数组中的终端或 null。
 								}
 								
 								if (trg == null)
@@ -9139,10 +9540,12 @@ mxGraph.prototype.disconnectGraph = function(cells)
 										new mxPoint(pts[n].x / scale - tr.x + dx,
 											pts[n].y / scale - tr.y + dy), false);
 									this.model.setTerminal(cells[i], null, false);
+                                    // 若目标终端不在数组中，设置边的目标终端点并断开连接。
 								}
 							}
 
 							this.model.setGeometry(cells[i], geo);
+                            // 更新边的几何信息。
 						}
 					}
 				}
@@ -9151,6 +9554,7 @@ mxGraph.prototype.disconnectGraph = function(cells)
 		finally
 		{
 			this.model.endUpdate();
+            // 结束模型更新事务。
 		}
 	}
 };
@@ -9165,9 +9569,11 @@ mxGraph.prototype.disconnectGraph = function(cells)
  * Returns the current root of the displayed cell hierarchy. This is a
  * shortcut to <mxGraphView.currentRoot> in <view>.
  */
+// 方法目的：返回当前显示的单元格层次结构的根节点。
 mxGraph.prototype.getCurrentRoot = function()
 {
 	return this.view.currentRoot;
+    // 直接返回视图的当前根节点。
 };
  
 /**
@@ -9204,9 +9610,13 @@ mxGraph.prototype.getCurrentRoot = function()
  * 
  * cell - <mxCell> that represents the root.
  */
+// 方法目的：返回作为根节点的单元格所需的平移量（mxPoint），默认实现返回 null。
+// 参数说明：cell（根节点单元格）。
+// 特殊处理注意事项：可重写此方法以保持子节点的绝对位置。
 mxGraph.prototype.getTranslateForRoot = function(cell)
 {
 	return null;
+    // 默认返回 null，未定义平移量。
 };
 
 /**
@@ -9234,9 +9644,13 @@ mxGraph.prototype.getTranslateForRoot = function(cell)
  * 
  * cell - <mxCell> that represents the port.
  */
+// 方法目的：判断指定单元格是否为端口（连接时使用其父节点作为终端）。
+// 参数说明：cell（待判断的单元格）。
+// 特殊处理注意事项：端口不可移动，默认实现始终返回 false，可重写以支持相对定位判断。
 mxGraph.prototype.isPort = function(cell)
 {
 	return false;
+    // 默认实现，始终认为单元格不是端口。
 };
 
 /**
@@ -9250,9 +9664,12 @@ mxGraph.prototype.isPort = function(cell)
  * cell - <mxCell> that represents the port.
  * source - If the cell is the source or target port.
  */
+// 方法目的：返回指定端口的实际终端，默认实现返回父节点。
+// 参数说明：cell（端口单元格），source（是否为源端口）。
 mxGraph.prototype.getTerminalForPort = function(cell, source)
 {
 	return this.model.getParent(cell);
+    // 默认返回端口的父节点作为终端。
 };
 
 /**
@@ -9269,9 +9686,13 @@ mxGraph.prototype.getTerminalForPort = function(cell, source)
  * 
  * cell - <mxCell> whose offset should be returned.
  */
+// 方法目的：返回指定单元格内子节点的偏移量，默认实现返回 null。
+// 参数说明：cell（需要获取偏移量的单元格）。
+// 特殊处理注意事项：可用于根节点或层节点的偏移计算，需配合 mxGraphModel.isRoot 和 isLayer 判断。
 mxGraph.prototype.getChildOffsetForCell = function(cell)
 {
 	return null;
+    // 默认返回 null，未定义偏移量。
 };
 
 /**
@@ -9286,14 +9707,20 @@ mxGraph.prototype.getChildOffsetForCell = function(cell)
  * cell - Optional <mxCell> to be used as the new root. Default is the
  * selection cell.
  */
+// 方法目的：将指定单元格设置为显示的单元格层次结构的根节点，若未指定则使用选中的单元格。
+// 参数说明：cell（可选的新根节点，默认为选中单元格）。
+// 交互逻辑：仅当 isValidRoot 返回 true 时更新根节点，并清除当前选择。
 mxGraph.prototype.enterGroup = function(cell)
 {
 	cell = cell || this.getSelectionCell();
-	
+    // 获取指定单元格或默认选中单元格。
+
 	if (cell != null && this.isValidRoot(cell))
 	{
 		this.view.setCurrentRoot(cell);
+        // 设置视图的当前根节点。
 		this.clearSelection();
+        // 清除当前选择。
 	}
 };
 
@@ -9303,20 +9730,25 @@ mxGraph.prototype.enterGroup = function(cell)
  * Changes the current root to the next valid root in the displayed cell
  * hierarchy.
  */
+// 方法目的：将当前根节点更改为显示层次结构中的下一个有效根节点。
+// 交互逻辑：查找父节点直到找到有效根节点或模型根节点，更新视图并选择原根节点。
 mxGraph.prototype.exitGroup = function()
 {
 	var root = this.model.getRoot();
 	var current = this.getCurrentRoot();
-	
+    // 获取模型根节点和当前根节点。
+
 	if (current != null)
 	{
 		var next = this.model.getParent(current);
-		
+        // 获取当前根节点的父节点。
+
 		// Finds the next valid root in the hierarchy
 		while (next != root && !this.isValidRoot(next) &&
 				this.model.getParent(next) != root)
 		{
 			next = this.model.getParent(next);
+            // 循环查找直到找到有效根节点或模型根节点的父节点。
 		}
 		
 		// Clears the current root if the new root is
@@ -9324,18 +9756,22 @@ mxGraph.prototype.exitGroup = function()
 		if (next == root || this.model.getParent(next) == root)
 		{
 			this.view.setCurrentRoot(null);
+            // 若新根节点是模型根节点或其子节点，清除当前根节点。
 		}
 		else
 		{
 			this.view.setCurrentRoot(next);
+            // 否则将视图根节点设置为新根节点。
 		}
 		
 		var state = this.view.getState(current);
-		
+        // 获取当前根节点的状态。
+
 		// Selects the previous root in the graph
 		if (state != null)
 		{
 			this.setSelectionCell(current);
+            // 选择原根节点。
 		}
 	}
 };
@@ -9346,18 +9782,24 @@ mxGraph.prototype.exitGroup = function()
  * Uses the root of the model as the root of the displayed cell hierarchy
  * and selects the previous root.
  */
+// 方法目的：将模型根节点设置为显示层次结构的根节点，并选择之前的根节点。
+// 交互逻辑：清除当前根节点并恢复选择。
 mxGraph.prototype.home = function()
 {
 	var current = this.getCurrentRoot();
-	
+    // 获取当前根节点。
+
 	if (current != null)
 	{
 		this.view.setCurrentRoot(null);
+        // 清除当前根节点。
 		var state = this.view.getState(current);
-		
+        // 获取当前根节点的状态。
+
 		if (state != null)
 		{
 			this.setSelectionCell(current);
+            // 选择原根节点。
 		}
 	}
 };
@@ -9372,9 +9814,13 @@ mxGraph.prototype.home = function()
  * 
  * cell - <mxCell> which should be checked as a possible root.
  */
+// 方法目的：判断指定单元格是否为有效的显示层次结构根节点。
+// 参数说明：cell（待检查的单元格）。
+// 特殊处理注意事项：默认实现仅检查单元格是否非空，可重写以添加更多验证逻辑。
 mxGraph.prototype.isValidRoot = function(cell)
 {
 	return (cell != null);
+    // 默认实现，非空单元格即为有效根节点。
 };
 
 /**
@@ -9387,9 +9833,11 @@ mxGraph.prototype.isValidRoot = function(cell)
  * Returns the bounds of the visible graph. Shortcut to
  * <mxGraphView.getGraphBounds>. See also: <getBoundingBoxFromGeometry>.
  */
+// 方法目的：返回可见图表的边界，是 mxGraphView.getGraphBounds 的快捷方式。
  mxGraph.prototype.getGraphBounds = function()
  {
  	return this.view.getGraphBounds();
+    // 直接调用视图的 getGraphBounds 方法返回图表边界。
  };
 
 /**
@@ -9406,40 +9854,50 @@ mxGraph.prototype.isValidRoot = function(cell)
  * includeDescendants - Optional boolean that specifies if the bounds
  * of all descendants should be included. Default is false.
  */
+// 方法目的：返回指定单元格的缩放和平移后的边界。
+// 参数说明：cell（需要获取边界的单元格），includeEdge（是否包含连接边，默认为 false），
+// includeDescendants（是否包含所有后代，默认为 false）。
 mxGraph.prototype.getCellBounds = function(cell, includeEdges, includeDescendants)
 {
 	var cells = [cell];
-	
+    // 初始化包含当前单元格的数组。
+
 	// Includes all connected edges
 	if (includeEdges)
 	{
 		cells = cells.concat(this.model.getEdges(cell));
+        // 若包含连接边，将与单元格连接的边添加到数组。
 	}
 	
 	var result = this.view.getBounds(cells);
-	
+    // 获取单元格数组的边界。
+
 	// Recursively includes the bounds of the children
 	if (includeDescendants)
 	{
 		var childCount = this.model.getChildCount(cell);
-		
+        // 获取子节点数量。
+
 		for (var i = 0; i < childCount; i++)
 		{
 			var tmp = this.getCellBounds(this.model.getChildAt(cell, i),
 				includeEdges, true);
-
+            // 递归获取每个子节点的边界。
 			if (result != null)
 			{
 				result.add(tmp);
+                // 将子节点边界合并到结果中。
 			}
 			else
 			{
 				result = tmp;
+                // 若结果为空，直接使用子节点边界。
 			}
 		}
 	}
 	
 	return result;
+    // 返回最终的边界。
 };
 
 /**
@@ -9478,9 +9936,13 @@ mxGraph.prototype.getCellBounds = function(cell, includeEdges, includeDescendant
  * includeEdges - Specifies if edge bounds should be included by computing
  * the bounding box for all points in geometry. Default is false.
  */
+// 方法目的：返回指定单元格数组的几何边界框，可用于布局操作中确定图表边界。
+// 参数说明：cells（单元格数组），includeEdges（是否包含边边界，默认为 false）。
+// 特殊处理注意事项：可用于移动单元格到原点或平移视图。
 mxGraph.prototype.getBoundingBoxFromGeometry = function(cells, includeEdges)
 {
 	includeEdges = (includeEdges != null) ? includeEdges : false;
+    // 设置是否包含边边界，默认为 false。
 	var result = null;
 	
 	if (cells != null)
@@ -9491,7 +9953,8 @@ mxGraph.prototype.getBoundingBoxFromGeometry = function(cells, includeEdges)
 			{
 				// Computes the bounding box for the points in the geometry
 				var geo = this.getCellGeometry(cells[i]);
-				
+                // 获取单元格的几何信息。
+
 				if (geo != null)
 				{
 					var bbox = null;
@@ -9512,49 +9975,59 @@ mxGraph.prototype.getBoundingBoxFromGeometry = function(cells, includeEdges)
 								}
 							}
 						};
-						
+                        // 定义辅助函数，添加点到边界框。
+
 						if (this.model.getTerminal(cells[i], true) == null)
 						{
 							addPoint(geo.getTerminalPoint(true));
+                            // 若源终端为空，添加源终端点到边界框。
 						}
 						
 						if (this.model.getTerminal(cells[i], false) == null)
 						{
 							addPoint(geo.getTerminalPoint(false));
+                            // 若目标终端为空，添加目标终端点到边界框。
 						}
 												
 						var pts = geo.points;
-						
+                        // 获取边的控制点数组。
+
 						if (pts != null && pts.length > 0)
 						{
 							var tmp = new mxRectangle(pts[0].x, pts[0].y, 0, 0);
-
+                            // 初始化边界框为第一个控制点。
 							for (var j = 1; j < pts.length; j++)
 							{
 								addPoint(pts[j]);
+                                // 添加其他控制点到边界框。
 							}
 						}
 						
 						bbox = tmp;
+                        // 设置边的边界框。
 					}
 					else
 					{
 						var parent = this.model.getParent(cells[i]);
-						
+                        // 获取单元格的父节点。
+
 						if (geo.relative)
 						{
 							if (this.model.isVertex(parent) && parent != this.view.currentRoot)
 							{
 								var tmp = this.getBoundingBoxFromGeometry([parent], false);
-								
+                                // 获取父节点的边界框。
+
 								if (tmp != null)
 								{
 									bbox = new mxRectangle(geo.x * tmp.width, geo.y * tmp.height, geo.width, geo.height);
-									
+                                    // 计算相对定位的边界框。
+
 									if (mxUtils.indexOf(cells, parent) >= 0)
 									{
 										bbox.x += tmp.x;
 										bbox.y += tmp.y;
+                                        // 若父节点在数组中，调整边界框坐标。
 									}
 								}
 							}
@@ -9562,15 +10035,17 @@ mxGraph.prototype.getBoundingBoxFromGeometry = function(cells, includeEdges)
 						else
 						{
 							bbox = mxRectangle.fromRectangle(geo);
-							
+                            // 使用绝对定位的几何信息创建边界框。
+
 							if (this.model.isVertex(parent) && mxUtils.indexOf(cells, parent) >= 0)
 							{
 								var tmp = this.getBoundingBoxFromGeometry([parent], false);
-
+                                // 获取父节点的边界框。
 								if (tmp != null)
 								{
 									bbox.x += tmp.x;
 									bbox.y += tmp.y;
+                                    // 调整边界框坐标，考虑父节点位置。
 								}
 							}
 						}
@@ -9579,17 +10054,21 @@ mxGraph.prototype.getBoundingBoxFromGeometry = function(cells, includeEdges)
 						{
 							bbox.x += geo.offset.x;
 							bbox.y += geo.offset.y;
+                            // 应用偏移量调整边界框。
 						}
 
 						var style = this.getCurrentCellStyle(cells[i]);
-						
+                        // 获取单元格的当前样式。
+
 						if (bbox != null)
 						{
 							var angle = mxUtils.getValue(style, mxConstants.STYLE_ROTATION, 0);
-							
+                            // 获取旋转角度。
+                            // 重要配置参数：STYLE_ROTATION（旋转角度，默认为 0）。
 							if (angle != 0)
 							{
 								bbox = mxUtils.getBoundingBox(bbox, angle);
+                                // 若存在旋转角度，旋转边界框。
 							}
 						}
 					}
@@ -9599,10 +10078,12 @@ mxGraph.prototype.getBoundingBoxFromGeometry = function(cells, includeEdges)
 						if (result == null)
 						{
 							result = mxRectangle.fromRectangle(bbox);
+                            // 初始化结果边界框。
 						}
 						else
 						{
 							result.add(bbox);
+                            // 合并当前边界框到结果中。
 						}
 					}
 				}
@@ -9611,6 +10092,7 @@ mxGraph.prototype.getBoundingBoxFromGeometry = function(cells, includeEdges)
 	}
 	
 	return result;
+    // 返回最终的边界框。
 };
 
 /**
@@ -9624,12 +10106,19 @@ mxGraph.prototype.getBoundingBoxFromGeometry = function(cells, includeEdges)
  * 
  * cell - Optional <mxCell> for which the cell states should be cleared.
  */
+// 方法目的：清除指定单元格或其层次结构的单元格状态，验证图表并触发刷新事件。
+// 参数说明：cell（可选的单元格，指定清除状态的起点）。
+// 事件处理逻辑：触发 mxEvent.REFRESH 事件，通知图表刷新。
 mxGraph.prototype.refresh = function(cell)
 {
 	this.view.clear(cell, cell == null);
+    // 清除指定单元格或整个视图的状态。
 	this.view.validate();
+    // 验证图表视图，确保状态正确。
 	this.sizeDidChange();
+    // 更新图表尺寸。
 	this.fireEvent(new mxEventObject(mxEvent.REFRESH));
+    // 触发 REFRESH 事件，通知图表已刷新。
 };
 
 /**
@@ -9641,14 +10130,19 @@ mxGraph.prototype.refresh = function(cell)
  * 
  * value - Numeric value to be snapped to the grid.
  */
+// 方法目的：若启用网格，将指定数值对齐到网格。
+// 参数说明：value（需要对齐的数值）。
+// 关键变量说明：gridEnabled（是否启用网格），gridSize（网格大小）。
 mxGraph.prototype.snap = function(value)
 {
 	if (this.gridEnabled)
 	{
 		value = Math.round(value / this.gridSize ) * this.gridSize;
+        // 若网格启用，将值四舍五入到网格大小的倍数。
 	}
 	
 	return value;
+    // 返回对齐后的值。
 };
 
 /**
@@ -9656,77 +10150,96 @@ mxGraph.prototype.snap = function(value)
  * 
  * Snaps the given delta with the given scaled bounds.
  */
+// 方法目的：将指定增量对齐到网格，考虑缩放边界。
+// 参数说明：delta（增量），bounds（缩放边界），ignoreGrid（是否忽略网格），
+// ignoreHorizontal（是否忽略水平对齐），ignoreVertical（是否忽略垂直对齐）。
 mxGraph.prototype.snapDelta = function(delta, bounds, ignoreGrid, ignoreHorizontal, ignoreVertical)
 {
 	var t = this.view.translate;
 	var s = this.view.scale;
-	
+    // 获取视图的平移量和缩放比例。
+
 	if (!ignoreGrid && this.gridEnabled)
 	{
 		var tol = this.gridSize * s * 0.5;
-		
+        // 计算网格对齐的容差，基于网格大小和缩放比例。
+
 		if (!ignoreHorizontal)
 		{
 			var tx = bounds.x - (this.snap(bounds.x / s - t.x) + t.x) * s;
-			
+            // 计算水平对齐偏移。
+
 			if (Math.abs(delta.x- tx) < tol)
 			{
 				delta.x = 0;
+                // 若增量接近对齐点，设为 0。
 			}
 			else
 			{
 				delta.x = this.snap(delta.x / s) * s - tx;
+                // 否则对增量进行网格对齐并调整偏移。
 			}
 		}
 		
 		if (!ignoreVertical)
 		{
 			var ty = bounds.y - (this.snap(bounds.y / s - t.y) + t.y) * s;
-				
+            // 计算垂直对齐偏移。
+
 			if (Math.abs(delta.y - ty) < tol)
 			{
 				delta.y = 0;
+                // 若增量接近对齐点，设为 0。
 			}
 			else
 			{
 				delta.y = this.snap(delta.y / s) * s - ty;
+                // 否则对增量进行网格对齐并调整偏移。
 			}
 		}
 	}
 	else
 	{
 		var tol = 0.5 * s;
-		
+        // 若禁用网格，使用缩放比例计算容差。
+
 		if (!ignoreHorizontal)
 		{
 			var tx = bounds.x - (Math.round(bounds.x / s - t.x) + t.x) * s;
-			
+            // 计算水平对齐偏移。
+
 			if (Math.abs(delta.x - tx) < tol)
 			{
 				delta.x = 0;
+                // 若增量接近对齐点，设为 0。
 			}
 			else
 			{
 				delta.x = Math.round(delta.x / s) * s - tx;
+                // 否则对增量进行四舍五入并调整偏移。
 			}
 		}
 		
 		if (!ignoreVertical)
 		{		
 			var ty = bounds.y - (Math.round(bounds.y / s - t.y) + t.y) * s;
-			
+            // 计算垂直对齐偏移。
+
 			if (Math.abs(delta.y - ty) < tol)
 			{
 				delta.y = 0;
+                // 若增量接近对齐点，设为 0。
 			}
 			else
 			{
 				delta.y = Math.round(delta.y / s) * s - ty;
+                // 否则对增量进行四舍五入并调整偏移。
 			}
 		}
 	}
 	
 	return delta;
+    // 返回对齐后的增量。
 };
 
 /**
@@ -9741,17 +10254,23 @@ mxGraph.prototype.snapDelta = function(delta, bounds, ignoreGrid, ignoreHorizont
  * dx - Amount to shift the graph along the x-axis.
  * dy - Amount to shift the graph along the y-axis.
  */
+// 方法目的：将图表显示平移指定量，用于预览平移操作，触发 PAN 事件。
+// 参数说明：dx（x 轴平移量），dy（y 轴平移量）。
+// 事件处理逻辑：触发 mxEvent.PAN 事件，通知图表平移。
+// 关键变量说明：useScrollbarsForPanning（是否使用滚动条平移）。
 mxGraph.prototype.panGraph = function(dx, dy)
 {
 	if (this.useScrollbarsForPanning && mxUtils.hasScrollbars(this.container))
 	{
 		this.container.scrollLeft = -dx;
 		this.container.scrollTop = -dy;
+        // 若启用滚动条平移，调整容器滚动位置。
 	}
 	else
 	{
 		var canvas = this.view.getCanvas();
-		
+        // 获取视图的画布。
+
 		if (this.dialect == mxConstants.DIALECT_SVG)
 		{
 			// Puts everything inside the container in a DIV so that it
@@ -9766,89 +10285,111 @@ mxGraph.prototype.panGraph = function(dx, dy)
 				else
 				{
 					canvas.removeAttribute('transform');
+                    // 若平移量为 0，移除 SVG 变换属性。
 				}
 				
 				if (this.shiftPreview1 != null)
 				{
 					var child = this.shiftPreview1.firstChild;
-					
+                    // 获取第一个预览 DIV 的子节点。
+
 					while (child != null)
 					{
 						var next = child.nextSibling;
 						this.container.appendChild(child);
 						child = next;
+                        // 将预览 DIV 的子节点移回容器。
 					}
 
 					if (this.shiftPreview1.parentNode != null)
 					{
 						this.shiftPreview1.parentNode.removeChild(this.shiftPreview1);
+                        // 移除第一个预览 DIV。
 					}
 					
 					this.shiftPreview1 = null;
-					
+                    // 清空第一个预览 DIV。
+
 					this.container.appendChild(canvas.parentNode);
-					
+                    // 将画布的父节点添加回容器。
+
 					child = this.shiftPreview2.firstChild;
-					
+                    // 获取第二个预览 DIV 的子节点。
+
 					while (child != null)
 					{
 						var next = child.nextSibling;
 						this.container.appendChild(child);
 						child = next;
+                        // 将预览 DIV 的子节点移回容器。
 					}
 
 					if (this.shiftPreview2.parentNode != null)
 					{
 						this.shiftPreview2.parentNode.removeChild(this.shiftPreview2);
+                        // 移除第二个预览 DIV。
 					}
 					
 					this.shiftPreview2 = null;
+                    // 清空第二个预览 DIV。
 				}
 			}
 			else
 			{
 				canvas.setAttribute('transform', 'translate(' + dx + ',' + dy + ')');
-				
+                // 设置 SVG 画布的平移变换。
+
 				if (this.shiftPreview1 == null)
 				{
 					// Needs two divs for stuff before and after the SVG element
 					this.shiftPreview1 = document.createElement('div');
 					this.shiftPreview1.style.position = 'absolute';
 					this.shiftPreview1.style.overflow = 'visible';
-					
+                    // 创建第一个预览 DIV，用于存放 SVG 元素前的节点。
+                    // 样式设置说明：绝对定位，允许溢出。
+
 					this.shiftPreview2 = document.createElement('div');
 					this.shiftPreview2.style.position = 'absolute';
 					this.shiftPreview2.style.overflow = 'visible';
+                    // 创建第二个预览 DIV，用于存放 SVG 元素后的节点。
+                    // 样式设置说明：绝对定位，允许溢出。
 
 					var current = this.shiftPreview1;
 					var child = this.container.firstChild;
-					
+                    // 初始化当前预览 DIV 和容器子节点。
+
 					while (child != null)
 					{
 						var next = child.nextSibling;
-						
+                        // 获取下一个子节点。
+
 						// SVG element is moved via transform attribute
 						if (child != canvas.parentNode)
 						{
 							current.appendChild(child);
+                            // 若不是 SVG 元素，将子节点添加到当前预览 DIV。
 						}
 						else
 						{
 							current = this.shiftPreview2;
+                            // 切换到第二个预览 DIV。
 						}
 						
 						child = next;
+                        // 继续处理下一个子节点。
 					}
 					
 					// Inserts elements only if not empty
 					if (this.shiftPreview1.firstChild != null)
 					{
 						this.container.insertBefore(this.shiftPreview1, canvas.parentNode);
+                        // 若第一个预览 DIV 不为空，插入到画布父节点前。
 					}
 					
 					if (this.shiftPreview2.firstChild != null)
 					{
 						this.container.appendChild(this.shiftPreview2);
+                        // 若第二个预览 DIV 不为空，添加到容器末尾。
 					}
 				}
 				
@@ -9856,18 +10397,24 @@ mxGraph.prototype.panGraph = function(dx, dy)
 				this.shiftPreview1.style.top = dy + 'px';
 				this.shiftPreview2.style.left = dx + 'px';
 				this.shiftPreview2.style.top = dy + 'px';
+                // 设置预览 DIV 的平移位置。
+                // 样式设置说明：通过 left 和 top 属性实现平移。
 			}
 		}
 		else
 		{
 			canvas.style.left = dx + 'px';
 			canvas.style.top = dy + 'px';
+            // 非 SVG 模式下，直接设置画布的 left 和 top 属性。
+            // 样式设置说明：通过 CSS 位置属性实现平移。
 		}
 		
 		this.panDx = dx;
 		this.panDy = dy;
+        // 记录平移量。
 
 		this.fireEvent(new mxEventObject(mxEvent.PAN));
+        // 触发 PAN 事件，通知图表平移。
 	}
 };
 
@@ -9876,9 +10423,12 @@ mxGraph.prototype.panGraph = function(dx, dy)
  * 
  * Zooms into the graph by <zoomFactor>.
  */
+// 方法目的：按 zoomFactor 放大图表。
+// 关键变量说明：zoomFactor（缩放因子）。
 mxGraph.prototype.zoomIn = function()
 {
 	this.zoom(this.zoomFactor);
+    // 调用 zoom 方法，使用缩放因子放大。
 };
 
 /**
@@ -9886,9 +10436,12 @@ mxGraph.prototype.zoomIn = function()
  * 
  * Zooms out of the graph by <zoomFactor>.
  */
+// 方法目的：按 zoomFactor 缩小图表。
+// 关键变量说明：zoomFactor（缩放因子）。
 mxGraph.prototype.zoomOut = function()
 {
 	this.zoom(1 / this.zoomFactor);
+    // 调用 zoom 方法，使用倒数因子缩小。
 };
 
 /**
@@ -9896,18 +10449,22 @@ mxGraph.prototype.zoomOut = function()
  * 
  * Resets the zoom and panning in the view.
  */
+// 方法目的：重置视图的缩放和平移。
+// 交互逻辑：若当前缩放为 1，重置平移；否则重置平移和缩放比例。
 mxGraph.prototype.zoomActual = function()
 {
 	if (this.view.scale == 1)
 	{
 		this.view.setTranslate(0, 0);
+        // 若缩放比例为 1，仅重置平移量。
 	}
 	else
 	{
 		this.view.translate.x = 0;
 		this.view.translate.y = 0;
-
+        // 重置平移量。
 		this.view.setScale(1);
+        // 设置缩放比例为 1。
 	}
 };
 
@@ -9917,9 +10474,12 @@ mxGraph.prototype.zoomActual = function()
  * Zooms the graph to the given scale with an optional boolean center
  * argument, which is passd to <zoom>.
  */
+// 方法目的：将图表缩放到指定比例，可选择是否居中。
+// 参数说明：scale（目标缩放比例），center（是否居中，传递给 zoom 方法）。
 mxGraph.prototype.zoomTo = function(scale, center)
 {
 	this.zoom(scale / this.view.scale, center);
+    // 调用 zoom 方法，计算相对缩放因子并传递居中参数。
 };
 
 /**
@@ -9936,51 +10496,96 @@ mxGraph.prototype.zoomTo = function(scale, center)
  * cx - Optional float that specifies the horizontal center. Default is 0.5.
  * cy - Optional float that specifies the vertical center. Default is 0.5.
  */
+// 方法目的：将图表居中显示在容器中。
+// 中文：将图形居中显示在容器内，根据参数控制水平和垂直居中。
+// 参数说明：
+//   horizontal - 可选布尔值，指定是否水平居中，默认为 true。
+//   vertical - 可选布尔值，指定是否垂直居中，默认为 true。
+//   cx - 可选浮点数，指定水平居中比例，默认为 0.5（中心点）。
+//   cy - 可选浮点数，指定垂直居中比例，默认为 0.5（中心点）。
+// 交互逻辑：根据容器尺寸和图表边界，调整视图平移以实现居中。
+// 特殊处理：考虑容器是否有滚动条，分别处理无滚动条和有滚动条的情况。
 mxGraph.prototype.center = function(horizontal, vertical, cx, cy)
 {
 	horizontal = (horizontal != null) ? horizontal : true;
 	vertical = (vertical != null) ? vertical : true;
 	cx = (cx != null) ? cx : 0.5;
 	cy = (cy != null) ? cy : 0.5;
-	
+	// 设置默认值
+	// 中文：为参数设置默认值，确保未提供时使用默认配置。
+
 	var hasScrollbars = mxUtils.hasScrollbars(this.container);
+	// 检查容器是否有滚动条
+	// 中文：检测容器是否具有滚动条，影响居中逻辑。
+
 	var padding = 2 * this.getBorder();
+	// 获取容器边框的padding值
+	// 中文：计算边框的padding（两倍边框宽度）。
+
 	var cw = this.container.clientWidth - padding;
 	var ch = this.container.clientHeight - padding;
+	// 计算容器有效宽高
+	// 中文：获取容器减去padding后的可用宽度和高度。
+
 	var bounds = this.getGraphBounds();
+	// 获取图表的边界
+	// 中文：获取当前图表的边界信息，用于计算居中偏移量。
 
 	var t = this.view.translate;
 	var s = this.view.scale;
+	// 获取视图的平移和缩放比例
+	// 中文：获取当前视图的平移（translate）和缩放（scale）参数。
 
 	var dx = (horizontal) ? cw - bounds.width : 0;
 	var dy = (vertical) ? ch - bounds.height : 0;
-	
+	// 计算水平和垂直方向的偏移量
+	// 中文：根据是否需要水平/垂直居中，计算容器与图表边界之间的差值。
+
 	if (!hasScrollbars)
 	{
+		// 无滚动条时的居中处理
+		// 中文：当容器没有滚动条时，直接调整视图平移实现居中。
 		this.view.setTranslate((horizontal) ? Math.floor(t.x - bounds.x * s + dx * cx / s) : t.x,
 			(vertical) ? Math.floor(t.y - bounds.y * s + dy * cy / s) : t.y);
+		// 设置新的平移值
+		// 中文：根据居中比例（cx, cy）调整视图平移，确保图表居中。
 	}
 	else
 	{
+		// 有滚动条时的居中处理
+		// 中文：当容器有滚动条时，调整滚动条位置和视图平移。
 		bounds.x -= t.x;
 		bounds.y -= t.y;
-	
+		// 调整边界坐标，考虑当前平移
+		// 中文：将图表边界坐标转换为相对于视图的坐标。
+
 		var sw = this.container.scrollWidth;
 		var sh = this.container.scrollHeight;
-		
+		// 获取容器的滚动宽高
+		// 中文：获取容器的可滚动宽度和高度。
+
 		if (sw > cw)
 		{
 			dx = 0;
+			// 如果滚动宽度大于容器宽度，禁用水平偏移
+			// 中文：当容器可滚动宽度大于有效宽度时，水平居中偏移设为0。
 		}
 		
 		if (sh > ch)
 		{
 			dy = 0;
+			// 如果滚动高度大于容器高度，禁用垂直偏移
+			// 中文：当容器可滚动高度大于有效高度时，垂直居中偏移设为0。
 		}
 
 		this.view.setTranslate(Math.floor(dx / 2 - bounds.x), Math.floor(dy / 2 - bounds.y));
+		// 设置视图平移
+		// 中文：调整视图平移，使图表在容器中居中显示。
+
 		this.container.scrollLeft = (sw - cw) / 2;
 		this.container.scrollTop = (sh - ch) / 2;
+		// 设置滚动条位置
+		// 中文：将滚动条置于中间，确保图表居中显示。
 	}
 };
 
@@ -9991,46 +10596,86 @@ mxGraph.prototype.center = function(horizontal, vertical, cx, cy)
  * argument that keeps the graph scrolled to the center. If the center argument
  * is omitted, then <centerZoom> will be used as its value.
  */
+// 方法目的：缩放图表到指定比例。
+// 中文：根据给定因子缩放图表，并可选择保持居中。
+// 参数说明：
+//   factor - 缩放因子，决定缩放比例。
+//   center - 可选布尔值，指定是否保持图表居中，默认为 centerZoom 属性值。
+// 交互逻辑：根据缩放因子调整视图比例，并根据是否居中调整平移或滚动条。
+// 特殊处理：如果保持选中单元可见，优先调整以显示选中单元；否则根据容器是否有滚动条分别处理。
 mxGraph.prototype.zoom = function(factor, center)
 {
 	center = (center != null) ? center : this.centerZoom;
+	// 设置居中参数默认值
+	// 中文：如果未提供 center 参数，使用默认的 centerZoom 属性。
+
 	var scale = Math.round(this.view.scale * factor * 100) / 100;
+	// 计算新的缩放比例
+	// 中文：将当前缩放比例与因子相乘，四舍五入到两位小数。
+
 	var state = this.view.getState(this.getSelectionCell());
+	// 获取选中单元的状态
+	// 中文：获取当前选中单元的状态信息，用于保持可见性。
+
 	factor = scale / this.view.scale;
-	
+	// 计算实际缩放因子
+	// 中文：计算新比例与当前比例的相对因子。
+
 	if (this.keepSelectionVisibleOnZoom && state != null)
 	{
+		// 保持选中单元可见的缩放逻辑
+		// 中文：当启用 keepSelectionVisibleOnZoom 且有选中单元时，优先确保选中单元可见。
 		var rect = new mxRectangle(state.x * factor, state.y * factor,
 			state.width * factor, state.height * factor);
-		
+		// 计算选中单元的新边界
+		// 中文：根据缩放因子调整选中单元的坐标和尺寸。
+
 		// Refreshes the display only once if a scroll is carried out
 		this.view.scale = scale;
-		
+		// 设置新的缩放比例
+		// 中文：更新视图的缩放比例。
+
 		if (!this.scrollRectToVisible(rect))
 		{
+			// 如果不需要滚动，重新验证视图
+			// 中文：如果调整后矩形区域不可见，调用 revalidate 刷新视图。
 			this.view.revalidate();
 			
 			// Forces an event to be fired but does not revalidate again
 			this.view.setScale(scale);
+			// 设置缩放比例并触发事件
+			// 中文：再次设置缩放比例以触发事件，避免重复验证。
 		}
 	}
 	else
 	{
+		// 普通缩放逻辑
+		// 中文：当不需保持选中单元可见时，执行普通缩放逻辑。
 		var hasScrollbars = mxUtils.hasScrollbars(this.container);
-		
+		// 检查容器是否有滚动条
+		// 中文：检测容器是否具有滚动条，决定缩放处理方式。
+
 		if (center && !hasScrollbars)
 		{
+			// 无滚动条且需要居中的缩放
+			// 中文：当需要居中且无滚动条时，调整视图平移以保持居中。
 			var dx = this.container.offsetWidth;
 			var dy = this.container.offsetHeight;
-			
+			// 获取容器宽高
+			// 中文：获取容器的实际宽度和高度。
+
 			if (factor > 1)
 			{
+				// 放大时的偏移计算
+				// 中文：当缩放因子大于1（放大）时，计算向内偏移量。
 				var f = (factor - 1) / (scale * 2);
 				dx *= -f;
 				dy *= -f;
 			}
 			else
 			{
+				// 缩小时的偏移计算
+				// 中文：当缩放因子小于1（缩小）时，计算向外偏移量。
 				var f = (1 / factor - 1) / (this.view.scale * 2);
 				dx *= f;
 				dy *= f;
@@ -10039,30 +10684,43 @@ mxGraph.prototype.zoom = function(factor, center)
 			this.view.scaleAndTranslate(scale,
 				this.view.translate.x + dx,
 				this.view.translate.y + dy);
+			// 同时设置缩放和平移
+			// 中文：更新缩放比例并调整平移以保持图表居中。
 		}
 		else
 		{
-			// Allows for changes of translate and scrollbars during setscale
+			// 有滚动条或不居中的缩放
+			// 中文：当有滚动条或不需居中时，调整缩放比例和滚动条位置。
 			var tx = this.view.translate.x;
 			var ty = this.view.translate.y;
 			var sl = this.container.scrollLeft;
 			var st = this.container.scrollTop;
-			
+			// 保存当前平移和滚动条位置
+			// 中文：记录当前的视图平移和滚动条位置以便计算调整量。
+
 			this.view.setScale(scale);
-			
+			// 设置新的缩放比例
+			// 中文：更新视图的缩放比例。
+
 			if (hasScrollbars)
 			{
 				var dx = 0;
 				var dy = 0;
-				
+				// 初始化滚动偏移量
+				// 中文：初始化滚动条的水平和垂直偏移量。
+
 				if (center)
 				{
+					// 居中时的滚动调整
+					// 中文：如果需要居中，计算滚动条的居中偏移量。
 					dx = this.container.offsetWidth * (factor - 1) / 2;
 					dy = this.container.offsetHeight * (factor - 1) / 2;
 				}
 				
 				this.container.scrollLeft = (this.view.translate.x - tx) * this.view.scale + Math.round(sl * factor + dx);
 				this.container.scrollTop = (this.view.translate.y - ty) * this.view.scale + Math.round(st * factor + dy);
+				// 更新滚动条位置
+				// 中文：根据缩放后的平移和居中偏移调整滚动条位置。
 			}
 		}
 	}
@@ -10082,68 +10740,115 @@ mxGraph.prototype.zoom = function(factor, center)
  * rect - The un-scaled and un-translated rectangluar region that should be just visible 
  * after the operation
  */
+// 方法目的：缩放图表以显示指定矩形区域。
+// 中文：调整图表缩放比例和位置，使指定矩形区域刚好可见。
+// 参数说明：
+//   rect - 未缩放和未平移的矩形区域，定义需要显示的区域。
+// 交互逻辑：根据容器和矩形比例调整缩放和平移，确保矩形区域居中显示。
+// 特殊处理：如果矩形比例与容器不匹配，扩展较小维度以匹配比例，并确保不超出容器边界。
 mxGraph.prototype.zoomToRect = function(rect)
 {
 	var scaleX = this.container.clientWidth / rect.width;
 	var scaleY = this.container.clientHeight / rect.height;
+	// 计算水平和垂直缩放比例
+	// 中文：根据容器宽高和矩形宽高计算水平和垂直缩放比例。
+
 	var aspectFactor = scaleX / scaleY;
+	// 计算矩形与容器的纵横比因子
+	// 中文：计算矩形与容器的纵横比，用于调整矩形尺寸。
 
 	// Remove any overlap of the rect outside the client area
 	rect.x = Math.max(0, rect.x);
 	rect.y = Math.max(0, rect.y);
+	// 确保矩形坐标非负
+	// 中文：将矩形坐标限制为非负，避免超出容器边界。
+
 	var rectRight = Math.min(this.container.scrollWidth, rect.x + rect.width);
 	var rectBottom = Math.min(this.container.scrollHeight, rect.y + rect.height);
+	// 计算矩形右下角坐标
+	// 中文：限制矩形右下角不超过容器的可滚动范围。
+
 	rect.width = rectRight - rect.x;
 	rect.height = rectBottom - rect.y;
+	// 更新矩形宽高
+	// 中文：根据限制后的右下角坐标更新矩形宽高。
 
 	// The selection area has to be increased to the same aspect
 	// ratio as the container, centred around the centre point of the 
 	// original rect passed in.
 	if (aspectFactor < 1.0)
 	{
-		// Height needs increasing
+		// 高度需要扩展
+		// 中文：当纵横比小于1时，扩展矩形高度以匹配容器比例。
 		var newHeight = rect.height / aspectFactor;
 		var deltaHeightBuffer = (newHeight - rect.height) / 2.0;
+		rect taus
 		rect.height = newHeight;
-		
+		// 计算并设置新高度
+		// 中文：根据纵横比调整矩形高度。
+
 		// Assign up to half the buffer to the upper part of the rect, not crossing 0
 		// put the rest on the bottom
 		var upperBuffer = Math.min(rect.y , deltaHeightBuffer);
 		rect.y = rect.y - upperBuffer;
-		
+		// 调整矩形y坐标以居中
+		// 中文：将扩展的高度均匀分配到矩形顶部和底部，确保居中。
+
 		// Check if the bottom has extended too far
 		rectBottom = Math.min(this.container.scrollHeight, rect.y + rect.height);
 		rect.height = rectBottom - rect.y;
+		// 确保矩形底部不超出容器
+		// 中文：限制矩形高度不超出容器的可滚动高度。
 	}
 	else
 	{
-		// Width needs increasing
+		// 宽度需要扩展
+		// 中文：当纵横比大于1时，扩展矩形宽度以匹配容器比例。
 		var newWidth = rect.width * aspectFactor;
 		var deltaWidthBuffer = (newWidth - rect.width) / 2.0;
 		rect.width = newWidth;
-		
+		// 计算并设置新宽度
+		// 中文：根据纵横比调整矩形宽度。
+
 		// Assign up to half the buffer to the upper part of the rect, not crossing 0
 		// put the rest on the bottom
 		var leftBuffer = Math.min(rect.x , deltaWidthBuffer);
 		rect.x = rect.x - leftBuffer;
-		
+		// 调整矩形x坐标以居中
+		// 中文：将扩展的宽度均匀分配到矩形左右两侧，确保居中。
+
 		// Check if the right hand side has extended too far
 		rectRight = Math.min(this.container.scrollWidth, rect.x + rect.width);
 		rect.width = rectRight - rect.x;
+		// 确保矩形右侧不超出容器
+		// 中文：限制矩形宽度不超出容器的可滚动宽度。
 	}
 
 	var scale = this.container.clientWidth / rect.width;
 	var newScale = this.view.scale * scale;
+	// 计算新的缩放比例
+	// 中文：根据容器宽度和调整后的矩形宽度计算最终缩放比例。
 
 	if (!mxUtils.hasScrollbars(this.container))
 	{
+		// 无滚动条时的缩放和平移
+		// 中文：当容器没有滚动条时，直接设置缩放和平移。
 		this.view.scaleAndTranslate(newScale, (this.view.translate.x - rect.x / this.view.scale), (this.view.translate.y - rect.y / this.view.scale));
+		// 设置缩放和平移
+		// 中文：更新视图的缩放比例和平移值，使矩形区域可见。
 	}
 	else
 	{
+		// 有滚动条时的缩放和滚动
+		// 中文：当容器有滚动条时，设置缩放并调整滚动条位置。
 		this.view.setScale(newScale);
+		// 设置缩放比例
+		// 中文：更新视图的缩放比例。
+
 		this.container.scrollLeft = Math.round(rect.x * scale);
 		this.container.scrollTop = Math.round(rect.y * scale);
+		// 设置滚动条位置
+		// 中文：调整滚动条位置，使矩形区域位于容器可见区域。
 	}
 };
 
@@ -10166,38 +10871,62 @@ mxGraph.prototype.zoomToRect = function(rect)
  * cell - <mxCell> to be made visible.
  * center - Optional boolean flag. Default is false.
  */
+// 方法目的：平移图表以显示指定单元。
+// 中文：调整图表视图，使指定单元可见，可选择居中显示。
+// 参数说明：
+//   cell - 需要显示的 <mxCell> 对象。
+//   center - 可选布尔值，指定是否居中显示，默认为 false。
+// 交互逻辑：根据单元位置调整视图平移或滚动条，确保单元可见。
 mxGraph.prototype.scrollCellToVisible = function(cell, center)
 {
 	var x = -this.view.translate.x;
 	var y = -this.view.translate.y;
+	// 获取当前视图平移的相反值
+	// 中文：计算当前视图平移的负值，用于坐标转换。
 
 	var state = this.view.getState(cell);
+	// 获取单元的状态
+	// 中文：获取指定单元的状态信息，包括位置和尺寸。
 
 	if (state != null)
 	{
 		var bounds = new mxRectangle(x + state.x, y + state.y, state.width,
 			state.height);
+		// 创建单元的边界矩形
+		// 中文：根据单元状态和视图平移创建边界矩形。
 
 		if (center && this.container != null)
 		{
+			// 居中显示的处理
+			// 中文：如果需要居中，调整矩形以居中于容器。
 			var w = this.container.clientWidth;
 			var h = this.container.clientHeight;
+			// 获取容器宽高
+			// 中文：获取容器的有效宽度和高度。
 
 			bounds.x = bounds.getCenterX() - w / 2;
 			bounds.width = w;
 			bounds.y = bounds.getCenterY() - h / 2;
 			bounds.height = h;
+			// 调整矩形位置和大小以居中
+			// 中文：将矩形调整为容器大小并居中于容器中心。
 		}
 		
 		var tr = new mxPoint(this.view.translate.x, this.view.translate.y);
+		// 保存当前平移值
+		// 中文：记录当前视图的平移值以便比较。
 
 		if (this.scrollRectToVisible(bounds))
 		{
-			// Triggers an update via the view's event source
+			// 如果需要调整视图
+			// 中文：调用 scrollRectToVisible 调整视图以显示矩形区域。
+			// Triggers an event to be fired but does not revalidate again
 			var tr2 = new mxPoint(this.view.translate.x, this.view.translate.y);
 			this.view.translate.x = tr.x;
 			this.view.translate.y = tr.y;
 			this.view.setTranslate(tr2.x, tr2.y);
+			// 恢复并更新平移值
+			// 中文：如果视图发生变化，恢复原始平移并设置新平移值。
 		}
 	}
 };
@@ -10211,100 +10940,163 @@ mxGraph.prototype.scrollCellToVisible = function(cell, center)
  * 
  * rect - <mxRectangle> to be made visible.
  */
+// 方法目的：平移图表以显示指定矩形区域。
+// 中文：调整图表视图，使指定矩形区域可见。
+// 参数说明：
+//   rect - 需要显示的 <mxRectangle> 对象。
+// 交互逻辑：根据容器是否有滚动条，调整视图平移或滚动条位置。
+// 特殊处理：确保矩形区域不超出容器边界，必要时刷新视图。
 mxGraph.prototype.scrollRectToVisible = function(rect)
 {
 	var isChanged = false;
-	
+	// 记录视图是否发生变化
+	// 中文：初始化标志变量，记录视图是否被调整。
+
 	if (rect != null)
 	{
 		var w = this.container.offsetWidth;
 		var h = this.container.offsetHeight;
+		// 获取容器宽高
+		// 中文：获取容器的实际宽度和高度。
 
         var widthLimit = Math.min(w, rect.width);
         var heightLimit = Math.min(h, rect.height);
+		// 限制矩形宽高不超过容器
+		// 中文：确保矩形宽高不超过容器尺寸。
 
 		if (mxUtils.hasScrollbars(this.container))
 		{
+			// 有滚动条时的处理
+			// 中文：当容器有滚动条时，调整滚动条位置以显示矩形。
 			var c = this.container;
 			rect.x += this.view.translate.x;
 			rect.y += this.view.translate.y;
+			// 调整矩形坐标，考虑视图平移
+			// 中文：将矩形坐标转换为视图坐标系。
+
 			var dx = c.scrollLeft - rect.x;
 			var ddx = Math.max(dx - c.scrollLeft, 0);
+			// 计算水平滚动偏移
+			// 中文：计算矩形与当前滚动位置的水平差值。
 
 			if (dx > 0)
 			{
 				c.scrollLeft -= dx + 2;
+				// 向左滚动
+				// 中文：如果矩形在滚动区域左侧，左移滚动条。
 			}
 			else
 			{
 				dx = rect.x + widthLimit - c.scrollLeft - c.clientWidth;
+				// 计算右侧超出的偏移
+				// 中文：检查矩形是否超出容器右侧。
 
 				if (dx > 0)
 				{
 					c.scrollLeft += dx + 2;
+					// 向右滚动
+					// 中文：右移滚动条以显示矩形区域。
 				}
 			}
 
 			var dy = c.scrollTop - rect.y;
 			var ddy = Math.max(0, dy - c.scrollTop);
+			// 计算垂直滚动偏移
+			// 中文：计算矩形与当前滚动位置的垂直差值。
 
 			if (dy > 0)
 			{
 				c.scrollTop -= dy + 2;
+				// 向上滚动
+				// 中文：如果矩形在滚动区域上方，上移滚动条。
 			}
 			else
 			{
 				dy = rect.y + heightLimit - c.scrollTop - c.clientHeight;
+				// 计算底部超出的偏移
+				// 中文：检查矩形是否超出容器底部。
 
 				if (dy > 0)
 				{
 					c.scrollTop += dy + 2;
+					// 向下滚动
+					// 中文：下移滚动条以显示矩形区域。
 				}
 			}
 
 			if (!this.useScrollbarsForPanning && (ddx != 0 || ddy != 0))
 			{
+				// 如果不使用滚动条进行平移
+				// 中文：当不使用滚动条平移时，调整视图平移值。
 				this.view.setTranslate(ddx, ddy);
+				// 设置新的平移值
+				// 中文：更新视图平移以显示矩形区域。
 			}
 		}
 		else
 		{
+			// 无滚动条时的处理
+			// 中文：当容器没有滚动条时，通过调整视图平移显示矩形。
 			var x = -this.view.translate.x;
 			var y = -this.view.translate.y;
+			// 获取当前平移的相反值
+			// 中文：计算当前视图平移的负值，用于坐标转换。
 
 			var s = this.view.scale;
+			// 获取当前缩放比例
+			// 中文：获取视图的当前缩放比例。
 
 			if (rect.x + widthLimit > x + w)
 			{
+				// 矩形超出容器右侧
+				// 中文：检查矩形是否超出容器右侧边界。
 				this.view.translate.x -= (rect.x + widthLimit - w - x) / s;
 				isChanged = true;
+				// 调整水平平移
+				// 中文：左移视图以显示矩形右侧。
 			}
 
 			if (rect.y + heightLimit > y + h)
 			{
+				// 矩形超出容器底部
+				// 中文：检查矩形是否超出容器底部边界。
 				this.view.translate.y -= (rect.y + heightLimit - h - y) / s;
 				isChanged = true;
+				// 调整垂直平移
+				// 中文：上移视图以显示矩形底部。
 			}
 
 			if (rect.x < x)
 			{
+				// 矩形在容器左侧
+				// 中文：检查矩形是否在容器左侧边界之外。
 				this.view.translate.x += (x - rect.x) / s;
 				isChanged = true;
+				// 调整水平平移
+				// 中文：右移视图以显示矩形左侧。
 			}
 
 			if (rect.y  < y)
 			{
+				// 矩形在容器顶部
+				// 中文：检查矩形是否在容器顶部边界之外。
 				this.view.translate.y += (y - rect.y) / s;
 				isChanged = true;
+				// 调整垂直平移
+				// 中文：下移视图以显示矩形顶部。
 			}
 
 			if (isChanged)
 			{
+				// 视图发生变化时刷新
+				// 中文：如果视图平移被调整，刷新视图以更新显示。
 				this.view.refresh();
 				
 				// Repaints selection marker (ticket 18)
 				if (this.selectionCellsHandler != null)
 				{
+					// 刷新选中标记
+					// 中文：如果存在选中单元处理器，刷新选中标记。
 					this.selectionCellsHandler.refresh();
 				}
 			}
@@ -10312,6 +11104,8 @@ mxGraph.prototype.scrollRectToVisible = function(rect)
 	}
 
 	return isChanged;
+	// 返回视图是否发生变化
+	// 中文：返回布尔值，指示视图是否被调整。
 };
 
 /**
@@ -10326,6 +11120,11 @@ mxGraph.prototype.scrollRectToVisible = function(rect)
  * 
  * cell - <mxCell> whose geometry should be returned.
  */
+// 中文注释：
+// 获取指定单元格的几何信息。
+// 功能：调用模型的getGeometry方法返回单元格的<mxGeometry>对象。
+// 参数说明：cell - 要获取几何信息的<mxCell>单元格对象。
+// 注意事项：子类可重写此方法以实现特定于某个图的几何信息，依赖于视图的当前状态。
 mxGraph.prototype.getCellGeometry = function(cell)
 {
 	return this.model.getGeometry(cell);
@@ -10346,6 +11145,12 @@ mxGraph.prototype.getCellGeometry = function(cell)
  * 
  * cell - <mxCell> whose visible state should be returned.
  */
+// 中文注释：
+// 判断指定单元格在图中是否可见。
+// 功能：调用模型的isVisible方法返回单元格的可见状态。
+// 参数说明：cell - 要检查可见状态的<mxCell>单元格对象。
+// 注意事项：子类可重写此方法以实现特定于某个图的可见性，不影响单元格的模型状态。
+// 特殊处理：当使用动态过滤表达式控制可见性时，过滤表达式更改后需重新验证图。
 mxGraph.prototype.isCellVisible = function(cell)
 {
 	return this.model.isVisible(cell);
@@ -10366,6 +11171,12 @@ mxGraph.prototype.isCellVisible = function(cell)
  * 
  * cell - <mxCell> whose collapsed state should be returned.
  */
+// 中文注释：
+// 判断指定单元格在图中是否处于折叠状态。
+// 功能：调用模型的isCollapsed方法返回单元格的折叠状态。
+// 参数说明：cell - 要检查折叠状态的<mxCell>单元格对象。
+// 注意事项：子类可重写此方法以实现特定于某个图的折叠状态，不影响单元格的模型状态。
+// 特殊处理：当使用动态过滤表达式控制折叠状态时，过滤表达式更改后需重新验证图。
 mxGraph.prototype.isCellCollapsed = function(cell)
 {
 	return this.model.isCollapsed(cell);
@@ -10383,6 +11194,11 @@ mxGraph.prototype.isCellCollapsed = function(cell)
  * 
  * cell - <mxCell> whose connectable state should be returned.
  */
+// 中文注释：
+// 判断指定单元格在图中是否可连接。
+// 功能：调用模型的isConnectable方法返回单元格的可连接状态。
+// 参数说明：cell - 要检查可连接状态的<mxCell>单元格对象。
+// 注意事项：子类可重写此方法以实现特定于某个图的可连接状态，不影响单元格的模型状态。
 mxGraph.prototype.isCellConnectable = function(cell)
 {
 	return this.model.isConnectable(cell);
@@ -10398,6 +11214,13 @@ mxGraph.prototype.isCellConnectable = function(cell)
  * 
  * edge - <mxCellState> that represents the edge.
  */
+// 中文注释：
+// 判断边是否应计算为仅包含水平或垂直段的正交边。
+// 功能：检查边的样式是否指定为正交，或边样式是否为特定连接器类型。
+// 参数说明：edge - 表示边的<mxCellState>对象。
+// 关键变量：orthogonal - 边的样式中是否设置了正交属性。
+// 样式设置：检查STYLE_ORTHOGONAL属性或特定边样式（如SegmentConnector、ElbowConnector等）。
+// 注意事项：返回true表示边应为正交样式，仅包含水平或垂直段。
 mxGraph.prototype.isOrthogonal = function(edge)
 {
 	var orthogonal = edge.style[mxConstants.STYLE_ORTHOGONAL];
@@ -10426,6 +11249,12 @@ mxGraph.prototype.isOrthogonal = function(edge)
  * 
  * state - <mxCellState> that represents a potential loop.
  */
+// 中文注释：
+// 判断给定的单元格状态是否为自环。
+// 功能：检查边的源和目标终端是否相同。
+// 参数说明：state - 表示潜在自环的<mxCellState>对象。
+// 关键变量：src - 边的可见源终端状态；trg - 边的可见目标终端状态。
+// 注意事项：返回true表示源和目标终端相同，即为自环。
 mxGraph.prototype.isLoop = function(state)
 {
 	var src = state.getVisibleTerminalState(true);
@@ -10440,6 +11269,11 @@ mxGraph.prototype.isLoop = function(state)
  * Returns true if the given event is a clone event. This implementation
  * returns true if control is pressed.
  */
+// 中文注释：
+// 判断给定事件是否为克隆事件。
+// 功能：检查事件中是否按下了Control键。
+// 参数说明：evt - 要检查的鼠标事件对象。
+// 事件处理逻辑：当Control键被按下时，返回true，表示触发克隆操作。
 mxGraph.prototype.isCloneEvent = function(evt)
 {
 	return mxEvent.isControlDown(evt);
@@ -10452,6 +11286,12 @@ mxGraph.prototype.isCloneEvent = function(evt)
  * returns true the cell behind the selected cell will be selected. This
  * implementation returns false;
  */
+// 中文注释：
+// 判断是否为透明点击事件（点击穿透行为）。
+// 功能：实现点击选中单元格时，是否选择其后面的单元格。
+// 参数说明：evt - 要检查的鼠标事件对象。
+// 注意事项：默认实现返回false，表示不启用点击穿透。
+// 交互逻辑：子类可重写以实现特定的点击穿透行为。
 mxGraph.prototype.isTransparentClickEvent = function(evt)
 {
 	return false;
@@ -10464,6 +11304,11 @@ mxGraph.prototype.isTransparentClickEvent = function(evt)
  * returns true if the meta key (Cmd) is pressed on Macs or if control is
  * pressed on any other platform.
  */
+// 中文注释：
+// 判断给定事件是否为切换事件。
+// 功能：检查事件中是否在Mac上按下Meta键（Cmd）或在其他平台上按下Control键。
+// 参数说明：evt - 要检查的鼠标事件对象。
+// 事件处理逻辑：Mac平台检查Meta键，其他平台检查Control键，返回true表示触发切换操作。
 mxGraph.prototype.isToggleEvent = function(evt)
 {
 	return (mxClient.IS_MAC) ? mxEvent.isMetaDown(evt) : mxEvent.isControlDown(evt);
@@ -10474,6 +11319,11 @@ mxGraph.prototype.isToggleEvent = function(evt)
  * 
  * Returns true if the given mouse event should be aligned to the grid.
  */
+// 中文注释：
+// 判断鼠标事件是否应启用网格对齐。
+// 功能：检查事件中是否未按下Alt键。
+// 参数说明：evt - 要检查的鼠标事件对象。
+// 事件处理逻辑：当未按下Alt键时，返回true，表示鼠标事件应与网格对齐。
 mxGraph.prototype.isGridEnabledEvent = function(evt)
 {
 	return evt != null && !mxEvent.isAltDown(evt);
@@ -10484,6 +11334,11 @@ mxGraph.prototype.isGridEnabledEvent = function(evt)
  * 
  * Returns true if the given mouse event should be aligned to the grid.
  */
+// 中文注释：
+// 判断鼠标事件是否为约束事件（限制移动）。
+// 功能：检查事件中是否按下了Shift键。
+// 参数说明：evt - 要检查的鼠标事件对象。
+// 事件处理逻辑：当Shift键被按下时，返回true，表示触发约束移动操作。
 mxGraph.prototype.isConstrainedEvent = function(evt)
 {
 	return mxEvent.isShiftDown(evt);
@@ -10495,6 +11350,11 @@ mxGraph.prototype.isConstrainedEvent = function(evt)
  * Returns true if the given mouse event should not allow any connections to be
  * made. This implementation returns false.
  */
+// 中文注释：
+// 判断鼠标事件是否应忽略连接操作。
+// 功能：默认实现返回false，表示允许连接操作。
+// 参数说明：evt - 要检查的鼠标事件对象。
+// 注意事项：子类可重写以实现特定的连接限制逻辑。
 mxGraph.prototype.isIgnoreTerminalEvent = function(evt)
 {
 	return false;
@@ -10510,6 +11370,11 @@ mxGraph.prototype.isIgnoreTerminalEvent = function(evt)
  * Displays the given validation error in a dialog. This implementation uses
  * mxUtils.alert.
  */
+// 中文注释：
+// 显示验证错误信息。
+// 功能：通过mxUtils.alert方法在对话框中显示给定的验证错误信息。
+// 参数说明：message - 要显示的错误信息字符串。
+// 交互逻辑：使用对话框向用户展示验证错误。
 mxGraph.prototype.validationAlert = function(message)
 {
 	mxUtils.alert(message);
@@ -10527,6 +11392,14 @@ mxGraph.prototype.validationAlert = function(message)
  * source - <mxCell> that represents the source terminal.
  * target - <mxCell> that represents the target terminal.
  */
+// 中文注释：
+// 检查边的验证错误是否为空。
+// 功能：调用getEdgeValidationError方法，检查返回值为null表示边有效。
+// 参数说明：
+//   - edge - 表示要验证的边的<mxCell>对象。
+//   - source - 表示源终端的<mxCell>对象。
+//   - target - 表示目标终端的<mxCell>对象。
+// 注意事项：返回true表示边有效，无验证错误。
 mxGraph.prototype.isEdgeValid = function(edge, source, target)
 {
 	return this.getEdgeValidationError(edge, source, target) == null;
@@ -10573,6 +11446,31 @@ mxGraph.prototype.isEdgeValid = function(edge, source, target)
  * source - <mxCell> that represents the source terminal.
  * target - <mxCell> that represents the target terminal.
  */
+// 中文注释：
+// 获取边的验证错误信息。
+// 功能：验证边的连接有效性，返回错误信息字符串。
+// 参数说明：
+//   - edge - 表示要验证的边的<mxCell>对象。
+//   - source - 表示源终端的<mxCell>对象。
+//   - target - 表示目标终端的<mxCell>对象。
+// 关键变量：
+//   - allowDanglingEdges - 是否允许悬空边（无源或目标终端的边）。
+//   - allowLoops - 是否允许自环。
+//   - multigraph - 是否允许同一对节点间存在多条边。
+//   - multiplicities - 验证规则集合，用于检查边的连接限制。
+// 验证逻辑：
+//   1. 检查悬空边：如果不允许悬空边且源或目标为空，返回空字符串（无效但不显示错误）。
+//   2. 检查完全悬空边：如果边没有源和目标终端，返回null（有效）。
+//   3. 检查自环：如果不允许自环且源和目标相同，返回空字符串（无效）。
+//   4. 检查连接有效性：调用isValidConnection验证源和目标是否可连接。
+//   5. 检查多重边：如果不允许多重边，检查源和目标间是否已存在其他边。
+//   6. 检查多重性规则：遍历multiplicities，验证边的源和目标是否符合规则。
+//   7. 检查自定义验证：调用validateEdge进行额外验证。
+// 注意事项：
+//   - 返回null表示边有效。
+//   - 返回空字符串表示边无效但不显示错误信息。
+//   - 返回非空字符串表示边无效并显示错误信息。
+// 特殊处理：子类可重写此方法以添加特定的源/目标验证逻辑。
 mxGraph.prototype.getEdgeValidationError = function(edge, source, target)
 {
 	if (edge != null && !this.isAllowDanglingEdges() && (source == null || target == null))
@@ -10663,6 +11561,14 @@ mxGraph.prototype.getEdgeValidationError = function(edge, source, target)
  * source - <mxCell> that represents the source terminal.
  * target - <mxCell> that represents the target terminal.
  */
+// 中文注释：
+// 验证边的自定义错误信息。
+// 功能：提供钩子方法，子类可重写以返回特定边的验证错误信息。
+// 参数说明：
+//   - edge - 表示要验证的边的<mxCell>对象。
+//   - source - 表示源终端的<mxCell>对象。
+//   - target - 表示目标终端的<mxCell>对象。
+// 注意事项：默认实现返回null，表示无错误。子类可实现特定验证逻辑。
 mxGraph.prototype.validateEdge = function(edge, source, target)
 {
 	return null;
@@ -10684,6 +11590,27 @@ mxGraph.prototype.validateEdge = function(edge, source, target)
  * the graph root.
  * context - Object that represents the global validation state.
  */
+// 中文注释：
+// 验证整个图或指定单元格及其后代。
+// 功能：递归验证图中指定单元格或模型根节点的所有后代，验证错误通过setCellWarning附加到单元格。
+// 参数说明：
+//   - cell - 可选的<mxCell>对象，用于开始递归验证，默认为图的根节点。
+//   - context - 表示全局验证状态的对象。
+// 关键变量：
+//   - isValid - 布尔值，记录验证是否成功。
+//   - childCount - 子节点数量，用于遍历子节点。
+// 验证逻辑：
+//   1. 遍历所有子节点，递归调用validateGraph进行验证。
+//   2. 如果子节点是有效根节点，创建新的上下文对象。
+//   3. 将验证错误附加到单元格，并更新isValid状态。
+//   4. 检查折叠单元格的子节点错误，添加警告信息。
+//   5. 对边执行getEdgeValidationError验证，对节点执行getCellValidationError验证。
+//   6. 调用validateCell进行自定义验证。
+//   7. 验证完成后更新视图以显示警告图标。
+// 注意事项：
+//   - 返回null表示验证成功。
+//   - 返回字符串数组表示验证失败，包含警告信息。
+// 特殊处理：折叠单元格的子节点错误会附加特定警告信息。
 mxGraph.prototype.validateGraph = function(cell, context)
 {
 	cell = (cell != null) ? cell : this.model.getRoot();
