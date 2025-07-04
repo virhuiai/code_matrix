@@ -1708,24 +1708,29 @@ var mxEdgeStyle =
 			dirPref[i] |= (prefOrdering[i][1] & portConstraint[i]) << 8;
 			dirPref[i] |= (prefOrdering[1 - i][i] & portConstraint[i]) << 16;
 			dirPref[i] |= (prefOrdering[1 - i][1 - i] & portConstraint[i]) << 24;
+ // // 组合方向偏好，考虑端口约束，存储在 dirPref 中。
 
 			if ((dirPref[i] & 0xF) == 0)
 			{
 				dirPref[i] = dirPref[i] << 8;
+ // // 如果最低位无效，左移 8 位。
 			}
 			
 			if ((dirPref[i] & 0xF00) == 0)
 			{
 				dirPref[i] = (dirPref[i] & 0xF) | dirPref[i] >> 8;
+ // // 如果次低位无效，调整位组合。
 			}
 			
 			if ((dirPref[i] & 0xF0000) == 0)
 			{
 				dirPref[i] = (dirPref[i] & 0xFFFF)
 						| ((dirPref[i] & 0xF000000) >> 8);
+ // // 如果高位无效，进一步调整位组合。
 			}
 
 			dir[i] = dirPref[i] & 0xF;
+ // // 提取最低位作为最终方向。
 
 			if (portConstraint[i] == mxConstants.DIRECTION_MASK_WEST
 					|| portConstraint[i] == mxConstants.DIRECTION_MASK_NORTH
@@ -1733,8 +1738,10 @@ var mxEdgeStyle =
 					|| portConstraint[i] == mxConstants.DIRECTION_MASK_SOUTH)
 			{
 				dir[i] = portConstraint[i];
+ // // 如果端口约束为单一方向，直接使用该方向。
 			}
 		}
+ // // 交互逻辑：压缩和优化方向偏好列表，确保符合端口约束。
 
 		//==============================================================
 		// End of source and target direction determination
@@ -1743,26 +1750,33 @@ var mxEdgeStyle =
 				: dir[0];
 		var targetIndex = dir[1] == mxConstants.DIRECTION_MASK_EAST ? 3
 				: dir[1];
+ // // 根据方向掩码计算源和目标的方向索引，东部方向映射为 3。
 
 		sourceIndex -= quad;
 		targetIndex -= quad;
+ // // 调整方向索引，减去象限偏移量。
 
 		if (sourceIndex < 1)
 		{
 			sourceIndex += 4;
+ // // 如果源索引小于 1，循环加 4。
 		}
 		
 		if (targetIndex < 1)
 		{
 			targetIndex += 4;
+ // // 如果目标索引小于 1，循环加 4。
 		}
 
 		var routePattern = mxEdgeStyle.routePatterns[sourceIndex - 1][targetIndex - 1];
-		
+ // // 根据源和目标索引选择路由模式。
+ // // 关键变量：routePattern 定义路径点的方向和连接方式。
+
 		//console.log('routePattern', routePattern);
 
 		mxEdgeStyle.wayPoints1[0][0] = geo[0][0];
 		mxEdgeStyle.wayPoints1[0][1] = geo[0][1];
+ // // 设置第一个路径点的坐标为源节点的 x、y 坐标。
 
 		switch (dir[0])
 		{
@@ -1783,34 +1797,45 @@ var mxEdgeStyle =
 				mxEdgeStyle.wayPoints1[0][1] -= sourceBuffer;
 				break;
 		}
+ // // 根据源方向调整第一个路径点的位置，考虑缓冲区和约束。
+ // // 交互逻辑：确保起点与源节点的连接点符合方向和间距要求。
 
 		var currentIndex = 0;
+ // // 定义当前路径点索引 currentIndex，初始为 0。
 
 		// Orientation, 0 horizontal, 1 vertical
 		var lastOrientation = (dir[0] & (mxConstants.DIRECTION_MASK_EAST | mxConstants.DIRECTION_MASK_WEST)) > 0 ? 0
 				: 1;
 		var initialOrientation = lastOrientation;
 		var currentOrientation = 0;
+ // // 定义方向变量：lastOrientation 记录上一个方向，initialOrientation 记录初始方向，currentOrientation 记录当前方向（0 为水平，1 为垂直）。
+ // // 关键变量：lastOrientation 和 initialOrientation 控制路径段的方向切换。
 
 		for (var i = 0; i < routePattern.length; i++)
 		{
 			var nextDirection = routePattern[i] & 0xF;
+ // // 获取路由模式的下一个方向（最低 4 位）。
 
 			// Rotate the index of this direction by the quad
 			// to get the real direction
 			var directionIndex = nextDirection == mxConstants.DIRECTION_MASK_EAST ? 3
 					: nextDirection;
+ // // 将方向映射为索引，东部方向为 3。
 
 			directionIndex += quad;
+ // // 根据象限调整方向索引。
 
 			if (directionIndex > 4)
 			{
 				directionIndex -= 4;
+ // // 如果索引超过 4，循环减 4。
 			}
 
 			var direction = mxEdgeStyle.dirVectors[directionIndex - 1];
+ // // 获取方向向量（西、北、东、南）。
 
 			currentOrientation = (directionIndex % 2 > 0) ? 0 : 1;
+ // // 根据方向索引确定当前方向（奇数为水平，偶数为垂直）。
 			// Only update the current index if the point moved
 			// in the direction of the current segment move,
 			// otherwise the same point is moved until there is 
@@ -1818,64 +1843,77 @@ var mxEdgeStyle =
 			if (currentOrientation != lastOrientation)
 			{
 				currentIndex++;
+ // // 如果方向发生变化，增加路径点索引。
 				// Copy the previous way point into the new one
 				// We can't base the new position on index - 1
 				// because sometime elbows turn out not to exist,
 				// then we'd have to rewind.
 				mxEdgeStyle.wayPoints1[currentIndex][0] = mxEdgeStyle.wayPoints1[currentIndex - 1][0];
 				mxEdgeStyle.wayPoints1[currentIndex][1] = mxEdgeStyle.wayPoints1[currentIndex - 1][1];
+ // // 复制上一个路径点到新索引，避免因路径弯曲失效而回退。
 			}
 
 			var tar = (routePattern[i] & mxEdgeStyle.TARGET_MASK) > 0;
 			var sou = (routePattern[i] & mxEdgeStyle.SOURCE_MASK) > 0;
 			var side = (routePattern[i] & mxEdgeStyle.SIDE_MASK) >> 5;
 			side = side << quad;
+ // // 提取路由模式中的目标、源和侧面标志，并根据象限调整侧面标志。
 
 			if (side > 0xF)
 			{
 				side = side >> 4;
+ // // 如果侧面标志超过 0xF，右移 4 位。
 			}
 
 			var center = (routePattern[i] & mxEdgeStyle.CENTER_MASK) > 0;
+ // // 检查是否为中心点。
 
 			if ((sou || tar) && side < 9)
 			{
 				var limit = 0;
 				var souTar = sou ? 0 : 1;
+ // // 定义限制值 limit 和源/目标标志 souTar（0 为源，1 为目标）。
 
 				if (center && currentOrientation == 0)
 				{
 					limit = geo[souTar][0] + constraint[souTar][0] * geo[souTar][2];
+ // // 如果为中心点且为水平方向，计算 x 坐标限制。
 				}
 				else if (center)
 				{
 					limit = geo[souTar][1] + constraint[souTar][1] * geo[souTar][3];
+ // // 如果为中心点且为垂直方向，计算 y 坐标限制。
 				}
 				else
 				{
 					limit = mxEdgeStyle.limits[souTar][side];
+ // // 否则使用预定义的边界限制。
 				}
 				
 				if (currentOrientation == 0)
 				{
 					var lastX = mxEdgeStyle.wayPoints1[currentIndex][0];
 					var deltaX = (limit - lastX) * direction[0];
+ // // 计算 x 方向的移动距离。
 
 					if (deltaX > 0)
 					{
 						mxEdgeStyle.wayPoints1[currentIndex][0] += direction[0]
 								* deltaX;
+ // // 如果 x 距离有效，更新路径点的 x 坐标。
 					}
 				}
 				else
 				{
 					var lastY = mxEdgeStyle.wayPoints1[currentIndex][1];
 					var deltaY = (limit - lastY) * direction[1];
+ // // 计算 y 方向的移动距离。
 
 					if (deltaY > 0)
 					{
 						mxEdgeStyle.wayPoints1[currentIndex][1] += direction[1]
 								* deltaY;
+ // // 如果 y 距离有效，更新路径点的 y 坐标。
 					}
 				}
 			}
@@ -1887,18 +1925,23 @@ var mxEdgeStyle =
 						* Math.abs(mxEdgeStyle.vertexSeperations[directionIndex] / 2);
 				mxEdgeStyle.wayPoints1[currentIndex][1] += direction[1]
 						* Math.abs(mxEdgeStyle.vertexSeperations[directionIndex] / 2);
+ // // 如果为中心点，根据方向调整路径点到节点间距离的中间位置。
 			}
 
 			if (currentIndex > 0
 					&& mxEdgeStyle.wayPoints1[currentIndex][currentOrientation] == mxEdgeStyle.wayPoints1[currentIndex - 1][currentOrientation])
 			{
 				currentIndex--;
+ // // 如果当前路径点与上一个点在当前方向上相同，回退索引。
+ // // 特殊处理：避免生成重复路径点。
 			}
 			else
 			{
 				lastOrientation = currentOrientation;
+ // // 更新上一个方向为当前方向。
 			}
 		}
+ // // 交互逻辑：根据路由模式和方向向量生成路径点，动态调整坐标和方向。
 
 		for (var i = 0; i <= currentIndex; i++)
 		{
@@ -1914,6 +1957,7 @@ var mxEdgeStyle =
 				var targetOrientation = (dir[1] & (mxConstants.DIRECTION_MASK_EAST | mxConstants.DIRECTION_MASK_WEST)) > 0 ? 0
 						: 1;
 				var sameOrient = targetOrientation == initialOrientation ? 0 : 1;
+ // // 检查目标方向与初始方向是否相同，决定路径点数量（同向需偶数点，异向需奇数点）。
 
 				// (currentIndex + 1) % 2 is 0 for even number of points,
 				// 1 for odd
@@ -1921,13 +1965,16 @@ var mxEdgeStyle =
 				{
 					// The last point isn't required
 					break;
+ // // 如果路径点数量与方向要求不符，忽略最后一个点。
 				}
 			}
 			
 			result.push(new mxPoint(Math.round(mxEdgeStyle.wayPoints1[i][0] * state.view.scale * 10) / 10,
 									Math.round(mxEdgeStyle.wayPoints1[i][1] * state.view.scale * 10) / 10));
+ // // 将路径点缩放回视图坐标系并四舍五入，添加到结果数组。
 		}
-		
+ // // 交互逻辑：确保路径点数量与方向一致，生成最终路径点。
+
 		//console.log(result);
 
 		// Removes duplicates
@@ -1940,12 +1987,16 @@ var mxEdgeStyle =
 				result[index - 1].y != result[index].y)
 			{
 				index++;
+ // // 如果当前点与前一个点不同，保留并继续检查。
 			}
 			else
 			{
 				result.splice(index, 1);
+ // // 如果当前点与前一个点相同，移除重复点。
+ // // 特殊处理：清除重复路径点，优化路径。
 			}
 		}
+ // // 方法目的：生成正交边路径点，基于源和目标方向、路由模式和约束，确保路径平滑且无重复点。
 	},
 	
 	getRoutePattern: function(dir, quad, dx, dy)
@@ -1954,29 +2005,37 @@ var mxEdgeStyle =
 				: dir[0];
 		var targetIndex = dir[1] == mxConstants.DIRECTION_MASK_EAST ? 3
 				: dir[1];
+ // // 计算源和目标方向索引，东部方向映射为 3。
 
 		sourceIndex -= quad;
 		targetIndex -= quad;
+ // // 调整方向索引，减去象限偏移量。
 
 		if (sourceIndex < 1)
 		{
 			sourceIndex += 4;
+ // // 如果源索引小于 1，循环加 4。
 		}
 		if (targetIndex < 1)
 		{
 			targetIndex += 4;
+ // // 如果目标索引小于 1，循环加 4。
 		}
 
 		var result = routePatterns[sourceIndex - 1][targetIndex - 1];
+ // // 根据调整后的索引选择路由模式。
 
 		if (dx == 0 || dy == 0)
 		{
 			if (inlineRoutePatterns[sourceIndex - 1][targetIndex - 1] != null)
 			{
 				result = inlineRoutePatterns[sourceIndex - 1][targetIndex - 1];
+ // // 如果 dx 或 dy 为 0 且内联路由模式存在，使用内联模式。
+ // // 特殊处理：处理源和目标在同一水平或垂直线上的情况。
 			}
 		}
 
 		return result;
+ // // 方法目的：根据源和目标方向、象限及距离返回合适的路由模式。
 	}
 };

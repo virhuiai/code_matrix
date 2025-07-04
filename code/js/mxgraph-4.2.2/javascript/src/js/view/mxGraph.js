@@ -1941,8 +1941,9 @@ mxGraph.prototype.centerZoom = true;
  */
 /**
  * 中文注释：resetViewOnRootChange 变量
- * 说明：指定模型根节点变化时，是否重置视图的缩放和平移，默认值为 true。
- * 用途：确保根节点变化后视图状态一致。
+ * 说明：指定当模型中的根节点发生变化时，是否重置视图的缩放和平移，默认值为 true。
+ * 用途：确保根节点变化后，视图的状态（如缩放和平移）与新根节点保持一致。
+ * 交互逻辑：当模型根节点更改时，自动调整视图以适应新根节点。
  */
 mxGraph.prototype.resetViewOnRootChange = true;
 
@@ -1952,6 +1953,13 @@ mxGraph.prototype.resetViewOnRootChange = true;
  * Specifies if edge control points should be reset after the resize of a
  * connected cell. Default is false.
  */
+
+ /**
+ * 中文注释：resetEdgesOnResize 变量
+ * 说明：指定当连接的单元调整大小时，是否重置边的控制点，默认值未明确（代码可能省略）。
+ * 用途：控制调整单元大小时，边的控制点是否重新计算以适应新尺寸。
+ * 交互逻辑：确保边在单元调整后保持正确的连接和形状。
+ */
 mxGraph.prototype.resetEdgesOnResize = false;
 
 /**
@@ -1960,6 +1968,11 @@ mxGraph.prototype.resetEdgesOnResize = false;
  * Specifies if edge control points should be reset after the move of a
  * connected cell. Default is false.
  */
+ /**
+ * 中文注释：resetEdgesOnMove 变量
+ * 说明：指定当连接的单元移动时，是否重置边的控制点，默认值未明确（代码可能省略）。
+ * 用途：控制移动单元后，边的控制点是否重新计算以适应新位置。
+ * 交互逻辑：确保边在单元移动后保持正确的连接和形状。
 mxGraph.prototype.resetEdgesOnMove = false;
 
 /**
@@ -1968,12 +1981,24 @@ mxGraph.prototype.resetEdgesOnMove = false;
  * Specifies if edge control points should be reset after the the edge has been
  * reconnected. Default is true.
  */
+/**
+ * 中文注释：resetEdgesOnConnect 变量
+ * 说明：指定当边重新连接时，是否重置边的控制点，默认值未明确（代码可能省略）。
+ * 用途：控制边重新连接后，控制点是否重新计算以适应新的连接点。
+ * 交互逻辑：确保边在重新连接后保持正确的形状和连接。
+ */
 mxGraph.prototype.resetEdgesOnConnect = true;
 
 /**
  * Variable: allowLoops
  * 
  * Specifies if loops (aka self-references) are allowed. Default is false.
+ */
+ /**
+ * 中文注释：allowLoops 变量
+ * 说明：指定是否允许循环边（即自引用边），默认值未明确（代码可能省略）。
+ * 用途：控制图表中是否允许单元连接到自身。
+ * 注意事项：启用循环边可能影响图表的逻辑和验证规则。
  */
 mxGraph.prototype.allowLoops = false;
 	
@@ -1983,6 +2008,11 @@ mxGraph.prototype.allowLoops = false;
  * <mxEdgeStyle> to be used for loops. This is a fallback for loops if the
  * <mxConstants.STYLE_LOOP> is undefined. Default is <mxEdgeStyle.Loop>.
  */
+ /**
+ * 中文注释：defaultLoopStyle 变量
+ * 说明：指定循环边使用的默认样式，默认值未明确（代码可能省略）。
+ * 样式设置：定义自引用边的视觉样式（如形状、颜色等）。
+ */
 mxGraph.prototype.defaultLoopStyle = mxEdgeStyle.Loop;
 
 /**
@@ -1990,6 +2020,12 @@ mxGraph.prototype.defaultLoopStyle = mxEdgeStyle.Loop;
  * 
  * Specifies if multiple edges in the same direction between the same pair of
  * vertices are allowed. Default is true.
+ */
+ /**
+ * 中文注释：multigraph 变量
+ * 说明：指定是否允许同一对顶点之间在同一方向上的多条边，默认值未明确（代码可能省略）。
+ * 用途：控制图表是否支持多重图（multiple edges）。
+ * 注意事项：启用多重边可能需要额外的连接验证逻辑。
  */
 mxGraph.prototype.multigraph = true;
 
@@ -1999,6 +2035,12 @@ mxGraph.prototype.multigraph = true;
  * Specifies if edges are connectable. Default is false. This overrides the
  * connectable field in edges.
  */
+/**
+ * 中文注释：connectableEdges 变量
+ * 说明：指定边是否可连接，默认值为 false。
+ * 用途：控制边是否可以作为连接的目标，覆盖边的 connectable 属性。
+ * 交互逻辑：影响边的连接行为。
+ */
 mxGraph.prototype.connectableEdges = false;
 
 /**
@@ -2006,6 +2048,12 @@ mxGraph.prototype.connectableEdges = false;
  * 
  * Specifies if edges with disconnected terminals are allowed in the graph.
  * Default is true.
+ */
+ /**
+ * 中文注释：allowDanglingEdges 变量
+ * 说明：指定是否允许图表中存在未连接终端的边（悬空边），默认值未明确（代码可能省略）。
+ * 用途：控制图表是否允许未连接的边。
+ * 注意事项：禁用悬空边可通过 setAllowDanglingEdges(false) 实现，需配合 cloneInvalidEdges 使用。
  */
 mxGraph.prototype.allowDanglingEdges = true;
 
@@ -2015,6 +2063,12 @@ mxGraph.prototype.allowDanglingEdges = true;
  * Specifies if edges that are cloned should be validated and only inserted
  * if they are valid. Default is true.
  */
+ /**
+ * 中文注释：cloneInvalidEdges 变量
+ * 说明：指定克隆的边如果没有有效终端是否保留，默认值为 false。
+ * 用途：控制克隆操作中无效边的处理（保留或移除）。
+ * 注意事项：与 allowDanglingEdges 配合使用，影响克隆、粘贴或拖放操作。
+ */
 mxGraph.prototype.cloneInvalidEdges = false;
 
 /**
@@ -2022,6 +2076,11 @@ mxGraph.prototype.cloneInvalidEdges = false;
  * 
  * Specifies if edges should be disconnected from their terminals when they
  * are moved. Default is true.
+ */
+/**
+ * 中文注释：disconnectOnMove 变量
+ * 说明：指定移动边时是否断开与终端的连接，默认值为 true。
+ * 交互逻辑：控制移动边时是否自动断开连接。
  */
 mxGraph.prototype.disconnectOnMove = true;
 
@@ -2031,12 +2090,23 @@ mxGraph.prototype.disconnectOnMove = true;
  * Specifies if labels should be visible. This is used in <getLabel>. Default
  * is true.
  */
+/**
+ * 中文注释：labelsVisible 变量
+ * 说明：指定标签是否可见，影响 getLabel 方法，默认值为 true。
+ * 用途：控制单元标签的显示状态。
+ */
 mxGraph.prototype.labelsVisible = true;
 	
 /**
  * Variable: htmlLabels
  * 
  * Specifies the return value for <isHtmlLabel>. Default is false.
+ */
+/**
+ * 中文注释：htmlLabels 变量
+ * 说明：指定 isHtmlLabel 方法的返回值，默认值为 false。
+ * 用途：控制是否将所有标签渲染为 HTML 格式。
+ * 注意事项：启用 HTML 标签可能存在安全风险，需参考文档中的安全说明。
  */
 mxGraph.prototype.htmlLabels = false;
 
@@ -2046,12 +2116,23 @@ mxGraph.prototype.htmlLabels = false;
  * Specifies if swimlanes should be selectable via the content if the
  * mouse is released. Default is true.
  */
+/**
+ * 中文注释：swimlaneSelectionEnabled 变量
+ * 说明：指定当鼠标点击泳道（但未点击其子单元）时，是否选择泳道，默认值为 true。
+ * 用途：控制泳道的选择行为。
+ * 交互逻辑：启用后，点击泳道空白区域会选择泳道本身，而非其子单元。
+ */
 mxGraph.prototype.swimlaneSelectionEnabled = true;
 
 /**
  * Variable: swimlaneNesting
  * 
  * Specifies if nesting of swimlanes is allowed. Default is true.
+ */
+ /**
+ * 中文注释：swimlaneNesting 变量
+ * 说明：指定是否允许泳道（swimlane）嵌套，默认值为 true。
+ * 用途：控制泳道是否可以包含其他泳道。
  */
 mxGraph.prototype.swimlaneNesting = true;
 	
@@ -2061,6 +2142,13 @@ mxGraph.prototype.swimlaneNesting = true;
  * The attribute used to find the color for the indicator if the indicator
  * color is set to 'swimlane'. Default is <mxConstants.STYLE_FILLCOLOR>.
  */
+// 中文注释：
+// 变量：swimlaneIndicatorColorAttribute
+// 用途：定义当指示器颜色设置为'swimlane'时，用于查找指示器颜色的属性。
+// 默认值：mxConstants.STYLE_FILLCOLOR（填充颜色）。
+// 说明：此变量指定了泳道图中彼此样式（fill color）来确定指示器的颜色。
+// 注意事项：仅在指示器颜色明确设置为'swimlane'时使用此属性。
+// 未修改代码逻辑，仅提供配置参数的解释。
 mxGraph.prototype.swimlaneIndicatorColorAttribute = mxConstants.STYLE_FILLCOLOR;
 
 /**
@@ -2068,13 +2156,40 @@ mxGraph.prototype.swimlaneIndicatorColorAttribute = mxConstants.STYLE_FILLCOLOR;
  * 
  * Holds the list of image bundles.
  */
+/**
+ * 中文注释：图像资源束列表
+ * 功能说明：存储图表中使用的图像资源束（image bundles）的数组。
+ * 变量用途：管理图表中加载的图像资源，用于单元格样式或背景图片。
+ * 交互逻辑：支持动态加载和引用图像资源，影响单元格的视觉呈现。
+ */
 mxGraph.prototype.imageBundles = null;
+
+/**
+ * Variable: imageBundlesPath
+ *
+ * Base path for loading images in bundles.
+ */
+/**
+ * 中文注释：图像资源束的加载基础路径
+ * 功能说明：指定图像资源束的加载基础路径，用于定位图像文件。
+ * 变量用途：提供图像资源加载的根目录，影响图像资源的访问。
+ * 注意事项：需确保路径正确，否则可能导致图像加载失败。
+ */
+mxGraph.prototype.imageBundlesPath = null;
 
 /**
  * Variable: minFitScale
  * 
  * Specifies the minimum scale to be applied in <fit>. Default is 0.1. Set this
  * to null to allow any value.
+ */
+/**
+ * 中文注释：最小适配缩放比例
+ * 功能说明：指定 fit 方法中允许的最小缩放比例。
+ * 默认值：0.1，限制缩放比例不得低于此值。
+ * 变量用途：控制图表自动适配时的最小缩放，确保内容不过分缩小。
+ * 交互逻辑：影响 fit 方法的缩放行为，保持视图的可读性。
+ * 注意事项：若设为 null，则允许任意缩放比例，可能导致内容过小。
  */
 mxGraph.prototype.minFitScale = 0.1;
 
@@ -2084,6 +2199,14 @@ mxGraph.prototype.minFitScale = 0.1;
  * Specifies the maximum scale to be applied in <fit>. Default is 8. Set this
  * to null to allow any value.
  */
+/**
+ * 中文注释：最大适配缩放比例
+ * 功能说明：指定 fit 方法中允许的最大缩放比例。
+ * 默认值：8，限制缩放比例不得高于此值。
+ * 变量用途：控制图表自动适配时的最大缩放，防止内容过分放大。
+ * 交互逻辑：与 minFitScale 配合，确保缩放范围合理。
+ * 注意事项：若设为 null，则允许任意缩放比例，可能影响显示效果。
+ */
 mxGraph.prototype.maxFitScale = 8;
 
 /**
@@ -2091,12 +2214,24 @@ mxGraph.prototype.maxFitScale = 8;
  * 
  * Current horizontal panning value. Default is 0.
  */
+ /**
+ * 中文注释：当前水平平移值
+ * 功能说明：存储图表的当前水平平移距离（以像素为单位）。
+ * 变量用途：记录视图在 X 轴上的平移偏移，用于调整图表显示位置。
+ * 交互逻辑：影响图表的平移操作，如拖动画布时的位置更新。
+ */
 mxGraph.prototype.panDx = 0;
 
 /**
  * Variable: panDy
  * 
  * Current vertical panning value. Default is 0.
+ */
+ /**
+ * 中文注释：当前垂直平移值
+ * 功能说明：存储图表的当前垂直平移距离（以像素为单位）。
+ * 变量用途：记录视图在 Y 轴上的平移偏移，用于调整图表显示位置。
+ * 交互逻辑：与 panDx 配合，支持画布的平移交互。
  */
 mxGraph.prototype.panDy = 0;
 
@@ -2106,6 +2241,13 @@ mxGraph.prototype.panDy = 0;
  * Specifies the <mxImage> to indicate a collapsed state.
  * Default value is mxClient.imageBasePath + '/collapsed.gif'
  */
+// 中文注释：
+// 变量：collapsedImage
+// 用途：指定用于表示折叠状态的图像（mxImage 对象）。
+// 默认值：mxClient.imageBasePath + '/collapsed.gif'，图像尺寸为 9x9 像素。
+// 说明：此变量定义了在图形中显示折叠状态时使用的图标。
+// 重要配置参数：图像路径基于 mxClient.imageBasePath，图标大小固定为 9x9。
+// 注意事项：确保 mxClient.imageBasePath 已正确配置以加载图像。
 mxGraph.prototype.collapsedImage = new mxImage(mxClient.imageBasePath + '/collapsed.gif', 9, 9);
 
 /**
@@ -2114,6 +2256,13 @@ mxGraph.prototype.collapsedImage = new mxImage(mxClient.imageBasePath + '/collap
  * Specifies the <mxImage> to indicate a expanded state.
  * Default value is mxClient.imageBasePath + '/expanded.gif'
  */
+// 中文注释：
+// 变量：expandedImage
+// 用途：指定用于表示展开状态的图像（mxImage 对象）。
+// 默认值：mxClient.imageBasePath + '/expanded.gif'，图像尺寸为 9x9 像素。
+// 说明：此变量定义了在图形中显示展开状态时使用的图标。
+// 重要配置参数：图像路径基于 mxClient.imageBasePath，图标大小固定为 9x9。
+// 注意事项：确保 mxClient.imageBasePath 已正确配置以加载图像。
 mxGraph.prototype.expandedImage = new mxImage(mxClient.imageBasePath + '/expanded.gif', 9, 9);
 
 /**
@@ -2124,6 +2273,13 @@ mxGraph.prototype.expandedImage = new mxImage(mxClient.imageBasePath + '/expande
  * '/warning'.  The extension for the image depends on the platform. It is
  * '.png' on the Mac and '.gif' on all other platforms.
  */
+// 中文注释：
+// 变量：warningImage
+// 用途：指定用于显示警告覆盖层的图像（mxImage 对象）。
+// 默认值：mxClient.imageBasePath + '/warning'，Mac 平台为 .png，其他平台为 .gif，图像尺寸为 16x16 像素。
+// 说明：此变量定义了用于警告覆盖层的图标，调用 setCellWarning 方法时使用。
+// 重要配置参数：图像扩展名根据平台动态选择（Mac 为 .png，其他为 .gif）。
+// 注意事项：需确保 mxClient.imageBasePath 正确指向图像资源路径。
 mxGraph.prototype.warningImage = new mxImage(mxClient.imageBasePath + '/warning'+
 	((mxClient.IS_MAC) ? '.png' : '.gif'), 16, 16);
 
@@ -2135,6 +2291,13 @@ mxGraph.prototype.warningImage = new mxImage(mxClient.imageBasePath + '/warning'
  * for this key does not exist then the value is used as the error message.
  * Default is 'alreadyConnected'.
  */
+// 中文注释：
+// 变量：alreadyConnectedResource
+// 用途：指定在非多重图中，当两个顶点已连接时显示的错误消息的资源键。
+// 默认值：'alreadyConnected'（如果资源键不存在，则直接使用该值作为错误消息）。
+// 说明：用于提示用户尝试重复连接时的错误信息。
+// 重要配置参数：依赖 mxClient.language，若语言设置为 'none'，则返回空字符串。
+// 注意事项：确保资源文件包含 'alreadyConnected' 键以支持多语言。
 mxGraph.prototype.alreadyConnectedResource = (mxClient.language != 'none') ? 'alreadyConnected' : '';
 
 /**
@@ -2145,6 +2308,13 @@ mxGraph.prototype.alreadyConnectedResource = (mxClient.language != 'none') ? 'al
  * key does not exist then the value is used as the warning message.
  * Default is 'containsValidationErrors'.
  */
+// 中文注释：
+// 变量：containsValidationErrorsResource
+// 用途：指定当折叠单元格包含验证错误时显示的警告消息的资源键。
+// 默认值：'containsValidationErrors'（如果资源键不存在，则直接使用该值作为警告消息）。
+// 说明：用于提示用户折叠单元格中存在验证错误。
+// 重要配置参数：依赖 mxClient.language，若语言设置为 'none'，则返回空字符串。
+// 注意事项：确保资源文件包含 'containsValidationErrors' 键以支持多语言。
 mxGraph.prototype.containsValidationErrorsResource = (mxClient.language != 'none') ? 'containsValidationErrors' : '';
 
 /**
@@ -2154,6 +2324,13 @@ mxGraph.prototype.containsValidationErrorsResource = (mxClient.language != 'none
  * If the resource for this key does not exist then the value is used as
  * the tooltip. Default is 'collapse-expand'.
  */
+// 中文注释：
+// 变量：collapseExpandResource
+// 用途：指定折叠/展开图标上的工具提示的资源键。
+// 默认值：'collapse-expand'（如果资源键不存在，则直接使用该值作为工具提示）。
+// 说明：用于在用户悬停于折叠/展开图标时显示提示信息。
+// 重要配置参数：依赖 mxClient.language，若语言设置为 'none'，则返回空字符串。
+// 注意事项：确保资源文件包含 'collapse-expand' 键以支持多语言。
 mxGraph.prototype.collapseExpandResource = (mxClient.language != 'none') ? 'collapse-expand' : '';
 
 /**
@@ -2165,20 +2342,45 @@ mxGraph.prototype.collapseExpandResource = (mxClient.language != 'none') ? 'coll
  * 
  * container - DOM node that will contain the graph display.
  */
+// 中文注释：
+// 函数：init
+// 用途：初始化图形容器并创建相关数据结构。
+// 参数：
+//   - container: DOM 节点，用于包含图形显示。
+// 主要功能：
+//   1. 保存容器引用。
+//   2. 初始化单元格编辑器。
+//   3. 初始化图形视图。
+//   4. 更新容器大小以适应当前图形。
+//   5. 添加事件监听器处理鼠标离开容器时隐藏工具提示。
+//   6. 在 IE 浏览器中添加卸载事件以销毁图形。
+//   7. 在 IE8 标准模式下添加占位组以解决形状显示问题。
+// 事件处理逻辑：
+//   - 监听 'mouseleave' 事件，隐藏工具提示。
+//   - 在 IE 中监听 'unload' 事件，销毁图形以释放内存。
+//   - 监听 'selectstart' 事件，禁用文本选择的 shift+click 行为。
+// 特殊处理注意事项：
+//   - 在 IE8 标准模式下，添加 VML 组元素以解决形状显示问题。
+// 交互逻辑：鼠标离开容器时隐藏工具提示；禁用非编辑状态下的文本选择。
+// 未修改代码逻辑，仅提供初始化功能的解释。
 mxGraph.prototype.init = function(container)
 {
 	this.container = container;
 	
 	// Initializes the in-place editor
-	this.cellEditor = this.createCellEditor();	
+    // 中文注释：初始化原地编辑器
+	this.cellEditor = this.createCellEditor();
 
 	// Initializes the container using the view
+    // 中文注释：使用视图初始化容器
 	this.view.init();
 	
 	// Updates the size of the container for the current graph
+    // 中文注释：更新容器大小以适应当前图形
 	this.sizeDidChange();
 	
 	// Hides tooltips and resets tooltip timer if mouse leaves container
+    // 中文注释：当鼠标离开容器时，隐藏工具提示并重置工具提示计时器
 	mxEvent.addListener(container, 'mouseleave', mxUtils.bind(this, function(evt)
 	{
 		if (this.tooltipHandler != null && this.tooltipHandler.div != null &&
@@ -2189,6 +2391,7 @@ mxGraph.prototype.init = function(container)
 	}));
 
 	// Automatic deallocation of memory
+    // 中文注释：自动释放内存
 	if (mxClient.IS_IE)
 	{
 		mxEvent.addListener(window, 'unload', mxUtils.bind(this, function()
@@ -2197,6 +2400,7 @@ mxGraph.prototype.init = function(container)
 		}));
 		
 		// Disable shift-click for text
+        // 中文注释：禁用文本的 shift+click 选择
 		mxEvent.addListener(container, 'selectstart',
 			mxUtils.bind(this, function(evt)
 			{
@@ -2207,6 +2411,7 @@ mxGraph.prototype.init = function(container)
 	
 	// Workaround for missing last shape and connect preview in IE8 standards
 	// mode if no initial graph displayed or no label for shape defined
+    // 中文注释：在 IE8 标准模式下，如果未显示初始图形或未定义形状标签，添加占位组以解决显示问题
 	if (document.documentMode == 8)
 	{
 		container.insertAdjacentHTML('beforeend', '<' + mxClient.VML_PREFIX + ':group' +
@@ -2220,6 +2425,21 @@ mxGraph.prototype.init = function(container)
  * Creates the tooltip-, panning-, connection- and graph-handler (in this
  * order). This is called in the constructor before <init> is called.
  */
+// 中文注释：
+// 函数：createHandlers
+// 用途：在构造函数中创建工具提示、平移、连接和图形处理器。
+// 主要功能：按顺序创建以下处理器：
+//   1. 工具提示处理器（tooltipHandler）。
+//   2. 选择单元格处理器（selectionCellsHandler）。
+//   3. 连接处理器（connectionHandler）。
+//   4. 图形处理器（graphHandler）。
+//   5. 平移处理器（panningHandler）。
+//   6. 弹出菜单处理器（popupMenuHandler）。
+// 重要配置参数：
+//   - 工具提示和连接处理器默认禁用。
+//   - 平移处理器的平移功能默认禁用。
+// 交互逻辑：初始化交互相关的处理器以支持用户操作（如鼠标悬停、拖动、连接等）。
+// 未修改代码逻辑，仅提供处理器创建的解释。
 mxGraph.prototype.createHandlers = function()
 {
 	this.tooltipHandler = this.createTooltipHandler();
@@ -2238,6 +2458,12 @@ mxGraph.prototype.createHandlers = function()
  * 
  * Creates and returns a new <mxTooltipHandler> to be used in this graph.
  */
+// 中文注释：
+// 函数：createTooltipHandler
+// 用途：创建并返回一个新的工具提示处理器（mxTooltipHandler）。
+// 说明：该处理器用于管理图形中的工具提示显示。
+// 交互逻辑：处理鼠标悬停时显示的工具提示信息。
+// 未修改代码逻辑，仅提供处理器创建的解释。
 mxGraph.prototype.createTooltipHandler = function()
 {
 	return new mxTooltipHandler(this);
@@ -2248,6 +2474,12 @@ mxGraph.prototype.createTooltipHandler = function()
  * 
  * Creates and returns a new <mxTooltipHandler> to be used in this graph.
  */
+// 中文注释：
+// 函数：createSelectionCellsHandler
+// 用途：创建并返回一个新的选择单元格处理器（mxSelectionCellsHandler）。
+// 说明：该处理器用于管理图形中单元格的选择操作。
+// 交互逻辑：处理用户对单元格的选择和相关交互。
+// 未修改代码逻辑，仅提供处理器创建的解释。
 mxGraph.prototype.createSelectionCellsHandler = function()
 {
 	return new mxSelectionCellsHandler(this);
@@ -2258,6 +2490,12 @@ mxGraph.prototype.createSelectionCellsHandler = function()
  * 
  * Creates and returns a new <mxConnectionHandler> to be used in this graph.
  */
+// 中文注释：
+// 函数：createConnectionHandler
+// 用途：创建并返回一个新的连接处理器（mxConnectionHandler）。
+// 说明：该处理器用于管理图形中单元格之间的连接操作。
+// 交互逻辑：处理用户创建或修改连接的交互行为。
+// 未修改代码逻辑，仅提供处理器创建的解释。
 mxGraph.prototype.createConnectionHandler = function()
 {
 	return new mxConnectionHandler(this);
@@ -2268,6 +2506,12 @@ mxGraph.prototype.createConnectionHandler = function()
  * 
  * Creates and returns a new <mxGraphHandler> to be used in this graph.
  */
+// 中文注释：
+// 函数：createGraphHandler
+// 用途：创建并返回一个新的图形处理器（mxGraphHandler）。
+// 说明：该处理器用于管理图形的整体交互行为。
+// 交互逻辑：处理图形级别的用户交互，如拖动、缩放等。
+// 未修改代码逻辑，仅提供处理器创建的解释。
 mxGraph.prototype.createGraphHandler = function()
 {
 	return new mxGraphHandler(this);
@@ -2278,6 +2522,12 @@ mxGraph.prototype.createGraphHandler = function()
  * 
  * Creates and returns a new <mxPanningHandler> to be used in this graph.
  */
+// 中文注释：
+// 函数：createPanningHandler
+// 用途：创建并返回一个新的平移处理器（mxPanningHandler）。
+// 说明：该处理器用于管理图形的平移操作。
+// 交互逻辑：处理用户拖动图形以平移视图的交互行为。
+// 未修改代码逻辑，仅提供处理器创建的解释。
 mxGraph.prototype.createPanningHandler = function()
 {
 	return new mxPanningHandler(this);
@@ -2288,6 +2538,12 @@ mxGraph.prototype.createPanningHandler = function()
  * 
  * Creates and returns a new <mxPopupMenuHandler> to be used in this graph.
  */
+// 中文注释：
+// 函数：createPopupMenuHandler
+// 用途：创建并返回一个新的弹出菜单处理器（mxPopupMenuHandler）。
+// 说明：该处理器用于管理图形的上下文菜单。
+// 交互逻辑：处理用户右键点击时显示的弹出菜单。
+// 未修改代码逻辑，仅提供处理器创建的解释。
 mxGraph.prototype.createPopupMenuHandler = function()
 {
 	return new mxPopupMenuHandler(this);
@@ -2298,6 +2554,12 @@ mxGraph.prototype.createPopupMenuHandler = function()
  * 
  * Creates a new <mxGraphSelectionModel> to be used in this graph.
  */
+// 中文注释：
+// 函数：createSelectionModel
+// 用途：创建并返回一个新的选择模型（mxGraphSelectionModel）。
+// 说明：该模型用于管理图形的选择状态。
+// 交互逻辑：跟踪和管理用户选择的单元格。
+// 未修改代码逻辑，仅提供模型创建的解释。
 mxGraph.prototype.createSelectionModel = function()
 {
 	return new mxGraphSelectionModel(this);
@@ -2308,6 +2570,12 @@ mxGraph.prototype.createSelectionModel = function()
  * 
  * Creates a new <mxGraphSelectionModel> to be used in this graph.
  */
+// 中文注释：
+// 函数：createStylesheet
+// 用途：创建并返回一个新的样式表（mxStylesheet）。
+// 说明：该样式表用于定义图形的样式规则。
+// 样式设置说明：用于配置单元格的视觉样式，如颜色、字体等。
+// 未修改代码逻辑，仅提供样式表创建的解释。
 mxGraph.prototype.createStylesheet = function()
 {
 	return new mxStylesheet();
@@ -2318,6 +2586,12 @@ mxGraph.prototype.createStylesheet = function()
  * 
  * Creates a new <mxGraphView> to be used in this graph.
  */
+// 中文注释：
+// 函数：createGraphView
+// 用途：创建并返回一个新的图形视图（mxGraphView）。
+// 说明：该视图用于管理图形的显示和渲染。
+// 交互逻辑：提供图形内容的视觉表示，支持缩放、平移等操作。
+// 未修改代码逻辑，仅提供视图创建的解释。
 mxGraph.prototype.createGraphView = function()
 {
 	return new mxGraphView(this);
@@ -2328,6 +2602,12 @@ mxGraph.prototype.createGraphView = function()
  * 
  * Creates a new <mxCellRenderer> to be used in this graph.
  */
+// 中文注释：
+// 函数：createCellRenderer
+// 用途：创建并返回一个新的单元格渲染器（mxCellRenderer）。
+// 说明：该渲染器负责绘制图形的单元格。
+// 样式设置说明：根据样式表和单元格状态渲染单元格的视觉效果。
+// 未修改代码逻辑，仅提供渲染器创建的解释。
 mxGraph.prototype.createCellRenderer = function()
 {
 	return new mxCellRenderer();
@@ -2338,6 +2618,12 @@ mxGraph.prototype.createCellRenderer = function()
  * 
  * Creates a new <mxCellEditor> to be used in this graph.
  */
+// 中文注释：
+// 函数：createCellEditor
+// 用途：创建并返回一个新的单元格编辑器（mxCellEditor）。
+// 说明：该编辑器用于支持图形的原地编辑功能。
+// 交互逻辑：允许用户直接在图形中编辑单元格内容。
+// 未修改代码逻辑，仅提供编辑器创建的解释。
 mxGraph.prototype.createCellEditor = function()
 {
 	return new mxCellEditor(this);
@@ -2348,6 +2634,11 @@ mxGraph.prototype.createCellEditor = function()
  * 
  * Returns the <mxGraphModel> that contains the cells.
  */
+// 中文注释：
+// 函数：getModel
+// 用途：返回包含单元格的图形模型（mxGraphModel）。
+// 说明：该模型存储图形的单元格数据结构。
+// 未修改代码逻辑，仅提供模型获取的解释。
 mxGraph.prototype.getModel = function()
 {
 	return this.model;
@@ -2358,6 +2649,11 @@ mxGraph.prototype.getModel = function()
  * 
  * Returns the <mxGraphView> that contains the <mxCellStates>.
  */
+// 中文注释：
+// 函数：getView
+// 用途：返回包含单元格状态的图形视图（mxGraphView）。
+// 说明：该视图管理单元格的显示状态。
+// 未修改代码逻辑，仅提供视图获取的解释。
 mxGraph.prototype.getView = function()
 {
 	return this.view;
@@ -2368,6 +2664,12 @@ mxGraph.prototype.getView = function()
  * 
  * Returns the <mxStylesheet> that defines the style.
  */
+// 中文注释：
+// 函数：getStylesheet
+// 用途：返回定义样式的样式表（mxStylesheet）。
+// 说明：该样式表包含图形的视觉样式规则。
+// 样式设置说明：用于获取当前图形的样式配置。
+// 未修改代码逻辑，仅提供样式表获取的解释。
 mxGraph.prototype.getStylesheet = function()
 {
 	return this.stylesheet;
@@ -2378,6 +2680,14 @@ mxGraph.prototype.getStylesheet = function()
  * 
  * Sets the <mxStylesheet> that defines the style.
  */
+// 中文注释：
+// 函数：setStylesheet
+// 用途：设置定义样式的样式表（mxStylesheet）。
+// 参数：
+//   - stylesheet: 要设置的样式表对象。
+// 说明：更新图形的样式表以应用新的样式规则。
+// 样式设置说明：用于动态更改图形的视觉样式。
+// 未修改代码逻辑，仅提供样式表设置的解释。
 mxGraph.prototype.setStylesheet = function(stylesheet)
 {
 	this.stylesheet = stylesheet;
@@ -2388,6 +2698,11 @@ mxGraph.prototype.setStylesheet = function(stylesheet)
  * 
  * Returns the <mxGraphSelectionModel> that contains the selection.
  */
+// 中文注释：
+// 函数：getSelectionModel
+// 用途：返回包含选择状态的选择模型（mxGraphSelectionModel）。
+// 说明：该模型管理用户当前选择的单元格。
+// 未修改代码逻辑，仅提供选择模型获取的解释。
 mxGraph.prototype.getSelectionModel = function()
 {
 	return this.selectionModel;
@@ -2398,6 +2713,14 @@ mxGraph.prototype.getSelectionModel = function()
  * 
  * Sets the <mxSelectionModel> that contains the selection.
  */
+// 中文注释：
+// 函数：setSelectionModel
+// 用途：设置包含选择状态的选择模型（mxSelectionModel）。
+// 参数：
+//   - selectionModel: 要设置的选择模型对象。
+// 说明：更新图形的选择模型以管理新的选择状态。
+// 交互逻辑：支持动态更改选择行为。
+// 未修改代码逻辑，仅提供选择模型设置的解释。
 mxGraph.prototype.setSelectionModel = function(selectionModel)
 {
 	this.selectionModel = selectionModel;
@@ -2414,6 +2737,22 @@ mxGraph.prototype.setSelectionModel = function(selectionModel)
  * change should be ignored.
  * 
  */
+// 中文注释：
+// 函数：getSelectionCellsForChanges
+// 用途：根据给定的变化数组返回需要选择的单元格。
+// 参数：
+//   - changes: 包含各个变化的数组。
+//   - ignoreFn: 可选函数，接收一个变化对象并返回 true 以忽略该变化。
+// 主要功能：
+//   1. 遍历变化数组，检查每个变化是否需要处理。
+//   2. 收集受影响的单元格（边或顶点），忽略无效或被忽略的单元格。
+//   3. 递归处理子单元格以确保完整性。
+// 说明：用于确定哪些单元格需要更新选择状态。
+// 交互逻辑：根据模型变化动态更新选择单元格。
+// 特殊处理注意事项：
+//   - 忽略 mxRootChange 类型的变化。
+//   - 使用字典（mxDictionary）避免重复添加单元格。
+// 未修改代码逻辑，仅提供选择单元格处理的解释。
 mxGraph.prototype.getSelectionCellsForChanges = function(changes, ignoreFn)
 {
 	var dict = new mxDictionary();
@@ -2479,6 +2818,18 @@ mxGraph.prototype.getSelectionCellsForChanges = function(changes, ignoreFn)
  * 
  * changes - Array that contains the individual changes.
  */
+// 中文注释：
+// 函数：graphModelChanged
+// 用途：当图形模型发生变化时调用，处理变化并更新视图。
+// 参数：
+//   - changes: 包含各个变化的数组。
+// 主要功能：
+//   1. 遍历变化数组，调用 processChange 处理每个变化。
+//   2. 更新选择状态。
+//   3. 验证视图并调整容器大小。
+// 说明：确保图形视图与模型变化保持同步。
+// 交互逻辑：根据模型变化动态更新图形显示。
+// 未修改代码逻辑，仅提供模型变化处理的解释。
 mxGraph.prototype.graphModelChanged = function(changes)
 {
 	for (var i = 0; i < changes.length; i++)
@@ -2496,6 +2847,18 @@ mxGraph.prototype.graphModelChanged = function(changes)
  * 
  * Removes selection cells that are not in the model from the selection.
  */
+// 中文注释：
+// 函数：updateSelection
+// 用途：从选择中移除不再存在于模型中的单元格。
+// 主要功能：
+//   1. 获取当前选择的单元格。
+//   2. 检查每个单元格是否在模型中或可见。
+//   3. 移除无效或不可见的单元格。
+// 说明：确保选择状态与模型一致。
+// 交互逻辑：动态更新用户选择以反映模型变化。
+// 特殊处理注意事项：
+//   - 检查单元格的父节点是否折叠或不可见。
+// 未修改代码逻辑，仅提供选择更新的解释。
 mxGraph.prototype.updateSelection = function()
 {
 	var cells = this.getSelectionCells();
@@ -2538,10 +2901,29 @@ mxGraph.prototype.updateSelection = function()
  * 
  * change - Object that represents the change on the model.
  */
+// 中文注释：
+// 函数：processChange
+// 用途：处理给定的模型变化并使视图中的缓存数据失效。
+// 参数：
+//   - change: 表示模型变化的对象。
+// 主要功能：
+//   1. 处理根节点变化（mxRootChange）：清除选择、设置默认父节点、移除旧根节点状态。
+//   2. 处理子节点变化（mxChildChange）：使新旧父节点和子节点的状态失效。
+//   3. 处理端点或几何变化（mxTerminalChange, mxGeometryChange）：仅使受影响的单元格失效。
+//   4. 处理值变化（mxValueChange）：使单元格状态失效。
+//   5. 处理样式变化（mxStyleChange）：使单元格及其样式失效。
+//   6. 默认情况下移除单元格状态。
+// 事件处理逻辑：
+//   - 如果根节点变化，触发 ROOT 事件。
+// 特殊处理注意事项：
+//   - 仅在必要时使缓存失效以优化性能。
+//   - 处理当前根节点被移除的特殊情况。
+// 未修改代码逻辑，仅提供变化处理的解释。
 mxGraph.prototype.processChange = function(change)
 {
 	// Resets the view settings, removes all cells and clears
 	// the selection if the root changes.
+    // 中文注释：如果根节点变化，重置视图设置，移除所有单元格并清除选择。
 	if (change instanceof mxRootChange)
 	{
 		this.clearSelection();
@@ -2561,6 +2943,7 @@ mxGraph.prototype.processChange = function(change)
 	// Adds or removes a child to the view by online invaliding
 	// the minimal required portions of the cache, namely, the
 	// old and new parent and the child.
+    // 中文注释：通过使新旧父节点和子节点的缓存失效，添加或移除子节点到视图。
 	else if (change instanceof mxChildChange)
 	{
 		var newParent = this.model.getParent(change.child);
@@ -2572,6 +2955,7 @@ mxGraph.prototype.processChange = function(change)
 			this.removeStateForCell(change.child);
 			
 			// Handles special case of current root of view being removed
+            // 中文注释：处理当前视图根节点被移除的特殊情况
 			if (this.view.currentRoot == change.child)
 			{
 				this.home();
@@ -2581,6 +2965,7 @@ mxGraph.prototype.processChange = function(change)
 		if (newParent != change.previous)
 		{
 			// Refreshes the collapse/expand icons on the parents
+            // 中文注释：刷新父节点上的折叠/展开图标
 			if (newParent != null)
 			{
 				this.view.invalidate(newParent, false, false);
@@ -2595,9 +2980,11 @@ mxGraph.prototype.processChange = function(change)
 
 	// Handles two special cases where the shape does not need to be
 	// recreated from scratch, it only needs to be invalidated.
+    // 中文注释：处理两种特殊情况，仅需使形状失效而无需重新创建。
 	else if (change instanceof mxTerminalChange || change instanceof mxGeometryChange)
 	{
 		// Checks if the geometry has changed to avoid unnessecary revalidation
+        // 中文注释：检查几何形状是否变化，以避免不必要的重新验证
 		if (change instanceof mxTerminalChange || ((change.previous == null && change.geometry != null) ||
 			(change.previous != null && !change.previous.equals(change.geometry))))
 		{
@@ -2607,12 +2994,14 @@ mxGraph.prototype.processChange = function(change)
 
 	// Handles two special cases where only the shape, but no
 	// descendants need to be recreated
+    // 中文注释：处理两种特殊情况，仅需重新创建形状而无需处理后代
 	else if (change instanceof mxValueChange)
 	{
 		this.view.invalidate(change.cell, false, false);
 	}
 	
 	// Requires a new mxShape in JavaScript
+    // 中文注释：需要重新创建新的 mxShape
 	else if (change instanceof mxStyleChange)
 	{
 		this.view.invalidate(change.cell, true, true);
@@ -2625,6 +3014,7 @@ mxGraph.prototype.processChange = function(change)
 	}
 	
 	// Removes the state from the cache by default
+    // 中文注释：默认从缓存中移除状态
 	else if (change.cell != null && change.cell instanceof mxCell)
 	{
 		this.removeStateForCell(change.cell);
@@ -2641,6 +3031,16 @@ mxGraph.prototype.processChange = function(change)
  * 
  * cell - <mxCell> that was removed from the model.
  */
+// 中文注释：
+// 函数：removeStateForCell
+// 用途：移除指定单元格及其后代的缓存信息。
+// 参数：
+//   - cell: 从模型中移除的单元格（mxCell）。
+// 主要功能：
+//   1. 递归移除子单元格的缓存状态。
+//   2. 使指定单元格的视图状态失效并移除。
+// 说明：当单元格从模型中移除时调用，确保缓存与模型一致。
+// 未修改代码逻辑，仅提供状态移除的解释。
 mxGraph.prototype.removeStateForCell = function(cell)
 {
 	var childCount = this.model.getChildCount(cell);
@@ -2669,6 +3069,20 @@ mxGraph.prototype.removeStateForCell = function(cell)
  * cell - <mxCell> to add the overlay for.
  * overlay - <mxCellOverlay> to be added for the cell.
  */
+// 中文注释：
+// 函数：addCellOverlay
+// 用途：为指定单元格添加覆盖层（mxCellOverlay）。
+// 参数：
+//   - cell: 要添加覆盖层的单元格（mxCell）。
+//   - overlay: 要添加的覆盖层（mxCellOverlay）。
+// 主要功能：
+//   1. 将覆盖层添加到单元格的覆盖层数组。
+//   2. 如果单元格状态存在，立即重绘单元格。
+//   3. 触发 ADD_OVERLAY 事件。
+// 事件处理逻辑：触发 mxEvent.ADD_OVERLAY 事件，通知覆盖层添加。
+// 说明：支持在单元格上添加视觉覆盖层，如警告或提示。
+// 交互逻辑：更新单元格显示以反映新的覆盖层。
+// 未修改代码逻辑，仅提供覆盖层添加的解释。
 mxGraph.prototype.addCellOverlay = function(cell, overlay)
 {
 	if (cell.overlays == null)
@@ -2681,6 +3095,7 @@ mxGraph.prototype.addCellOverlay = function(cell, overlay)
 	var state = this.view.getState(cell);
 
 	// Immediately updates the cell display if the state exists
+    // 中文注释：如果单元格状态存在，立即更新单元格显示
 	if (state != null)
 	{
 		this.cellRenderer.redraw(state);
@@ -2702,6 +3117,13 @@ mxGraph.prototype.addCellOverlay = function(cell, overlay)
  * 
  * cell - <mxCell> whose overlays should be returned.
  */
+// 中文注释：
+// 函数：getCellOverlays
+// 用途：返回指定单元格的覆盖层数组（mxCellOverlays），如果未定义则返回 null。
+// 参数：
+//   - cell: 要返回覆盖层的单元格（mxCell）。
+// 说明：用于获取单元格上的所有覆盖层。
+// 未修改代码逻辑，仅提供覆盖层获取的解释。
 mxGraph.prototype.getCellOverlays = function(cell)
 {
 	return cell.overlays;
@@ -2719,6 +3141,21 @@ mxGraph.prototype.getCellOverlays = function(cell)
  * cell - <mxCell> whose overlay should be removed.
  * overlay - Optional <mxCellOverlay> to be removed.
  */
+// 中文注释：
+// 函数：removeCellOverlay
+// 用途：从指定单元格移除给定的覆盖层（mxCellOverlay）并返回。
+// 参数：
+//   - cell: 要移除覆盖层的单元格（mxCell）。
+//   - overlay: 可选，要移除的覆盖层（mxCellOverlay）。
+// 主要功能：
+//   1. 如果未指定覆盖层，调用 removeCellOverlays 移除所有覆盖层。
+//   2. 移除指定的覆盖层并更新单元格显示。
+//   3. 触发 REMOVE_OVERLAY 事件。
+// 事件处理逻辑：触发 mxEvent.REMOVE_OVERLAY 事件，通知覆盖层移除。
+// 特殊处理注意事项：
+//   - 如果覆盖层数组为空，设置为 null 以优化内存。
+// 交互逻辑：更新单元格显示以移除覆盖层效果。
+// 未修改代码逻辑，仅提供覆盖层移除的解释。
 mxGraph.prototype.removeCellOverlay = function(cell, overlay)
 {
 	if (overlay == null)
@@ -2739,6 +3176,7 @@ mxGraph.prototype.removeCellOverlay = function(cell, overlay)
 			}
 			
 			// Immediately updates the cell display if the state exists
+            // 中文注释：如果单元格状态存在，立即更新单元格显示
 			var state = this.view.getState(cell);
 			
 			if (state != null)
@@ -2769,6 +3207,18 @@ mxGraph.prototype.removeCellOverlay = function(cell, overlay)
  * 
  * cell - <mxCell> whose overlays should be removed
  */
+// 中文注释：
+// 函数：removeCellOverlays
+// 用途：移除指定单元格的所有覆盖层（mxCellOverlays）并返回移除的覆盖层数组。
+// 参数：
+//   - cell: 要移除覆盖层的单元格（mxCell）。
+// 主要功能：
+//   1. 清空单元格的覆盖层数组。
+//   2. 更新单元格显示。
+//   3. 为每个移除的覆盖层触发 REMOVE_OVERLAY 事件。
+// 事件处理逻辑：触发 mxEvent.REMOVE_OVERLAY 事件，通知每个覆盖层移除。
+// 交互逻辑：更新单元格显示以移除所有覆盖层效果。
+// 未修改代码逻辑，仅提供覆盖层移除的解释。
 mxGraph.prototype.removeCellOverlays = function(cell)
 {
 	var overlays = cell.overlays;
@@ -2778,6 +3228,7 @@ mxGraph.prototype.removeCellOverlays = function(cell)
 		cell.overlays = null;
 		
 		// Immediately updates the cell display if the state exists
+        // 中文注释：如果单元格状态存在，立即更新单元格显示
 		var state = this.view.getState(cell);
 		
 		if (state != null)
@@ -2808,12 +3259,23 @@ mxGraph.prototype.removeCellOverlays = function(cell)
  * cell - Optional <mxCell> that represents the root of the subtree to
  * remove the overlays from. Default is the root in the model.
  */
+// 中文注释：
+// 函数：clearCellOverlays
+// 用途：移除指定单元格及其所有后代的所有覆盖层（mxCellOverlays）。
+// 参数：
+//   - cell: 可选，子树根节点的单元格（mxCell），默认使用模型的根节点。
+// 主要功能：
+//   1. 使用 removeCellOverlays 移除指定单元格的覆盖层。
+//   2. 递归移除所有子节点的覆盖层。
+// 说明：用于清除整个子树或整个图形的覆盖层。
+// 未修改代码逻辑，仅提供覆盖层清除的解释。
 mxGraph.prototype.clearCellOverlays = function(cell)
 {
 	cell = (cell != null) ? cell : this.model.getRoot();
 	this.removeCellOverlays(cell);
 	
 	// Recursively removes all overlays from the children
+    // 中文注释：递归移除所有子节点的覆盖层
 	var childCount = this.model.getChildCount(cell);
 	
 	for (var i = 0; i < childCount; i++)
@@ -2847,6 +3309,24 @@ mxGraph.prototype.clearCellOverlays = function(cell)
  * isSelect - Optional boolean indicating if a click on the overlay
  * should select the corresponding cell. Default is false.
  */
+// 中文注释：
+// 函数：setCellWarning
+// 用途：为指定单元格创建警告覆盖层（mxCellOverlay）并返回。
+// 参数：
+//   - cell: 要设置警告的单元格（mxCell）。
+//   - warning: 表示要显示的警告信息的字符串。
+//   - img: 可选，覆盖层使用的图像，默认使用 warningImage。
+//   - isSelect: 可选布尔值，指示点击覆盖层是否选择对应单元格，默认 false。
+// 主要功能：
+//   1. 如果警告信息非空，创建新的覆盖层并使用红色字体显示警告。
+//   2. 如果 isSelect 为 true，添加点击事件以选择单元格。
+//   3. 如果警告信息为空，移除所有覆盖层。
+// 事件处理逻辑：如果 isSelect 为 true，监听 mxEvent.CLICK 事件以选择单元格。
+// 样式设置说明：警告信息以红色字体显示，支持 HTML 标记。
+// 交互逻辑：支持通过点击覆盖层选择单元格。
+// 特殊处理注意事项：
+//   - 如果警告信息为空，调用 removeCellOverlays 移除所有覆盖层。
+// 未修改代码逻辑，仅提供警告设置的解释。
 mxGraph.prototype.setCellWarning = function(cell, warning, img, isSelect)
 {
 	if (warning != null && warning.length > 0)
@@ -2854,10 +3334,12 @@ mxGraph.prototype.setCellWarning = function(cell, warning, img, isSelect)
 		img = (img != null) ? img : this.warningImage;
 		
 		// Creates the overlay with the image and warning
+        // 中文注释：使用图像和警告信息创建覆盖层
 		var overlay = new mxCellOverlay(img,
 			'<font color=red>'+warning+'</font>');
 		
 		// Adds a handler for single mouseclicks to select the cell
+        // 中文注释：为单击事件添加处理器以选择单元格
 		if (isSelect)
 		{
 			overlay.addListener(mxEvent.CLICK,
@@ -2872,6 +3354,7 @@ mxGraph.prototype.setCellWarning = function(cell, warning, img, isSelect)
 		}
 		
 		// Sets and returns the overlay in the graph
+        // 中文注释：在图形中设置并返回覆盖层
 		return this.addCellOverlay(cell, overlay);
 	}
 	else
@@ -2896,6 +3379,14 @@ mxGraph.prototype.setCellWarning = function(cell, warning, img, isSelect)
  * 
  * evt - Optional mouse event that triggered the editing.
  */
+// 中文注释：
+// 函数：startEditing
+// 用途：使用指定单元格或第一个选定单元格调用 startEditingAtCell。
+// 参数：
+//   - evt: 可选，触发编辑的鼠标事件。
+// 说明：启动原地编辑功能。
+// 交互逻辑：允许用户编辑选定单元格的内容。
+// 未修改代码逻辑，仅提供编辑启动的解释。
 mxGraph.prototype.startEditing = function(evt)
 {
 	this.startEditingAtCell(null, evt);
@@ -2913,6 +3404,24 @@ mxGraph.prototype.startEditing = function(evt)
  * cell - <mxCell> to start the in-place editor for.
  * evt - Optional mouse event that triggered the editing.
  */
+// 中文注释：
+// 函数：startEditingAtCell
+// 用途：启动指定单元格的原地编辑。
+// 参数：
+//   - cell: 要编辑的单元格（mxCell）。
+//   - evt: 可选，触发编辑的鼠标事件。
+// 主要功能：
+//   1. 如果未指定单元格，使用第一个选定单元格。
+//   2. 触发 START_EDITING 事件。
+//   3. 调用单元格编辑器开始编辑。
+//   4. 触发 EDITING_STARTED 事件。
+// 事件处理逻辑：
+//   - 触发 mxEvent.START_EDITING 和 mxEvent.EDITING_STARTED 事件。
+// 交互逻辑：支持用户直接编辑单元格内容。
+// 特殊处理注意事项：
+//   - 忽略多点触控事件。
+//   - 仅编辑可编辑的单元格。
+// 未修改代码逻辑，仅提供编辑启动的解释。
 mxGraph.prototype.startEditingAtCell = function(cell, evt)
 {
 	if (evt == null || !mxEvent.isMultiTouchEvent(evt))
@@ -2951,6 +3460,16 @@ mxGraph.prototype.startEditingAtCell = function(cell, evt)
  * cell - <mxCell> for which the initial editing value should be returned.
  * evt - Optional mouse event that triggered the editor.
  */
+// 中文注释：
+// 函数：getEditingValue
+// 用途：返回原地编辑的初始值。
+// 参数：
+//   - cell: 要返回初始编辑值的单元格（mxCell）。
+//   - evt: 可选，触发编辑器的鼠标事件。
+// 说明：通过 convertValueToString 方法将单元格值转换为字符串。
+// 特殊处理注意事项：
+//   - 如果重写此函数，需确保 mxGraphModel.valueForCellChanged 正确存储新值。
+// 未修改代码逻辑，仅提供编辑值获取的解释。
 mxGraph.prototype.getEditingValue = function(cell, evt)
 {
 	return this.convertValueToString(cell);
