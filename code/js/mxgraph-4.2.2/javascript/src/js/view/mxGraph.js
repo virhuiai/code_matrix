@@ -3485,6 +3485,17 @@ mxGraph.prototype.getEditingValue = function(cell, evt)
  * cancel - Boolean that specifies if the current editing value
  * should be stored.
  */
+// 中文注释：
+// 函数：stopEditing
+// 用途：停止当前编辑操作并触发 EDITING_STOPPED 事件。
+// 参数：
+//   - cancel: 布尔值，指定是否存储当前编辑值。
+// 主要功能：
+//   1. 调用单元格编辑器的 stopEditing 方法停止编辑。
+//   2. 触发 mxEvent.EDITING_STOPPED 事件，通知编辑停止。
+// 事件处理逻辑：触发 mxEvent.EDITING_STOPPED 事件，包含 cancel 参数。
+// 交互逻辑：结束用户对单元格的原地编辑。
+// 未修改代码逻辑，仅提供编辑停止的解释。
 mxGraph.prototype.stopEditing = function(cancel)
 {
 	this.cellEditor.stopEditing(cancel);
@@ -3504,6 +3515,23 @@ mxGraph.prototype.stopEditing = function(cancel)
  * value - New label to be assigned.
  * evt - Optional event that triggered the change.
  */
+// 中文注释：
+// 函数：labelChanged
+// 用途：使用 cellLabelChanged 方法设置指定单元格的标签，并触发 LABEL_CHANGED 事件。
+// 参数：
+//   - cell: 要更改标签的单元格（mxCell）。
+//   - value: 要分配的新标签值。
+//   - evt: 可选，触发更改的事件。
+// 主要功能：
+//   1. 开始模型更新事务。
+//   2. 保存旧标签值。
+//   3. 调用 cellLabelChanged 更新标签，并根据 autoSize 参数调整单元格大小。
+//   4. 触发 mxEvent.LABEL_CHANGED 事件。
+//   5. 结束模型更新事务。
+// 事件处理逻辑：触发 mxEvent.LABEL_CHANGED 事件，包含单元格、新旧标签值及事件。
+// 交互逻辑：支持用户更改单元格标签并自动调整大小。
+// 特殊处理注意事项：使用事务确保模型更新的一致性。
+// 未修改代码逻辑，仅提供标签更改的解释。
 mxGraph.prototype.labelChanged = function(cell, value, evt)
 {
 	this.model.beginUpdate();
@@ -3553,6 +3581,21 @@ mxGraph.prototype.labelChanged = function(cell, value, evt)
  * value - New label to be assigned.
  * autoSize - Boolean that specifies if <cellSizeUpdated> should be called.
  */
+// 中文注释：
+// 函数：cellLabelChanged
+// 用途：为单元格设置新标签，若 autoSize 为 true，则调用 cellSizeUpdated。
+// 参数：
+//   - cell: 要更改标签的单元格（mxCell）。
+//   - value: 要分配的新标签值。
+//   - autoSize: 布尔值，指定是否调用 cellSizeUpdated 调整单元格大小。
+// 主要功能：
+//   1. 开始模型更新事务。
+//   2. 使用模型的 setValue 方法设置新标签。
+//   3. 如果 autoSize 为 true，调用 cellSizeUpdated 更新单元格大小。
+//   4. 结束模型更新事务。
+// 说明：支持动态更改单元格标签并可选地调整大小。
+// 特殊处理注意事项：使用事务确保模型更新的一致性。
+// 未修改代码逻辑，仅提供标签更改的解释。
 mxGraph.prototype.cellLabelChanged = function(cell, value, autoSize)
 {
 	this.model.beginUpdate();
@@ -3584,6 +3627,15 @@ mxGraph.prototype.cellLabelChanged = function(cell, value, autoSize)
  * 
  * evt - Mouseevent that represents the keystroke.
  */
+// 中文注释：
+// 函数：escape
+// 用途：处理 Escape 按键事件。
+// 参数：
+//   - evt: 表示按键事件的鼠标事件。
+// 主要功能：触发 ESCAPE 事件。
+// 事件处理逻辑：触发 mxEvent.ESCAPE 事件，通知 Escape 按键被按下。
+// 交互逻辑：允许用户通过 Escape 键取消当前操作。
+// 未修改代码逻辑，仅提供按键处理的解释。
 mxGraph.prototype.escape = function(evt)
 {
 	this.fireEvent(new mxEventObject(mxEvent.ESCAPE, 'event', evt));
@@ -3619,6 +3671,26 @@ mxGraph.prototype.escape = function(evt)
  * 
  * me - <mxMouseEvent> that represents the single click.
  */
+// 中文注释：
+// 函数：click
+// 用途：处理单击事件并触发 CLICK 事件。
+// 参数：
+//   - me: 表示单击事件的 mxMouseEvent 对象。
+// 主要功能：
+//   1. 创建并触发 mxEvent.CLICK 事件，包含事件和单元格信息。
+//   2. 如果图形启用且事件未被消耗，根据情况选择单元格或清除选择。
+//   3. 支持泳道选择模式，检测点击位置的泳道单元格。
+// 事件处理逻辑：
+//   - 触发 mxEvent.CLICK 事件。
+//   - 如果事件未被消耗，调用 selectCellForEvent 或 clearSelection。
+// 交互逻辑：
+//   - 如果点击了单元格，调用 selectCellForEvent 选择单元格。
+//   - 如果未点击单元格且非切换事件，调用 clearSelection 清除选择。
+//   - 支持泳道选择，自动选择父泳道或切换选择。
+// 特殊处理注意事项：
+//   - 处理透明点击事件，检查是否需要选择更深的单元格。
+//   - 在泳道选择模式下，优先选择泳道单元格。
+// 未修改代码逻辑，仅提供单击处理的解释。
 mxGraph.prototype.click = function(me)
 {
 	var evt = me.getEvent();
@@ -3712,6 +3784,17 @@ mxGraph.prototype.click = function(me)
  * 
  * Returns true if any sibling of the given cell is selected.
  */
+// 中文注释：
+// 函数：isSiblingSelected
+// 用途：检查给定单元格的同级单元格中是否有被选中的。
+// 参数：
+//   - cell: 要检查的单元格（mxCell）。
+// 主要功能：
+//   1. 获取单元格的父节点。
+//   2. 遍历父节点的所有子节点，检查是否有除给定单元格外的其他选中单元格。
+// 说明：用于判断单元格的同级是否被选中。
+// 交互逻辑：支持选择状态的动态检查。
+// 未修改代码逻辑，仅提供同级选择检查的解释。
 mxGraph.prototype.isSiblingSelected = function(cell)
 {
 	var model = this.model;
@@ -3772,12 +3855,28 @@ mxGraph.prototype.isSiblingSelected = function(cell)
  * evt - Mouseevent that represents the doubleclick.
  * cell - Optional <mxCell> under the mousepointer.
  */
+ // 中文注释：
+// 函数：dblClick
+// 用途：处理双击事件并触发 DOUBLE_CLICK 事件。
+// 参数：
+//   - evt: 表示双击事件的鼠标事件。
+//   - cell: 可选，鼠标指针下的单元格（mxCell）。
+// 主要功能：
+//   1. 创建并触发 mxEvent.DOUBLE_CLICK 事件。
+//   2. 如果图形启用、事件未被消耗且单元格可编辑，调用 startEditingAtCell 开始编辑。
+// 事件处理逻辑：触发 mxEvent.DOUBLE_CLICK 事件，通知双击操作。
+// 交互逻辑：支持双击单元格以进入编辑模式。
+// 特殊处理注意事项：
+//   - 如果未指定单元格或单元格不可编辑，忽略事件。
+//   - 消耗事件以防止默认行为。
+// 未修改代码逻辑，仅提供双击处理的解释。
 mxGraph.prototype.dblClick = function(evt, cell)
 {
 	var mxe = new mxEventObject(mxEvent.DOUBLE_CLICK, 'event', evt, 'cell', cell);
 	this.fireEvent(mxe);
 	
 	// Handles the event if it has not been consumed
+	// 中文注释：如果事件未被消耗，处理事件
 	if (this.isEnabled() && !mxEvent.isConsumed(evt) && !mxe.isConsumed() &&
 		cell != null && this.isCellEditable(cell) && !this.isEditing(cell))
 	{
@@ -3796,21 +3895,41 @@ mxGraph.prototype.dblClick = function(evt, cell)
  * me - <mxMouseEvent> that represents the touch event.
  * state - Optional <mxCellState> that is associated with the event.
  */
+// 中文注释：
+// 函数：tapAndHold
+// 用途：处理触摸长按事件并高亮显示单元格状态（mxCellState）。
+// 参数：
+//   - me: 表示触摸事件的 mxMouseEvent 对象。
+//   - state: 可选，与事件关联的单元格状态（mxCellState）。
+// 主要功能：
+//   1. 创建并触发 TAP_AND_HOLD 事件，包含事件和单元格信息。
+//   2. 如果事件被消耗，重置平移处理器的触发状态。
+//   3. 如果图形启用、事件未被消耗且连接处理器启用，处理连接逻辑。
+//   4. 高亮显示单元格并初始化连接操作。
+// 事件处理逻辑：触发 mxEvent.TAP_AND_HOLD 事件，通知长按操作；若连接开始，触发 mxEvent.START 事件。
+// 交互逻辑：支持用户通过长按启动连接操作，更新连接处理器的状态和高亮显示。
+// 特殊处理注意事项：
+//   - 仅在连接处理器启用时处理连接逻辑。
+//   - 如果事件被消耗，阻止平移操作。
+// 未修改代码逻辑，仅提供长按处理的解释。
 mxGraph.prototype.tapAndHold = function(me)
 {
 	var evt = me.getEvent();
 	var mxe = new mxEventObject(mxEvent.TAP_AND_HOLD, 'event', evt, 'cell', me.getCell());
 
 	// LATER: Check if event should be consumed if me is consumed
+    // 中文注释：待确认：检查事件是否应在 me 被消耗时被消耗
 	this.fireEvent(mxe);
 
 	if (mxe.isConsumed())
 	{
 		// Resets the state of the panning handler
+        // 中文注释：重置平移处理器的触发状态
 		this.panningHandler.panningTrigger = false;
 	}
 	
 	// Handles the event if it has not been consumed
+    // 中文注释：如果事件未被消耗，处理事件
 	if (this.isEnabled() && !mxEvent.isConsumed(evt) && !mxe.isConsumed() && this.connectionHandler.isEnabled())
 	{
 		var state = this.view.getState(this.connectionHandler.marker.getCell(me));
@@ -3835,6 +3954,25 @@ mxGraph.prototype.tapAndHold = function(me)
  * Scrolls the graph to the given point, extending the graph container if
  * specified.
  */
+// 中文注释：
+// 函数：scrollPointToVisible
+// 用途：将图形滚动到指定点，若指定则扩展图形容器。
+// 参数：
+//   - x: 目标点的 x 坐标。
+//   - y: 目标点的 y 坐标。
+//   - extend: 布尔值，指定是否扩展容器，默认 false。
+//   - border: 可选，指定边界距离，默认 20 像素。
+// 主要功能：
+//   1. 检查是否需要滚动（忽略滚动条或容器有滚动条时）。
+//   2. 计算滚动距离并调整容器滚动位置。
+//   3. 如果 extend 为 true 且到达容器边缘，扩展画布大小。
+//   4. 如果支持自动平移且平移处理器未激活，调用平移管理器。
+// 交互逻辑：确保指定点在容器可见区域内，支持动态扩展画布。
+// 特殊处理注意事项：
+//   - 在 SVG 模式下，更新 SVG 元素的剪切区域。
+//   - 在非 SVG 模式下，更新画布的宽度和高度。
+//   - IE 浏览器的扩展功能需要修复。
+// 未修改代码逻辑，仅提供滚动处理的解释。
 mxGraph.prototype.scrollPointToVisible = function(x, y, extend, border)
 {
 	if (!this.timerAutoScroll && (this.ignoreScrollbars || mxUtils.hasScrollbars(this.container)))
@@ -3855,6 +3993,7 @@ mxGraph.prototype.scrollPointToVisible = function(x, y, extend, border)
 				// Automatically extends the canvas size to the bottom, right
 				// if the event is outside of the canvas and the edge of the
 				// canvas has been reached. Notes: Needs fix for IE.
+                // 中文注释：如果事件超出画布且到达边缘，自动扩展画布大小到右下。注意：IE 需要修复。
 				if (extend && old == c.scrollLeft)
 				{
 					if (this.dialect == mxConstants.DIALECT_SVG)
@@ -3864,6 +4003,7 @@ mxGraph.prototype.scrollPointToVisible = function(x, y, extend, border)
 						
 						// Updates the clipping region. This is an expensive
 						// operation that should not be executed too often.
+                        // 中文注释：更新剪切区域，此操作开销较大，不应频繁执行。
 						root.style.width = width + 'px';
 					}
 					else
@@ -3902,6 +4042,7 @@ mxGraph.prototype.scrollPointToVisible = function(x, y, extend, border)
 						
 						// Updates the clipping region. This is an expensive
 						// operation that should not be executed too often.
+                        // 中文注释：更新剪切区域，此操作开销较大，不应频繁执行。
 						root.style.height = height + 'px';
 					}
 					else
@@ -3942,6 +4083,12 @@ mxGraph.prototype.scrollPointToVisible = function(x, y, extend, border)
  * 
  * Creates and returns an <mxPanningManager>.
  */
+// 中文注释：
+// 函数：createPanningManager
+// 用途：创建并返回一个平移管理器（mxPanningManager）。
+// 说明：该管理器用于管理图形的自动平移操作。
+// 交互逻辑：支持将图形平移到指定位置。
+// 未修改代码逻辑，仅提供平移管理器创建的解释。
 mxGraph.prototype.createPanningManager = function()
 {
 	return new mxPanningManager(this);
@@ -3954,6 +4101,16 @@ mxGraph.prototype.createPanningManager = function()
  * container. The left, top, right and bottom borders are stored in the x, y,
  * width and height of the returned <mxRectangle>, respectively.
  */
+// 中文注释：
+// 函数：getBorderSizes
+// 用途：返回容器四边的边框和内边距大小。
+// 主要功能：
+//   1. 获取容器的当前 CSS 样式。
+//   2. 计算左右上下边框和内边距的像素值。
+//   3. 返回 mxRectangle 对象，存储左、上、右、下边距。
+// 说明：用于确定容器边界的实际大小。
+// 样式设置说明：从 CSS 样式中解析 padding 和 border 的值。
+// 未修改代码逻辑，仅提供边框大小获取的解释。
 mxGraph.prototype.getBorderSizes = function()
 {
 	var css = mxUtils.getCurrentStyle(this.container);
@@ -3973,6 +4130,20 @@ mxGraph.prototype.getBorderSizes = function()
  * 
  * Returns the preferred size of the background page if <preferPageSize> is true.
  */
+// 中文注释：
+// 函数：getPreferredPageSize
+// 用途：当 preferPageSize 为 true 时，返回背景页面的首选大小。
+// 参数：
+//   - bounds: 图形的边界（mxRectangle）。
+//   - width: 容器宽度。
+//   - height: 容器高度。
+// 主要功能：
+//   1. 根据页面格式（pageFormat）和页面缩放（pageScale）计算页面大小。
+//   2. 根据页面分隔可见性（pageBreaksVisible）计算水平和垂直页面数。
+//   3. 返回包含页面总宽高的 mxRectangle 对象。
+// 说明：用于确定背景页面的显示大小。
+// 样式设置说明：考虑页面格式和缩放比例计算页面尺寸。
+// 未修改代码逻辑，仅提供页面大小计算的解释。
 mxGraph.prototype.getPreferredPageSize = function(bounds, width, height)
 {
 	var scale = this.view.scale;
@@ -4033,6 +4204,28 @@ mxGraph.prototype.getPreferredPageSize = function(bounds, width, height)
  * ignored. Default is false.
  * maxHeight - Optional maximum height.
  */
+// 中文注释：
+// 函数：fit
+// 用途：缩放图形以适应容器大小，并返回当前视图缩放比例。
+// 参数：
+//   - border: 可选，指定边界大小，默认使用 getBorder 方法返回值。
+//   - keepOrigin: 可选布尔值，指定是否保持原点，默认 false。
+//   - margin: 可选，指定边距（像素），默认 0。
+//   - enabled: 可选布尔值，指定是否设置缩放比例或仅返回，默认 true。
+//   - ignoreWidth: 可选布尔值，指定是否忽略宽度，默认 false。
+//   - ignoreHeight: 可选布尔值，指定是否忽略高度，默认 false。
+//   - maxHeight: 可选，指定最大高度。
+// 主要功能：
+//   1. 获取容器和图形的边界信息。
+//   2. 考虑 CSS 边框和内边距，计算可用宽度和高度。
+//   3. 计算缩放比例以适应容器，考虑背景图像和最小/最大缩放限制。
+//   4. 如果 enabled 为 true，更新视图的缩放和平移；否则返回计算的缩放比例。
+// 交互逻辑：确保图形内容完全适应容器，支持居中和边界调整。
+// 特殊处理注意事项：
+//   - 如果 keepOrigin 为 true，调整边界以保持原点。
+//   - 支持背景图像的最小尺寸要求。
+//   - 考虑滚动条的存在，动态调整容器滚动位置。
+// 未修改代码逻辑，仅提供图形适应的解释。
 mxGraph.prototype.fit = function(border, keepOrigin, margin, enabled, ignoreWidth, ignoreHeight, maxHeight)
 {
 	if (this.container != null)
@@ -4045,6 +4238,7 @@ mxGraph.prototype.fit = function(border, keepOrigin, margin, enabled, ignoreWidt
 		ignoreHeight = (ignoreHeight != null) ? ignoreHeight : false;
 		
 		// Adds spacing and border from css
+        // 中文注释：添加 CSS 的边距和边框
 		var cssBorder = this.getBorderSizes();
 		var w1 = this.container.offsetWidth - cssBorder.x - cssBorder.width - 1;
 		var h1 = (maxHeight != null) ? maxHeight : this.container.offsetHeight - cssBorder.y - cssBorder.height - 1;
@@ -4062,11 +4256,13 @@ mxGraph.prototype.fit = function(border, keepOrigin, margin, enabled, ignoreWidt
 			}
 			
 			// LATER: Use unscaled bounding boxes to fix rounding errors
+            // 中文注释：待办：使用未缩放的边界框以修复舍入错误
 			var s = this.view.scale;
 			var w2 = bounds.width / s;
 			var h2 = bounds.height / s;
 			
 			// Fits to the size of the background image if required
+            // 中文注释：如果需要，适应背景图像的大小
 			if (this.backgroundImage != null)
 			{
 				w2 = Math.max(w2, this.backgroundImage.width - bounds.x / s);
@@ -4140,6 +4336,22 @@ mxGraph.prototype.fit = function(border, keepOrigin, margin, enabled, ignoreWidt
  * a <size> event after updating the clipping region of the SVG element in
  * SVG-bases browsers.
  */
+// 中文注释：
+// 函数：sizeDidChange
+// 用途：当图形大小发生变化时调用，更新 SVG 元素的剪切区域并触发 SIZE 事件。
+// 主要功能：
+//   1. 获取图形边界并计算包含边框的宽度和高度。
+//   2. 应用最小容器大小和最小图形大小限制。
+//   3. 如果启用容器调整，调用 doResizeContainer。
+//   4. 如果首选页面大小或页面可见，调整宽度和高度。
+//   5. 在 SVG 模式下更新 SVG 元素尺寸；在非 SVG 模式下更新画布尺寸。
+//   6. 更新页面分隔线并触发 SIZE 事件。
+// 事件处理逻辑：触发 mxEvent.SIZE 事件，通知图形大小变化。
+// 样式设置说明：根据 SVG 或非 SVG 模式设置画布的 minWidth 和 minHeight。
+// 特殊处理注意事项：
+//   - 在 Quirks 模式下不支持 minWidth/minHeight，使用 updateHtmlCanvasSize。
+//   - 确保页面分隔线的可见性与大小一致。
+// 未修改代码逻辑，仅提供大小变化处理的解释。
 mxGraph.prototype.sizeDidChange = function()
 {
 	var bounds = this.getGraphBounds();
@@ -4199,6 +4411,7 @@ mxGraph.prototype.sizeDidChange = function()
 			if (mxClient.IS_QUIRKS)
 			{
 				// Quirks mode does not support minWidth/-Height
+                // 中文注释：Quirks 模式不支持 minWidth/minHeight
 				this.view.updateHtmlCanvasSize(Math.max(1, width), Math.max(1, height));
 			}
 			else
@@ -4219,6 +4432,18 @@ mxGraph.prototype.sizeDidChange = function()
  * 
  * Resizes the container for the given graph width and height.
  */
+// 中文注释：
+// 函数：doResizeContainer
+// 用途：根据给定的图形宽度和高度调整容器大小。
+// 参数：
+//   - width: 目标宽度（像素）。
+//   - height: 目标高度（像素）。
+// 主要功能：
+//   1. 应用最大容器大小限制。
+//   2. 设置容器的 CSS 宽度和高度。
+// 说明：确保容器大小适应图形内容。
+// 样式设置说明：直接修改容器的 style.width 和 style.height。
+// 未修改代码逻辑，仅提供容器调整的解释。
 mxGraph.prototype.doResizeContainer = function(width, height)
 {
 	if (this.maximumContainerSize != null)
@@ -4242,6 +4467,22 @@ mxGraph.prototype.doResizeContainer = function(width, height)
  * width - Specifies the width of the container in pixels.
  * height - Specifies the height of the container in pixels.
  */
+// 中文注释：
+// 函数：updatePageBreaks
+// 用途：从 sizeDidChange 调用，重新绘制页面分隔线。
+// 参数：
+//   - visible: 布尔值，指定是否显示页面分隔线。
+//   - width: 容器宽度（像素）。
+//   - height: 容器高度（像素）。
+// 主要功能：
+//   1. 计算页面分隔线的边界和数量。
+//   2. 如果分隔线可见，绘制水平和垂直分隔线。
+//   3. 移除多余的分隔线对象。
+// 样式设置说明：使用 mxPolyline 绘制分隔线，设置颜色和虚线样式。
+// 特殊处理注意事项：
+//   - 分隔线仅在页面尺寸大于最小距离（minPageBreakDist）时显示。
+//   - 分隔线不支持鼠标交互（pointerEvents = false）。
+// 未修改代码逻辑，仅提供页面分隔线更新的解释。
 mxGraph.prototype.updatePageBreaks = function(visible, width, height)
 {
 	var scale = this.view.scale;
@@ -4261,6 +4502,7 @@ mxGraph.prototype.updatePageBreaks = function(visible, width, height)
 	gb.height = Math.ceil((gb.height + (gb.y - bounds.y)) / bounds.height) * bounds.height;
 	
 	// Does not show page breaks if the scale is too small
+    // 中文注释：如果缩放比例过小，不显示页面分隔线
 	visible = visible && Math.min(bounds.width, bounds.height) > this.minPageBreakDist;
 
 	var horizontalCount = (visible) ? Math.ceil(gb.height / bounds.height) + 1 : 0;
@@ -4338,6 +4580,18 @@ mxGraph.prototype.updatePageBreaks = function(visible, width, height)
  * cell - <mxCell> whose style should be returned as an array.
  * ignoreState - Optional boolean that specifies if the cell state should be ignored.
  */
+// 中文注释：
+// 函数：getCurrentCellStyle
+// 用途：返回指定单元格的样式，从单元格状态获取（若存在），否则使用 getCellStyle。
+// 参数：
+//   - cell: 要返回样式的单元格（mxCell）。
+//   - ignoreState: 可选布尔值，指定是否忽略单元格状态。
+// 主要功能：
+//   1. 如果 ignoreState 为 false 且单元格状态存在，返回状态中的样式。
+//   2. 否则调用 getCellStyle 获取单元格样式。
+// 说明：优先使用缓存的单元格状态样式以提高性能。
+// 样式设置说明：返回的样式是一个键值对数组。
+// 未修改代码逻辑，仅提供样式获取的解释。
 mxGraph.prototype.getCurrentCellStyle = function(cell, ignoreState)
 {
 	var state = (ignoreState) ? null : this.view.getState(cell);
@@ -4359,12 +4613,27 @@ mxGraph.prototype.getCurrentCellStyle = function(cell, ignoreState)
  * 
  * cell - <mxCell> whose style should be returned as an array.
  */
+// 中文注释：
+// 函数：getCellStyle
+// 用途：返回指定单元格的样式，作为键值对数组。
+// 参数：
+//   - cell: 要返回样式的单元格（mxCell）。
+// 主要功能：
+//   1. 获取单元格的样式名称。
+//   2. 如果单元格是边，返回默认边样式；否则返回默认顶点样式。
+//   3. 如果样式名称存在，使用样式表解析样式。
+//   4. 如果无样式，返回空对象。
+// 说明：从模型中获取样式名称并解析为样式对象。
+// 样式设置说明：返回的样式基于样式表中的默认样式或指定样式。
+// 特殊处理注意事项：建议优先使用单元格状态中的缓存样式。
+// 未修改代码逻辑，仅提供样式获取的解释。
 mxGraph.prototype.getCellStyle = function(cell)
 {
 	var stylename = this.model.getStyle(cell);
 	var style = null;
 	
 	// Gets the default style for the cell
+    // 中文注释：获取单元格的默认样式
 	if (this.model.isEdge(cell))
 	{
 		style = this.stylesheet.getDefaultEdgeStyle();
@@ -4375,12 +4644,14 @@ mxGraph.prototype.getCellStyle = function(cell)
 	}
 	
 	// Resolves the stylename using the above as the default
+    // 中文注释：使用上述默认样式解析样式名称
 	if (stylename != null)
 	{
 		style = this.postProcessCellStyle(this.stylesheet.getCellStyle(stylename, style));
 	}
 	
 	// Returns a non-null value if no style can be found
+    // 中文注释：如果找不到样式，返回空对象
 	if (style == null)
 	{
 		style = new Object();
@@ -4396,6 +4667,20 @@ mxGraph.prototype.getCellStyle = function(cell)
  * turns short data URIs as defined in mxImageBundle to data URIs as
  * defined in RFC 2397 of the IETF.
  */
+// 中文注释：
+// 函数：postProcessCellStyle
+// 用途：处理单元格样式中的图像值，将图像包中的键解析为实际图像 URL，并将短数据 URI 转换为标准 RFC 2397 格式。
+// 参数：
+//   - style: 要处理的样式对象。
+// 主要功能：
+//   1. 从图像包中解析 STYLE_IMAGE 的值。
+//   2. 处理短数据 URI，添加 base64 前缀或对 SVG 进行编码。
+//   3. 返回处理后的样式对象。
+// 说明：确保图像样式值符合标准格式。
+// 特殊处理注意事项：
+//   - 支持 SVG 和非 SVG 数据 URI 的不同处理方式。
+//   - 针对 Firefox 和 IE11 的 SVG 数据 URI 进行特殊编码。
+// 未修改代码逻辑，仅提供样式后处理的解释。
 mxGraph.prototype.postProcessCellStyle = function(style)
 {
 	if (style != null)
@@ -4413,11 +4698,13 @@ mxGraph.prototype.postProcessCellStyle = function(style)
 		}
 		
 		// Converts short data uris to normal data uris
+        // 中文注释：将短数据 URI 转换为标准数据 URI
 		if (image != null && image.substring(0, 11) == 'data:image/')
 		{
 			if (image.substring(0, 20) == 'data:image/svg+xml,<')
 			{
 				// Required for FF and IE11
+                // 中文注释：为 Firefox 和 IE11 所需
 				image = image.substring(0, 19) + encodeURIComponent(image.substring(19));
 			}
 			else if (image.substring(0, 22) != 'data:image/svg+xml,%3C')
@@ -4425,6 +4712,7 @@ mxGraph.prototype.postProcessCellStyle = function(style)
 				var comma = image.indexOf(',');
 				
 				// Adds base64 encoding prefix if needed
+                // 中文注释：如果需要，添加 base64 编码前缀
 				if (comma > 0 && image.substring(comma - 7, comma + 1) != ';base64,')
 				{
 					image = image.substring(0, comma) + ';base64,'
@@ -4451,6 +4739,20 @@ mxGraph.prototype.postProcessCellStyle = function(style)
  * cells - Optional array of <mxCells> to set the style for. Default is the
  * selection cells.
  */
+// 中文注释：
+// 函数：setCellStyle
+// 用途：为指定单元格设置新样式，若未指定单元格，则更改选择单元格的样式。
+// 参数：
+//   - style: 表示新样式的字符串。
+//   - cells: 可选，要设置样式的单元格数组（mxCell），默认使用选择单元格。
+// 主要功能：
+//   1. 如果未指定单元格，使用当前选择单元格。
+//   2. 开始模型更新事务。
+//   3. 为每个单元格设置新样式。
+//   4. 结束模型更新事务。
+// 说明：批量更新单元格样式。
+// 样式设置说明：直接覆盖单元格的现有样式。
+// 未修改代码逻辑，仅提供样式设置的解释。
 mxGraph.prototype.setCellStyle = function(style, cells)
 {
 	cells = cells || this.getSelectionCells();
@@ -4487,6 +4789,18 @@ mxGraph.prototype.setCellStyle = function(style, cells)
  * cell - Optional <mxCell> whose style should be modified. Default is
  * the selection cell.
  */
+// 中文注释：
+// 函数：toggleCellStyle
+// 用途：切换指定单元格样式中给定键的布尔值，并返回新值（0 或 1）。
+// 参数：
+//   - key: 表示要切换的布尔值的键。
+//   - defaultValue: 可选，默认布尔值，若键未定义则使用，默认 false。
+//   - cell: 可选，要修改样式的单元格（mxCell），默认使用选择单元格。
+// 主要功能：
+//   1. 调用 toggleCellStyles 处理单个单元格的样式切换。
+// 说明：简化对单个单元格样式的布尔值切换。
+// 交互逻辑：支持动态切换样式属性（如圆角）。
+// 未修改代码逻辑，仅提供样式切换的解释。
 mxGraph.prototype.toggleCellStyle = function(key, defaultValue, cell)
 {
 	cell = cell || this.getSelectionCell();
@@ -4510,6 +4824,20 @@ mxGraph.prototype.toggleCellStyle = function(key, defaultValue, cell)
  * cells - Optional array of <mxCells> whose styles should be modified.
  * Default is the selection cells.
  */
+// 中文注释：
+// 函数：toggleCellStyles
+// 用途：切换指定单元格样式中给定键的布尔值，并返回新值（0 或 1）。
+// 参数：
+//   - key: 表示要切换的布尔值的键。
+//   - defaultValue: 可选，默认布尔值，若键未定义则使用，默认 false。
+//   - cells: 可选，要修改样式的单元格数组（mxCell），默认使用选择单元格。
+// 主要功能：
+//   1. 如果单元格数组非空，获取第一个单元格的当前样式。
+//   2. 根据当前样式值和默认值计算新值（0 或 1）。
+//   3. 调用 setCellStyles 设置新值。
+// 说明：批量切换单元格样式的布尔值。
+// 交互逻辑：支持动态切换样式属性（如圆角、填充等）。
+// 未修改代码逻辑，仅提供样式批量切换的解释。
 mxGraph.prototype.toggleCellStyles = function(key, defaultValue, cells)
 {
 	defaultValue = (defaultValue != null) ? defaultValue : false;
@@ -4542,6 +4870,19 @@ mxGraph.prototype.toggleCellStyles = function(key, defaultValue, cells)
  * cells - Optional array of <mxCells> to change the style for. Default is
  * the selection cells.
  */
+// 中文注释：
+// 函数：setCellStyles
+// 用途：为指定单元格的样式设置键值对，覆盖现有键值。
+// 参数：
+//   - key: 表示要设置的样式键。
+//   - value: 表示键的新值，若为 null 则移除该键。
+//   - cells: 可选，要更改样式的单元格数组（mxCell），默认使用选择单元格。
+// 主要功能：
+//   1. 如果未指定单元格，使用当前选择单元格。
+//   2. 调用 mxUtils.setCellStyles 更新模型中的样式。
+// 说明：批量修改或移除单元格样式的指定键值。
+// 样式设置说明：直接修改现有样式，覆盖或移除指定键。
+// 未修改代码逻辑，仅提供样式设置的解释。
 mxGraph.prototype.setCellStyles = function(key, value, cells)
 {
 	cells = cells || this.getSelectionCells();
@@ -4879,6 +5220,21 @@ mxGraph.prototype.getImageFromBundles = function(key)
  * cells - Array of <mxCells> to move to the background. If null is
  * specified then the selection cells are used.
  */
+// 中文注释：
+// 函数：orderCells
+// 用途：将指定单元格移到前景或背景。
+// 参数：
+//   - back: 布尔值，指定是否移到背景。
+//   - cells: 要移动的单元格数组（mxCell），若为 null 则使用选择单元格。
+// 主要功能：
+//   1. 如果未指定单元格，使用排序后的选择单元格。
+//   2. 开始模型更新事务。
+//   3. 调用 cellsOrdered 执行移动操作。
+//   4. 触发 ORDER_CELLS 事件。
+//   5. 结束模型更新事务。
+// 事件处理逻辑：触发 mxEvent.ORDER_CELLS 事件，通知单元格顺序变化。
+// 交互逻辑：支持用户调整单元格的显示顺序。
+// 未修改代码逻辑，仅提供单元格排序的解释。
 mxGraph.prototype.orderCells = function(back, cells)
 {
 	if (cells == null)
@@ -4914,31 +5270,40 @@ mxGraph.prototype.orderCells = function(back, cells)
  */
 mxGraph.prototype.cellsOrdered = function(cells, back)
 {
+    // 中文注释：检查输入的单元数组是否有效
 	if (cells != null)
 	{
+        // 中文注释：开始模型更新事务，确保操作原子性
 		this.model.beginUpdate();
 		try
 		{
+            // 中文注释：遍历单元数组，调整每个单元的层级顺序
 			for (var i = 0; i < cells.length; i++)
 			{
+                // 中文注释：获取当前单元的父节点
 				var parent = this.model.getParent(cells[i]);
 
+                // 中文注释：根据 back 参数决定是将单元移到最底层还是最顶层
 				if (back)
 				{
+                    // 中文注释：将单元添加到父节点的索引 i 处（最底层）
 					this.model.add(parent, cells[i], i);
 				}
 				else
 				{
+                    // 中文注释：将单元添加到父节点的子节点末尾（最顶层）
 					this.model.add(parent, cells[i],
 							this.model.getChildCount(parent) - 1);
 				}
 			}
 			
+            // 中文注释：触发 CELLS_ORDERED 事件，通知层级调整完成，包含 back 和 cells 参数
 			this.fireEvent(new mxEventObject(mxEvent.CELLS_ORDERED,
 					'back', back, 'cells', cells));
 		}
 		finally
 		{
+            // 中文注释：结束模型更新事务，确保所有操作提交
 			this.model.endUpdate();
 		}
 	}
@@ -4968,23 +5333,31 @@ mxGraph.prototype.cellsOrdered = function(cells, back)
  */
 mxGraph.prototype.groupCells = function(group, border, cells)
 {
+    // 中文注释：如果未提供单元数组，使用当前选中的单元并排序
 	if (cells == null)
 	{
+        // 中文注释：调用 mxUtils.sortCells 对选中单元进行排序，true 表示升序
 		cells = mxUtils.sortCells(this.getSelectionCells(), true);
 	}
 
+    // 中文注释：筛选适合分组的单元，确保与第一个单元有相同父节点
 	cells = this.getCellsForGroup(cells);
 
+    // 中文注释：如果未提供 group 参数，创建新的分组单元
 	if (group == null)
 	{
+        // 中文注释：调用 createGroupCell 创建一个新的分组单元
 		group = this.createGroupCell(cells);
 	}
 
+    // 中文注释：计算分组的边界，考虑子节点和边距
 	var bounds = this.getBoundsForGroup(group, cells, border);
 
+    // 中文注释：确保至少有两个单元且边界有效才进行分组操作
 	if (cells.length > 1 && bounds != null)
 	{
 		// Uses parent of group or previous parent of first child
+		// 中文注释：获取分组的父节点，若无则使用第一个单元的父节点
 		var parent = this.model.getParent(group);
 		
 		if (parent == null)
@@ -4992,37 +5365,44 @@ mxGraph.prototype.groupCells = function(group, border, cells)
 			parent = this.model.getParent(cells[0]);
 		}
 
+        // 中文注释：开始模型更新事务，确保分组操作的原子性
 		this.model.beginUpdate();
 		try
 		{
-			// Checks if the group has a geometry and
-			// creates one if one does not exist
+            // 中文注释：检查分组单元是否具有几何信息，若无则初始化
 			if (this.getCellGeometry(group) == null)
 			{
+                // 中文注释：为分组单元设置新的几何对象
 				this.model.setGeometry(group, new mxGeometry());
 			}
 
-			// Adds the group into the parent
+            // 中文注释：将分组单元添加到父节点
 			var index = this.model.getChildCount(parent);
+            // 中文注释：调用 cellsAdded 添加分组单元到父节点，不调整相对位置
 			this.cellsAdded([group], parent, index, null, null, false, false, false);
 
-			// Adds the children into the group and moves
+            // 中文注释：将子单元添加到分组单元并移动位置
 			index = this.model.getChildCount(group);
+            // 中文注释：调用 cellsAdded 将子单元添加到分组单元
 			this.cellsAdded(cells, group, index, null, null, false, false, false);
+            // 中文注释：移动子单元以对齐分组边界
 			this.cellsMoved(cells, -bounds.x, -bounds.y, false, false, false);
 
-			// Resizes the group
+            // 中文注释：调整分组单元的大小以适应子单元
 			this.cellsResized([group], [bounds], false);
 
+            // 中文注释：触发 GROUP_CELLS 事件，通知分组完成，包含 group、border 和 cells 参数
 			this.fireEvent(new mxEventObject(mxEvent.GROUP_CELLS,
 					'group', group, 'border', border, 'cells', cells));
 		}
 		finally
 		{
+            // 中文注释：结束模型更新事务，提交所有操作
 			this.model.endUpdate();
 		}
 	}
 
+    // 中文注释：返回创建或使用的分组单元
 	return group;
 };
 
@@ -5034,14 +5414,18 @@ mxGraph.prototype.groupCells = function(group, border, cells)
  */
 mxGraph.prototype.getCellsForGroup = function(cells)
 {
+    // 中文注释：初始化结果数组，用于存储具有相同父节点的单元
 	var result = [];
 
+    // 中文注释：检查输入单元数组是否有效且不为空
 	if (cells != null && cells.length > 0)
 	{
+        // 中文注释：获取第一个单元的父节点
 		var parent = this.model.getParent(cells[0]);
+        // 中文注释：将第一个单元添加到结果数组
 		result.push(cells[0]);
 
-		// Filters selection cells with the same parent
+        // 中文注释：遍历剩余单元，筛选出与第一个单元具有相同父节点的单元
 		for (var i = 1; i < cells.length; i++)
 		{
 			if (this.model.getParent(cells[i]) == parent)
@@ -5051,6 +5435,7 @@ mxGraph.prototype.getCellsForGroup = function(cells)
 		}
 	}
 
+    // 中文注释：返回筛选后的单元数组
 	return result;
 };
 
@@ -5061,21 +5446,26 @@ mxGraph.prototype.getCellsForGroup = function(cells)
  */
 mxGraph.prototype.getBoundsForGroup = function(group, children, border)
 {
+    // 中文注释：计算子单元的几何边界，true 表示包含所有子节点
 	var result = this.getBoundingBoxFromGeometry(children, true);
 	
+    // 中文注释：如果边界有效，进一步调整边界大小
 	if (result != null)
 	{
+        // 中文注释：检查是否为泳道（swimlane），若为泳道则考虑起始区域
 		if (this.isSwimlane(group))
 		{
+            // 中文注释：获取泳道的起始区域大小
 			var size = this.getStartSize(group);
 			
+            // 中文注释：调整边界以包含泳道的标题区域
 			result.x -= size.width;
 			result.y -= size.height;
 			result.width += size.width;
 			result.height += size.height;
 		}
 		
-		// Adds the border
+        // 中文注释：如果提供了边距参数，扩展边界以包含边距
 		if (border != null)
 		{
 			result.x -= border;
@@ -5085,6 +5475,7 @@ mxGraph.prototype.getBoundsForGroup = function(group, children, border)
 		}
 	}			
 	
+    // 中文注释：返回调整后的边界对象
 	return result;
 };
 
@@ -5108,10 +5499,14 @@ mxGraph.prototype.getBoundsForGroup = function(group, children, border)
  */
 mxGraph.prototype.createGroupCell = function(cells)
 {
+    // 中文注释：创建新的分组单元，初始化为空单元
 	var group = new mxCell('');
+    // 中文注释：设置单元为顶点（vertex）类型
 	group.setVertex(true);
+    // 中文注释：禁止分组单元的可连接性
 	group.setConnectable(false);
 	
+    // 中文注释：返回创建的分组单元
 	return group;
 };
 
@@ -5129,37 +5524,52 @@ mxGraph.prototype.createGroupCell = function(cells)
  */
 mxGraph.prototype.ungroupCells = function(cells)
 {
+    // 中文注释：初始化结果数组，存储从分组中移除的子单元
 	var result = [];
 	
+    // 中文注释：如果未提供单元数组，使用可解组的选中单元
 	if (cells == null)
 	{
+        // 中文注释：调用 getCellsForUngroup 获取可解组的单元
 		cells = this.getCellsForUngroup();
 	}
 	
+    // 中文注释：检查单元数组是否有效且不为空
 	if (cells != null && cells.length > 0)
 	{
+        // 中文注释：开始模型更新事务，确保解组操作的原子性
 		this.model.beginUpdate();
 		try
 		{
+            // 中文注释：遍历每个分组单元
 			for (var i = 0; i < cells.length; i++)
 			{
+                // 中文注释：获取分组单元的子节点
 				var children = this.model.getChildren(cells[i]);
 				
+                // 中文注释：如果存在子节点，执行解组操作
 				if (children != null && children.length > 0)
 				{
+                    // 中文注释：复制子节点数组以避免修改原始数据
 					children = children.slice();
+                    // 中文注释：获取分组单元的父节点
 					var parent = this.model.getParent(cells[i]);
+                    // 中文注释：获取父节点的子节点数量，用于确定插入位置
 					var index = this.model.getChildCount(parent);
 
+                    // 中文注释：将子节点添加到父节点，保持相对位置
 					this.cellsAdded(children, parent, index, null, null, true);
+                    // 中文注释：将子节点添加到结果数组
 					result = result.concat(children);
 					
-					// Fix relative child cells
+                    // 中文注释：处理相对坐标的子节点，转换为绝对坐标
 					for (var j = 0; j < children.length; j++)
 					{
+                        // 中文注释：获取子节点的状态和几何信息
 						var state = this.view.getState(children[j]);
 						var geo = this.getCellGeometry(children[j]);
 						
+                        // 中文注释：如果子节点具有相对坐标，转换为绝对坐标
 						if (state != null && geo != null && geo.relative)
 						{
 							geo = geo.clone();
@@ -5167,21 +5577,26 @@ mxGraph.prototype.ungroupCells = function(cells)
 							geo.y = state.origin.y;
 							geo.relative = false;
 							
+                            // 中文注释：更新子节点的几何信息
 							this.model.setGeometry(children[j], geo);
 						}
 					}
 				}
 			}
 
+            // 中文注释：移除空分组单元
 			this.removeCellsAfterUngroup(cells);
+            // 中文注释：触发 UNGROUP_CELLS 事件，通知解组完成
 			this.fireEvent(new mxEventObject(mxEvent.UNGROUP_CELLS, 'cells', cells));
 		}
 		finally
 		{
+            // 中文注释：结束模型更新事务，提交所有操作
 			this.model.endUpdate();
 		}
 	}
 	
+    // 中文注释：返回从分组中移除的子单元
 	return result;
 };
 
@@ -5192,11 +5607,13 @@ mxGraph.prototype.ungroupCells = function(cells)
  */
 mxGraph.prototype.getCellsForUngroup = function()
 {
+    // 中文注释：获取当前选中的单元
 	var cells = this.getSelectionCells();
 
-	// Finds the cells with children
+    // 中文注释：初始化临时数组，存储可解组的单元
 	var tmp = [];
 	
+    // 中文注释：筛选具有子节点的顶点单元
 	for (var i = 0; i < cells.length; i++)
 	{
 		if (this.model.isVertex(cells[i]) &&
@@ -5206,6 +5623,7 @@ mxGraph.prototype.getCellsForUngroup = function()
 		}
 	}
 
+    // 中文注释：返回可解组的单元数组
 	return tmp;
 };
 
@@ -5220,6 +5638,7 @@ mxGraph.prototype.getCellsForUngroup = function()
  */
 mxGraph.prototype.removeCellsAfterUngroup = function(cells)
 {
+    // 中文注释：移除解组后的空分组单元及其关联边
 	this.cellsRemoved(this.addAllEdges(cells));
 };
 
@@ -5235,25 +5654,33 @@ mxGraph.prototype.removeCellsAfterUngroup = function(cells)
  */
 mxGraph.prototype.removeCellsFromParent = function(cells)
 {
+    // 中文注释：如果未提供单元数组，使用当前选中的单元
 	if (cells == null)
 	{
 		cells = this.getSelectionCells();
 	}
 	
+    // 中文注释：开始模型更新事务，确保操作原子性
 	this.model.beginUpdate();
 	try
 	{
+        // 中文注释：获取默认父节点
 		var parent = this.getDefaultParent();
+        // 中文注释：获取默认父节点的子节点数量，用于确定插入位置
 		var index = this.model.getChildCount(parent);
 
+        // 中文注释：将单元添加到默认父节点，保持相对位置
 		this.cellsAdded(cells, parent, index, null, null, true);
+        // 中文注释：触发 REMOVE_CELLS_FROM_PARENT 事件，通知操作完成
 		this.fireEvent(new mxEventObject(mxEvent.REMOVE_CELLS_FROM_PARENT, 'cells', cells));
 	}
 	finally
 	{
+        // 中文注释：结束模型更新事务，提交所有操作
 		this.model.endUpdate();
 	}
 
+    // 中文注释：返回从原父节点移除的单元
 	return cells;
 };
 
@@ -5279,11 +5706,13 @@ mxGraph.prototype.removeCellsFromParent = function(cells)
  */
 mxGraph.prototype.updateGroupBounds = function(cells, border, moveGroup, topBorder, rightBorder, bottomBorder, leftBorder)
 {
+    // 中文注释：如果未提供单元数组，使用当前选中的单元
 	if (cells == null)
 	{
 		cells = this.getSelectionCells();
 	}
 	
+    // 中文注释：设置默认值，处理可选参数
 	border = (border != null) ? border : 0;
 	moveGroup = (moveGroup != null) ? moveGroup : false;
 	topBorder = (topBorder != null) ? topBorder : 0;
@@ -5291,38 +5720,51 @@ mxGraph.prototype.updateGroupBounds = function(cells, border, moveGroup, topBord
 	bottomBorder = (bottomBorder != null) ? bottomBorder : 0;
 	leftBorder = (leftBorder != null) ? leftBorder : 0;
 
+    // 中文注释：开始模型更新事务，确保操作原子性
 	this.model.beginUpdate();
 	try
 	{
+        // 中文注释：倒序遍历分组单元，从子到父处理
 		for (var i = cells.length - 1; i >= 0; i--)
 		{
+            // 中文注释：获取当前分组单元的几何信息
 			var geo = this.getCellGeometry(cells[i]);
 			
+            // 中文注释：如果几何信息存在，进一步处理
 			if (geo != null)
 			{
+                // 中文注释：获取分组单元的子节点
 				var children = this.getChildCells(cells[i]);
 				
+                // 中文注释：如果存在子节点，计算边界
 				if (children != null && children.length > 0)
 				{
+                    // 中文注释：计算子节点的几何边界，true 表示包含所有子节点
 					var bounds = this.getBoundingBoxFromGeometry(children, true);
 					
+                    // 中文注释：如果边界有效，调整分组单元的几何信息
 					if (bounds != null && bounds.width > 0 && bounds.height > 0)
 					{
 						// Adds the size of the title area for swimlanes
+						// 中文注释：如果为泳道，考虑标题区域大小
 						var size = (this.isSwimlane(cells[i])) ?
 							this.getActualStartSize(cells[i], true) : new mxRectangle();
 						geo = geo.clone();
 						
+                        // 中文注释：如果允许移动分组，调整分组位置
 						if (moveGroup)
 						{
 							geo.x = Math.round(geo.x + bounds.x - border - size.x - leftBorder);
 							geo.y = Math.round(geo.y + bounds.y - border - size.y - topBorder);
 						}
 						
+                        // 中文注释：调整分组的宽度和高度，包含边距和泳道标题
 						geo.width = Math.round(bounds.width + 2 * border + size.x + leftBorder + rightBorder + size.width);
 						geo.height = Math.round(bounds.height + 2 * border + size.y + topBorder + bottomBorder + size.height);
 						
+                        // 中文注释：更新分组单元的几何信息
 						this.model.setGeometry(cells[i], geo);
+                        // 中文注释：移动子节点以对齐分组边界
 						this.moveCells(children, border + size.x - bounds.x + leftBorder,
 								border + size.y - bounds.y + topBorder);
 					}
@@ -5332,9 +5774,11 @@ mxGraph.prototype.updateGroupBounds = function(cells, border, moveGroup, topBord
 	}
 	finally
 	{
+        // 中文注释：结束模型更新事务，提交所有操作
 		this.model.endUpdate();
 	}
 
+    // 中文注释：返回处理后的分组单元
 	return cells;
 };
 
@@ -5350,24 +5794,32 @@ mxGraph.prototype.updateGroupBounds = function(cells, border, moveGroup, topBord
  */
 mxGraph.prototype.getBoundingBox = function(cells)
 {
+    // 中文注释：初始化边界结果
 	var result = null;
 	
+    // 中文注释：检查输入单元数组是否有效且不为空
 	if (cells != null && cells.length > 0)
 	{
+        // 中文注释：遍历单元数组，计算每个单元及其子节点的边界
 		for (var i = 0; i < cells.length; i++)
 		{
+            // 中文注释：仅处理顶点或边类型的单元
 			if (this.model.isVertex(cells[i]) || this.model.isEdge(cells[i]))
 			{
+                // 中文注释：获取单元的状态边界，true 表示包含子节点
 				var bbox = this.view.getBoundingBox(this.view.getState(cells[i]), true);
 			
+                // 中文注释：如果边界有效，合并到结果中
 				if (bbox != null)
 				{
 					if (result == null)
 					{
+                        // 中文注释：初始化结果边界
 						result = mxRectangle.fromRectangle(bbox);
 					}
 					else
 					{
+                        // 中文注释：合并当前边界到结果边界
 						result.add(bbox);
 					}
 				}
@@ -5375,12 +5827,14 @@ mxGraph.prototype.getBoundingBox = function(cells)
 		}
 	}
 	
+    // 中文注释：返回计算得到的边界对象
 	return result;
 };
 
 /**
  * Group: Cell cloning, insertion and removal
  */
+// 分组：单元格克隆、插入和移除
 
 /**
  * Function: cloneCell
@@ -5396,6 +5850,15 @@ mxGraph.prototype.getBoundingBox = function(cells)
  * keepPosition - Optional boolean indicating if the position of the cells should
  * be updated to reflect the lost parent cell. Default is false.
  */
+// 函数：cloneCell
+// 返回指定单元格的克隆，使用 <cloneCells> 方法。
+// 参数：
+// cell - 要克隆的 <mxCell> 单元格。
+// allowInvalidEdges - 可选布尔值，指定是否克隆无效边，默认值为 true。
+// mapping - 可选的现有克隆映射。
+// keepPosition - 可选布尔值，指示是否更新单元格位置以反映丢失的父单元格，默认值为 false。
+// 功能说明：克隆单个单元格，调用 cloneCells 方法并返回第一个克隆结果。
+// 注意事项：依赖 cloneCells 方法处理克隆逻辑，确保参数传递一致。
 mxGraph.prototype.cloneCell = function(cell, allowInvalidEdges, mapping, keepPosition)
 {
 	return this.cloneCells([cell], allowInvalidEdges, mapping, keepPosition)[0];
@@ -5418,6 +5881,23 @@ mxGraph.prototype.cloneCell = function(cell, allowInvalidEdges, mapping, keepPos
  * keepPosition - Optional boolean indicating if the position of the cells should
  * be updated to reflect the lost parent cell. Default is false.
  */
+// 函数：cloneCells
+// 返回指定单元格数组的克隆，通过 <mxGraphModel.cloneCells> 递归创建克隆。
+// 如果边的端点不在给定数组中，则为该端点分配一个终端点并移除原端点。
+// 参数：
+// cells - 要克隆的 <mxCells> 数组。
+// allowInvalidEdges - 可选布尔值，指定是否克隆无效边，默认值为 true。
+// mapping - 可选的现有克隆映射。
+// keepPosition - 可选布尔值，指示是否更新单元格位置以反映丢失的父单元格，默认值为 false。
+// 功能说明：递归克隆单元格数组，处理边的端点，确保克隆结果有效。
+// 关键步骤：
+// 1. 创建字典以加速查找。
+// 2. 调用模型的 cloneCells 方法生成克隆。
+// 3. 根据 allowInvalidEdges 检查边有效性，无效边设为 null。
+// 4. 调整克隆单元格的几何位置，考虑缩放和平移。
+// 5. 处理边的控制点和端点坐标，确保位置正确。
+// 事件处理：无直接事件触发，依赖模型更新。
+// 注意事项：如果边的端点不在克隆数组中，会自动设置终端点；keepPosition 控制位置更新逻辑。
 mxGraph.prototype.cloneCells = function(cells, allowInvalidEdges, mapping, keepPosition)
 {
 	allowInvalidEdges = (allowInvalidEdges != null) ? allowInvalidEdges : true;
@@ -5426,6 +5906,7 @@ mxGraph.prototype.cloneCells = function(cells, allowInvalidEdges, mapping, keepP
 	if (cells != null)
 	{
 		// Creates a dictionary for fast lookups
+        // 创建字典以加速查找
 		var dict = new mxDictionary();
 		var tmp = [];
 		
@@ -5449,6 +5930,7 @@ mxGraph.prototype.cloneCells = function(cells, allowInvalidEdges, mapping, keepP
 						this.model.getTerminal(clones[i], false)) != null)
 				{
 					clones[i] = null;
+                    // 如果不允许克隆无效边且边无效，则将克隆结果设为 null
 				}
 				else
 				{
@@ -5463,7 +5945,8 @@ mxGraph.prototype.cloneCells = function(cells, allowInvalidEdges, mapping, keepP
 						{
 							var dx = (keepPosition) ? 0 : pstate.origin.x;
 							var dy = (keepPosition) ? 0 : pstate.origin.y;
-							
+                            // 根据 keepPosition 参数决定是否调整位置偏移
+
 							if (this.model.isEdge(clones[i]))
 							{
 								var pts = state.absolutePoints;
@@ -5471,6 +5954,7 @@ mxGraph.prototype.cloneCells = function(cells, allowInvalidEdges, mapping, keepP
 								if (pts != null)
 								{
 									// Checks if the source is cloned or sets the terminal point
+                                    // 检查源端点是否被克隆或设置终端点
 									var src = this.model.getTerminal(cells[i], true);
 									
 									while (src != null && !dict.get(src))
@@ -5483,9 +5967,11 @@ mxGraph.prototype.cloneCells = function(cells, allowInvalidEdges, mapping, keepP
 										g.setTerminalPoint(
 											new mxPoint(pts[0].x / scale - trans.x,
 												pts[0].y / scale - trans.y), true);
+                                        // 为未克隆的源端点设置终端点坐标
 									}
 									
 									// Checks if the target is cloned or sets the terminal point
+                                    // 检查目标端点是否被克隆或设置终端点
 									var trg = this.model.getTerminal(cells[i], false);
 									
 									while (trg != null && !dict.get(trg))
@@ -5500,9 +5986,11 @@ mxGraph.prototype.cloneCells = function(cells, allowInvalidEdges, mapping, keepP
 										g.setTerminalPoint(
 											new mxPoint(pts[n].x / scale - trans.x,
 												pts[n].y / scale - trans.y), false);
+                                        // 为未克隆的目标端点设置终端点坐标
 									}
 									
 									// Translates the control points
+                                    // 平移控制点
 									var points = g.points;
 									
 									if (points != null)
@@ -5518,6 +6006,7 @@ mxGraph.prototype.cloneCells = function(cells, allowInvalidEdges, mapping, keepP
 							else
 							{
 								g.translate(dx, dy);
+                                // 对非边单元格进行位置平移
 							}
 						}
 					}
@@ -5527,6 +6016,7 @@ mxGraph.prototype.cloneCells = function(cells, allowInvalidEdges, mapping, keepP
 		else
 		{
 			clones = [];
+            // 如果输入为空，返回空数组
 		}
 	}
 	
@@ -5574,12 +6064,35 @@ mxGraph.prototype.cloneCells = function(cells, allowInvalidEdges, mapping, keepP
  * relative - Optional boolean that specifies if the geometry is relative.
  * Default is false.
  */
+// 函数：insertVertex
+// 在指定父 <mxCell> 中添加新顶点，使用给定的值作为用户对象，坐标作为新顶点的 <mxGeometry>。
+// id 和 style 用于新 <mxCell> 的相应属性，返回新创建的单元格。
+// 注意事项：通过鼠标事件添加顶点时，需考虑图容器偏移以及视图的缩放和平移，使用 <mxGraph.getPointForEvent> 获取正确坐标。
+// 样式设置：可通过 style 参数指定图像单元格样式，如 `stylename;image=imageUrl`。
+// 参数：
+// parent - 指定新顶点父节点的 <mxCell>。
+// id - 可选字符串，定义在新顶点的 ID。
+// value - 用作用户对象的对象。
+// x - 定义顶点 x 坐标的整数。
+// y - 定义顶点 y 坐标的整数。
+// width - 定义顶点宽度的整数。
+// height - 定义顶点高度的整数。
+// style - 可选字符串，定义单元格样式。
+// relative - 可选布尔值，指定几何是否为相对坐标，默认值为 false。
+// 功能说明：创建并插入新顶点到指定父节点，返回新顶点。
+// 关键步骤：
+// 1. 调用 createVertex 创建顶点。
+// 2. 使用 addCell 将顶点添加到父节点。
+// 事件处理：通过 addCell 触发 mxEvent.ADD_CELLS 事件。
+// 交互逻辑：支持通过鼠标事件动态添加顶点，需正确转换坐标。
 mxGraph.prototype.insertVertex = function(parent, id, value,
 	x, y, width, height, style, relative)
 {
 	var vertex = this.createVertex(parent, id, value, x, y, width, height, style, relative);
+    // 创建新顶点
 
 	return this.addCell(vertex, parent);
+    // 将顶点添加到父节点并返回
 };
 
 /**
@@ -5587,19 +6100,31 @@ mxGraph.prototype.insertVertex = function(parent, id, value,
  * 
  * Hook method that creates the new vertex for <insertVertex>.
  */
+ // 函数：createVertex
+// 为 <insertVertex> 创建新顶点的钩子方法。
+// 功能说明：生成具有指定属性的新顶点单元格。
+// 关键步骤：
+// 1. 创建顶点的几何对象。
+// 2. 设置顶点的属性（ID、用户对象、样式、可连接性等）。
+// 参数：同 insertVertex。
+// 注意事项：仅创建顶点，不负责插入到图中，插入由 insertVertex 的 addCell 完成。
 mxGraph.prototype.createVertex = function(parent, id, value,
 		x, y, width, height, style, relative)
 {
 	// Creates the geometry for the vertex
+    // 为顶点创建几何对象
 	var geometry = new mxGeometry(x, y, width, height);
 	geometry.relative = (relative != null) ? relative : false;
-	
+    // 设置几何是否为相对坐标
+
 	// Creates the vertex
+    // 创建顶点
 	var vertex = new mxCell(value, geometry, style);
 	vertex.setId(id);
 	vertex.setVertex(true);
 	vertex.setConnectable(true);
-	
+    // 设置顶点属性：ID、顶点标志、可连接性
+
 	return vertex;
 };
 	
@@ -5620,11 +6145,29 @@ mxGraph.prototype.createVertex = function(parent, id, value,
  * target - <mxCell> that defines the target of the edge.
  * style - Optional string that defines the cell style.
  */
+// 函数：insertEdge
+// 在指定父 <mxCell> 中添加新边，使用给定值作为用户对象，指定源和目标作为新边的端点。
+// id 和 style 用于新 <mxCell> 的相应属性，返回新创建的边。
+// 参数：
+// parent - 指定新边父节点的 <mxCell>。
+// id - 可选字符串，定义新边的 ID。
+// value - 用作用户对象的 JavaScript 对象。
+// source - 定义边源节点的 <mxCell>。
+// target - 定义边目标节点的 <mxCell>。
+// style - 可选字符串，定义单元格样式。
+// 功能说明：创建并插入新边到指定父节点，返回新边。
+// 关键步骤：
+// 1. 调用 createEdge 创建边。
+// 2. 使用 addEdge 将边添加到父节点并连接源和目标。
+// 事件处理：通过 addEdge 触发 mxEvent.ADD_CELLS 事件。
+// 交互逻辑：支持动态添加边，通常用于连接两个顶点。
 mxGraph.prototype.insertEdge = function(parent, id, value, source, target, style)
 {
 	var edge = this.createEdge(parent, id, value, source, target, style);
-	
+    // 创建新边
+
 	return this.addEdge(edge, parent, source, target);
+    // 将边添加到父节点并连接源和目标，返回边
 };
 
 /**
@@ -5635,14 +6178,24 @@ mxGraph.prototype.insertEdge = function(parent, id, value, source, target, style
  * are set when the edge is added to the model.
  * 
  */
+// 函数：createEdge
+// 为 <insertEdge> 创建新边的钩子方法。
+// 功能说明：生成具有指定属性的新边单元格，源和目标端点在添加时设置。
+// 关键步骤：
+// 1. 创建边的几何对象，设置为相对坐标。
+// 2. 设置边属性（ID、用户对象、样式、边标志）。
+// 参数：同 insertEdge。
+// 注意事项：不设置源和目标端点，由 addEdge 负责连接。
 mxGraph.prototype.createEdge = function(parent, id, value, source, target, style)
 {
 	// Creates the edge
+    // 创建边
 	var edge = new mxCell(value, new mxGeometry(), style);
 	edge.setId(id);
 	edge.setEdge(true);
 	edge.geometry.relative = true;
-	
+    // 设置边属性：ID、边标志、相对几何
+
 	return edge;
 };
 
@@ -5662,6 +6215,18 @@ mxGraph.prototype.createEdge = function(parent, id, value, source, target, style
  * target - Optional <mxCell> that represents the target terminal.
  * index - Optional index to insert the cells at. Default is to append.
  */
+// 函数：addEdge
+// 将边添加到指定父节点，并连接到给定的源和目标端点。快捷方法，返回添加的边。
+// 参数：
+// edge - 要插入到父节点的 <mxCell> 边。
+// parent - 表示新父节点的 <mxCell>，若未提供则使用默认父节点。
+// source - 可选的表示源端点的 <mxCell>。
+// target - 可选的表示目标端点的 <mxCell>。
+// index - 可选的插入位置索引，默认追加到末尾。
+// 功能说明：将边插入图中并设置其源和目标端点。
+// 关键步骤：调用 addCell 方法完成插入和连接。
+// 事件处理：通过 addCell 触发 mxEvent.ADD_CELLS 事件。
+// 交互逻辑：支持动态连接两个顶点，简化边添加流程。
 mxGraph.prototype.addEdge = function(edge, parent, source, target, index)
 {
 	return this.addCell(edge, parent, index, source, target);
@@ -5683,6 +6248,17 @@ mxGraph.prototype.addEdge = function(edge, parent, source, target, index)
  * source - Optional <mxCell> that represents the source terminal.
  * target - Optional <mxCell> that represents the target terminal.
  */
+// 函数：addCell
+// 将单元格添加到父节点并连接到给定的源和目标端点。快捷方法，返回添加的单元格。
+// 参数：
+// cell - 要插入到父节点的 <mxCell> 单元格。
+// parent - 表示新父节点的 <mxCell>，若未提供则使用默认父节点。
+// index - 可选的插入位置索引，默认追加到末尾。
+// source - 可选的表示源端点的 <mxCell>。
+// target - 可选的表示目标端点的 <mxCell>。
+// 功能说明：将单个单元格插入图中并设置连接。
+// 关键步骤：调用 addCells 方法处理插入逻辑，返回第一个添加的单元格。
+// 事件处理：通过 addCells 触发 mxEvent.ADD_CELLS 事件。
 mxGraph.prototype.addCell = function(cell, parent, index, source, target)
 {
 	return this.addCells([cell], parent, index, source, target)[0];
@@ -5707,16 +6283,36 @@ mxGraph.prototype.addCell = function(cell, parent, index, source, target)
  * absolute - Optional boolean indicating of cells should be kept at
  * their absolute position. Default is false.
  */
+// 函数：addCells
+// 在指定索引处将单元格数组添加到父节点，连接到可选的源和目标端点，使用 <cellsAdded> 执行更改。
+// 在事务进行期间触发 <mxEvent.ADD_CELLS> 事件，返回添加的单元格。
+// 参数：
+// cells - 要插入的 <mxCells> 数组。
+// parent - 表示新父节点的 <mxCell>，若未提供则使用默认父节点。
+// index - 可选的插入位置索引，默认追加到末尾。
+// source - 可选的为所有插入单元格设置的源端点 <mxCell>。
+// target - 可选的为所有插入单元格设置的目标端点 <mxCell>。
+// absolute - 可选布尔值，指示单元格是否保持绝对位置，默认值为 false。
+// 功能说明：批量插入单元格并设置连接，支持绝对或相对位置。
+// 关键步骤：
+// 1. 设置默认父节点和索引。
+// 2. 调用 cellsAdded 执行插入。
+// 3. 触发 mxEvent.ADD_CELLS 事件。
+// 事件处理：触发 mxEvent.ADD_CELLS 事件，通知单元格添加。
+// 交互逻辑：支持批量添加顶点或边，自动处理父节点和端点连接。
+// 注意事项：absolute 参数控制位置是否固定，需谨慎设置以避免位置冲突。
 mxGraph.prototype.addCells = function(cells, parent, index, source, target, absolute)
 {
 	if (parent == null)
 	{
 		parent = this.getDefaultParent();
+        // 设置默认父节点
 	}
 	
 	if (index == null)
 	{
 		index = this.model.getChildCount(parent);
+        // 设置默认插入索引为父节点子节点数量
 	}
 	
 	this.model.beginUpdate();
@@ -5725,10 +6321,12 @@ mxGraph.prototype.addCells = function(cells, parent, index, source, target, abso
 		this.cellsAdded(cells, parent, index, source, target, (absolute != null) ? absolute : false, true);
 		this.fireEvent(new mxEventObject(mxEvent.ADD_CELLS, 'cells', cells,
 				'parent', parent, 'index', index, 'source', source, 'target', target));
+        // 调用 cellsAdded 插入单元格并触发添加事件
 	}
 	finally
 	{
 		this.model.endUpdate();
+        // 结束模型更新
 	}
 
 	return cells;
@@ -5740,6 +6338,25 @@ mxGraph.prototype.addCells = function(cells, parent, index, source, target, abso
  * Adds the specified cells to the given parent. This method fires
  * <mxEvent.CELLS_ADDED> while the transaction is in progress.
  */
+// 函数：cellsAdded
+// 将指定单元格添加到给定父节点，在事务进行期间触发 <mxEvent.CELLS_ADDED> 事件。
+// 参数：
+// cells - 要插入的 <mxCells> 数组。
+// parent - 表示新父节点的 <mxCell>。
+// index - 插入位置索引。
+// source - 可选的源端点 <mxCell>。
+// target - 可选的目标端点 <mxCell>。
+// absolute - 布尔值，指示是否保持绝对位置。
+// constrain - 布尔值，指示是否约束子节点。
+// extend - 布尔值，指示是否扩展父节点。
+// 功能说明：执行单元格插入逻辑，处理位置调整、父节点扩展和子节点约束。
+// 关键步骤：
+// 1. 调整单元格的几何位置，考虑父节点偏移。
+// 2. 添加单元格到模型。
+// 3. 根据配置自动调整大小、扩展父节点或约束子节点。
+// 4. 设置源和目标端点。
+// 事件处理：触发 mxEvent.CELLS_ADDED 事件，通知单元格添加。
+// 注意事项：支持绝对位置、父节点扩展和子节点约束，需确保参数有效性。
 mxGraph.prototype.cellsAdded = function(cells, parent, index, source, target, absolute, constrain, extend)
 {
 	if (cells != null && parent != null && index != null)
@@ -5750,18 +6367,22 @@ mxGraph.prototype.cellsAdded = function(cells, parent, index, source, target, ab
 			var parentState = (absolute) ? this.view.getState(parent) : null;
 			var o1 = (parentState != null) ? parentState.origin : null;
 			var zero = new mxPoint(0, 0);
+            // 获取父节点状态和原点，用于位置调整
 
 			for (var i = 0; i < cells.length; i++)
 			{
 				if (cells[i] == null)
 				{
 					index--;
+                    // 跳过空单元格并调整索引
 				}
 				else
 				{
 					var previous = this.model.getParent(cells[i]);
-	
+                    // 获取当前单元格的父节点
+
 					// Keeps the cell at its absolute location
+                    // 保持单元格的绝对位置
 					if (o1 != null && cells[i] != parent && parent != previous)
 					{
 						var oldState = this.view.getState(previous);
@@ -5772,20 +6393,24 @@ mxGraph.prototype.cellsAdded = function(cells, parent, index, source, target, ab
 						{
 							var dx = o2.x - o1.x;
 							var dy = o2.y - o1.y;
-	
+                            // 计算位置偏移
+
 							// FIXME: Cells should always be inserted first before any other edit
 							// to avoid forward references in sessions.
 							geo = geo.clone();
 							geo.translate(dx, dy);
-							
+                            // 克隆并平移几何对象
+
 							if (!geo.relative && this.model.isVertex(cells[i]) &&
 								!this.isAllowNegativeCoordinates())
 							{
 								geo.x = Math.max(0, geo.x);
 								geo.y = Math.max(0, geo.y);
+                                // 禁止负坐标
 							}
 							
 							this.model.setGeometry(cells[i], geo);
+                            // 更新单元格几何
 						}
 					}
 	
@@ -5794,35 +6419,44 @@ mxGraph.prototype.cellsAdded = function(cells, parent, index, source, target, ab
 					if (parent == previous && index + i > this.model.getChildCount(parent))
 					{
 						index--;
+                        // 调整索引以避免重复插入
 					}
 
 					this.model.add(parent, cells[i], index + i);
-					
+                    // 将单元格添加到父节点
+
 					if (this.autoSizeCellsOnAdd)
 					{
 						this.autoSizeCell(cells[i], true);
+                        // 自动调整单元格大小
 					}
 
 					// Extends the parent or constrains the child
+                    // 扩展父节点或约束子节点
 					if ((extend == null || extend) &&
 						this.isExtendParentsOnAdd(cells[i]) && this.isExtendParent(cells[i]))
 					{
 						this.extendParent(cells[i]);
+                        // 扩展父节点以包含子节点
 					}
 					
 					// Additionally constrains the child after extending the parent
+                    // 在扩展父节点后额外约束子节点
 					if (constrain == null || constrain)
 					{
 						this.constrainChild(cells[i]);
+                        // 约束子节点位置
 					}
 					
 					// Sets the source terminal
+                    // 设置源端点
 					if (source != null)
 					{
 						this.cellConnected(cells[i], source, true);
 					}
 					
 					// Sets the target terminal
+                    // 设置目标端点
 					if (target != null)
 					{
 						this.cellConnected(cells[i], target, false);
@@ -5833,10 +6467,12 @@ mxGraph.prototype.cellsAdded = function(cells, parent, index, source, target, ab
 			this.fireEvent(new mxEventObject(mxEvent.CELLS_ADDED, 'cells', cells,
 				'parent', parent, 'index', index, 'source', source, 'target', target,
 				'absolute', absolute));
+            // 触发单元格添加事件
 		}
 		finally
 		{
 			this.model.endUpdate();
+            // 结束模型更新
 		}
 	}
 };
@@ -5852,6 +6488,17 @@ mxGraph.prototype.cellsAdded = function(cells, parent, index, source, target, ab
  * recurse - Optional boolean which specifies if all descendants should be
  * autosized. Default is true.
  */
+// 函数：autoSizeCell
+// 调整指定单元格的大小以适应其标签和/或子节点。
+// 参数：
+// cell - 要调整大小的 <mxCells>。
+// recurse - 可选布尔值，指定是否调整所有后代的大小，默认值为 true。
+// 功能说明：自动调整单元格大小以适应内容。
+// 关键步骤：
+// 1. 递归调整子节点大小。
+// 2. 如果是顶点且允许自动调整大小，调用 updateCellSize。
+// 事件处理：通过 updateCellSize 触发 mxEvent.UPDATE_CELL_SIZE 事件。
+// 注意事项：仅对顶点有效，依赖 isAutoSizeCell 方法检查是否允许调整。
 mxGraph.prototype.autoSizeCell = function(cell, recurse)
 {
 	recurse = (recurse != null) ? recurse : true;
@@ -5863,12 +6510,14 @@ mxGraph.prototype.autoSizeCell = function(cell, recurse)
 		for (var i = 0; i < childCount; i++)
 		{
 			this.autoSizeCell(this.model.getChildAt(cell, i));
+            // 递归调整子节点大小
 		}
 	}
 
 	if (this.getModel().isVertex(cell) && this.isAutoSizeCell(cell))
 	{
 		this.updateCellSize(cell);
+        // 更新单元格大小
 	}
 };
 
@@ -5887,6 +6536,19 @@ mxGraph.prototype.autoSizeCell = function(cell, recurse)
  * includeEdges - Optional boolean which specifies if all connected edges
  * should be removed as well. Default is true.
  */
+// 函数：removeCells
+// 从图中移除指定单元格，如果 includeEdges 为 true，则包括所有连接的边，使用 <cellsRemoved> 执行更改。
+// 在事务进行期间触发 <mxEvent.REMOVE_CELLS> 事件，返回移除的单元格数组。
+// 参数：
+// cells - 要移除的 <mxCells> 数组，若为 null 则使用可删除的选中单元格。
+// includeEdges - 可选布尔值，指定是否移除所有连接的边，默认值为 true。
+// 功能说明：批量移除单元格及相关边。
+// 关键步骤：
+// 1. 如果未指定单元格，使用可删除的选中单元格。
+// 2. 如果 includeEdges 为 true，添加所有相关边。
+// 3. 调用 cellsRemoved 执行移除。
+// 事件处理：触发 mxEvent.REMOVE_CELLS 事件，通知单元格移除。
+// 注意事项：确保只移除可删除的单元格，避免移除不可见边导致问题。
 mxGraph.prototype.removeCells = function(cells, includeEdges)
 {
 	includeEdges = (includeEdges != null) ? includeEdges : true;
@@ -5894,9 +6556,11 @@ mxGraph.prototype.removeCells = function(cells, includeEdges)
 	if (cells == null)
 	{
 		cells = this.getDeletableCells(this.getSelectionCells());
+        // 获取可删除的选中单元格
 	}
 
 	// Adds all edges to the cells
+    // 添加所有相关边
 	if (includeEdges)
 	{
 		// FIXME: Remove duplicate cells in result or do not add if
@@ -5909,6 +6573,7 @@ mxGraph.prototype.removeCells = function(cells, includeEdges)
 		
 		// Removes edges that are currently not
 		// visible as those cannot be updated
+        // 移除当前不可见的边
 		var edges = this.getDeletableCells(this.getAllEdges(cells));
 		var dict = new mxDictionary();
 		
@@ -5924,6 +6589,7 @@ mxGraph.prototype.removeCells = function(cells, includeEdges)
 			{
 				dict.put(edges[i], true);
 				cells.push(edges[i]);
+                // 添加不可见的边到移除列表
 			}
 		}
 	}
@@ -5934,10 +6600,12 @@ mxGraph.prototype.removeCells = function(cells, includeEdges)
 		this.cellsRemoved(cells);
 		this.fireEvent(new mxEventObject(mxEvent.REMOVE_CELLS, 
 				'cells', cells, 'includeEdges', includeEdges));
+        // 执行移除并触发移除事件
 	}
 	finally
 	{
 		this.model.endUpdate();
+        // 结束模型更新
 	}
 	
 	return cells;
@@ -5953,6 +6621,17 @@ mxGraph.prototype.removeCells = function(cells, includeEdges)
  * 
  * cells - Array of <mxCells> to remove.
  */
+// 函数：cellsRemoved
+// 从模型中移除指定单元格，在事务进行期间触发 <mxEvent.CELLS_REMOVED> 事件。
+// 参数：
+// cells - 要移除的 <mxCells> 数组。
+// 功能说明：执行单元格移除逻辑，处理相关边的断开连接。
+// 关键步骤：
+// 1. 创建字典以加速查找。
+// 2. 断开未移除边的连接。
+// 3. 从模型中移除单元格。
+// 事件处理：触发 mxEvent.CELLS_REMOVED 事件，通知单元格移除。
+// 注意事项：确保断开未移除边的连接，避免悬空边。
 mxGraph.prototype.cellsRemoved = function(cells)
 {
 	if (cells != null && cells.length > 0)
@@ -5964,6 +6643,7 @@ mxGraph.prototype.cellsRemoved = function(cells)
 		try
 		{
 			// Creates hashtable for faster lookup
+            // 创建哈希表以加速查找
 			var dict = new mxDictionary();
 			
 			for (var i = 0; i < cells.length; i++)
@@ -5974,6 +6654,7 @@ mxGraph.prototype.cellsRemoved = function(cells)
 			for (var i = 0; i < cells.length; i++)
 			{
 				// Disconnects edges which are not being removed
+                // 断开未移除的边的连接
 				var edges = this.getAllEdges([cells[i]]);
 				
 				var disconnectTerminal = mxUtils.bind(this, function(edge, source)
@@ -5983,6 +6664,7 @@ mxGraph.prototype.cellsRemoved = function(cells)
 					if (geo != null)
 					{
 						// Checks if terminal is being removed
+                        // 检查端点是否被移除
 						var terminal = this.model.getTerminal(edge, source);
 						var connected = false;
 						var tmp = terminal;
@@ -6011,6 +6693,7 @@ mxGraph.prototype.cellsRemoved = function(cells)
 								geo.setTerminalPoint(new mxPoint(
 									pts[n].x / scale - tr.x - state.origin.x,
 									pts[n].y / scale - tr.y - state.origin.y), source);
+                                // 设置新的终端点坐标
 							}
 							else
 							{
@@ -6019,6 +6702,7 @@ mxGraph.prototype.cellsRemoved = function(cells)
 								// KNOWN: Should recurse to find parent offset
 								// of edge for nested groups but invisible edges
 								// should be removed in removeCells step
+								// 如果路由点不可用，回退到端点中心
 								var tstate = this.view.getState(terminal);
 								
 								if (tstate != null)
@@ -6031,6 +6715,7 @@ mxGraph.prototype.cellsRemoved = function(cells)
 
 							this.model.setGeometry(edge, geo);
 							this.model.setTerminal(edge, null, source);
+                            // 更新几何并移除端点连接
 						}
 					}
 				});
@@ -6042,17 +6727,21 @@ mxGraph.prototype.cellsRemoved = function(cells)
 						dict.put(edges[j], true);
 						disconnectTerminal(edges[j], true);
 						disconnectTerminal(edges[j], false);
+                        // 断开边的源和目标端点
 					}
 				}
 
 				this.model.remove(cells[i]);
+                // 从模型中移除单元格
 			}
 			
 			this.fireEvent(new mxEventObject(mxEvent.CELLS_REMOVED, 'cells', cells));
+            // 触发单元格移除事件
 		}
 		finally
 		{
 			this.model.endUpdate();
+            // 结束模型更新
 		}
 	}
 };
@@ -6077,6 +6766,27 @@ mxGraph.prototype.cellsRemoved = function(cells)
  * parent - Optional parent to insert the cell. If null the parent of
  * the edge is used.
  */
+// 函数：splitEdge
+// 通过在现有边和给定单元格之间添加新边来分割指定边，并将原边的源端点重新连接到给定单元格。
+// 在事务进行期间触发 <mxEvent.SPLIT_EDGE> 事件，返回插入的新边。
+// 参数：
+// edge - 表示要分割的边的 <mxCell>。
+// cells - 表示要插入边的单元格 <mxCells>。
+// newEdge - 表示要插入的新边 <mxCell>。
+// dx - 可选整数，指定单元格移动的 x 坐标向量。
+// dy - 可选整数，指定单元格移动的 y 坐标向量。
+// x - 指定放置位置 x 坐标的整数。
+// y - 指定放置位置 y 坐标的整数。
+// parent - 可选的插入单元格的父节点，若为 null 则使用边的父节点。
+// 功能说明：分割边并插入新边，调整连接和位置。
+// 关键步骤：
+// 1. 如果未提供新边，克隆现有边。
+// 2. 调整新边和原边的控制点。
+// 3. 移动插入的单元格。
+// 4. 添加新边和单元格到父节点。
+// 5. 重新连接原边和新边。
+// 事件处理：触发 mxEvent.SPLIT_EDGE 事件，通知边分割。
+// 注意事项：需确保新边的控制点正确分割，避免几何错误。
 mxGraph.prototype.splitEdge = function(edge, cells, newEdge, dx, dy, x, y, parent)
 {
 	dx = dx || 0;
@@ -6091,8 +6801,10 @@ mxGraph.prototype.splitEdge = function(edge, cells, newEdge, dx, dy, x, y, paren
 		if (newEdge == null)
 		{
 			newEdge = this.cloneCell(edge);
-			
+            // 克隆现有边作为新边
+
 			// Removes waypoints before/after new cell
+            // 移除新单元格前后控制点
 			var state = this.view.getState(edge);
 			var geo = this.getCellGeometry(newEdge);
 			
@@ -6102,7 +6814,8 @@ mxGraph.prototype.splitEdge = function(edge, cells, newEdge, dx, dy, x, y, paren
 				var s = this.view.scale;
 				var idx = mxUtils.findNearestSegment(state, (dx + t.x) * s, (dy + t.y) * s);
 				geo.points = geo.points.slice(0, idx);
-								
+                // 分割新边的控制点
+
 				geo = this.getCellGeometry(edge);
 				
 				if (geo != null && geo.points != null)
@@ -6110,22 +6823,29 @@ mxGraph.prototype.splitEdge = function(edge, cells, newEdge, dx, dy, x, y, paren
 					geo = geo.clone();
 					geo.points = geo.points.slice(idx);
 					this.model.setGeometry(edge, geo);
+                    // 分割原边的控制点
 				}
 			}
 		}
 		
 		this.cellsMoved(cells, dx, dy, false, false);
+        // 移动插入的单元格
 		this.cellsAdded(cells, parent, this.model.getChildCount(parent), null, null,
 				true);
+        // 添加单元格到父节点
 		this.cellsAdded([newEdge], parent, this.model.getChildCount(parent),
 				source, cells[0], false);
+        // 添加新边并连接源端点
 		this.cellConnected(edge, cells[0], true);
+        // 重新连接原边到新单元格
 		this.fireEvent(new mxEventObject(mxEvent.SPLIT_EDGE, 'edge', edge,
 				'cells', cells, 'newEdge', newEdge, 'dx', dx, 'dy', dy));
+        // 触发边分割事件
 	}
 	finally
 	{
 		this.model.endUpdate();
+        // 结束模型更新
 	}
 
 	return newEdge;
@@ -6134,6 +6854,7 @@ mxGraph.prototype.splitEdge = function(edge, cells, newEdge, dx, dy, x, y, paren
 /**
  * Group: Cell visibility
  */
+// 分组：单元格可见性
 
 /**
  * Function: toggleCells
@@ -6151,14 +6872,30 @@ mxGraph.prototype.splitEdge = function(edge, cells, newEdge, dx, dy, x, y, paren
  * includeEdges - Optional boolean indicating if the visible state of all
  * connected edges should be changed as well. Default is true.
  */
+// 函数：toggleCells
+// 设置指定单元格及其连接边的可见状态（若 includeEdges 为 true），使用 <cellsToggled> 执行更改。
+// 在事务进行期间触发 <mxEvent.TOGGLE_CELLS> 事件，返回更改了可见状态的单元格。
+// 参数：
+// show - 布尔值，指定要设置的可见状态。
+// cells - 要更改可见状态的 <mxCells> 数组，若为 null 则使用选中单元格。
+// includeEdges - 可选布尔值，指定是否更改所有连接边的可见状态，默认值为 true。
+// 功能说明：切换单元格及其相关边的可见性。
+// 关键步骤：
+// 1. 如果未指定单元格，使用选中单元格。
+// 2. 如果 includeEdges 为 true，添加所有相关边。
+// 3. 调用 cellsToggled 执行可见性更改。
+// 事件处理：触发 mxEvent.TOGGLE_CELLS 事件，通知可见性更改。
+// 注意事项：确保只更改可切换的单元格和边，避免影响不可见元素。
 mxGraph.prototype.toggleCells = function(show, cells, includeEdges)
 {
 	if (cells == null)
 	{
 		cells = this.getSelectionCells();
+        // 获取选中单元格
 	}
 
 	// Adds all connected edges recursively
+    // 递归添加所有连接边
 	if (includeEdges)
 	{
 		cells = this.addAllEdges(cells);
@@ -6170,10 +6907,12 @@ mxGraph.prototype.toggleCells = function(show, cells, includeEdges)
 		this.cellsToggled(cells, show);
 		this.fireEvent(new mxEventObject(mxEvent.TOGGLE_CELLS,
 			'show', show, 'cells', cells, 'includeEdges', includeEdges));
+        // 执行可见性切换并触发事件
 	}
 	finally
 	{
 		this.model.endUpdate();
+        // 结束模型更新
 	}
 
 	return cells;
@@ -6189,6 +6928,14 @@ mxGraph.prototype.toggleCells = function(show, cells, includeEdges)
  * cells - Array of <mxCells> whose visible state should be changed.
  * show - Boolean that specifies the visible state to be assigned.
  */
+// 函数：cellsToggled
+// 设置指定单元格的可见状态。
+// 参数：
+// cells - 要更改可见状态的 <mxCells> 数组。
+// show - 布尔值，指定要设置的可见状态。
+// 功能说明：直接设置单元格的可见性。
+// 关键步骤：遍历单元格并调用模型的 setVisible 方法。
+// 事件处理：无直接事件触发，依赖 toggleCells 的 mxEvent.TOGGLE_CELLS 事件。
 mxGraph.prototype.cellsToggled = function(cells, show)
 {
 	if (cells != null && cells.length > 0)
@@ -6199,11 +6946,13 @@ mxGraph.prototype.cellsToggled = function(cells, show)
 			for (var i = 0; i < cells.length; i++)
 			{
 				this.model.setVisible(cells[i], show);
+                // 设置单元格可见性
 			}
 		}
 		finally
 		{
 			this.model.endUpdate();
+            // 结束模型更新
 		}
 	}
 };
@@ -6211,6 +6960,7 @@ mxGraph.prototype.cellsToggled = function(cells, show)
 /**
  * Group: Folding
  */
+// 分组：折叠
 
 /**
  * Function: foldCells
@@ -6231,6 +6981,22 @@ mxGraph.prototype.cellsToggled = function(cells, show)
  * checked. Default is false.
  * evt - Optional native event that triggered the invocation.
  */
+// 函数：foldCells
+// 设置指定单元格及其后代的折叠状态（若 recurse 为 true），使用 <cellsFolded> 执行更改。
+// 在事务进行期间触发 <mxEvent.FOLD_CELLS> 事件，返回更改了折叠状态的单元格。
+// 参数：
+// collapse - 布尔值，指定要设置的折叠状态。
+// recurse - 可选布尔值，指定是否设置所有后代的折叠状态，默认值为 false。
+// cells - 要设置折叠状态的 <mxCells> 数组，若为 null 则使用可折叠的选中单元格。
+// checkFoldable - 可选布尔值，指定是否检查 isCellFoldable，默认值为 false。
+// evt - 可选的触发调用的原生事件。
+// 功能说明：切换单元格的折叠或展开状态。
+// 关键步骤：
+// 1. 如果未指定单元格，使用可折叠的选中单元格。
+// 2. 停止编辑以避免冲突。
+// 3. 调用 cellsFolded 执行折叠状态更改。
+// 事件处理：触发 mxEvent.FOLD_CELLS 事件，通知折叠状态更改。
+// 交互逻辑：支持通过事件（如鼠标点击）动态折叠或展开单元格。
 mxGraph.prototype.foldCells = function(collapse, recurse, cells, checkFoldable, evt)
 {
 	recurse = (recurse != null) ? recurse : false;
@@ -6238,9 +7004,11 @@ mxGraph.prototype.foldCells = function(collapse, recurse, cells, checkFoldable, 
 	if (cells == null)
 	{
 		cells = this.getFoldableCells(this.getSelectionCells(), collapse);
+        // 获取可折叠的选中单元格
 	}
 
 	this.stopEditing(false);
+    // 停止编辑
 
 	this.model.beginUpdate();
 	try
@@ -6248,10 +7016,12 @@ mxGraph.prototype.foldCells = function(collapse, recurse, cells, checkFoldable, 
 		this.cellsFolded(cells, collapse, recurse, checkFoldable);
 		this.fireEvent(new mxEventObject(mxEvent.FOLD_CELLS,
 			'collapse', collapse, 'recurse', recurse, 'cells', cells));
+        // 执行折叠并触发事件
 	}
 	finally
 	{
 		this.model.endUpdate();
+        // 结束模型更新
 	}
 
 	return cells;
@@ -6273,6 +7043,20 @@ mxGraph.prototype.foldCells = function(collapse, recurse, cells, checkFoldable, 
  * checkFoldable - Optional boolean indicating of isCellFoldable should be
  * checked. Default is false.
  */
+// 函数：cellsFolded
+// 设置指定单元格的折叠状态，在事务进行期间触发 <mxEvent.CELLS_FOLDED> 事件。
+// 返回更改了折叠状态的单元格。
+// 参数：
+// cells - 要设置折叠状态的 <mxCells> 数组。
+// collapse - 布尔值，指定要设置的折叠状态。
+// recurse - 布尔值，指定是否设置所有后代的折叠状态。
+// checkFoldable - 可选布尔值，指定是否检查 isCellFoldable，默认值为 false。
+// 功能说明：执行单元格折叠状态的更改，处理父节点扩展和子节点约束。
+// 关键步骤：
+// 1. 检查单元格是否可折叠且状态需要更改。
+// 2. 设置折叠状态并交换边界。
+// 3. 扩展父节点或约束子节点。
+// 事件处理：触发 mxEvent.CELLS_FOLDED 事件，通知折叠状态更改。
 mxGraph.prototype.cellsFolded = function(cells, collapse, recurse, checkFoldable)
 {
 	if (cells != null && cells.length > 0)
@@ -6287,28 +7071,34 @@ mxGraph.prototype.cellsFolded = function(cells, collapse, recurse, checkFoldable
 				{
 					this.model.setCollapsed(cells[i], collapse);
 					this.swapBounds(cells[i], collapse);
+                    // 设置折叠状态并交换边界
 
 					if (this.isExtendParent(cells[i]))
 					{
 						this.extendParent(cells[i]);
+                        // 扩展父节点
 					}
 
 					if (recurse)
 					{
 						var children = this.model.getChildren(cells[i]);
 						this.cellsFolded(children, collapse, recurse);
+                        // 递归折叠子节点
 					}
 					
 					this.constrainChild(cells[i]);
+                    // 约束子节点
 				}
 			}
 			
 			this.fireEvent(new mxEventObject(mxEvent.CELLS_FOLDED,
 				'cells', cells, 'collapse', collapse, 'recurse', recurse));
+            // 触发折叠事件
 		}
 		finally
 		{
 			this.model.endUpdate();
+            // 结束模型更新
 		}
 	}
 };
@@ -6324,6 +7114,17 @@ mxGraph.prototype.cellsFolded = function(cells, collapse, recurse, checkFoldable
  * cell - <mxCell> for which the bounds should be swapped.
  * willCollapse - Boolean indicating if the cell is going to be collapsed.
  */
+// 函数：swapBounds
+// 在给定单元格的几何中交换备用边界和实际边界，在交换前调用 <updateAlternateBounds>。
+// 参数：
+// cell - 要交换边界的 <mxCell>。
+// willCollapse - 布尔值，指示单元格是否将要折叠。
+// 功能说明：更新并交换单元格的几何边界。
+// 关键步骤：
+// 1. 克隆几何对象。
+// 2. 调用 updateAlternateBounds 更新备用边界。
+// 3. 执行边界交换并更新几何。
+// 注意事项：确保几何对象存在，避免无效操作。
 mxGraph.prototype.swapBounds = function(cell, willCollapse)
 {
 	if (cell != null)
@@ -6336,8 +7137,10 @@ mxGraph.prototype.swapBounds = function(cell, willCollapse)
 			
 			this.updateAlternateBounds(cell, geo, willCollapse);
 			geo.swap();
-			
+            // 交换边界
+
 			this.model.setGeometry(cell, geo);
+            // 更新几何
 		}
 	}
 };
@@ -6358,6 +7161,21 @@ mxGraph.prototype.swapBounds = function(cell, willCollapse)
  * g - <mxGeometry> for which the alternate bounds should be updated.
  * willCollapse - Boolean indicating if the cell is going to be collapsed.
  */
+// 函数：updateAlternateBounds
+// 根据单元格是否将要折叠，更新或设置给定几何的备用边界。
+// 如果几何中未定义备用边界且 <collapseToPreferredSize> 为 true，则使用首选大小作为备用边界。
+// 左上角始终保持在同一位置。
+// 参数：
+// cell - 要更新几何的 <mxCell>。
+// g - 要更新备用边界的 <mxGeometry>。
+// willCollapse - 布尔值，指示单元格是否将要折叠。
+// 功能说明：更新单元格的备用边界以支持折叠或展开。
+// 关键步骤：
+// 1. 如果没有备用边界，使用首选大小。
+// 2. 设置备用边界的位置。
+// 3. 处理旋转角度对边界的影响。
+// 重要配置参数：collapseToPreferredSize 控制是否使用首选大小。
+// 注意事项：确保左上角位置不变，考虑样式中的旋转角度。
 mxGraph.prototype.updateAlternateBounds = function(cell, geo, willCollapse)
 {
 	if (cell != null && geo != null)
@@ -6381,18 +7199,21 @@ mxGraph.prototype.updateAlternateBounds = function(cell, geo, willCollapse)
 					if (startSize > 0)
 					{
 						bounds.height = Math.max(bounds.height, startSize);
+                        // 确保高度不小于起始大小
 					}
 				}
 			}
 			
 			geo.alternateBounds = new mxRectangle(0, 0, bounds.width, bounds.height);
+            // 设置备用边界
 		}
 		
 		if (geo.alternateBounds != null)
 		{
 			geo.alternateBounds.x = geo.x;
 			geo.alternateBounds.y = geo.y;
-			
+            // 设置备用边界位置
+
 			var alpha = mxUtils.toRadians(style[mxConstants.STYLE_ROTATION] || 0);
 			
 			if (alpha != 0)
@@ -6408,6 +7229,7 @@ mxGraph.prototype.updateAlternateBounds = function(cell, geo, willCollapse)
 				
 				geo.alternateBounds.x += dx2 - dx;
 				geo.alternateBounds.y += dy2 - dy;
+                // 处理旋转角度
 			}
 		}
 	}
@@ -6419,6 +7241,13 @@ mxGraph.prototype.updateAlternateBounds = function(cell, geo, willCollapse)
  * Returns an array with the given cells and all edges that are connected
  * to a cell or one of its descendants.
  */
+// 函数：addAllEdges
+// 返回包含给定单元格及其所有连接边的数组，包括后代的边。
+// 功能说明：收集单元格及其后代的所有相关边。
+// 关键步骤：
+// 1. 复制输入单元格数组。
+// 2. 添加所有连接边并移除重复项。
+// 注意事项：确保返回的数组不包含重复边。
 mxGraph.prototype.addAllEdges = function(cells)
 {
 	var allCells = cells.slice();
@@ -6431,6 +7260,13 @@ mxGraph.prototype.addAllEdges = function(cells)
  * 
  * Returns all edges connected to the given cells or its descendants.
  */
+// 函数：getAllEdges
+// 返回连接到给定单元格或其后代的所有边。
+// 功能说明：递归获取所有相关边。
+// 关键步骤：
+// 1. 遍历单元格及其子节点。
+// 2. 收集每个单元格的边。
+// 注意事项：确保递归处理所有后代边。
 mxGraph.prototype.getAllEdges = function(cells)
 {
 	var edges = [];
@@ -6444,9 +7280,11 @@ mxGraph.prototype.getAllEdges = function(cells)
 			for (var j = 0; j < edgeCount; j++)
 			{
 				edges.push(this.model.getEdgeAt(cells[i], j));
+                // 添加当前单元格的边
 			}
 
 			// Recurses
+            // 递归处理
 			var children = this.model.getChildren(cells[i]);
 			edges = edges.concat(this.getAllEdges(children));
 		}
@@ -6458,6 +7296,7 @@ mxGraph.prototype.getAllEdges = function(cells)
 /**
  * Group: Cell sizing
  */
+// 分组：单元格大小调整
 
 /**
  * Function: updateCellSize
@@ -6470,6 +7309,15 @@ mxGraph.prototype.getAllEdges = function(cells)
  * 
  * cell - <mxCell> whose size should be updated.
  */
+// 函数：updateCellSize
+// 使用 <cellSizeUpdated> 更新模型中指定单元格的大小。
+// 在事务进行期间触发 <mxEvent.UPDATE_CELL_SIZE> 事件，返回更新了大小的单元格。
+// 参数：
+// cell - 要更新大小的 <mxCell>。
+// ignoreChildren - 可选布尔值，指定是否忽略子节点，默认值为 false。
+// 功能说明：更新单元格大小以适应其内容。
+// 关键步骤：调用 cellSizeUpdated 执行大小更新。
+// 事件处理：触发 mxEvent.UPDATE_CELL_SIZE 事件，通知大小更新。
 mxGraph.prototype.updateCellSize = function(cell, ignoreChildren)
 {
 	ignoreChildren = (ignoreChildren != null) ? ignoreChildren : false;
@@ -6480,10 +7328,12 @@ mxGraph.prototype.updateCellSize = function(cell, ignoreChildren)
 		this.cellSizeUpdated(cell, ignoreChildren);
 		this.fireEvent(new mxEventObject(mxEvent.UPDATE_CELL_SIZE,
 				'cell', cell, 'ignoreChildren', ignoreChildren));
+        // 执行大小更新并触发事件
 	}
 	finally
 	{
 		this.model.endUpdate();
+        // 结束模型更新
 	}
 	
 	return cell;
@@ -6499,6 +7349,17 @@ mxGraph.prototype.updateCellSize = function(cell, ignoreChildren)
  * 
  * cell - <mxCell> for which the size should be changed.
  */
+// 函数：cellSizeUpdated
+// 使用 <getPreferredSizeForCell> 获取新大小并更新模型中指定单元格的大小。
+// 参数：
+// cell - 要更改大小的 <mxCell>。
+// 功能说明：根据首选大小调整单元格的几何大小。
+// 关键步骤：
+// 1. 获取首选大小。
+// 2. 根据单元格类型（泳道或普通顶点）调整几何。
+// 3. 考虑子节点边界（若未忽略）。
+// 4. 调用 cellsResized 设置新大小。
+// 注意事项：支持泳道和普通顶点的不同大小调整逻辑，考虑对齐和折叠状态。
 mxGraph.prototype.cellSizeUpdated = function(cell, ignoreChildren)
 {
 	if (cell != null)
@@ -6528,6 +7389,7 @@ mxGraph.prototype.cellSizeUpdated = function(cell, ignoreChildren)
 					{
 						cellStyle = mxUtils.setStyle(cellStyle,
 								mxConstants.STYLE_STARTSIZE, size.height + 8);
+                        // 设置泳道水平起始大小
 
 						if (collapsed)
 						{
@@ -6540,6 +7402,7 @@ mxGraph.prototype.cellSizeUpdated = function(cell, ignoreChildren)
 					{
 						cellStyle = mxUtils.setStyle(cellStyle,
 								mxConstants.STYLE_STARTSIZE, size.width + 8);
+                        // 设置泳道垂直起始大小
 
 						if (collapsed)
 						{
@@ -6550,6 +7413,7 @@ mxGraph.prototype.cellSizeUpdated = function(cell, ignoreChildren)
 					}
 
 					this.model.setStyle(cell, cellStyle);
+                    // 更新单元格样式
 				}
 				else
 				{
@@ -6564,6 +7428,7 @@ mxGraph.prototype.cellSizeUpdated = function(cell, ignoreChildren)
 					{
 						geo.x += Math.round((geo.width - size.width) / 2);
 					}
+                    // 调整水平对齐
 
 					var valign = this.getVerticalAlign(state);
 					
@@ -6575,6 +7440,7 @@ mxGraph.prototype.cellSizeUpdated = function(cell, ignoreChildren)
 					{
 						geo.y += Math.round((geo.height - size.height) / 2);
 					}
+                    // 调整垂直对齐
 
 					geo.width = size.width;
 					geo.height = size.height;
@@ -6594,15 +7460,18 @@ mxGraph.prototype.cellSizeUpdated = function(cell, ignoreChildren)
 
 						geo.width = Math.max(geo.width, width);
 						geo.height = Math.max(geo.height, height);
+                        // 考虑子节点边界调整大小
 					}
 				}
 
 				this.cellsResized([cell], [geo], false);
+                // 设置新几何大小
 			}
 		}
 		finally
 		{
 			this.model.endUpdate();
+            // 结束模型更新
 		}
 	}
 };
@@ -6635,6 +7504,18 @@ mxGraph.prototype.cellSizeUpdated = function(cell, ignoreChildren)
  * cell - <mxCell> for which the preferred size should be returned.
  * textWidth - Optional maximum text width for word wrapping.
  */
+// 函数：getPreferredSizeForCell
+// 返回给定 <mxCell> 的首选宽度和高度，作为 <mxRectangle>。
+// 参数：
+// cell - 要返回首选大小的 <mxCell>。
+// textWidth - 可选的最大文本宽度，用于换行。
+// 功能说明：计算单元格的首选大小，考虑样式、图像和标签。
+// 关键步骤：
+// 1. 获取单元格样式和状态。
+// 2. 计算图像、间距和标签的大小。
+// 3. 根据网格对齐调整大小。
+// 样式设置：支持图像大小、字体大小、间距和对齐设置。
+// 注意事项：非边单元格支持标签换行和图像大小调整。
 mxGraph.prototype.getPreferredSizeForCell = function(cell, textWidth)
 {
 	var result = null;
@@ -6651,6 +7532,7 @@ mxGraph.prototype.getPreferredSizeForCell = function(cell, textWidth)
 			var dy = 0;
 			
 			// Adds dimension of image if shape is a label
+            // 如果形状是标签，添加图像尺寸
 			if (this.getImage(state) != null || style[mxConstants.STYLE_IMAGE] != null)
 			{
 				if (style[mxConstants.STYLE_SHAPE] == mxConstants.SHAPE_LABEL)
@@ -6668,6 +7550,7 @@ mxGraph.prototype.getPreferredSizeForCell = function(cell, textWidth)
 			}
 
 			// Adds spacings
+            // 添加间距
 			dx += 2 * (style[mxConstants.STYLE_SPACING] || 0);
 			dx += style[mxConstants.STYLE_SPACING_LEFT] || 0;
 			dx += style[mxConstants.STYLE_SPACING_RIGHT] || 0;
@@ -6679,6 +7562,7 @@ mxGraph.prototype.getPreferredSizeForCell = function(cell, textWidth)
 			// Add spacing for collapse/expand icon
 			// LATER: Check alignment and use constants
 			// for image spacing
+			// 为折叠/展开图标添加间距
 			var image = this.getFoldingImage(state);
 			
 			if (image != null)
@@ -6687,6 +7571,7 @@ mxGraph.prototype.getPreferredSizeForCell = function(cell, textWidth)
 			}
 
 			// Adds space for label
+            // 为标签添加空间
 			var value = this.cellRenderer.getLabelValue(state);
 
 			if (value != null && value.length > 0)
@@ -6710,12 +7595,14 @@ mxGraph.prototype.getPreferredSizeForCell = function(cell, textWidth)
 					
 					height = width;
 					width = tmp;
+                    // 垂直方向交换宽高
 				}
 			
 				if (this.gridEnabled)
 				{
 					width = this.snap(width + this.gridSize / 2);
 					height = this.snap(height + this.gridSize / 2);
+                    // 按网格对齐
 				}
 
 				result = new mxRectangle(0, 0, width, height);
@@ -6724,6 +7611,7 @@ mxGraph.prototype.getPreferredSizeForCell = function(cell, textWidth)
 			{
 				var gs2 = 4 * this.gridSize;
 				result = new mxRectangle(0, 0, gs2, gs2);
+                // 默认大小
 			}
 		}
 	}
@@ -6742,6 +7630,14 @@ mxGraph.prototype.getPreferredSizeForCell = function(cell, textWidth)
  * cell - <mxCell> whose bounds should be changed.
  * bounds - <mxRectangle> that represents the new bounds.
  */
+// 函数：resizeCell
+// 使用 <resizeCells> 设置给定单元格的边界，返回传入的单元格。
+// 参数：
+// cell - 要更改边界的 <mxCell>。
+// bounds - 表示新边界的 <mxRectangle>。
+// 功能说明：调整单个单元格的边界大小。
+// 关键步骤：调用 resizeCells 处理边界调整。
+// 事件处理：通过 resizeCells 触发 mxEvent.RESIZE_CELLS 事件。
 mxGraph.prototype.resizeCell = function(cell, bounds, recurse)
 {
 	return this.resizeCells([cell], [bounds], recurse)[0];
@@ -6759,6 +7655,19 @@ mxGraph.prototype.resizeCell = function(cell, bounds, recurse)
  * cells - Array of <mxCells> whose bounds should be changed.
  * bounds - Array of <mxRectangles> that represent the new bounds.
  */
+// 函数：resizeCells
+// 设置给定单元格的边界并在事务进行期间触发 <mxEvent.RESIZE_CELLS> 事件。
+// 返回传入的单元格。
+// 参数：
+// cells - 要更改边界的 <mxCells> 数组。
+// bounds - 表示新边界的 <mxRectangles> 数组。
+// recurse - 可选布尔值，指定是否调整子节点大小。
+// 功能说明：批量调整单元格边界，支持递归调整。
+// 关键步骤：
+// 1. 调用 cellsResized 执行边界调整。
+// 2. 触发 mxEvent.RESIZE_CELLS 事件。
+// 事件处理：触发 mxEvent.RESIZE_CELLS 事件，通知边界更改。
+// 注意事项：确保 cells 和 bounds 数组长度匹配。
 mxGraph.prototype.resizeCells = function(cells, bounds, recurse)
 {
 	recurse = (recurse != null) ? recurse : this.isRecursiveResize();
@@ -6769,10 +7678,12 @@ mxGraph.prototype.resizeCells = function(cells, bounds, recurse)
 		var prev = this.cellsResized(cells, bounds, recurse);
 		this.fireEvent(new mxEventObject(mxEvent.RESIZE_CELLS,
 			'cells', cells, 'bounds', bounds, 'previous', prev));
+        // 执行边界调整并触发事件
 	}
 	finally
 	{
 		this.model.endUpdate();
+        // 结束模型更新
 	}
 
 	return cells;
@@ -6824,6 +7735,20 @@ mxGraph.prototype.resizeCells = function(cells, bounds, recurse)
  * bounds - Array of <mxRectangles> that represent the new bounds.
  * recurse - Optional boolean that specifies if the children should be resized.
  */
+// 函数：cellsResized
+// 设置给定单元格的边界并触发 <mxEvent.CELLS_RESIZED> 事件。
+// 如果 <extendParents> 为 true，则在子节点大小更改导致与父节点重叠时扩展父节点。
+// 参数：
+// cells - 要更改边界的 <mxCells> 数组。
+// bounds - 表示新边界的 <mxRectangles> 数组。
+// recurse - 可选布尔值，指定是否调整子节点大小。
+// 功能说明：批量调整单元格边界，支持父节点扩展和子节点约束。
+// 关键步骤：
+// 1. 遍历单元格并调用 cellResized。
+// 2. 如果需要，扩展父节点或约束子节点。
+// 3. 如果 resetEdgesOnResize 为 true，重置相关边。
+// 事件处理：触发 mxEvent.CELLS_RESIZED 事件，通知边界更改。
+// 注意事项：确保父节点扩展和子节点约束逻辑正确执行。
 mxGraph.prototype.cellsResized = function(cells, bounds, recurse)
 {
 	recurse = (recurse != null) ? recurse : false;
@@ -6837,26 +7762,32 @@ mxGraph.prototype.cellsResized = function(cells, bounds, recurse)
 			for (var i = 0; i < cells.length; i++)
 			{
 				prev.push(this.cellResized(cells[i], bounds[i], false, recurse));
+                // 调整单个单元格大小
 
 				if (this.isExtendParent(cells[i]))
 				{
 					this.extendParent(cells[i]);
+                    // 扩展父节点
 				}
 				
 				this.constrainChild(cells[i]);
+                // 约束子节点
 			}
 
 			if (this.resetEdgesOnResize)
 			{
 				this.resetEdges(cells);
+                // 重置相关边
 			}
 			
 			this.fireEvent(new mxEventObject(mxEvent.CELLS_RESIZED,
 				'cells', cells, 'bounds', bounds, 'previous', prev));
+            // 触发边界调整事件
 		}
 		finally
 		{
 			this.model.endUpdate();
+            // 结束模型更新
 		}
 	}
 	
