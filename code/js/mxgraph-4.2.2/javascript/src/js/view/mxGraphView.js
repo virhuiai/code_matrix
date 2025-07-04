@@ -1845,6 +1845,28 @@ mxGraphView.prototype.updateBoundsFromStencil = function(state)
  * source - <mxCellState> that represents the source terminal.
  * target - <mxCellState> that represents the target terminal.
  */
+/**
+ * 函数: updatePoints
+ *
+ * 使用指定的<mxPoints>数组作为相对点，更新给定状态的绝对点。
+ *
+ * 参数：
+ *
+ * edge - 要更新绝对点的<mxCellState>。
+ * points - 构成相对点的<mxPoints>数组。
+ * source - 表示源终端的<mxCellState>。
+ * target - 表示目标终端的<mxCellState>。
+ *
+ * 中文注释：
+ * 方法目的：更新边的绝对路径点，确保边的显示符合几何和样式要求。
+ * 主要功能：根据边样式或提供的相对点更新边的绝对路径点。
+ * 关键步骤：
+ * 1. 初始化绝对点数组，添加边的起始点。
+ * 2. 根据边样式（edgeStyle）计算路径点，若无样式则使用提供的相对点。
+ * 3. 如果使用模板（stencil），更新并恢复源和目标终端的边界。
+ * 4. 添加边的终点并更新绝对点数组。
+ * 特殊处理注意事项：当边样式或相对点不存在时，需确保路径点有效。
+ */
 mxGraphView.prototype.updatePoints = function(edge, points, source, target)
 {
 	if (edge != null)
@@ -1859,12 +1881,14 @@ mxGraphView.prototype.updatePoints = function(edge, points, source, target)
 			var trg = this.getTerminalPort(edge, target, false);
 			
 			// Uses the stencil bounds for routing and restores after routing
+            // 中文注释：使用模板边界进行路径计算，并在完成后恢复边界。
 			var srcBounds = this.updateBoundsFromStencil(src);
 			var trgBounds = this.updateBoundsFromStencil(trg);
 
 			edgeStyle(edge, src, trg, points, pts);
 			
 			// Restores previous bounds
+            // 中文注释：恢复源和目标终端的原始边界。
 			if (srcBounds != null)
 			{
 				src.setRect(srcBounds.x, srcBounds.y, srcBounds.width, srcBounds.height);
@@ -1899,6 +1923,24 @@ mxGraphView.prototype.updatePoints = function(edge, points, source, target)
  *
  * Transforms the given control point to an absolute point.
  */
+/**
+ * 函数: transformControlPoint
+ *
+ * 将给定的控制点转换为绝对点。
+ *
+ * 中文注释：
+ * 方法目的：将相对控制点转换为绝对坐标，考虑视图的缩放和平移。
+ * 主要功能：根据视图的变换参数计算绝对点坐标。
+ * 参数：
+ * - state: 表示边的<mxCellState>。
+ * - pt: 要转换的相对点<mxPoint>。
+ * - ignoreScale: 可选布尔值，是否忽略缩放，默认考虑缩放。
+ * 关键步骤：
+ * 1. 检查状态和点是否有效。
+ * 2. 应用缩放和平移变换，计算绝对坐标。
+ * 3. 返回转换后的绝对点或null。
+ * 特殊处理注意事项：当忽略缩放时，使用原始坐标计算。
+ */
 mxGraphView.prototype.transformControlPoint = function(state, pt, ignoreScale)
 {
 	if (state != null && pt != null)
@@ -1921,6 +1963,26 @@ mxGraphView.prototype.transformControlPoint = function(state, pt, ignoreScale)
  * returns true if the given edge is a loop and does not have connections constraints
  * associated.
  */
+/**
+ * 函数: isLoopStyleEnabled
+ *
+ * 如果给定边应使用<mxGraph.defaultLoopStyle>或<mxConstants.STYLE_LOOP>定义的样式进行路径计算，则返回true。此实现检查边是否为循环边且没有关联的连接约束。
+ *
+ * 中文注释：
+ * 方法目的：判断边是否应使用循环样式进行路径计算。
+ * 主要功能：检查边是否为自循环且无连接约束。
+ * 参数：
+ * - edge: 表示边的<mxCellState>。
+ * - points: 相对点数组<mxPoints>。
+ * - source: 表示源终端的<mxCellState>。
+ * - target: 表示目标终端的<mxCellState>。
+ * 关键步骤：
+ * 1. 获取源和目标的连接约束。
+ * 2. 检查点数量和样式设置，确定是否为循环边。
+ * 3. 返回true表示使用循环样式，false表示不使用。
+ * 重要配置参数：mxConstants.STYLE_ORTHOGONAL_LOOP控制是否使用正交循环样式。
+ * 特殊处理注意事项：仅当源和目标相同且无约束时启用循环样式。
+ */
 mxGraphView.prototype.isLoopStyleEnabled = function(edge, points, source, target)
 {
 	var sc = this.graph.getConnectionConstraint(edge, source, true);
@@ -1941,6 +2003,29 @@ mxGraphView.prototype.isLoopStyleEnabled = function(edge, points, source, target
  * 
  * Returns the edge style function to be used to render the given edge state.
  */
+/**
+ * 函数: getEdgeStyle
+ *
+ * 返回用于渲染给定边状态的边样式函数。
+ *
+ * 中文注释：
+ * 方法目的：获取适用于边的渲染样式函数。
+ * 主要功能：根据边样式或循环样式选择合适的渲染函数。
+ * 参数：
+ * - edge: 表示边的<mxCellState>。
+ * - points: 相对点数组<mxPoints>。
+ * - source: 表示源终端的<mxCellState>。
+ * - target: 表示目标终端的<mxCellState>。
+ * 关键步骤：
+ * 1. 检查是否启用循环样式，获取循环样式或默认样式。
+ * 2. 如果边样式为字符串，尝试从<mxStyleRegistry>获取或动态评估。
+ * 3. 确保返回值为函数类型，否则返回null。
+ * 重要配置参数：
+ * - mxConstants.STYLE_LOOP：定义循环边样式。
+ * - mxConstants.STYLE_EDGE：定义普通边样式。
+ * - mxConstants.STYLE_NOEDGESTYLE：禁用边样式。
+ * 特殊处理注意事项：动态评估样式字符串时需启用allowEval，否则可能引发安全问题。
+ */
 mxGraphView.prototype.getEdgeStyle = function(edge, points, source, target)
 {
 	var edgeStyle = this.isLoopStyleEnabled(edge, points, source, target) ?
@@ -1949,6 +2034,7 @@ mxGraphView.prototype.getEdgeStyle = function(edge, points, source, target)
 		edge.style[mxConstants.STYLE_EDGE] : null);
 
 	// Converts string values to objects
+    // 中文注释：将字符串值转换为对象。
 	if (typeof(edgeStyle) == "string")
 	{
 		var tmp = mxStyleRegistry.getValue(edgeStyle);
@@ -1981,6 +2067,24 @@ mxGraphView.prototype.getEdgeStyle = function(edge, points, source, target)
  * source - <mxCellState> that represents the source terminal.
  * target - <mxCellState> that represents the target terminal.
  */
+/**
+ * 函数: updateFloatingTerminalPoints
+ *
+ * 在计算边样式后，更新给定状态的终端点。
+ *
+ * 参数：
+ *
+ * state - 要更新终端点的<mxCellState>。
+ * source - 表示源终端的<mxCellState>。
+ * target - 表示目标终端的<mxCellState>。
+ *
+ * 中文注释：
+ * 方法目的：更新边的浮动终端点，确保边连接正确。
+ * 主要功能：在边样式计算后调整源和目标终端点。
+ * 关键步骤：
+ * 1. 检查绝对点数组的起始和结束点。
+ * 2. 如果起始或结束点为空，调用updateFloatingTerminalPoint更新。
+ */
 mxGraphView.prototype.updateFloatingTerminalPoints = function(state, source, target)
 {
 	var pts = state.absolutePoints;
@@ -2011,6 +2115,25 @@ mxGraphView.prototype.updateFloatingTerminalPoints = function(state, source, tar
  * end - <mxCellState> for the terminal on the other side of the edge.
  * source - Boolean indicating if start is the source terminal state.
  */
+/**
+ * 函数: updateFloatingTerminalPoint
+ *
+ * 更新给定状态的绝对终端点，start为源终端（如果source为true）。
+ *
+ * 参数：
+ *
+ * edge - 要更新终端点的<mxCellState>。
+ * start - 表示边“此侧”终端的<mxCellState>。
+ * end - 表示边另一侧终端的<mxCellState>。
+ * source - 布尔值，指示start是否为源终端状态。
+ *
+ * 中文注释：
+ * 方法目的：更新边的浮动终端点位置。
+ * 主要功能：根据边的样式和终端状态计算浮动终端点。
+ * 关键步骤：
+ * 1. 调用getFloatingTerminalPoint获取浮动终端点。
+ * 2. 使用setAbsoluteTerminalPoint设置绝对终端点。
+ */
 mxGraphView.prototype.updateFloatingTerminalPoint = function(edge, start, end, source)
 {
 	edge.setAbsoluteTerminalPoint(this.getFloatingTerminalPoint(edge, start, end, source), source);
@@ -2028,6 +2151,33 @@ mxGraphView.prototype.updateFloatingTerminalPoint = function(edge, start, end, s
  * start - <mxCellState> for the terminal on "this" side of the edge.
  * end - <mxCellState> for the terminal on the other side of the edge.
  * source - Boolean indicating if start is the source terminal state.
+ */
+/**
+ * 函数: getFloatingTerminalPoint
+ *
+ * 返回给定边的浮动终端点，start为源终端（如果source为true）。
+ *
+ * 参数：
+ *
+ * edge - 要返回终端点的<mxCellState>。
+ * start - 表示边“此侧”终端的<mxCellState>。
+ * end - 表示边另一侧终端的<mxCellState>。
+ * source - 布尔值，指示start是否为源终端状态。
+ *
+ * 中文注释：
+ * 方法目的：计算边的浮动终端点坐标。
+ * 主要功能：根据终端状态和样式计算浮动连接点。
+ * 关键步骤：
+ * 1. 获取终端端口（如果适用）。
+ * 2. 获取下一路径点。
+ * 3. 应用旋转和边界间距调整。
+ * 4. 调用getPerimeterPoint计算连接点。
+ * 5. 如果有旋转，调整点坐标。
+ * 样式设置：
+ * - mxConstants.STYLE_PERIMETER_SPACING：定义边界间距。
+ * - mxConstants.STYLE_SOURCE_PERIMETER_SPACING：源终端边界间距。
+ * - mxConstants.STYLE_TARGET_PERIMETER_SPACING：目标终端边界间距。
+ * 特殊处理注意事项：考虑正交边和旋转对终端点的影响。
  */
 mxGraphView.prototype.getFloatingTerminalPoint = function(edge, start, end, source)
 {
@@ -2073,6 +2223,28 @@ mxGraphView.prototype.getFloatingTerminalPoint = function(edge, start, end, sour
  * terminal - <mxCellState> that represents the terminal.
  * source - Boolean indicating if the given terminal is the source terminal.
  */
+/**
+ * 函数: getTerminalPort
+ *
+ * 返回表示给定边的源或目标终端或端口的<mxCellState>。
+ *
+ * 参数：
+ *
+ * state - 表示边状态的<mxCellState>。
+ * terminal - 表示终端的<mxCellState>。
+ * source - 布尔值，指示给定终端是否为源终端。
+ *
+ * 中文注释：
+ * 方法目的：获取边的源或目标端口状态。
+ * 主要功能：根据样式中的端口ID返回对应的终端状态。
+ * 关键步骤：
+ * 1. 从样式中获取源或目标端口ID。
+ * 2. 如果存在端口ID，获取对应的单元状态。
+ * 3. 如果端口状态有效，替换终端状态。
+ * 重要配置参数：
+ * - mxConstants.STYLE_SOURCE_PORT：源端口样式键。
+ * - mxConstants.STYLE_TARGET_PORT：目标端口样式键。
+ */
 mxGraphView.prototype.getTerminalPort = function(state, terminal, source)
 {
 	var key = (source) ? mxConstants.STYLE_SOURCE_PORT :
@@ -2109,6 +2281,33 @@ mxGraphView.prototype.getTerminalPort = function(state, terminal, source)
  * returned.
  * border - Optional border between the perimeter and the shape.
  */
+/**
+ * 函数: getPerimeterPoint
+ *
+ * 返回定义形状周界与形状中心到给定点之间的线交点的<mxPoint>。
+ *
+ * 参数：
+ *
+ * terminal - 表示源或目标终端的<mxCellState>。
+ * next - 位于终端外的<mxPoint>。
+ * orthogonal - 布尔值，指定是否返回周界的正交投影。如果为false，返回周界与中心到next的线的交点。
+ * border - 可选的周界与形状之间的边界间距。
+ *
+ * 中文注释：
+ * 方法目的：计算终端周界与外部点的交点。
+ * 主要功能：根据周界函数和样式计算连接点坐标。
+ * 关键步骤：
+ * 1. 获取周界函数。
+ * 2. 计算周界边界，考虑间距。
+ * 3. 应用翻转（flip）样式调整坐标。
+ * 4. 调用周界函数计算交点。
+ * 5. 恢复翻转调整。
+ * 样式设置：
+ * - mxConstants.STYLE_FLIPH：水平翻转。
+ * - mxConstants.STYLE_FLIPV：垂直翻转。
+ * - stencilFlipH/V：模板特定的翻转样式。
+ * 特殊处理注意事项：处理翻转样式以确保正确坐标计算。
+ */
 mxGraphView.prototype.getPerimeterPoint = function(terminal, next, orthogonal, border)
 {
 	var point = null;
@@ -2133,6 +2332,7 @@ mxGraphView.prototype.getPerimeterPoint = function(terminal, next, orthogonal, b
 					flipV = mxUtils.getValue(terminal.style, mxConstants.STYLE_FLIPV, 0) == 1;	
 	
 					// Legacy support for stencilFlipH/V
+                    // 中文注释：支持旧版stencilFlipH/V样式。
 					if (terminal.shape != null && terminal.shape.stencil != null)
 					{
 						flipH = (mxUtils.getValue(terminal.style, 'stencilFlipH', 0) == 1) || flipH;
@@ -2181,6 +2381,20 @@ mxGraphView.prototype.getPerimeterPoint = function(terminal, next, orthogonal, b
  * 
  * Returns the x-coordinate of the center point for automatic routing.
  */
+/**
+ * 函数: getRoutingCenterX
+ *
+ * 返回自动路径计算的X中心点坐标。
+ *
+ * 中文注释：
+ * 方法目的：提供用于自动路径计算的X中心点。
+ * 主要功能：根据样式调整计算终端的X中心坐标。
+ * 关键步骤：
+ * 1. 从样式获取路由中心偏移（STYLE_ROUTING_CENTER_X）。
+ * 2. 计算中心点X坐标加上偏移量。
+ * 样式设置：
+ * - mxConstants.STYLE_ROUTING_CENTER_X：定义X方向路由中心偏移。
+ */
 mxGraphView.prototype.getRoutingCenterX = function (state)
 {
 	var f = (state.style != null) ? parseFloat(state.style
@@ -2193,6 +2407,20 @@ mxGraphView.prototype.getRoutingCenterX = function (state)
  * Function: getRoutingCenterY
  * 
  * Returns the y-coordinate of the center point for automatic routing.
+ */
+/**
+ * 函数: getRoutingCenterY
+ *
+ * 返回自动路径计算的Y中心点坐标。
+ *
+ * 中文注释：
+ * 方法目的：提供用于自动路径计算的Y中心点。
+ * 主要功能：根据样式调整计算终端的Y中心坐标。
+ * 关键步骤：
+ * 1. 从样式获取路由中心偏移（STYLE_ROUTING_CENTER_Y）。
+ * 2. 计算中心点Y坐标加上偏移量。
+ * 样式设置：
+ * - mxConstants.STYLE_ROUTING_CENTER_Y：定义Y方向路由中心偏移。
  */
 mxGraphView.prototype.getRoutingCenterY = function (state)
 {
@@ -2245,6 +2473,56 @@ mxGraphView.prototype.getRoutingCenterY = function (state)
  * terminal - <mxCellState> that represents the terminal.
  * border - Number that adds a border between the shape and the perimeter.
  */
+/**
+ * 函数: getPerimeterBounds
+ *
+ * 返回给定终端和边的周界边界，作为<mxRectangle>。
+ *
+ * 如果模型中每个终端有一个相对子节点作为连接的图形端点，可以按以下方式替换此方法：
+ *
+ * (code)
+ * var oldGetPerimeterBounds = mxGraphView.prototype.getPerimeterBounds;
+ * mxGraphView.prototype.getPerimeterBounds = function(terminal, edge, isSource)
+ * {
+ *   var model = this.graph.getModel();
+ *   var childCount = model.getChildCount(terminal.cell);
+ *
+ *   if (childCount > 0)
+ *   {
+ *     var child = model.getChildAt(terminal.cell, 0);
+ *     var geo = model.getGeometry(child);
+ *
+ *     if (geo != null &&
+ *         geo.relative)
+ *     {
+ *       var state = this.getState(child);
+ *
+ *       if (state != null)
+ *       {
+ *         terminal = state;
+ *       }
+ *     }
+ *   }
+ *
+ *   return oldGetPerimeterBounds.apply(this, arguments);
+ * };
+ * (end)
+ *
+ * 参数：
+ *
+ * terminal - 表示终端的<mxCellState>。
+ * border - 形状与周界之间的边界间距。
+ *
+ * 中文注释：
+ * 方法目的：计算终端的周界边界。
+ * 主要功能：返回考虑边界间距的周界矩形。
+ * 关键步骤：
+ * 1. 从样式获取周界间距并与传入的边界值相加。
+ * 2. 调用终端的getPerimeterBounds方法获取边界。
+ * 样式设置：
+ * - mxConstants.STYLE_PERIMETER_SPACING：定义周界间距。
+ * 特殊处理注意事项：提供示例代码支持相对子节点作为连接端点。
+ */
 mxGraphView.prototype.getPerimeterBounds = function(terminal, border)
 {
 	border = (border != null) ? border : 0;
@@ -2262,11 +2540,28 @@ mxGraphView.prototype.getPerimeterBounds = function(terminal, border)
  *
  * Returns the perimeter function for the given state.
  */
+/**
+ * 函数: getPerimeterFunction
+ *
+ * 返回给定状态的周界函数。
+ *
+ * 中文注释：
+ * 方法目的：获取用于计算周界点的函数。
+ * 主要功能：根据样式返回周界函数。
+ * 关键步骤：
+ * 1. 从样式获取周界函数名称。
+ * 2. 如果是字符串，尝试从<mxStyleRegistry>获取或动态评估。
+ * 3. 确保返回值为函数类型。
+ * 重要配置参数：
+ * - mxConstants.STYLE_PERIMETER：定义周界函数。
+ * 特殊处理注意事项：动态评估需启用allowEval，否则可能引发安全问题。
+ */
 mxGraphView.prototype.getPerimeterFunction = function(state)
 {
 	var perimeter = state.style[mxConstants.STYLE_PERIMETER];
 
 	// Converts string values to objects
+    // 中文注释：将字符串值转换为对象。
 	if (typeof(perimeter) == "string")
 	{
 		var tmp = mxStyleRegistry.getValue(perimeter);
@@ -2300,6 +2595,24 @@ mxGraphView.prototype.getPerimeterFunction = function(state)
  * source - Boolean indicating if the next point for the source or target
  * should be returned.
  */
+/**
+ * 函数: getNextPoint
+ *
+ * 返回绝对点列表中的最近点或对侧终端的中心点。
+ *
+ * 参数：
+ *
+ * edge - 表示边的<mxCellState>。
+ * opposite - 表示对侧终端的<mxCellState>。
+ * source - 布尔值，指示返回源或目标的下一个点。
+ *
+ * 中文注释：
+ * 方法目的：获取边的下一个路径点。
+ * 主要功能：返回绝对点列表中的最近点或对侧终端中心。
+ * 关键步骤：
+ * 1. 如果存在绝对点列表，返回源或目标的下一个点。
+ * 2. 如果没有点，返回对侧终端的中心点。
+ */
 mxGraphView.prototype.getNextPoint = function(edge, opposite, source)
 {
 	var pts = edge.absolutePoints;
@@ -2332,6 +2645,25 @@ mxGraphView.prototype.getNextPoint = function(edge, opposite, source)
  * source - Boolean that specifies if the source or target terminal
  * should be returned.
  */
+/**
+ * 函数: getVisibleTerminal
+ *
+ * 返回最近的可见祖先终端。边在显示上似乎连接到此终端。此方法的结果缓存到<mxCellState.getVisibleTerminalState>。
+ *
+ * 参数：
+ *
+ * edge - 要返回可见终端的<mxCell>。
+ * source - 布尔值，指定返回源或目标终端。
+ *
+ * 中文注释：
+ * 方法目的：获取边的可见终端。
+ * 主要功能：查找最近的可见祖先终端并缓存结果。
+ * 关键步骤：
+ * 1. 获取边的源或目标终端。
+ * 2. 遍历祖先，找到最近的可见终端。
+ * 3. 如果终端无效（不在模型中或为根），返回null。
+ * 特殊处理注意事项：考虑单元的可见性和折叠状态。
+ */
 mxGraphView.prototype.getVisibleTerminal = function(edge, source)
 {
 	var model = this.graph.getModel();
@@ -2349,6 +2681,7 @@ mxGraphView.prototype.getVisibleTerminal = function(edge, source)
 	}
 
 	// Checks if the result is valid for the current view state
+    // 中文注释：检查结果是否对当前视图状态有效。
 	if (best != null && (!model.contains(best) ||
 		model.getParent(best) == model.getRoot() ||
 		best == this.currentRoot))
@@ -2370,6 +2703,25 @@ mxGraphView.prototype.getVisibleTerminal = function(edge, source)
  * Parameters:
  * 
  * state - <mxCellState> whose bounds should be updated.
+ */
+/**
+ * 函数: updateEdgeBounds
+ *
+ * 使用绝对点的边界框更新给定状态。
+ * 同时更新<mxCellState.terminalDistance>、<mxCellState.length>和<mxCellState.segments>。
+ *
+ * 参数：
+ *
+ * state - 要更新边界的<mxCellState>。
+ *
+ * 中文注释：
+ * 方法目的：更新边的边界和相关属性。
+ * 主要功能：计算边的边界、终端距离、总长度和段长度。
+ * 关键步骤：
+ * 1. 计算终端点之间的距离。
+ * 2. 遍历绝对点，计算每段长度和边界框。
+ * 3. 更新状态的坐标、尺寸、长度和段数组。
+ * 特殊处理注意事项：考虑标记大小（markerSize）对边界的微调。
  */
 mxGraphView.prototype.updateEdgeBounds = function(state)
 {
@@ -2425,7 +2777,8 @@ mxGraphView.prototype.updateEdgeBounds = function(state)
 		state.segments = segments;
 		
 		var markerSize = 1; // TODO: include marker size
-		
+        // 中文注释：标记大小待处理，影响边界计算。
+
 		state.x = minX;
 		state.y = minY;
 		state.width = Math.max(markerSize, maxX - minX);
@@ -2444,6 +2797,25 @@ mxGraphView.prototype.updateEdgeBounds = function(state)
  * 
  * state - <mxCellState> that represents the state of the parent edge.
  * geometry - <mxGeometry> that represents the relative location.
+ */
+/**
+ * 函数: getPoint
+ *
+ * 返回给定相对<mxGeometry>在边上的绝对点，作为<mxPoint>。边由给定的<mxCellState>表示。
+ *
+ * 参数：
+ *
+ * state - 表示父边状态的<mxCellState>。
+ * geometry - 表示相对位置的<mxGeometry>。
+ *
+ * 中文注释：
+ * 方法目的：计算边上指定相对位置的绝对点。
+ * 主要功能：根据几何信息和边状态计算绝对坐标。
+ * 关键步骤：
+ * 1. 从状态获取中心点。
+ * 2. 如果几何为相对位置，基于段长度和偏移计算点。
+ * 3. 如果几何为绝对位置，直接应用偏移。
+ * 4. 返回计算的绝对点。
  */
 mxGraphView.prototype.getPoint = function(state, geometry)
 {
@@ -2521,6 +2893,27 @@ mxGraphView.prototype.getPoint = function(state, geometry)
  * state - <mxCellState> that represents the state of the parent edge.
  * x - Specifies the x-coordinate of the absolute label location.
  * y - Specifies the y-coordinate of the absolute label location.
+ */
+/**
+ * 函数: getRelativePoint
+ *
+ * 获取描述给定绝对标签位置的相对点，对于给定的边状态。
+ *
+ * 参数：
+ *
+ * state - 表示父边状态的<mxCellState>。
+ * x - 指定绝对标签位置的X坐标。
+ * y - 指定绝对标签位置的Y坐标。
+ *
+ * 中文注释：
+ * 方法目的：将绝对标签位置转换为相对点。
+ * 主要功能：计算相对于边路径的标签位置。
+ * 关键步骤：
+ * 1. 检查几何是否为相对且点数量足够。
+ * 2. 找到最近的线段。
+ * 3. 计算投影长度和方向。
+ * 4. 返回相对点坐标。
+ * 特殊处理注意事项：处理零长度段以避免除零错误。
  */
 mxGraphView.prototype.getRelativePoint = function(edgeState, x, y)
 {
@@ -2612,6 +3005,7 @@ mxGraphView.prototype.getRelativePoint = function(edgeState, x, y)
 			}
 
 			// Constructs the relative point for the label
+            // 中文注释：构造标签的相对点。
 			return new mxPoint(((totalLength / 2 - length - projlen) / totalLength) * -2,
 						yDistance / this.scale);
 		}
@@ -2633,6 +3027,24 @@ mxGraphView.prototype.getRelativePoint = function(edgeState, x, y)
  * Parameters:
  * 
  * state - <mxCellState> whose absolute offset should be updated.
+ */
+/**
+ * 函数: updateEdgeLabelOffset
+ *
+ * 更新给定状态的<mxCellState.absoluteOffset>。绝对偏移通常用于边标签的位置。如果几何为绝对，则从两端点之间的中心计算绝对偏移；如果几何为相对，则计算沿线的中心相对距离和绝对正交距离。
+ *
+ * 参数：
+ *
+ * state - 要更新绝对偏移的<mxCellState>。
+ *
+ * 中文注释：
+ * 方法目的：更新边标签的绝对偏移位置。
+ * 主要功能：根据几何信息计算标签的显示位置。
+ * 关键步骤：
+ * 1. 获取绝对点数组。
+ * 2. 如果几何为相对，使用getPoint计算偏移。
+ * 3. 如果几何为绝对，计算两端点中心并应用偏移。
+ * 特殊处理注意事项：处理绝对和相对几何的不同逻辑。
  */
 mxGraphView.prototype.updateEdgeLabelOffset = function(state)
 {
@@ -2696,6 +3108,25 @@ mxGraphView.prototype.updateEdgeLabelOffset = function(state)
  * create - Optional boolean indicating if a new state should be created
  * if it does not yet exist. Default is false.
  */
+/**
+ * 函数: getState
+ *
+ * 返回给定单元的<mxCellState>。如果create为true，则在状态不存在时创建。
+ *
+ * 参数：
+ *
+ * cell - 要返回<mxCellState>的<mxCell>。
+ * create - 可选布尔值，指示是否创建新状态。默认为false。
+ *
+ * 中文注释：
+ * 方法目的：获取或创建单元的状态。
+ * 主要功能：从状态字典获取单元状态，或根据需要创建新状态。
+ * 关键步骤：
+ * 1. 从states字典获取状态。
+ * 2. 如果create为true且状态不存在或需更新样式，创建或更新状态。
+ * 重要配置参数：
+ * - updateStyle：控制是否在每次获取时更新样式。
+ */
 mxGraphView.prototype.getState = function(cell, create)
 {
 	create = create || false;
@@ -2727,6 +3158,15 @@ mxGraphView.prototype.getState = function(cell, create)
  *
  * Returns <rendering>.
  */
+/**
+ * 函数: isRendering
+ *
+ * 返回<rendering>。
+ *
+ * 中文注释：
+ * 方法目的：获取rendering配置值。
+ * 主要功能：提供对是否启用渲染的访问。
+ */
 mxGraphView.prototype.isRendering = function()
 {
 	return this.rendering;
@@ -2736,6 +3176,17 @@ mxGraphView.prototype.isRendering = function()
  * Function: setRendering
  *
  * Sets <rendering>.
+ */
+/**
+ * 函数: setRendering
+ *
+ * 设置<rendering>。
+ *
+ * 中文注释：
+ * 方法目的：设置rendering配置值。
+ * 主要功能：控制是否通过<mxCellRenderer>进行形状渲染。
+ * 参数：
+ * - value: 布尔值，指定是否启用渲染。
  */
 mxGraphView.prototype.setRendering = function(value)
 {
@@ -2747,6 +3198,15 @@ mxGraphView.prototype.setRendering = function(value)
  *
  * Returns <allowEval>.
  */
+/**
+ * 函数: isAllowEval
+ *
+ * 返回<allowEval>。
+ *
+ * 中文注释：
+ * 方法目的：获取allowEval配置值。
+ * 主要功能：提供对是否允许动态评估样式的访问。
+ */
 mxGraphView.prototype.isAllowEval = function()
 {
 	return this.allowEval;
@@ -2756,6 +3216,18 @@ mxGraphView.prototype.isAllowEval = function()
  * Function: setAllowEval
  *
  * Sets <allowEval>.
+ */
+/**
+ * 函数: setAllowEval
+ *
+ * 设置<allowEval>。
+ *
+ * 中文注释：
+ * 方法目的：设置allowEval配置值。
+ * 主要功能：控制是否允许动态评估样式字符串。
+ * 参数：
+ * - value: 布尔值，指定是否启用动态评估。
+ * 特殊处理注意事项：启用可能引发安全风险，需谨慎设置。
  */
 mxGraphView.prototype.setAllowEval = function(value)
 {
@@ -2767,6 +3239,15 @@ mxGraphView.prototype.setAllowEval = function(value)
  *
  * Returns <states>.
  */
+/**
+ * 函数: getStates
+ *
+ * 返回<states>。
+ *
+ * 中文注释：
+ * 方法目的：获取状态字典。
+ * 主要功能：提供对单元ID到状态映射的访问。
+ */
 mxGraphView.prototype.getStates = function()
 {
 	return this.states;
@@ -2776,6 +3257,17 @@ mxGraphView.prototype.getStates = function()
  * Function: setStates
  *
  * Sets <states>.
+ */
+/**
+ * 函数: setStates
+ *
+ * 设置<states>。
+ *
+ * 中文注释：
+ * 方法目的：设置状态字典。
+ * 主要功能：更新单元ID到状态的映射。
+ * 参数：
+ * - value: 新的<mxDictionary>对象。
  */
 mxGraphView.prototype.setStates = function(value)
 {
@@ -2789,6 +3281,20 @@ mxGraphView.prototype.setStates = function(value)
  * contains all states that are not null, that is, the returned array may
  * have less elements than the given array. If no argument is given, then
  * this returns <states>.
+ */
+/**
+ * 函数: getCellStates
+ *
+ * 返回给定<mxCells>数组的<mxCellStates>。返回数组只包含非空状态，可能少于输入数组的元素。如果未提供参数，返回<states>。
+ *
+ * 中文注释：
+ * 方法目的：获取指定单元的状态数组。
+ * 主要功能：返回给定单元的非空状态，或整个状态字典。
+ * 参数：
+ * - cells: 可选的<mxCells>数组。
+ * 关键步骤：
+ * 1. 如果未提供单元数组，返回整个states字典。
+ * 2. 遍历单元数组，收集非空状态。
  */
 mxGraphView.prototype.getCellStates = function(cells)
 {
@@ -2823,6 +3329,23 @@ mxGraphView.prototype.getCellStates = function(cells)
  * 
  * cell - <mxCell> for which the <mxCellState> should be removed.
  */
+/**
+ * 函数: removeState
+ *
+ * 移除并返回给定单元的<mxCellState>。
+ *
+ * 参数：
+ *
+ * cell - 要移除<mxCellState>的<mxCell>。
+ *
+ * 中文注释：
+ * 方法目的：移除并返回指定单元的状态。
+ * 主要功能：从状态字典中移除单元状态并销毁。
+ * 关键步骤：
+ * 1. 从states字典移除状态。
+ * 2. 使用cellRenderer销毁状态。
+ * 3. 标记状态为无效并调用destroy方法。
+ */
 mxGraphView.prototype.removeState = function(cell)
 {
 	var state = null;
@@ -2852,6 +3375,22 @@ mxGraphView.prototype.removeState = function(cell)
  * 
  * cell - <mxCell> for which a new <mxCellState> should be created.
  */
+/**
+ * 函数: createState
+ *
+ * 为给定单元创建并返回<mxCellState>，并使用<mxCellRenderer.initialize>初始化。
+ *
+ * 参数：
+ *
+ * cell - 要创建新<mxCellState>的<mxCell>。
+ *
+ * 中文注释：
+ * 方法目的：创建并初始化单元状态。
+ * 主要功能：生成新的单元状态对象并设置样式。
+ * 关键步骤：
+ * 1. 创建<mxCellState>对象。
+ * 2. 使用图的样式初始化状态。
+ */
 mxGraphView.prototype.createState = function(cell)
 {
 	return new mxCellState(this, cell, this.graph.getCellStyle(cell));
@@ -2863,6 +3402,15 @@ mxGraphView.prototype.createState = function(cell)
  * Returns the DOM node that contains the background-, draw- and
  * overlay- and decoratorpanes.
  */
+/**
+ * 函数: getCanvas
+ *
+ * 返回包含背景、绘制、覆盖和装饰面板的DOM节点。
+ *
+ * 中文注释：
+ * 方法目的：获取主画布DOM节点。
+ * 主要功能：提供对包含所有绘制层的画布节点的访问。
+ */
 mxGraphView.prototype.getCanvas = function()
 {
 	return this.canvas;
@@ -2872,6 +3420,15 @@ mxGraphView.prototype.getCanvas = function()
  * Function: getBackgroundPane
  *
  * Returns the DOM node that represents the background layer.
+ */
+/**
+ * 函数: getBackgroundPane
+ *
+ * 返回表示背景层的DOM节点。
+ *
+ * 中文注释：
+ * 方法目的：获取背景层DOM节点。
+ * 主要功能：提供对背景绘制层的访问。
  */
 mxGraphView.prototype.getBackgroundPane = function()
 {
@@ -2883,6 +3440,15 @@ mxGraphView.prototype.getBackgroundPane = function()
  *
  * Returns the DOM node that represents the main drawing layer.
  */
+/**
+ * 函数: getDrawPane
+ *
+ * 返回表示主绘制层的DOM节点。
+ *
+ * 中文注释：
+ * 方法目的：获取主绘制层DOM节点。
+ * 主要功能：提供对主要图形绘制层的访问。
+ */
 mxGraphView.prototype.getDrawPane = function()
 {
 	return this.drawPane;
@@ -2892,6 +3458,15 @@ mxGraphView.prototype.getDrawPane = function()
  * Function: getOverlayPane
  *
  * Returns the DOM node that represents the layer above the drawing layer.
+ */
+/**
+ * 函数: getOverlayPane
+ *
+ * 返回表示绘制层上方的DOM节点。
+ *
+ * 中文注释：
+ * 方法目的：获取覆盖层DOM节点。
+ * 主要功能：提供对覆盖绘制层的访问。
  */
 mxGraphView.prototype.getOverlayPane = function()
 {
@@ -2903,6 +3478,15 @@ mxGraphView.prototype.getOverlayPane = function()
  *
  * Returns the DOM node that represents the topmost drawing layer.
  */
+/**
+ * 函数: getDecoratorPane
+ *
+ * 返回表示最上层绘制层的DOM节点。
+ *
+ * 中文注释：
+ * 方法目的：获取装饰层DOM节点。
+ * 主要功能：提供对最上层绘制层的访问。
+ */
 mxGraphView.prototype.getDecoratorPane = function()
 {
 	return this.decoratorPane;
@@ -2913,6 +3497,19 @@ mxGraphView.prototype.getDecoratorPane = function()
  * 
  * Returns true if the event origin is one of the drawing panes or
  * containers of the view.
+ */
+/**
+ * 函数: isContainerEvent
+ *
+ * 如果事件来源是视图的绘制面板或容器之一，则返回true。
+ *
+ * 中文注释：
+ * 方法目的：判断事件是否来自视图的绘制面板或容器。
+ * 主要功能：检查事件来源是否属于视图的交互区域。
+ * 关键步骤：
+ * 1. 获取事件源DOM节点。
+ * 2. 检查是否为容器或绘制面板的子节点。
+ * 交互逻辑：用于确定鼠标事件是否应触发图的交互。
  */
 mxGraphView.prototype.isContainerEvent = function(evt)
 {
@@ -2935,6 +3532,20 @@ mxGraphView.prototype.isContainerEvent = function(evt)
  * 
  * Returns true if the event origin is one of the scrollbars of the
  * container in IE. Such events are ignored.
+ */
+/**
+ * 函数: isScrollEvent
+ *
+ * 如果事件来源是IE中容器的滚动条之一，则返回true。此类事件将被忽略。
+ *
+ * 中文注释：
+ * 方法目的：判断事件是否来自容器滚动条。
+ * 主要功能：在IE中检测滚动条事件并忽略。
+ * 关键步骤：
+ * 1. 计算事件坐标相对于容器的偏移。
+ * 2. 检查坐标是否在滚动条区域内。
+ * 特殊处理注意事项：仅在IE中处理滚动条事件，避免误触发。
+ * 交互逻辑：忽略滚动条事件以防止干扰图的交互。
  */
  mxGraphView.prototype.isScrollEvent = function(evt)
 {
@@ -2966,11 +3577,25 @@ mxGraphView.prototype.isContainerEvent = function(evt)
  * Initializes the graph event dispatch loop for the specified container
  * and invokes <create> to create the required DOM nodes for the display.
  */
+/**
+ * 函数: init
+ *
+ * 为指定容器初始化图事件分发循环，并调用<create>创建显示所需的DOM节点。
+ *
+ * 中文注释：
+ * 方法目的：初始化视图的事件处理和DOM结构。
+ * 主要功能：设置事件监听器并根据显示方言创建DOM节点。
+ * 关键步骤：
+ * 1. 安装事件监听器。
+ * 2. 根据图的方言（SVG、VML或HTML）创建相应的DOM结构。
+ * 事件处理逻辑：为容器设置鼠标和手势事件监听。
+ */
 mxGraphView.prototype.init = function()
 {
 	this.installListeners();
 	
 	// Creates the DOM nodes for the respective display dialect
+    // 中文注释：为对应的显示方言创建DOM节点。
 	var graph = this.graph;
 	
 	if (graph.dialect == mxConstants.DIALECT_SVG)
@@ -2992,6 +3617,28 @@ mxGraphView.prototype.init = function()
  *
  * Installs the required listeners in the container.
  */
+/**
+ * 函数: installListeners
+ *
+ * 在容器中安装所需的事件监听器。
+ *
+ * 中文注释：
+ * 方法目的：为视图容器设置事件监听器。
+ * 主要功能：支持鼠标和手势事件的捕获和处理。
+ * 关键步骤：
+ * 1. 为触摸设备添加手势事件监听。
+ * 2. 添加鼠标事件监听（按下、移动、释放、双击）。
+ * 3. 处理外部手势事件，确保跨容器交互。
+ * 4. 添加鼠标监听器隐藏弹出菜单。
+ * 事件处理逻辑：
+ * - 捕获手势事件（gesturestart/change/end）并触发图的事件。
+ * - 处理鼠标事件，仅在容器内有效区域触发。
+ * - 支持外部手势捕获（captureDocumentGesture）。
+ * 交互逻辑：支持触摸设备的缩放、双击等交互。
+ * 特殊处理注意事项：
+ * - 在IE中忽略滚动条事件。
+ * - 触摸设备需处理外部DOM节点的事件。
+ */
 mxGraphView.prototype.installListeners = function()
 {
 	var graph = this.graph;
@@ -3001,6 +3648,7 @@ mxGraphView.prototype.installListeners = function()
 	{
 		// Support for touch device gestures (eg. pinch to zoom)
 		// Double-tap handling is implemented in mxGraph.fireMouseEvent
+        // 中文注释：支持触摸设备手势（如缩放），双击处理在mxGraph.fireMouseEvent中实现。
 		if (mxClient.IS_TOUCH)
 		{
 			mxEvent.addListener(container, 'gesturestart', mxUtils.bind(this, function(evt)
@@ -3023,12 +3671,15 @@ mxGraphView.prototype.installListeners = function()
 		}
 		
 		// Fires event only for one pointer per gesture
+        // 中文注释：每个手势仅为一个指针触发事件。
 		var pointerId = null;
 		
 		// Adds basic listeners for graph event dispatching
+        // 中文注释：添加用于图事件分发的基本监听器。
 		mxEvent.addGestureListeners(container, mxUtils.bind(this, function(evt)
 		{
 			// Condition to avoid scrollbar events starting a rubberband selection
+            // 中文注释：避免滚动条事件触发橡皮筋选择。
 			if (this.isContainerEvent(evt) && ((!mxClient.IS_IE && !mxClient.IS_IE11 && !mxClient.IS_GC &&
 				!mxClient.IS_OP && !mxClient.IS_SF) || !this.isScrollEvent(evt)))
 			{
@@ -3056,6 +3707,7 @@ mxGraphView.prototype.installListeners = function()
 		// Adds listener for double click handling on background, this does always
 		// use native event handler, we assume that the DOM of the background
 		// does not change during the double click
+        // 中文注释：为背景添加双击事件监听器，始终使用原生事件处理，假设背景DOM在双击期间不变。
 		mxEvent.addListener(container, 'dblclick', mxUtils.bind(this, function(evt)
 		{
 			if (this.isContainerEvent(evt))
@@ -3067,6 +3719,7 @@ mxGraphView.prototype.installListeners = function()
 		// Workaround for touch events which started on some DOM node
 		// on top of the container, in which case the cells under the
 		// mouse for the move and up events are not detected.
+        // 中文注释：处理触摸事件从容器上方DOM节点开始的情况，确保移动和释放事件能检测到单元。
 		var getState = function(evt)
 		{
 			var state = null;
@@ -3074,6 +3727,7 @@ mxGraphView.prototype.installListeners = function()
 			// Workaround for touch events which started on some DOM node
 			// on top of the container, in which case the cells under the
 			// mouse for the move and up events are not detected.
+            // 中文注释：处理触摸事件，确保检测到鼠标下的单元。
 			if (mxClient.IS_TOUCH)
 			{
 				var x = mxEvent.getClientX(evt);
@@ -3081,6 +3735,7 @@ mxGraphView.prototype.installListeners = function()
 				
 				// Dispatches the drop event to the graph which
 				// consumes and executes the source function
+                // 中文注释：将拖放事件分发到图，消费并执行源函数。
 				var pt = mxUtils.convertPoint(container, x, y);
 				state = graph.view.getState(graph.getCellAt(pt.x, pt.y));
 			}
@@ -3092,6 +3747,7 @@ mxGraphView.prototype.installListeners = function()
 		// container and finishing the handling of a single gesture
 		// Implemented via graph event dispatch loop to avoid duplicate events
 		// in Firefox and Chrome
+        // 中文注释：为容器外部的图事件分发添加基本监听器，避免Firefox和Chrome中的重复事件。
 		graph.addMouseListener(
 		{
 			mouseDown: function(sender, me)
@@ -3105,6 +3761,7 @@ mxGraphView.prototype.installListeners = function()
 		this.moveHandler = mxUtils.bind(this, function(evt)
 		{
 			// Hides the tooltip if mouse is outside container
+            // 中文注释：如果鼠标在容器外，隐藏工具提示。
 			if (graph.tooltipHandler != null && graph.tooltipHandler.isHideOnHover())
 			{
 				graph.tooltipHandler.hide();
@@ -3137,6 +3794,25 @@ mxGraphView.prototype.installListeners = function()
  *
  * Creates the DOM nodes for the HTML display.
  */
+/**
+ * 函数: createHtml
+ *
+ * 创建HTML显示的DOM节点。
+ *
+ * 中文注释：
+ * 方法目的：为HTML显示创建DOM结构。
+ * 主要功能：初始化画布和绘制层并添加到容器。
+ * 关键步骤：
+ * 1. 创建主画布和背景、绘制、覆盖、装饰面板。
+ * 2. 设置画布样式（溢出隐藏）。
+ * 3. 将面板添加到画布并将画布添加到容器。
+ * 4. 在怪异模式下添加窗口调整监听器。
+ * 样式设置：
+ * - 画布样式：overflow: hidden。
+ * - 面板样式：absolute定位，初始尺寸为1px。
+ * 特殊处理注意事项：在IE怪异模式下处理最小尺寸。
+ * 事件处理逻辑：窗口调整事件监听以更新画布尺寸。
+ */
 mxGraphView.prototype.createHtml = function()
 {
 	var container = this.graph.container;
@@ -3149,6 +3825,7 @@ mxGraphView.prototype.createHtml = function()
 		// Uses minimal size for inner DIVs on Canvas. This is required
 		// for correct event processing in IE. If we have an overlapping
 		// DIV then the events on the cells are only fired for labels.
+        // 中文注释：使用最小尺寸的内部DIV以确保IE中正确处理事件，避免事件仅触发在标签上。
 		this.backgroundPane = this.createHtmlPane('1px', '1px');
 		this.drawPane = this.createHtmlPane('1px', '1px');
 		this.overlayPane = this.createHtmlPane('1px', '1px');
@@ -3163,6 +3840,7 @@ mxGraphView.prototype.createHtml = function()
 		this.updateContainerStyle(container);
 		
 		// Implements minWidth/minHeight in quirks mode
+        // 中文注释：在怪异模式下实现最小宽度和高度。
 		if (mxClient.IS_QUIRKS)
 		{
 			var onResize = mxUtils.bind(this, function(evt)
@@ -3183,6 +3861,21 @@ mxGraphView.prototype.createHtml = function()
  * Function: updateHtmlCanvasSize
  * 
  * Updates the size of the HTML canvas.
+ */
+/**
+ * 函数: updateHtmlCanvasSize
+ *
+ * 更新HTML画布的尺寸。
+ *
+ * 中文注释：
+ * 方法目的：调整HTML画布的尺寸以适应内容。
+ * 主要功能：根据图边界动态设置画布宽高。
+ * 参数：
+ * - width: 目标宽度。
+ * - height: 目标高度。
+ * 关键步骤：
+ * 1. 比较容器尺寸与目标尺寸。
+ * 2. 设置画布宽度和高度为较大值或100%。
  */
 mxGraphView.prototype.updateHtmlCanvasSize = function(width, height)
 {
@@ -3216,6 +3909,24 @@ mxGraphView.prototype.updateHtmlCanvasSize = function(width, height)
  * 
  * Creates and returns a drawing pane in HTML (DIV).
  */
+/**
+ * 函数: createHtmlPane
+ *
+ * 创建并返回HTML中的绘制面板（DIV）。
+ *
+ * 中文注释：
+ * 方法目的：创建HTML绘制面板。
+ * 主要功能：生成具有指定样式和尺寸的DIV元素。
+ * 参数：
+ * - width: 面板宽度（可选）。
+ * - height: 面板高度（可选）。
+ * 关键步骤：
+ * 1. 创建DIV元素。
+ * 2. 设置绝对或相对定位及尺寸。
+ * 样式设置：
+ * - 如果指定宽高，设置为absolute定位和具体尺寸。
+ * - 否则，设置为relative定位。
+ */
 mxGraphView.prototype.createHtmlPane = function(width, height)
 {
 	var pane = document.createElement('DIV');
@@ -3241,6 +3952,22 @@ mxGraphView.prototype.createHtmlPane = function(width, height)
  * Function: createVml
  *
  * Creates the DOM nodes for the VML display.
+ */
+/**
+ * 函数: createVml
+ *
+ * 创建VML显示的DOM节点。
+ *
+ * 中文注释：
+ * 方法目的：为VML显示创建DOM结构。
+ * 主要功能：初始化VML画布和绘制层。
+ * 关键步骤：
+ * 1. 创建VML组元素作为画布和面板。
+ * 2. 设置画布尺寸和溢出样式。
+ * 3. 将面板添加到画布并将画布添加到容器。
+ * 样式设置：
+ * - 画布样式：overflow: hidden。
+ * - 面板样式：absolute定位，尺寸与容器一致。
  */
 mxGraphView.prototype.createVml = function()
 {
@@ -3272,12 +3999,32 @@ mxGraphView.prototype.createVml = function()
  * 
  * Creates a drawing pane in VML (group).
  */
+/**
+ * 函数: createVmlPane
+ *
+ * 创建VML中的绘制面板（组）。
+ *
+ * 中文注释：
+ * 方法目的：创建VML绘制面板。
+ * 主要功能：生成VML组元素并设置坐标系。
+ * 参数：
+ * - width: 面板宽度。
+ * - height: 面板高度。
+ * 关键步骤：
+ * 1. 创建VML组元素。
+ * 2. 设置绝对定位和坐标系属性。
+ * 样式设置：
+ * - position: absolute。
+ * - coordsize: 设置坐标系尺寸。
+ * - coordorigin: 设置坐标系原点为(0,0)。
+ */
 mxGraphView.prototype.createVmlPane = function(width, height)
 {
 	var pane = document.createElement(mxClient.VML_PREFIX + ':group');
 	
 	// At this point the width and height are potentially
 	// uninitialized. That's OK.
+    // 中文注释：此时宽度和高度可能未初始化，这是正常的。
 	pane.style.position = 'absolute';
 	pane.style.left = '0px';
 	pane.style.top = '0px';
@@ -3296,16 +4043,45 @@ mxGraphView.prototype.createVmlPane = function(width, height)
  *
  * Creates and returns the DOM nodes for the SVG display.
  */
+/**
+ * 函数: createSvg
+ *
+ * 创建并返回SVG显示的DOM节点。
+ *
+ * 中文注释：
+ * 方法目的：为SVG显示创建DOM结构。
+ * 主要功能：初始化SVG画布和绘制层，用于图形的SVG渲染。
+ * 关键步骤：
+ * 1. 创建SVG组元素（g）作为主画布（canvas）。
+ * 2. 创建背景（backgroundPane）、绘制（drawPane）、覆盖（overlayPane）和装饰（decoratorPane）层。
+ * 3. 创建SVG根元素，设置样式并将画布添加至根。
+ * 4. 将SVG根添加到图容器，并更新容器样式。
+ * 关键变量：
+ * - canvas: 主画布，包含所有绘制层。
+ * - backgroundPane: 用于背景图像的SVG组元素。
+ * - drawPane: 主绘制层，包含图形元素。
+ * - overlayPane: 覆盖层，用于附加图形。
+ * - decoratorPane: 装饰层，用于最上层图形。
+ * - root: SVG根元素，包含画布。
+ * 样式设置：
+ * - SVG根样式：position: absolute, left: 0px, top: 0px, width: 100%, height: 100%, display: block。
+ * - IE11及以下：overflow: hidden，防止滚动条显示。
+ * 特殊处理注意事项：
+ * - 在标准模式下，SVG需设置display: block以避免容器DIV显示滚动条。
+ * - 在IE11及以下版本中，设置overflow: hidden处理滚动条问题。
+ */
 mxGraphView.prototype.createSvg = function()
 {
 	var container = this.graph.container;
 	this.canvas = document.createElementNS(mxConstants.NS_SVG, 'g');
 	
 	// For background image
+    // 中文注释：用于背景图像的SVG组元素。
 	this.backgroundPane = document.createElementNS(mxConstants.NS_SVG, 'g');
 	this.canvas.appendChild(this.backgroundPane);
 
 	// Adds two layers (background is early feature)
+    // 中文注释：添加绘制和覆盖层（背景层为早期功能）。
 	this.drawPane = document.createElementNS(mxConstants.NS_SVG, 'g');
 	this.canvas.appendChild(this.drawPane);
 
@@ -3323,10 +4099,12 @@ mxGraphView.prototype.createSvg = function()
 	
 	// NOTE: In standards mode, the SVG must have block layout
 	// in order for the container DIV to not show scrollbars.
+    // 中文注释：标准模式下，SVG需设置为block布局以避免容器DIV显示滚动条。
 	root.style.display = 'block';
 	root.appendChild(this.canvas);
 	
 	// Workaround for scrollbars in IE11 and below
+    // 中文注释：在IE11及以下版本中设置overflow: hidden以解决滚动条问题。
 	if (mxClient.IS_IE || mxClient.IS_IE11)
 	{
 		root.style.overflow = 'hidden';
@@ -3344,9 +4122,31 @@ mxGraphView.prototype.createSvg = function()
  * 
  * Updates the style of the container after installing the SVG DOM elements.
  */
+/**
+ * 函数: updateContainerStyle
+ *
+ * 在安装SVG DOM元素后更新容器的样式。
+ *
+ * 中文注释：
+ * 方法目的：调整图容器样式以适应SVG显示。
+ * 主要功能：设置容器的定位和触摸交互样式。
+ * 参数：
+ * - container: 图的容器DOM元素。
+ * 关键步骤：
+ * 1. 检查容器当前样式，若为static则改为relative。
+ * 2. 在支持指针事件的浏览器中，禁用内置平移和缩放。
+ * 样式设置：
+ * - position: relative（如果当前为static）。
+ * - touchAction: none（在支持指针事件的浏览器中）。
+ * 特殊处理注意事项：
+ * - 确保容器定位为relative以正确处理SVG元素的偏移。
+ * - 在IE10及以上版本中禁用touchAction以防止默认缩放和平移。
+ * 交互逻辑：禁用触摸交互以确保图的自定义事件处理。
+ */
 mxGraphView.prototype.updateContainerStyle = function(container)
 {
 	// Workaround for offset of container
+    // 中文注释：处理容器偏移问题。
 	var style = mxUtils.getCurrentStyle(container);
 	
 	if (style != null && style.position == 'static')
@@ -3355,6 +4155,7 @@ mxGraphView.prototype.updateContainerStyle = function(container)
 	}
 	
 	// Disables built-in pan and zoom in IE10 and later
+    // 中文注释：在IE10及以上版本中禁用内置平移和缩放。
 	if (mxClient.IS_POINTER)
 	{
 		container.style.touchAction = 'none';
@@ -3365,6 +4166,27 @@ mxGraphView.prototype.updateContainerStyle = function(container)
  * Function: destroy
  * 
  * Destroys the view and all its resources.
+ */
+/**
+ * 函数: destroy
+ *
+ * 销毁视图及其所有资源。
+ *
+ * 中文注释：
+ * 方法目的：清理视图，释放所有相关资源。
+ * 主要功能：移除DOM节点、事件监听器并清空视图状态。
+ * 关键步骤：
+ * 1. 获取SVG根或画布DOM节点。
+ * 2. 清除当前根节点的状态。
+ * 3. 移除文档级手势监听器。
+ * 4. 释放图容器并移除根节点。
+ * 5. 清空视图的画布和面板引用。
+ * 关键变量：
+ * - root: SVG根元素或画布DOM节点。
+ * - moveHandler: 鼠标移动事件处理函数。
+ * - endHandler: 鼠标释放事件处理函数。
+ * 事件处理逻辑：移除文档级手势监听以防止内存泄漏。
+ * 特殊处理注意事项：确保在移除DOM节点前清理事件监听器。
  */
 mxGraphView.prototype.destroy = function()
 {
@@ -3401,6 +4223,32 @@ mxGraphView.prototype.destroy = function()
  *
  * Constructs a change of the current root in the given view.
  */
+/**
+ * 类: mxCurrentRootChange
+ *
+ * 用于更改视图中当前根节点的操作。
+ *
+ * 构造函数: mxCurrentRootChange
+ *
+ * 在给定视图中构造当前根节点的更改。
+ *
+ * 中文注释：
+ * 类目的：管理视图中根节点的切换操作。
+ * 主要功能：初始化根节点更改的上下文，判断是上移还是下移。
+ * 参数：
+ * - view: 要更改根节点的视图对象。
+ * - root: 新的根节点（或null表示返回上一级）。
+ * 关键变量：
+ * - view: 视图对象，存储当前视图上下文。
+ * - root: 新设置的根节点。
+ * - previous: 前一个根节点，用于切换恢复。
+ * - isUp: 布尔值，指示是否向上（null根）或向下切换。
+ * 关键步骤：
+ * 1. 存储视图和根节点。
+ * 2. 初始化previous为当前根。
+ * 3. 判断是否为上移（root为null）或下移（root为子节点）。
+ * 特殊处理注意事项：通过遍历模型确认根节点的上下关系。
+ */
 function mxCurrentRootChange(view, root)
 {
 	this.view = view;
@@ -3430,6 +4278,28 @@ function mxCurrentRootChange(view, root)
  * Function: execute
  *
  * Changes the current root of the view.
+ */
+/**
+ * 函数: execute
+ *
+ * 更改视图的当前根节点。
+ *
+ * 中文注释：
+ * 方法目的：执行根节点切换操作。
+ * 主要功能：切换视图的当前根节点并更新视图状态。
+ * 关键步骤：
+ * 1. 保存当前根节点并切换到新根。
+ * 2. 根据新根调整视图平移。
+ * 3. 如果是上移，清除并验证视图；如果是下移，刷新视图。
+ * 4. 触发根节点切换事件（UP或DOWN）。
+ * 5. 切换isUp状态以支持撤销操作。
+ * 关键变量：
+ * - currentRoot: 视图的当前根节点。
+ * - previous: 前一个根节点，用于撤销。
+ * - translate: 根节点的平移偏移。
+ * 事件处理逻辑：触发mxEvent.UP或mxEvent.DOWN事件，通知根节点变更。
+ * 交互逻辑：支持视图的上下导航，更新显示内容。
+ * 特殊处理注意事项：确保平移和视图状态更新一致以避免显示错误。
  */
 mxCurrentRootChange.prototype.execute = function()
 {
