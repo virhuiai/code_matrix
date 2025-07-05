@@ -2348,6 +2348,15 @@ mxGraphModel.prototype.setStyle = function(cell, style)
  * cell - <mxCell> that specifies the cell to be updated.
  * style - String of the form [stylename;|key=value;] to specify
  * the new cell style.
+ *
+ * // 中文注释：
+ * // 函数：styleForCellChanged
+ * // 内部回调函数，用于使用 mxCell.setStyle 更新指定单元的样式并返回之前的样式。
+ * // 参数：
+ * // cell - 需要更新样式的 mxCell 对象。
+ * // style - 指定新单元样式的字符串，格式为 [stylename;|key=value;]。
+ * // 返回值：之前的样式字符串。
+ * // 样式说明：样式字符串以键值对形式定义单元的显示属性，如颜色、字体等。
  */
 mxGraphModel.prototype.styleForCellChanged = function(cell, style)
 {
@@ -2365,6 +2374,13 @@ mxGraphModel.prototype.styleForCellChanged = function(cell, style)
  * Parameters:
  * 
  * cell - <mxCell> whose collapsed state should be returned.
+ *
+ * // 中文注释：
+ * // 函数：isCollapsed
+ * // 判断指定单元是否处于折叠状态。
+ * // 参数：
+ * // cell - 需要返回折叠状态的 mxCell 对象。
+ * // 返回值：如果单元处于折叠状态，返回 true；若单元为空，返回 false。
  */
 mxGraphModel.prototype.isCollapsed = function(cell)
 {
@@ -2380,7 +2396,16 @@ mxGraphModel.prototype.isCollapsed = function(cell)
  * Parameters:
  * 
  * cell - <mxCell> whose collapsed state should be changed.
- * collapsed - Boolean that specifies the new collpased state.
+ * collapsed - Boolean that specifies the new collapsed state.
+ *
+ * // 中文注释：
+ * // 函数：setCollapsed
+ * // 使用 mxCollapseChange 设置指定单元的折叠状态，并将更改添加到当前事务。
+ * // 参数：
+ * // cell - 需要更改折叠状态的 mxCell 对象。
+ * // collapsed - 布尔值，指定新的折叠状态（true 表示折叠，false 表示展开）。
+ * // 返回值：新设置的折叠状态。
+ * // 注意事项：仅当折叠状态发生变化时才执行更改操作。
  */
 mxGraphModel.prototype.setCollapsed = function(cell, collapsed)
 {
@@ -2402,7 +2427,15 @@ mxGraphModel.prototype.setCollapsed = function(cell, collapsed)
  * Parameters:
  * 
  * cell - <mxCell> that specifies the cell to be updated.
- * collapsed - Boolean that specifies the new collpased state.
+ * collapsed - Boolean that specifies the new collapsed state.
+ *
+ * // 中文注释：
+ * // 函数：collapsedStateForCellChanged
+ * // 内部回调函数，使用 mxCell.setCollapsed 更新指定单元的折叠状态并返回之前的折叠状态。
+ * // 参数：
+ * // cell - 需要更新折叠状态的 mxCell 对象。
+ * // collapsed - 布尔值，指定新的折叠状态。
+ * // 返回值：之前的折叠状态。
  */
 mxGraphModel.prototype.collapsedStateForCellChanged = function(cell, collapsed)
 {
@@ -2420,6 +2453,13 @@ mxGraphModel.prototype.collapsedStateForCellChanged = function(cell, collapsed)
  * Parameters:
  * 
  * cell - <mxCell> whose visible state should be returned.
+ *
+ * // 中文注释：
+ * // 函数：isVisible
+ * // 判断指定单元是否可见。
+ * // 参数：
+ * // cell - 需要返回可见状态的 mxCell 对象。
+ * // 返回值：如果单元可见，返回 true；若单元为空，返回 false。
  */
 mxGraphModel.prototype.isVisible = function(cell)
 {
@@ -2436,6 +2476,15 @@ mxGraphModel.prototype.isVisible = function(cell)
  * 
  * cell - <mxCell> whose visible state should be changed.
  * visible - Boolean that specifies the new visible state.
+ *
+ * // 中文注释：
+ * // 函数：setVisible
+ * // 使用 mxVisibleChange 设置指定单元的可见状态，并将更改添加到当前事务。
+ * // 参数：
+ * // cell - 需要更改可见状态的 mxCell 对象。
+ * // visible - 布尔值，指定新的可见状态（true 表示可见，false 表示隐藏）。
+ * // 返回值：新设置的可见状态。
+ * // 注意事项：仅当可见状态发生变化时才执行更改操作。
  */
 mxGraphModel.prototype.setVisible = function(cell, visible)
 {
@@ -2458,6 +2507,15 @@ mxGraphModel.prototype.setVisible = function(cell, visible)
  * 
  * cell - <mxCell> that specifies the cell to be updated.
  * visible - Boolean that specifies the new visible state.
+ *
+ * // 中文注释：
+ * // 函数：visibleStateForCellChanged
+ * // 内部回调函数，使用 mxCell.setVisible 更新指定单元的可见状态并返回之前的可见状态。
+ * // 参数：
+ * // cell - 需要更新可见状态的 mxCell 对象。
+ * // visible - 布尔值，指定新的可见状态。
+ * // 返回值：之前的可见状态。
+ * // 注意事项：英文注释中提到使用 mxCell.setCollapsed 是错误的，应为 mxCell.setVisible。
  */
 mxGraphModel.prototype.visibleStateForCellChanged = function(cell, visible)
 {
@@ -2481,6 +2539,15 @@ mxGraphModel.prototype.visibleStateForCellChanged = function(cell, visible)
  * Parameters:
  * 
  * change - Object that described the change.
+ *
+ * // 中文注释：
+ * // 函数：execute
+ * // 执行指定的编辑操作并在需要时触发事件。
+ * // 编辑对象需要一个 execute 方法来执行操作。
+ * // 编辑操作在 beginUpdate 和 endUpdate 之间添加到 currentEdit，确保在独立事务中触发事件。
+ * // 参数：
+ * // change - 描述更改的对象。
+ * // 事件处理逻辑：在执行更改前触发 mxEvent.EXECUTE 事件，执行后触发 mxEvent.EXECUTED 事件。
  */
 mxGraphModel.prototype.execute = function(change)
 {
@@ -2531,6 +2598,17 @@ mxGraphModel.prototype.execute = function(change)
  * (code)
  * graph.addCells([v1, v2]).
  * (end)
+ *
+ * // 中文注释：
+ * // 函数：beginUpdate
+ * // 将 updateLevel 增加 1，事件通知会排队直到 updateLevel 达到 0（通过 endUpdate）。
+ * // 模型中的所有更改均为事务性更改，即在单一可撤销更改中执行（无事务隔离）。
+ * // 若需将多个更改合并为单一可撤销更改，应在 beginUpdate 和 endUpdate 之间调用修改模型的 API。
+ * // 关键变量：updateLevel - 跟踪嵌套事务的深度。
+ * // 事件处理逻辑：
+ * // - 触发 mxEvent.BEGIN_UPDATE 事件。
+ * // - 当 updateLevel 从 0 变为 1 时，触发 mxEvent.START_EDIT 事件。
+ * // 示例：展示如何在单一事务中添加多个单元。
  */
 mxGraphModel.prototype.beginUpdate = function()
 {
@@ -2556,6 +2634,20 @@ mxGraphModel.prototype.beginUpdate = function()
  * the <change> event is fired whenever the notify
  * function is invoked, that is, on undo and redo of
  * the edit.
+ *
+ * // 中文注释：
+ * // 函数：endUpdate
+ * // 将 updateLevel 减少 1，若 updateLevel 达到 0，则触发 mxEvent.UNDO 事件。
+ * // 通过调用 currentEdit 的 notify 方法间接触发 mxEvent.CHANGE 事件，并创建新的 currentEdit。
+ * // 事件处理逻辑：
+ * // - 若 updateLevel 达到 0，触发 mxEvent.END_EDIT 事件。
+ * // - 在非嵌套事务结束时，触发 mxEvent.END_UPDATE 和 mxEvent.BEFORE_UNDO 事件。
+ * // - 若 currentEdit 非空，调用 notify 方法触发 mxEvent.CHANGE 和 mxEvent.NOTIFY 事件，并触发 mxEvent.UNDO 事件。
+ * // 关键变量：
+ * // - updateLevel - 跟踪嵌套事务的深度。
+ * // - currentEdit - 保存当前事务的更改。
+ * // - endingUpdate - 标志当前是否处于 endUpdate 流程中。
+ * // 注意事项：确保在 finally 块中重置 endingUpdate，以避免状态错误。
  */
 mxGraphModel.prototype.endUpdate = function()
 {
@@ -2600,6 +2692,14 @@ mxGraphModel.prototype.endUpdate = function()
  * 
  * significant - Optional boolean that specifies if the edit to be created is
  * significant. Default is true.
+ *
+ * // 中文注释：
+ * // 函数：createUndoableEdit
+ * // 创建一个新的 mxUndoableEdit 对象，实现 notify 方法以触发 mxEvent.CHANGE 和 mxEvent.NOTIFY 事件。
+ * // 参数：
+ * // significant - 可选布尔值，指定创建的编辑是否为重要编辑，默认值为 true。
+ * // 返回值：新创建的 mxUndoableEdit 对象。
+ * // 事件处理逻辑：notify 方法触发 mxEvent.CHANGE 和 mxEvent.NOTIFY 事件，通知编辑更改。
  */
 mxGraphModel.prototype.createUndoableEdit = function(significant)
 {
@@ -2628,6 +2728,18 @@ mxGraphModel.prototype.createUndoableEdit = function(significant)
  * cloneAllEdges flag is set to false, in which case edges with the same
  * id in the target model are reconnected to reflect the terminals of the
  * source edges.
+ *
+ * // 中文注释：
+ * // 函数：mergeChildren
+ * // 将指定单元的子节点合并到目标单元中。
+ * // 除非模型中存在相同 ID 的单元，否则所有单元都会被克隆；存在相同 ID 时，忽略源单元并连接到现有单元。
+ * // 边被认为无唯一标识，总是被克隆，除非 cloneAllEdges 为 false，此时会重新连接目标模型中相同 ID 的边。
+ * // 参数：
+ * // from - 源单元的 mxCell 对象。
+ * // to - 目标单元的 mxCell 对象。
+ * // cloneAllEdges - 布尔值，指定是否克隆所有边，默认值为 true。
+ * // 注意事项：操作在事务中执行，确保原子性。
+ * // 交互逻辑：克隆子节点并重新连接边到目标模型中的对应单元。
  */
 mxGraphModel.prototype.mergeChildren = function(from, to, cloneAllEdges)
 {
