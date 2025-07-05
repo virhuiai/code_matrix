@@ -24,6 +24,17 @@
  * the <isLayer> function is used. It returns true if the parent of the given
  * cell is the root of the model.
  * 
+ * // 中文注释：
+ * // mxGraphModel 类继承自 mxEventSource，用于实现图形模型。
+ * // 模型作为单元（cells）的包装器，单元负责存储实际的图形数据结构。
+ * // 模型提供事务性包装，包含事件通知以跟踪所有更改，而单元则包含更新实际数据结构的原子操作。
+ * // 层级结构说明：
+ * // 模型中的单元层级必须包含一个顶级根单元（root cell），其中包含层（通常有一个默认层）。
+ * // 层中包含该层的顶级单元，所有单元都必须属于某个层。
+ * // 如果不需要层，则所有新单元应添加到默认层。
+ * // 层的作用：用于隐藏或显示单元组，或将某些单元组置于其他单元之上显示。
+ * // 使用 isLayer 函数判断是否为层，如果单元的父节点是模型的根节点，则返回 true。
+ *
  * Events:
  * 
  * See events section for more details. There is a new set of events for
@@ -32,6 +43,14 @@
  * and endEdit for the terminal endUpdate. The executed event contains a
  * property called change which represents the change after execution.
  * 
+ * // 中文注释：
+ * // 事件说明：
+ * // 模型支持一组新的事件，用于实时跟踪事务性更改。
+ * // 事件包括：
+ * // - startEdit：当 beginUpdate 开始时触发。
+ * // - executed：每次执行更改时触发，包含 change 属性，表示执行后的更改。
+ * // - endEdit：当 endUpdate 结束时触发。
+ *
  * Encoding the model:
  * 
  * To encode a graph model, use the following code:
@@ -43,6 +62,11 @@
  * 
  * This will create an XML node that contains all the model information.
  * 
+ * // 中文注释：
+ * // 模型编码：
+ * // 使用 mxCodec 类的 encode 方法将图形模型编码为 XML 节点。
+ * // 上述代码创建一个包含所有模型信息的 XML 节点。
+ *
  * Encoding and decoding changes:
  * 
  * For the encoding of changes, a graph model listener is required that encodes
@@ -63,6 +87,12 @@
  * });
  * (end)
  * 
+ * // 中文注释：
+ * // 更改编码：
+ * // 需要为模型添加监听器，监听 mxEvent.CHANGE 事件。
+ * // 监听器从事件中获取更改数组（changes），并使用 mxCodec 将每个更改编码为节点。
+ * // nodes 数组存储编码后的更改节点，可用于后续处理。
+ *
  * For the decoding and execution of changes, the codec needs a lookup function
  * that allows it to resolve cell IDs as follows:
  * 
@@ -74,6 +104,11 @@
  * }
  * (end)
  * 
+ * // 中文注释：
+ * // 更改解码：
+ * // 解码和执行更改时，需为 mxCodec 设置 lookup 函数。
+ * // 该函数通过单元 ID 获取对应的 mxCell 对象，用于解析编码中的单元引用。
+ *
  * For each encoded change (represented by a node), the following code can be
  * used to carry out the decoding and create a change object.
  * 
@@ -85,6 +120,11 @@
  * changes.push(change);
  * (end)
  * 
+ * // 中文注释：
+ * // 更改解码与执行：
+ * // 对每个编码的更改节点，使用 codec.decode 方法解码为更改对象。
+ * // 将更改对象的 model 属性设置为当前模型，调用 execute 方法执行更改，并将更改存储到 changes 数组中。
+ *
  * The changes can then be dispatched using the model as follows.
  * 
  * (code)
@@ -104,12 +144,24 @@
  * 		'edit', edit, 'changes', changes));
  * (end)
  *
+ * // 中文注释：
+ * // 更改分发：
+ * // 创建 mxUndoableEdit 对象，将更改数组赋值给其 changes 属性。
+ * // 定义 notify 方法，触发 mxEvent.CHANGE 和 mxEvent.NOTIFY 事件，通知更改。
+ * // 通过模型触发 mxEvent.UNDO 和 mxEvent.CHANGE 事件，分发更改。
+ *
  * Event: mxEvent.CHANGE
  *
  * Fires when an undoable edit is dispatched. The <code>edit</code> property
  * contains the <mxUndoableEdit>. The <code>changes</code> property contains
  * the array of atomic changes inside the undoable edit. The changes property
  * is <strong>deprecated</strong>, please use edit.changes instead.
+ *
+ * // 中文注释：
+ * // 事件：mxEvent.CHANGE
+ * // 当分发可撤销的编辑时触发。
+ * // edit 属性包含 mxUndoableEdit 对象。
+ * // changes 属性包含可撤销编辑中的原子更改数组（已弃用，建议使用 edit.changes）。
  *
  * Example:
  * 
@@ -134,7 +186,12 @@
  * });
  * (end)
  * 
- * 
+ * // 中文注释：
+ * // 示例：查找新插入的单元
+ * // 通过监听 mxEvent.CHANGE 事件，检查 changes 数组。
+ * // 如果更改是 mxChildChange 类型且 previous 属性为 null，说明是新插入的单元。
+ * // 调用 graph.startEditingAtCell 方法开始编辑新插入的单元。
+ *
  * Event: mxEvent.NOTIFY
  *
  * Same as <mxEvent.CHANGE>, this event can be used for classes that need to
@@ -142,48 +199,90 @@
  * such a setup, only local changes should trigger a notify event and all
  * changes should trigger a change event.
  * 
+ * // 中文注释：
+ * // 事件：mxEvent.NOTIFY
+ * // 与 mxEvent.CHANGE 类似，用于需要同步本地模型与远程模型的场景。
+ * // 仅本地更改应触发 notify 事件，所有更改均触发 change 事件。
+ *
  * Event: mxEvent.EXECUTE
  * 
  * Fires between begin- and endUpdate and after an atomic change was executed
  * in the model. The <code>change</code> property contains the atomic change
  * that was executed.
  * 
+ * // 中文注释：
+ * // 事件：mxEvent.EXECUTE
+ * // 在 beginUpdate 和 endUpdate 之间，以及原子更改执行后触发。
+ * // change 属性包含已执行的原子更改。
+ *
  * Event: mxEvent.EXECUTED
  * 
  * Fires between START_EDIT and END_EDIT after an atomic change was executed.
  * The <code>change</code> property contains the change that was executed.
+ *
+ * // 中文注释：
+ * // 事件：mxEvent.EXECUTED
+ * // 在 START_EDIT 和 END_EDIT 之间，原子更改执行后触发。
+ * // change 属性包含已执行的更改。
  *
  * Event: mxEvent.BEGIN_UPDATE
  *
  * Fires after the <updateLevel> was incremented in <beginUpdate>. This event
  * contains no properties.
  * 
+ * // 中文注释：
+ * // 事件：mxEvent.BEGIN_UPDATE
+ * // 在 beginUpdate 中 updateLevel 增加后触发，无属性。
+ *
  * Event: mxEvent.START_EDIT
  *
  * Fires after the <updateLevel> was changed from 0 to 1. This event
  * contains no properties.
  * 
+ * // 中文注释：
+ * // 事件：mxEvent.START_EDIT
+ * // 在 updateLevel 从 0 变为 1 时触发，无属性。
+ *
  * Event: mxEvent.END_UPDATE
  * 
  * Fires after the <updateLevel> was decreased in <endUpdate> but before any
  * notification or change dispatching. The <code>edit</code> property contains
  * the <currentEdit>.
  * 
+ * // 中文注释：
+ * // 事件：mxEvent.END_UPDATE
+ * // 在 endUpdate 中 updateLevel 减少后、通知或更改分发前触发。
+ * // edit 属性包含 currentEdit 对象。
+ *
  * Event: mxEvent.END_EDIT
  *
  * Fires after the <updateLevel> was changed from 1 to 0. This event
  * contains no properties.
  * 
+ * // tsl:
+ * // 事件：mxEvent.END_EDIT
+ * // 在 updateLevel 从 1 变为 0 时触发，无属性。
+ *
  * Event: mxEvent.BEFORE_UNDO
  * 
  * Fires before the change is dispatched after the update level has reached 0
  * in <endUpdate>. The <code>edit</code> property contains the <curreneEdit>.
  * 
+ * // 中文注释：
+ * // 事件：mxEvent.BEFORE_UNDO
+ * // 在 endUpdate 中 updateLevel 达到 0 后、更改分发前触发。
+ * // edit 属性包含 currentEdit 对象。
+ *
  * Event: mxEvent.UNDO
  * 
  * Fires after the change was dispatched in <endUpdate>. The <code>edit</code>
  * property contains the <currentEdit>.
  * 
+ * // 中文注释：
+ * // 事件：mxEvent.UNDO
+ * // 在 endUpdate 中更改分发后触发。
+ * // edit 属性包含 currentEdit 对象。
+ *
  * Constructor: mxGraphModel
  * 
  * Constructs a new graph model. If no root is specified then a new root
@@ -192,6 +291,13 @@
  * Parameters:
  * 
  * root - <mxCell> that represents the root cell.
+ *
+ * // 中文注释：
+ * // 构造函数：mxGraphModel
+ * // 创建一个新的图形模型。
+ * // 如果未指定根节点（root），则创建一个包含默认层的 mxCell 作为根节点。
+ * // 参数：
+ * // root - 表示根单元的 mxCell 对象。
  */
 function mxGraphModel(root)
 {
@@ -205,10 +311,16 @@ function mxGraphModel(root)
 	{
 		this.clear();
 	}
+    // 中文注释：
+    // 初始化图形模型，创建初始的可撤销编辑对象（currentEdit）。
+    // 如果提供了根节点，则调用 setRoot 设置根节点；否则调用 clear 方法创建默认根节点。
 };
 
 /**
  * Extends mxEventSource.
+ *
+ * // 中文注释：
+ * // 继承 mxEventSource，获得事件触发和监听功能。
  */
 mxGraphModel.prototype = new mxEventSource();
 mxGraphModel.prototype.constructor = mxGraphModel;
@@ -219,6 +331,11 @@ mxGraphModel.prototype.constructor = mxGraphModel;
  * Holds the root cell, which in turn contains the cells that represent the
  * layers of the diagram as child cells. That is, the actual elements of the
  * diagram are supposed to live in the third generation of cells and below.
+ *
+ * // 中文注释：
+ * // 变量：root
+ * // 保存根单元，根单元包含表示图形层级的子单元。
+ * // 图形的实际元素应位于第三层及以下的单元中。
  */
 mxGraphModel.prototype.root = null;
 
@@ -226,6 +343,10 @@ mxGraphModel.prototype.root = null;
  * Variable: cells
  * 
  * Maps from Ids to cells.
+ *
+ * // 中文注释：
+ * // 变量：cells
+ * // 一个映射对象，将单元的 ID 映射到对应的 mxCell 对象。
  */
 mxGraphModel.prototype.cells = null;
 
@@ -234,6 +355,11 @@ mxGraphModel.prototype.cells = null;
  * 
  * Specifies if edges should automatically be moved into the nearest common
  * ancestor of their terminals. Default is true.
+ *
+ * // 中文注释：
+ * // 变量：maintainEdgeParent
+ * // 指定是否自动将边移动到其端点的最近公共祖先中。
+ * // 默认值为 true。
  */
 mxGraphModel.prototype.maintainEdgeParent = true;
 
@@ -242,6 +368,11 @@ mxGraphModel.prototype.maintainEdgeParent = true;
  * 
  * Specifies if relative edge parents should be ignored for finding the nearest
  * common ancestors of an edge's terminals. Default is true.
+ *
+ * // 中文注释：
+ * // 变量：ignoreRelativeEdgeParent
+ * // 指定在查找边的端点的最近公共祖先时是否忽略相对边父节点。
+ * // 默认值为 true。
  */
 mxGraphModel.prototype.ignoreRelativeEdgeParent = true;
 
@@ -250,6 +381,11 @@ mxGraphModel.prototype.ignoreRelativeEdgeParent = true;
  * 
  * Specifies if the model should automatically create Ids for new cells.
  * Default is true.
+ *
+ * // 中文注释：
+ * // 变量：createIds
+ * // 指定模型是否为新单元自动生成 ID。
+ * // 默认值为 true。
  */
 mxGraphModel.prototype.createIds = true;
 
@@ -257,6 +393,11 @@ mxGraphModel.prototype.createIds = true;
  * Variable: prefix
  * 
  * Defines the prefix of new Ids. Default is an empty string.
+ *
+ * // 中文注释：
+ * // 变量：prefix
+ * // 定义新 ID 的前缀。
+ * // 默认值为空字符串。
  */
 mxGraphModel.prototype.prefix = '';
 
@@ -264,6 +405,11 @@ mxGraphModel.prototype.prefix = '';
  * Variable: postfix
  * 
  * Defines the postfix of new Ids. Default is an empty string.
+ *
+ * // 中文注释：
+ * // 变量：postfix
+ * // 定义新 ID 的后缀。
+ * // 默认值为空字符串。
  */
 mxGraphModel.prototype.postfix = '';
 
@@ -271,6 +417,11 @@ mxGraphModel.prototype.postfix = '';
  * Variable: nextId
  * 
  * Specifies the next Id to be created. Initial value is 0.
+ *
+ * // 中文注释：
+ * // 变量：nextId
+ * // 指定下一个要创建的 ID。
+ * // 初始值为 0。
  */
 mxGraphModel.prototype.nextId = 0;
 
@@ -280,6 +431,11 @@ mxGraphModel.prototype.nextId = 0;
  * Holds the changes for the current transaction. If the transaction is
  * closed then a new object is created for this variable using
  * <createUndoableEdit>.
+ *
+ * // 中文注释：
+ * // 变量：currentEdit
+ * // 保存当前事务的更改。
+ * // 当事务关闭时，使用 createUndoableEdit 方法为此变量创建一个新对象。
  */
 mxGraphModel.prototype.currentEdit = null;
 
@@ -290,6 +446,13 @@ mxGraphModel.prototype.currentEdit = null;
  * will increment this number and each call to <endUpdate> will decrement
  * it. When the counter reaches 0, the transaction is closed and the
  * respective events are fired. Initial value is 0.
+ *
+ * // 中文注释：
+ * // 变量：updateLevel
+ * // 嵌套事务深度的计数器。
+ * // 每次调用 beginUpdate 增加该值，调用 endUpdate 减少该值。
+ * // 当计数器达到 0 时，事务关闭并触发相应事件。
+ * // 初始值为 0。
  */
 mxGraphModel.prototype.updateLevel = 0;
 
@@ -297,6 +460,11 @@ mxGraphModel.prototype.updateLevel = 0;
  * Variable: endingUpdate
  * 
  * True if the program flow is currently inside endUpdate.
+ *
+ * // 中文注释：
+ * // 变量：endingUpdate
+ * // 表示程序流当前是否处于 endUpdate 方法中。
+ * // 值为 true 时表示正在执行 endUpdate。
  */
 mxGraphModel.prototype.endingUpdate = false;
 
@@ -304,6 +472,11 @@ mxGraphModel.prototype.endingUpdate = false;
  * Function: clear
  *
  * Sets a new root using <createRoot>.
+ *
+ * // 中文注释：
+ * // 函数：clear
+ * // 使用 createRoot 方法设置一个新的根节点。
+ * // 用于清空模型并重新初始化根节点。
  */
 mxGraphModel.prototype.clear = function()
 {
@@ -314,6 +487,11 @@ mxGraphModel.prototype.clear = function()
  * Function: isCreateIds
  *
  * Returns <createIds>.
+ *
+ * // 中文注释：
+ * // 函数：isCreateIds
+ * // 返回 createIds 变量的值。
+ * // 用于检查是否为新单元自动生成 ID。
  */
 mxGraphModel.prototype.isCreateIds = function()
 {
@@ -324,6 +502,12 @@ mxGraphModel.prototype.isCreateIds = function()
  * Function: setCreateIds
  *
  * Sets <createIds>.
+ *
+ * // 中文注释：
+ * // 函数：setCreateIds
+ * // 设置 createIds 变量的值。
+ * // 参数：
+ * // value - 布尔值，指定是否为新单元自动生成 ID。
  */
 mxGraphModel.prototype.setCreateIds = function(value)
 {
@@ -334,6 +518,11 @@ mxGraphModel.prototype.setCreateIds = function(value)
  * Function: createRoot
  *
  * Creates a new root cell with a default layer (child 0).
+ *
+ * // 中文注释：
+ * // 函数：createRoot
+ * // 创建一个包含默认层（子节点 0）的根单元。
+ * // 返回新创建的 mxCell 对象作为根节点。
  */
 mxGraphModel.prototype.createRoot = function()
 {
@@ -352,6 +541,12 @@ mxGraphModel.prototype.createRoot = function()
  * Parameters:
  * 
  * id - A string representing the Id of the cell.
+ *
+ * // 中文注释：
+ * // 函数：getCell
+ * // 根据指定的 ID 返回对应的 mxCell 对象，如果未找到则返回 null。
+ * // 参数：
+ * // id - 表示单元 ID 的字符串。
  */
 mxGraphModel.prototype.getCell = function(id)
 {
@@ -363,6 +558,14 @@ mxGraphModel.prototype.getCell = function(id)
  * 
  * Returns the cells from the given array where the given filter function
  * returns true.
+ *
+ * // 中文注释：
+ * // 函数：filterCells
+ * // 从给定的单元数组中返回满足指定过滤函数的单元。
+ * // 参数：
+ * // cells - 待过滤的单元数组。
+ * // filter - 过滤函数，接受一个 mxCell 参数并返回布尔值。
+ * // 返回值：满足过滤条件的单元数组。
  */
 mxGraphModel.prototype.filterCells = function(cells, filter)
 {
@@ -392,6 +595,13 @@ mxGraphModel.prototype.filterCells = function(cells, filter)
  * Parameters:
  * 
  * parent - <mxCell> whose descendants should be returned.
+ *
+ * // 中文注释：
+ * // 函数：getDescendants
+ * // 返回指定单元及其所有后代的数组。
+ * // 参数：
+ * // parent - 需要返回后代的 mxCell 对象。
+ * // 返回值：包含指定单元及其后代的数组。
  */
 mxGraphModel.prototype.getDescendants = function(parent)
 {
@@ -421,6 +631,16 @@ mxGraphModel.prototype.getDescendants = function(parent)
  * filter - JavaScript function that takes an <mxCell> as an argument
  * and returns a boolean.
  * parent - Optional <mxCell> that is used as the root of the recursion.
+ *
+ * // 中文注释：
+ * // 函数：filterDescendants
+ * // 递归访问所有单元，并对每个单元应用指定的过滤函数。
+ * // 如果过滤函数返回 true，则将该单元添加到结果数组中。
+ * // 参数：
+ * // filter - 接受 mxCell 参数并返回布尔值的 JavaScript 函数。
+ * // parent - 可选参数，指定递归的起始根单元，默认为模型的根节点。
+ * // 返回值：满足过滤条件的单元数组。
+ * // 示例：提取模型中的所有顶点（vertices）。
  */
 mxGraphModel.prototype.filterDescendants = function(filter, parent)
 {
@@ -457,6 +677,13 @@ mxGraphModel.prototype.filterDescendants = function(filter, parent)
  * Parameters:
  * 
  * cell - Optional <mxCell> that specifies the child.
+ *
+ * // 中文注释：
+ * // 函数：getRoot
+ * // 返回模型的根节点，或指定单元的最顶级父节点。
+ * // 参数：
+ * // cell - 可选的 mxCell 对象，指定子节点。
+ * // 返回值：根节点或最顶级父节点。
  */
 mxGraphModel.prototype.getRoot = function(cell)
 {
@@ -493,6 +720,15 @@ mxGraphModel.prototype.getRoot = function(cell)
  * Parameters:
  * 
  * root - <mxCell> that specifies the new root.
+ *
+ * // 中文注释：
+ * // 函数：setRoot
+ * // 使用 mxRootChange 设置模型的根节点，并将更改添加到当前事务。
+ * // 重置模型中的所有数据结构，是清空现有模型的首选方法。
+ * // 参数：
+ * // root - 指定新根节点的 mxCell 对象。
+ * // 返回值：新设置的根节点。
+ * // 示例：创建一个新根节点并插入一个子节点。
  */
 mxGraphModel.prototype.setRoot = function(root)
 {
@@ -510,6 +746,13 @@ mxGraphModel.prototype.setRoot = function(root)
  * Parameters:
  * 
  * root - <mxCell> that specifies the new root.
+ *
+ * // 中文注释：
+ * // 函数：rootChanged
+ * // 内部回调函数，用于更改模型的根节点并更新内部数据结构（如 cells 和 nextId）。
+ * // 参数：
+ * // root - 指定新根节点的 mxCell 对象。
+ * // 返回值：之前的根节点。
  */
 mxGraphModel.prototype.rootChanged = function(root)
 {
@@ -533,6 +776,13 @@ mxGraphModel.prototype.rootChanged = function(root)
  * Parameters:
  * 
  * cell - <mxCell> that represents the possible root.
+ *
+ * // 中文注释：
+ * // 函数：isRoot
+ * // 判断给定单元是否为模型的根节点且非空。
+ * // 参数：
+ * // cell - 表示可能根节点的 mxCell 对象。
+ * // 返回值：如果单元是根节点且非空，返回 true。
  */
 mxGraphModel.prototype.isRoot = function(cell)
 {
@@ -547,6 +797,13 @@ mxGraphModel.prototype.isRoot = function(cell)
  * Parameters:
  * 
  * cell - <mxCell> that represents the possible layer.
+ *
+ * // 中文注释：
+ * // 函数：isLayer
+ * // 判断给定单元的父节点是否为根节点，从而确定该单元是否为层。
+ * // 参数：
+ * // cell - 表示可能层的 mxCell 对象。
+ * // 返回值：如果单元的父节点是根节点，返回 true。
  */
 mxGraphModel.prototype.isLayer = function(cell)
 {
@@ -563,6 +820,14 @@ mxGraphModel.prototype.isLayer = function(cell)
  * 
  * parent - <mxCell> that specifies the parent.
  * child - <mxCell> that specifies the child.
+ *
+ * // 中文注释：
+ * // 函数：isAncestor
+ * // 判断指定父节点是否为子节点的祖先（包括子节点等于父节点的情况）。
+ * // 参数：
+ * // parent - 指定父节点的 mxCell 对象。
+ * // child - 指定子节点的 mxCell 对象。
+ * // 返回值：如果父节点是子节点的祖先，返回 true。
  */
 mxGraphModel.prototype.isAncestor = function(parent, child)
 {
@@ -582,6 +847,13 @@ mxGraphModel.prototype.isAncestor = function(parent, child)
  * Parameters:
  * 
  * cell - <mxCell> that specifies the cell.
+ *
+ * // 中文注释：
+ * // 函数：contains
+ * // 判断模型是否包含指定的单元。
+ * // 参数：
+ * // cell - 指定单元的 mxCell 对象。
+ * // 返回值：如果模型包含该单元，返回 true。
  */
 mxGraphModel.prototype.contains = function(cell)
 {
@@ -596,6 +868,13 @@ mxGraphModel.prototype.contains = function(cell)
  * Parameters:
  * 
  * cell - <mxCell> whose parent should be returned.
+ *
+ * // 中文注释：
+ * // 函数：getParent
+ * // 返回指定单元的父节点。
+ * // 参数：
+ * // cell - 需要返回父节点的 mxCell 对象。
+ * // 返回值：父节点，若单元为空则返回 null。
  */
 mxGraphModel.prototype.getParent = function(cell)
 {
@@ -615,6 +894,17 @@ mxGraphModel.prototype.getParent = function(cell)
  * parent - <mxCell> that specifies the parent to contain the child.
  * child - <mxCell> that specifies the child to be inserted.
  * index - Optional integer that specifies the index of the child.
+ *
+ * // 中文注释：
+ * // 函数：add
+ * // 将指定子节点添加到父节点的指定索引位置，使用 mxChildChange 并将更改添加到当前事务。
+ * // 如果未指定索引，则将子节点追加到父节点的子节点数组末尾。
+ * // 参数：
+ * // parent - 指定父节点的 mxCell 对象。
+ * // child - 指定要插入的子节点的 mxCell 对象。
+ * // index - 可选整数，指定子节点的插入索引。
+ * // 返回值：插入的子节点。
+ * // 注意事项：如果 maintainEdgeParent 为 true 且父节点发生变化，会更新边的父节点。
  */
 mxGraphModel.prototype.add = function(parent, child, index)
 {
@@ -661,6 +951,17 @@ mxGraphModel.prototype.add = function(parent, child, index)
  * Parameters:
  * 
  * cell - <mxCell> that specifies the cell that has been added.
+ *
+ * // 中文注释：
+ * // 函数：cellAdded
+ * // 内部回调函数，用于在添加单元时更新 cells 映射。
+ * // 实现通过创建新 ID 解决 ID 冲突。
+ * // 参数：
+ * // cell - 指定已添加的单元的 mxCell 对象。
+ * // 注意事项：
+ * // 如果单元没有 ID 且 createIds 为 true，则自动生成 ID。
+ * // 如果 ID 冲突，会生成新 ID 直到无冲突。
+ * // 递归处理子节点，确保所有子节点的 ID 也被添加到 cells 映射中。
  */
 mxGraphModel.prototype.cellAdded = function(cell)
 {
@@ -723,6 +1024,15 @@ mxGraphModel.prototype.cellAdded = function(cell)
  * Parameters:
  *
  * cell - <mxCell> to create the Id for.
+ *
+ * // 中文注释：
+ * // 函数：createId
+ * // 为指定单元创建 ID 的钩子方法。
+ * // 通过拼接 prefix、id 和 postfix 创建 ID，并递增 nextId。
+ * // 参数：
+ * // cell - 需要创建 ID 的 mxCell 对象（当前实现忽略此参数）。
+ * // 返回值：新生成的 ID 字符串。
+ * // 注意事项：可通过重写此方法为 ID 添加前缀（如单元类型）。
  */
 mxGraphModel.prototype.createId = function(cell)
 {
@@ -737,6 +1047,13 @@ mxGraphModel.prototype.createId = function(cell)
  * 
  * Updates the parent for all edges that are connected to cell or one of
  * its descendants using <updateEdgeParent>.
+ *
+ * // 中文注释：
+ * // 函数：updateEdgeParents
+ * // 更新与指定单元或其后代连接的所有边的父节点，使用 updateEdgeParent 方法。
+ * // 参数：
+ * // cell - 需要更新边父节点的 mxCell 对象。
+ * // root - 可选参数，表示模型的当前根节点，默认为 getRoot(cell) 的结果。
  */
 mxGraphModel.prototype.updateEdgeParents = function(cell, root)
 {
@@ -785,6 +1102,16 @@ mxGraphModel.prototype.updateEdgeParents = function(cell, root)
  * 
  * edge - <mxCell> that specifies the edge.
  * root - <mxCell> that represents the current root of the model.
+ *
+ * // 中文注释：
+ * // 函数：updateEdgeParent
+ * // 内部回调函数，将指定边的父节点更新为其两个端点的最近公共祖先。
+ * // 参数：
+ * // edge - 指定边的 mxCell 对象。
+ * // root - 表示模型当前根节点的 mxCell 对象。
+ * // 注意事项：
+ * // 如果 ignoreRelativeEdgeParent 为 true，则忽略相对几何位置的端点。
+ * // 调整边的几何位置以适应新的父节点。
  */
 mxGraphModel.prototype.updateEdgeParent = function(edge, root)
 {
@@ -846,6 +1173,13 @@ mxGraphModel.prototype.updateEdgeParent = function(edge, root)
  * 
  * Returns the absolute, accumulated origin for the children inside the
  * given parent as an <mxPoint>.
+ *
+ * // 中文注释：
+ * // 函数：getOrigin
+ * // 返回指定父节点内子节点的绝对累积原点，作为 mxPoint 对象。
+ * // 参数：
+ * // cell - 指定父节点的 mxCell 对象。
+ * // 返回值：表示累积原点的 mxPoint 对象。
  */
 mxGraphModel.prototype.getOrigin = function(cell)
 {
@@ -883,6 +1217,14 @@ mxGraphModel.prototype.getOrigin = function(cell)
  * 
  * cell1 - <mxCell> that specifies the first cell in the tree.
  * cell2 - <mxCell> that specifies the second cell in the tree.
+ *
+ * // 中文注释：
+ * // 函数：getNearestCommonAncestor
+ * // 返回两个指定单元的最近公共祖先。
+ * // 参数：
+ * // cell1 - 树中的第一个 mxCell 对象。
+ * // cell2 - 树中的第二个 mxCell 对象。
+ * // 返回值：最近公共祖先的 mxCell 对象，若无则返回 null。
  */
 mxGraphModel.prototype.getNearestCommonAncestor = function(cell1, cell2)
 {
@@ -936,6 +1278,15 @@ mxGraphModel.prototype.getNearestCommonAncestor = function(cell1, cell2)
  * Parameters:
  * 
  * cell - <mxCell> that should be removed.
+ *
+ * // 中文注释：
+ * // 函数：remove
+ * // 使用 mxChildChange 从模型中移除指定单元，并将更改添加到当前事务。
+ * // 此操作会移除单元及其所有子节点。
+ * // 参数：
+ * // cell - 需要移除的 mxCell 对象。
+ * // 返回值：被移除的单元。
+ * // 注意事项：如果单元是根节点，则调用 setRoot(null)。
  */
 mxGraphModel.prototype.remove = function(cell)
 {
@@ -959,6 +1310,13 @@ mxGraphModel.prototype.remove = function(cell)
  * Parameters:
  * 
  * cell - <mxCell> that specifies the cell that has been removed.
+ *
+ * // 中文注释：
+ * // 函数：cellRemoved
+ * // 内部回调函数，用于在移除单元时更新 cells 映射。
+ * // 参数：
+ * // cell - 指定已移除的单元的 mxCell 对象。
+ * // 注意事项：递归处理子节点，从 cells 映射中移除单元及其子节点的 ID。
  */
 mxGraphModel.prototype.cellRemoved = function(cell)
 {
@@ -992,6 +1350,15 @@ mxGraphModel.prototype.cellRemoved = function(cell)
  * parent - <mxCell> that specifies the new parent of the cell.
  * index - Optional integer that defines the index of the child
  * in the parent's child array.
+ *
+ * // 中文注释：
+ * // 函数：parentForCellChanged
+ * // 内部回调函数，使用 mxCell.insert 更新单元的父节点并返回之前的父节点。
+ * // 参数：
+ * // cell - 需要更新父节点的 mxCell 对象。
+ * // parent - 指定新父节点的 mxCell 对象。
+ * // index - 可选整数，指定子节点在父节点子数组中的索引。
+ * // 返回值：之前的父节点。
  */
 mxGraphModel.prototype.parentForCellChanged = function(cell, parent, index)
 {
@@ -1034,6 +1401,13 @@ mxGraphModel.prototype.parentForCellChanged = function(cell, parent, index)
  * Parameters:
  * 
  * cell - <mxCell> whose number of children should be returned.
+ *
+ * // 中文注释：
+ * // 函数：getChildCount
+ * // 返回指定单元的子节点数量。
+ * // 参数：
+ * // cell - 需要返回子节点数量的 mxCell 对象。
+ * // 返回值：子节点数量，若单元为空则返回 0。
  */
 mxGraphModel.prototype.getChildCount = function(cell)
 {
@@ -1049,6 +1423,14 @@ mxGraphModel.prototype.getChildCount = function(cell)
  * 
  * cell - <mxCell> that represents the parent.
  * index - Integer that specifies the index of the child to be returned.
+ *
+ * // 中文注释：
+ * // 函数：getChildAt
+ * // 返回指定父节点在给定索引处的子节点。
+ * // 参数：
+ * // cell - 表示父节点的 mxCell 对象。
+ * // index - 指定要返回的子节点的索引。
+ * // 返回值：指定索引处的子节点，若单元为空则返回 null。
  */
 mxGraphModel.prototype.getChildAt = function(cell, index)
 {
@@ -1064,6 +1446,13 @@ mxGraphModel.prototype.getChildAt = function(cell, index)
  * Parameters:
  * 
  * cell - <mxCell> the represents the parent.
+ *
+ * // 中文注释：
+ * // 函数：getChildren
+ * // 返回指定父节点的所有子节点作为 mxCell 数组。
+ * // 参数：
+ * // cell - 表示父节点的 mxCell 对象。
+ * // 返回值：子节点数组，仅限读取。
  */
 mxGraphModel.prototype.getChildren = function(cell)
 {
@@ -1078,6 +1467,13 @@ mxGraphModel.prototype.getChildren = function(cell)
  * Parameters:
  * 
  * cell - <mxCell> whose child vertices should be returned.
+ *
+ * // 中文注释：
+ * // 函数：getChildVertices
+ * // 返回指定父节点的子顶点。
+ * // 参数：
+ * // cell - 需要返回子顶点的 mxCell 对象。
+ * // 返回值：子顶点数组。
  */
 mxGraphModel.prototype.getChildVertices = function(parent)
 {
@@ -1092,6 +1488,13 @@ mxGraphModel.prototype.getChildVertices = function(parent)
  * Parameters:
  * 
  * cell - <mxCell> whose child edges should be returned.
+ *
+ * // 中文注释：
+ * // 函数：getChildEdges
+ * // 返回指定父节点的子边。
+ * // 参数：
+ * // cell - 需要返回子边的 mxCell 对象。
+ * // 返回值：子边数组。
  */
 mxGraphModel.prototype.getChildEdges = function(parent)
 {
@@ -1111,6 +1514,15 @@ mxGraphModel.prototype.getChildEdges = function(parent)
  * Default is false.
  * edges - Boolean indicating if child edges should be returned.
  * Default is false.
+ *
+ * // 中文注释：
+ * // 函数：getChildCells
+ * // 返回指定父节点的子节点，根据参数决定返回顶点和/或边。
+ * // 参数：
+ * // cell - 表示父节点的 mxCell 对象。
+ * // vertices - 布尔值，指定是否返回子顶点，默认值为 false。
+ * // edges - 布尔值，指定是否返回子边，默认值为 false。
+ * // 返回值：满足条件的子节点数组。
  */
 mxGraphModel.prototype.getChildCells = function(parent, vertices, edges)
 {
@@ -1144,6 +1556,14 @@ mxGraphModel.prototype.getChildCells = function(parent, vertices, edges)
  * 
  * edge - <mxCell> that specifies the edge.
  * isSource - Boolean indicating which end of the edge should be returned.
+ *
+ * // 中文注释：
+ * // 函数：getTerminal
+ * // 返回指定边的源端点或目标端点，根据布尔参数决定。
+ * // 参数：
+ * // edge - 指定边的 mxCell 对象。
+ * // isSource - 布尔值，指定返回源端点（true）还是目标端点（false）。
+ * // 返回值：源端点或目标端点的 mxCell 对象，若边为空则返回 null。
  */
 mxGraphModel.prototype.getTerminal = function(edge, isSource)
 {
@@ -1164,6 +1584,16 @@ mxGraphModel.prototype.getTerminal = function(edge, isSource)
  * terminal - <mxCell> that specifies the new terminal.
  * isSource - Boolean indicating if the terminal is the new source or
  * target terminal of the edge.
+ *
+ * // 中文注释：
+ * // 函数：setTerminal
+ * // 使用 mxTerminalChange 设置指定边的源端点或目标端点，并将更改添加到当前事务。
+ * // 如果需要（maintainEdgeParent 为 true 且端点变化），更新边的父节点。
+ * // 参数：
+ * // edge - 指定边的 mxCell 对象。
+ * // terminal - 指定新端点的 mxCell 对象。
+ * // isSource - 布尔值，指定设置源端点（true）还是目标端点（false）。
+ * // 返回值：新设置的端点。
  */
 mxGraphModel.prototype.setTerminal = function(edge, terminal, isSource)
 {
@@ -1189,6 +1619,14 @@ mxGraphModel.prototype.setTerminal = function(edge, terminal, isSource)
  * edge - <mxCell> that specifies the edge.
  * source - <mxCell> that specifies the new source terminal.
  * target - <mxCell> that specifies the new target terminal.
+ *
+ * // 中文注释：
+ * // 函数：setTerminals
+ * // 在单一事务中，使用 setTerminal 设置指定边的源端点和目标端点。
+ * // 参数：
+ * // edge - 指定边的 mxCell 对象。
+ * // source - 指定新源端点的 mxCell 对象。
+ * // target - 指定新目标端点的 mxCell 对象。
  */
 mxGraphModel.prototype.setTerminals = function(edge, source, target)
 {
@@ -1216,6 +1654,15 @@ mxGraphModel.prototype.setTerminals = function(edge, source, target)
  * terminal - <mxCell> that specifies the new terminal.
  * isSource - Boolean indicating if the terminal is the new source or
  * target terminal of the edge.
+ *
+ * // 中文注释：
+ * // 函数：terminalForCellChanged
+ * // 内部辅助函数，使用 mxCell.insertEdge 更新边的端点并返回之前的端点。
+ * // 参数：
+ * // edge - 指定要更新的边的 mxCell 对象。
+ * // terminal - 指定新端点的 mxCell 对象。
+ * // isSource - 布尔值，指定更新源端点（true）还是目标端点（false）。
+ * // 返回值：之前的端点。
  */
 mxGraphModel.prototype.terminalForCellChanged = function(edge, terminal, isSource)
 {
@@ -1241,6 +1688,13 @@ mxGraphModel.prototype.terminalForCellChanged = function(edge, terminal, isSourc
  * Parameters:
  * 
  * cell - <mxCell> that represents the vertex.
+ *
+ * // 中文注释：
+ * // 函数：getEdgeCount
+ * // 返回连接到指定单元的唯一边的数量。
+ * // 参数：
+ * // cell - 表示顶点的 mxCell 对象。
+ * // 返回值：边的数量，若单元为空则返回 0。
  */
 mxGraphModel.prototype.getEdgeCount = function(cell)
 {
@@ -1257,6 +1711,14 @@ mxGraphModel.prototype.getEdgeCount = function(cell)
  * cell - <mxCell> that specifies the vertex.
  * index - Integer that specifies the index of the edge
  * to return.
+ *
+ * // 中文注释：
+ * // 函数：getEdgeAt
+ * // 返回指定单元在给定索引处的边。
+ * // 参数：
+ * // cell - 指定顶点的 mxCell 对象。
+ * // index - 指定要返回的边的索引。
+ * // 返回值：指定索引处的边，若单元为空则返回 null。
  */
 mxGraphModel.prototype.getEdgeAt = function(cell, index)
 {
@@ -1275,6 +1737,15 @@ mxGraphModel.prototype.getEdgeAt = function(cell, index)
  * outgoing - Boolean that specifies if the number of outgoing or
  * incoming edges should be returned.
  * ignoredEdge - <mxCell> that represents an edge to be ignored.
+ *
+ * // 中文注释：
+ * // 函数：getDirectedEdgeCount
+ * // 返回指定单元的入边或出边数量，忽略指定的边。
+ * // 参数：
+ * // cell - 需要返回边数量的 mxCell 对象。
+ * // outgoing - 布尔值，指定返回出边（true）还是入边（false）的数量。
+ * // ignoredEdge - 需要忽略的边的 mxCell 对象。
+ * // 返回值：入边或出边的数量。
  */
 mxGraphModel.prototype.getDirectedEdgeCount = function(cell, outgoing, ignoredEdge)
 {
@@ -1303,6 +1774,12 @@ mxGraphModel.prototype.getDirectedEdgeCount = function(cell, outgoing, ignoredEd
  * 
  * cell - <mxCell> whose edges should be returned.
  * 
+ * // 中文注释：
+ * // 函数：getConnections
+ * // 返回指定单元的所有边，不包括循环边。
+ * // 参数：
+ * // cell - 需要返回边的 mxCell 对象。
+ * // 返回值：不含循环边的边数组。
  */
 mxGraphModel.prototype.getConnections = function(cell)
 {
@@ -1318,6 +1795,12 @@ mxGraphModel.prototype.getConnections = function(cell)
  * 
  * cell - <mxCell> whose incoming edges should be returned.
  * 
+ * // 中文注释：
+ * // 函数：getIncomingEdges
+ * // 返回指定单元的入边，不包括循环边。
+ * // 参数：
+ * // cell - 需要返回入边的 mxCell 对象。
+ * // 返回值：入边数组。
  */
 mxGraphModel.prototype.getIncomingEdges = function(cell)
 {
@@ -1333,6 +1816,12 @@ mxGraphModel.prototype.getIncomingEdges = function(cell)
  * 
  * cell - <mxCell> whose outgoing edges should be returned.
  * 
+ * // 中文注释：
+ * // 函数：getOutgoingEdges
+ * // 返回指定单元的出边，不包括循环边。
+ * // 参数：
+ * // cell - 需要返回出边的 mxCell 对象。
+ * // 返回值：出边数组。
  */
 mxGraphModel.prototype.getOutgoingEdges = function(cell)
 {
@@ -1356,6 +1845,17 @@ mxGraphModel.prototype.getOutgoingEdges = function(cell)
  * returned. Default is true.
  * includeLoops - Optional boolean that specifies if loops should be returned.
  * Default is true. 
+ *
+ * // 中文注释：
+ * // 函数：getEdges
+ * // 返回连接到指定单元的所有唯一边作为 mxCell 数组。
+ * // 如果 incoming 或 outgoing 至少一个为 true，则忽略循环边；否则若两者均为 false，则返回包括循环边在内的所有边。
+ * // 参数：
+ * // cell - 指定单元的 mxCell 对象。
+ * // incoming - 可选布尔值，指定是否返回入边，默认值为 true。
+ * // outgoing - 可选布尔值，指定是否返回出边，默认值为 true。
+ * // includeLoops - 可选布尔值，指定是否返回循环边，默认值为 true。
+ * // 返回值：连接到指定单元的边数组。
  */
 mxGraphModel.prototype.getEdges = function(cell, incoming, outgoing, includeLoops)
 {
@@ -1397,6 +1897,16 @@ mxGraphModel.prototype.getEdges = function(cell, incoming, outgoing, includeLoop
  * returned.
  * directed - Optional boolean that specifies if the direction of the
  * edge should be taken into account. Default is false.
+ *
+ * // 中文注释：
+ * // 函数：getEdgesBetween
+ * // 返回指定源端点和目标端点之间的所有边。
+ * // 如果 directed 为 true，则只返回从源到目标的边；否则返回两者之间的所有边。
+ * // 参数：
+ * // source - 定义边源端点的 mxCell 对象。
+ * // target - 定义边目标端点的 mxCell 对象。
+ * // directed - 可选布尔值，指定是否考虑边的方向，默认值为 false。
+ * // 返回值：源端点和目标端点之间的边数组。
  */
 mxGraphModel.prototype.getEdgesBetween = function(source, target, directed)
 {
@@ -1453,6 +1963,16 @@ mxGraphModel.prototype.getEdgesBetween = function(source, target, directed)
  * in the result. Default is true.
  * targets - Boolean that specifies if target terminals should be contained
  * in the result. Default is true.
+ *
+ * // 中文注释：
+ * // 函数：getOpposites
+ * // 返回给定边相对于指定端点的所有对端顶点，仅返回指定的源端点和/或目标端点。
+ * // 参数：
+ * // edges - 包含待检查边的 mxCell 数组。
+ * // terminal - 指定已知端点的 mxCell 对象。
+ * // sources - 布尔值，指定结果是否包含源端点，默认值为 true。
+ * // targets - 布尔值，指定结果是否包含目标端点，默认值为 true。
+ * // 返回值：对端顶点的 mxCell 数组。
  */
 mxGraphModel.prototype.getOpposites = function(edges, terminal, sources, targets)
 {
@@ -1499,6 +2019,14 @@ mxGraphModel.prototype.getOpposites = function(edges, terminal, sources, targets
  * Parameters:
  * 
  * cells - Array of <mxCells> whose topmost ancestors should be returned.
+ *
+ * // 中文注释：
+ * // 函数：getTopmostCells
+ * // 返回层级中最顶级的单元数组，不包含任何后代。
+ * // 去除数组中的重复单元以提高性能。
+ * // 参数：
+ * // cells - 需要返回最顶级祖先的 mxCell 数组。
+ * // 返回值：最顶级单元的数组。
  */
 mxGraphModel.prototype.getTopmostCells = function(cells)
 {
@@ -1544,6 +2072,13 @@ mxGraphModel.prototype.getTopmostCells = function(cells)
  * Parameters:
  * 
  * cell - <mxCell> that represents the possible vertex.
+ *
+ * // 中文注释：
+ * // 函数：isVertex
+ * // 判断给定单元是否为顶点。
+ * // 参数：
+ * // cell - 表示可能顶点的 mxCell 对象。
+ * // 返回值：如果单元是顶点，返回 true。
  */
 mxGraphModel.prototype.isVertex = function(cell)
 {
@@ -1558,6 +2093,13 @@ mxGraphModel.prototype.isVertex = function(cell)
  * Parameters:
  * 
  * cell - <mxCell> that represents the possible edge.
+ *
+ * // 中文注释：
+ * // 函数：isEdge
+ * // 判断给定单元是否为边。
+ * // 参数：
+ * // cell - 表示可能边的 mxCell 对象。
+ * // 返回值：如果单元是边，返回 true。
  */
 mxGraphModel.prototype.isEdge = function(cell)
 {
@@ -1574,6 +2116,14 @@ mxGraphModel.prototype.isEdge = function(cell)
  * Parameters:
  * 
  * cell - <mxCell> whose connectable state should be returned.
+ *
+ * // 中文注释：
+ * // 函数：isConnectable
+ * // 判断给定单元是否可连接。
+ * // 如果 edgesConnectable 为 false，则所有边返回 false；否则返回 mxCell.isConnectable 的值。
+ * // 参数：
+ * // cell - 需要返回连接状态的 mxCell 对象。
+ * // 返回值：如果单元可连接，返回 true。
  */
 mxGraphModel.prototype.isConnectable = function(cell)
 {
@@ -1588,6 +2138,13 @@ mxGraphModel.prototype.isConnectable = function(cell)
  * Parameters:
  * 
  * cell - <mxCell> whose user object should be returned.
+ *
+ * // 中文注释：
+ * // 函数：getValue
+ * // 使用 mxCell.getValue 返回指定单元的用户对象。
+ * // 参数：
+ * // cell - 需要返回用户对象的 mxCell 对象。
+ * // 返回值：用户对象，若单元为空则返回 null。
  */
 mxGraphModel.prototype.getValue = function(cell)
 {
@@ -1604,6 +2161,14 @@ mxGraphModel.prototype.getValue = function(cell)
  * 
  * cell - <mxCell> whose user object should be changed.
  * value - Object that defines the new user object.
+ *
+ * // 中文注释：
+ * // 函数：setValue
+ * // 使用 mxValueChange 设置指定单元的用户对象，并将更改添加到当前事务。
+ * // 参数：
+ * // cell - 需要更改用户对象的 mxCell 对象。
+ * // value - 定义新用户对象的对象。
+ * // 返回值：新设置的用户对象。
  */
 mxGraphModel.prototype.setValue = function(cell, value)
 {
@@ -1631,6 +2196,15 @@ mxGraphModel.prototype.setValue = function(cell, value)
  *   return previous;
  * };
  * (end) 
+ *
+ * // 中文注释：
+ * // 函数：valueForCellChanged
+ * // 内部回调函数，使用 mxCell.valueChanged 更新指定单元的用户对象并返回之前的值。
+ * // 参数：
+ * // cell - 需要更新用户对象的 mxCell 对象。
+ * // value - 新用户对象的值。
+ * // 返回值：mxCell.valueChanged 返回的之前值。
+ * // 示例：修改 XML 节点中的特定属性。
  */
 mxGraphModel.prototype.valueForCellChanged = function(cell, value)
 {
@@ -1645,6 +2219,13 @@ mxGraphModel.prototype.valueForCellChanged = function(cell, value)
  * Parameters:
  * 
  * cell - <mxCell> whose geometry should be returned.
+ *
+ * // 中文注释：
+ * // 函数：getGeometry
+ * // 返回指定单元的 mxGeometry 对象。
+ * // 参数：
+ * // cell - 需要返回几何信息的 mxCell 对象。
+ * // 返回值：单元的几何信息，若单元为空则返回 null。
  */
 mxGraphModel.prototype.getGeometry = function(cell)
 {
@@ -1662,6 +2243,15 @@ mxGraphModel.prototype.getGeometry = function(cell)
  * 
  * cell - <mxCell> whose geometry should be changed.
  * geometry - <mxGeometry> that defines the new geometry.
+ *
+ * // 中文注释：
+ * // 函数：setGeometry
+ * // 设置指定单元的 mxGeometry 对象，实际更新在 geometryForCellChanged 中执行。
+ * // 使用 mxGeometryChange 封装更改。
+ * // 参数：
+ * // cell - 需要更改几何信息的 mxCell 对象。
+ * // geometry - 定义新几何信息的 mxGeometry 对象。
+ * // 返回值：新设置的几何信息。
  */
 mxGraphModel.prototype.setGeometry = function(cell, geometry)
 {
@@ -1678,6 +2268,14 @@ mxGraphModel.prototype.setGeometry = function(cell, geometry)
  * 
  * Inner callback to update the <mxGeometry> of the given <mxCell> using
  * <mxCell.setGeometry> and return the previous <mxGeometry>.
+ *
+ * // 中文注释：
+ * // 函数：geometryForCellChanged
+ * // 内部回调函数，使用 mxCell.setGeometry 更新指定单元的几何信息并返回之前的几何信息。
+ * // 参数：
+ * // cell - 需要更新几何信息的 mxCell 对象。
+ * // geometry - 新几何信息的 mxGeometry 对象。
+ * // 返回值：之前的几何信息。
  */
 mxGraphModel.prototype.geometryForCellChanged = function(cell, geometry)
 {
@@ -1695,6 +2293,13 @@ mxGraphModel.prototype.geometryForCellChanged = function(cell, geometry)
  * Parameters:
  * 
  * cell - <mxCell> whose style should be returned.
+ *
+ * // 中文注释：
+ * // 函数：getStyle
+ * // 返回指定单元的样式。
+ * // 参数：
+ * // cell - 需要返回样式的 mxCell 对象。
+ * // 返回值：单元的样式字符串，若单元为空则返回 null。
  */
 mxGraphModel.prototype.getStyle = function(cell)
 {
@@ -1712,6 +2317,15 @@ mxGraphModel.prototype.getStyle = function(cell)
  * cell - <mxCell> whose style should be changed.
  * style - String of the form [stylename;|key=value;] to specify
  * the new cell style.
+ *
+ * // 中文注释：
+ * // 函数：setStyle
+ * // 使用 mxStyleChange 设置指定单元的样式，并将更改添加到当前事务。
+ * // 参数：
+ * // cell - 需要更改样式的 mxCell 对象。
+ * // style - 指定新单元样式的字符串，格式为 [stylename;|key=value;]。
+ * // 返回值：新设置的样式字符串。
+ * // 样式说明：样式字符串以键值对形式定义单元的显示属性。
  */
 mxGraphModel.prototype.setStyle = function(cell, style)
 {
