@@ -2787,6 +2787,21 @@ mxGraphModel.prototype.mergeChildren = function(from, to, cloneAllEdges)
  * this model and adds an entry to the mapping that maps from the source
  * cell to the target cell with the same id or the clone of the source cell
  * that was inserted into this model.
+ *
+ * // 中文注释：
+ * // 函数：mergeChildrenImpl
+ * // 将源单元的子节点克隆到目标单元，并添加映射条目，将源单元映射到目标单元（具有相同 ID 或克隆的单元）。
+ * // 主要功能：递归克隆子节点并维护映射关系，用于合并图形模型中的子节点。
+ * // 参数：
+ * // from - 源单元的 mxCell 对象。
+ * // to - 目标单元的 mxCell 对象。
+ * // cloneAllEdges - 布尔值，指定是否克隆所有边，默认值为 true。
+ * // mapping - 映射对象，存储源单元到目标单元的映射。
+ * // 交互逻辑：克隆子节点并重新连接边到目标模型中的对应单元。
+ * // 注意事项：
+ * // - 如果目标模型中存在相同 ID 的单元，则使用现有单元而非克隆。
+ * // - 不使用 model.add 方法插入边，以避免 maintainEdgeParent 导致边移动。
+ * // - 操作在事务中执行（beginUpdate/endUpdate），确保原子性。
  */
 mxGraphModel.prototype.mergeChildrenImpl = function(from, to, cloneAllEdges, mapping)
 {
@@ -2804,7 +2819,10 @@ mxGraphModel.prototype.mergeChildrenImpl = function(from, to, cloneAllEdges, map
 				var id = cell.getId();
 				var target = (id != null && (!this.isEdge(cell) || !cloneAllEdges)) ?
 						this.getCell(id) : null;
-				
+                // 中文注释：
+                // 获取子节点的 ID，并检查目标模型中是否已存在相同 ID 的单元。
+                // 如果是边且 cloneAllEdges 为 false，则尝试复用现有单元。
+
 				// Clones and adds the child if no cell exists for the id
 				if (target == null)
 				{
@@ -2815,25 +2833,37 @@ mxGraphModel.prototype.mergeChildrenImpl = function(from, to, cloneAllEdges, map
 					// because the lookup uses strings not cells in JS
 					clone.setTerminal(cell.getTerminal(true), true);
 					clone.setTerminal(cell.getTerminal(false), false);
-					
+                    // 中文注释：
+                    // 如果目标模型中无相同 ID 的单元，则克隆源单元并设置相同的 ID。
+                    // 将源单元的源端点和目标端点设置到克隆单元（使用字符串 ID 进行查找）。
+
 					// Do *NOT* use model.add as this will move the edge away
 					// from the parent in updateEdgeParent if maintainEdgeParent
 					// is enabled in the target model
 					target = to.insert(clone);
 					this.cellAdded(target);
+                    // 中文注释：
+                    // 直接插入克隆单元到目标单元，避免使用 model.add 方法。
+                    // 调用 cellAdded 更新模型的 cells 映射。
 				}
 				
 				// Stores the mapping for later reconnecting edges
 				mapping[mxCellPath.create(cell)] = target;
-				
+                // 中文注释：
+                // 将源单元路径与目标单元存储到映射中，用于后续边连接。
+
 				// Recurses
 				this.mergeChildrenImpl(cell, target, cloneAllEdges, mapping);
+                // 中文注释：
+                // 递归处理子节点的子节点，继续克隆和映射。
 			}
 		}
 	}
 	finally
 	{
 		this.endUpdate();
+        // 中文注释：
+        // 结束事务，确保所有更改作为一个整体提交。
 	}
 };
 
@@ -2846,6 +2876,17 @@ mxGraphModel.prototype.mergeChildrenImpl = function(from, to, cloneAllEdges, map
  * Parameters:
  * 
  * cells - Array of cells whose parents should be returned.
+ *
+ * // 中文注释：
+ * // 函数：getParents
+ * // 返回给定单元数组的所有父节点集合（无重复）。
+ * // 主要功能：获取指定单元的父节点，并使用 mxDictionary 去除重复。
+ * // 参数：
+ * // cells - 需要返回父节点的 mxCell 数组。
+ * // 返回值：父节点数组。
+ * // 关键变量：
+ * // - dict - mxDictionary 对象，用于跟踪已处理的父节点以避免重复。
+ * // 注意事项：如果输入的 cells 数组为空或 null，则返回空数组。
  */
 mxGraphModel.prototype.getParents = function(cells)
 {
@@ -2854,7 +2895,9 @@ mxGraphModel.prototype.getParents = function(cells)
 	if (cells != null)
 	{
 		var dict = new mxDictionary();
-		
+        // 中文注释：
+        // 创建 mxDictionary 对象，用于记录已处理的父节点。
+
 		for (var i = 0; i < cells.length; i++)
 		{
 			var parent = this.getParent(cells[i]);
@@ -2863,6 +2906,8 @@ mxGraphModel.prototype.getParents = function(cells)
 			{
 				dict.put(parent, true);
 				parents.push(parent);
+                // 中文注释：
+                // 获取单元的父节点，若存在且未处理，则添加到父节点数组并标记为已处理。
 			}
 		}
 	}
@@ -2885,12 +2930,24 @@ mxGraphModel.prototype.getParents = function(cells)
  * cell - <mxCell> to be cloned.
  * includeChildren - Optional boolean indicating if the cells should be cloned
  * with all descendants. Default is true.
+ *
+ * // 中文注释：
+ * // 函数：cloneCell
+ * // 返回指定单元的深克隆（包括子节点），通过 cloneCells 方法创建。
+ * // 主要功能：克隆单个单元及其后代（若 includeChildren 为 true）。
+ * // 参数：
+ * // cell - 需要克隆的 mxCell 对象。
+ * // includeChildren - 可选布尔值，指定是否克隆所有后代，默认值为 true。
+ * // 返回值：克隆的单元，若单元为空则返回 null。
+ * // 注意事项：依赖 cloneCells 方法实现批量克隆。
  */
 mxGraphModel.prototype.cloneCell = function(cell, includeChildren)
 {
 	if (cell != null)
 	{
 		return this.cloneCells([cell], includeChildren)[0];
+        // 中文注释：
+        // 调用 cloneCells 方法克隆单个单元并返回结果数组的第一个元素。
 	}
 	
 	return null;
@@ -2910,6 +2967,22 @@ mxGraphModel.prototype.cloneCell = function(cell, includeChildren)
  * includeChildren - Optional boolean indicating if the cells should be cloned
  * with all descendants. Default is true.
  * mapping - Optional mapping for existing clones.
+ *
+ * // 中文注释：
+ * // 函数：cloneCells
+ * // 返回给定单元数组的克隆数组。
+ * // 主要功能：根据 includeChildren 的值，为每个单元创建深克隆，并恢复连接关系。
+ * // 参数：
+ * // cells - 需要克隆的 mxCell 数组。
+ * // includeChildren - 可选布尔值，指定是否克隆所有后代，默认值为 true。
+ * // mapping - 可选映射对象，存储现有克隆，默认创建新对象。
+ * // 返回值：克隆的单元数组。
+ * // 关键变量：
+ * // - mapping - 存储源单元到克隆单元的映射，用于避免重复克隆。
+ * // 交互逻辑：
+ * // - 首先克隆所有单元（通过 cloneCellImpl）。
+ * // - 然后恢复克隆单元的连接关系（通过 restoreClone）。
+ * // 注意事项：如果输入单元为 null，则在结果数组中返回 null。
  */
 mxGraphModel.prototype.cloneCells = function(cells, includeChildren, mapping)
 {
@@ -2922,10 +2995,14 @@ mxGraphModel.prototype.cloneCells = function(cells, includeChildren, mapping)
 		if (cells[i] != null)
 		{
 			clones.push(this.cloneCellImpl(cells[i], mapping, includeChildren));
+            // 中文注释：
+            // 对每个非空单元调用 cloneCellImpl 进行克隆，并添加到克隆数组。
 		}
 		else
 		{
 			clones.push(null);
+            // 中文注释：
+            // 如果单元为空，则在克隆数组中添加 null。
 		}
 	}
 	
@@ -2934,6 +3011,8 @@ mxGraphModel.prototype.cloneCells = function(cells, includeChildren, mapping)
 		if (clones[i] != null)
 		{
 			this.restoreClone(clones[i], cells[i], mapping);
+            // 中文注释：
+            // 对每个非空克隆单元调用 restoreClone，恢复连接关系。
 		}
 	}
 	
@@ -2944,6 +3023,19 @@ mxGraphModel.prototype.cloneCells = function(cells, includeChildren, mapping)
  * Function: cloneCellImpl
  * 
  * Inner helper method for cloning cells recursively.
+ *
+ * // 中文注释：
+ * // 函数：cloneCellImpl
+ * // 内部辅助函数，递归克隆单元。
+ * // 主要功能：克隆指定单元及其后代（若 includeChildren 为 true），并存储到映射中。
+ * // 参数：
+ * // cell - 需要克隆的 mxCell 对象。
+ * // mapping - 映射对象，存储克隆的单元。
+ * // includeChildren - 布尔值，指定是否克隆子节点。
+ * // 返回值：克隆的单元。
+ * // 关键变量：
+ * // - ident - 使用 mxObjectIdentity.get 获取的单元唯一标识。
+ * // 注意事项：使用 mapping 避免重复克隆同一单元。
  */
 mxGraphModel.prototype.cloneCellImpl = function(cell, mapping, includeChildren)
 {
@@ -2954,6 +3046,8 @@ mxGraphModel.prototype.cloneCellImpl = function(cell, mapping, includeChildren)
 	{
 		clone = this.cellCloned(cell);
 		mapping[ident] = clone;
+        // 中文注释：
+        // 如果映射中不存在克隆，则调用 cellCloned 创建克隆并存储到映射。
 
 		if (includeChildren)
 		{
@@ -2964,6 +3058,8 @@ mxGraphModel.prototype.cloneCellImpl = function(cell, mapping, includeChildren)
 				var cloneChild = this.cloneCellImpl(
 					this.getChildAt(cell, i), mapping, true);
 				clone.insert(cloneChild);
+                // 中文注释：
+                // 递归克隆子节点，并将克隆的子节点插入到克隆单元中。
 			}
 		}
 	}
@@ -2976,6 +3072,15 @@ mxGraphModel.prototype.cloneCellImpl = function(cell, mapping, includeChildren)
  * 
  * Hook for cloning the cell. This returns cell.clone() or
  * any possible exceptions.
+ *
+ * // 中文注释：
+ * // 函数：cellCloned
+ * // 克隆单元的钩子方法，返回 cell.clone() 的结果或可能的异常。
+ * // 主要功能：提供克隆单元的默认实现。
+ * // 参数：
+ * // cell - 需要克隆的 mxCell 对象。
+ * // 返回值：克隆的单元。
+ * // 注意事项：可通过重写此方法自定义克隆逻辑。
  */
 mxGraphModel.prototype.cellCloned = function(cell)
 {
@@ -2987,6 +3092,19 @@ mxGraphModel.prototype.cellCloned = function(cell)
  * 
  * Inner helper method for restoring the connections in
  * a network of cloned cells.
+ *
+ * // 中文注释：
+ * // 函数：restoreClone
+ * // 内部辅助函数，用于恢复克隆单元网络中的连接关系。
+ * // 主要功能：根据映射恢复克隆单元的源端点和目标端点的连接。
+ * // 参数：
+ * // clone - 克隆的 mxCell 对象。
+ * // cell - 原始的 mxCell 对象。
+ * // mapping - 映射对象，存储克隆单元的映射。
+ * // 交互逻辑：
+ * // - 检查原始单元的源端点和目标端点。
+ * // - 使用映射查找对应的克隆端点并重新连接。
+ * // - 递归处理子节点。
  */
 mxGraphModel.prototype.restoreClone = function(clone, cell, mapping)
 {
@@ -2999,6 +3117,8 @@ mxGraphModel.prototype.restoreClone = function(clone, cell, mapping)
 		if (tmp != null)
 		{
 			tmp.insertEdge(clone, true);
+            // 中文注释：
+            // 如果源端点存在且映射中存在对应克隆，则将克隆单元连接到克隆源端点。
 		}
 	}
 	
@@ -3011,6 +3131,8 @@ mxGraphModel.prototype.restoreClone = function(clone, cell, mapping)
 		if (tmp != null)
 		{	
 			tmp.insertEdge(clone, false);
+            // 中文注释：
+            // 如果目标端点存在且映射中存在对应克隆，则将克隆单元连接到克隆目标端点。
 		}
 	}
 	
@@ -3020,6 +3142,8 @@ mxGraphModel.prototype.restoreClone = function(clone, cell, mapping)
 	{
 		this.restoreClone(this.getChildAt(clone, i),
 			this.getChildAt(cell, i), mapping);
+        // 中文注释：
+        // 递归处理克隆单元的子节点，恢复其连接关系。
 	}
 };
 
@@ -3036,6 +3160,19 @@ mxGraphModel.prototype.restoreClone = function(clone, cell, mapping)
  * 
  * Constructs a change of the root in the
  * specified model.
+ *
+ * // 中文注释：
+ * // 类：mxRootChange
+ * // 用于更改模型根节点的动作类。
+ * // 构造函数：mxRootChange
+ * // 构造一个在指定模型中更改根节点的动作。
+ * // 参数：
+ * // model - 图形模型对象。
+ * // root - 新根节点的 mxCell 对象。
+ * // 关键变量：
+ * // - model - 关联的图形模型。
+ * // - root - 新根节点。
+ * // - previous - 之前的根节点，初始值为新根节点。
  */
 function mxRootChange(model, root)
 {
@@ -3049,6 +3186,13 @@ function mxRootChange(model, root)
  * 
  * Carries out a change of the root using
  * <mxGraphModel.rootChanged>.
+ *
+ * // 中文注释：
+ * // 函数：execute
+ * // 执行根节点更改，使用 mxGraphModel.rootChanged 更新根节点。
+ * // 主要功能：交换当前根节点和 previous 属性，并调用模型的 rootChanged 方法。
+ * // 交互逻辑：更新模型的根节点并返回之前的根节点。
+ * // 返回值：之前的根节点。
  */
 mxRootChange.prototype.execute = function()
 {
@@ -3065,6 +3209,24 @@ mxRootChange.prototype.execute = function()
  * 
  * Constructs a change of a child in the
  * specified model.
+ *
+ * // 中文注释：
+ * // 类：mxChildChange
+ * // 用于在模型中添加或移除子节点的动作类。
+ * // 构造函数：mxChildChange
+ * // 构造一个在指定模型中更改子节点的动作。
+ * // 参数：
+ * // model - 图形模型对象。
+ * // parent - 新父节点的 mxCell 对象。
+ * // child - 需要添加或移除的子节点 mxCell 对象。
+ * // index - 子节点的索引位置。
+ * // 关键变量：
+ * // - model - 关联的图形模型。
+ * // - parent - 新父节点。
+ * // - previous - 之前的父节点，初始值为新父节点。
+ * // - child - 子节点。
+ * // - index - 新索引位置。
+ * // - previousIndex - 之前的索引位置，初始值为新索引。
  */
 function mxChildChange(model, parent, child, index)
 {
@@ -3083,6 +3245,17 @@ function mxChildChange(model, parent, child, index)
  * <mxGraphModel.parentForCellChanged> and
  * removes or restores the cell's
  * connections.
+ *
+ * // 中文注释：
+ * // 函数：execute
+ * // 执行子节点更改，使用 mxGraphModel.parentForCellChanged 更改子节点的父节点，并移除或恢复连接。
+ * // 主要功能：更改子节点的父节点并更新其连接关系。
+ * // 交互逻辑：
+ * // - 如果 previous 为 null，断开子节点的连接。
+ * // - 调用 parentForCellChanged 更新父节点。
+ * // - 如果 previous 不为 null，恢复子节点的连接。
+ * // - 交换 parent 和 previous，index 和 previousIndex。
+ * // 注意事项：确保子节点非空，否则不执行操作。
  */
 mxChildChange.prototype.execute = function()
 {
@@ -3090,24 +3263,34 @@ mxChildChange.prototype.execute = function()
 	{
 		var tmp = this.model.getParent(this.child);
 		var tmp2 = (tmp != null) ? tmp.getIndex(this.child) : 0;
-		
+        // 中文注释：
+        // 获取子节点的当前父节点及其索引。
+
 		if (this.previous == null)
 		{
 			this.connect(this.child, false);
+            // 中文注释：
+            // 如果 previous 为 null，断开子节点的连接。
 		}
 		
 		tmp = this.model.parentForCellChanged(
 			this.child, this.previous, this.previousIndex);
-			
+        // 中文注释：
+        // 更新子节点的父节点为 previous，并使用 previousIndex。
+
 		if (this.previous != null)
 		{
 			this.connect(this.child, true);
+            // 中文注释：
+            // 如果 previous 不为 null，恢复子节点的连接。
 		}
 		
 		this.parent = this.previous;
 		this.previous = tmp;
 		this.index = this.previousIndex;
 		this.previousIndex = tmp2;
+        // 中文注释：
+        // 交换 parent 和 previous，index 和 previousIndex，准备下一次撤销/重做。
 	}
 };
 
@@ -3117,6 +3300,19 @@ mxChildChange.prototype.execute = function()
  * Disconnects the given cell recursively from its
  * terminals and stores the previous terminal in the
  * cell's terminals.
+ *
+ * // 中文注释：
+ * // 函数：connect
+ * // 递归断开或恢复指定单元的端点连接，并存储之前的端点。
+ * // 主要功能：管理单元的连接状态（连接或断开）。
+ * // 参数：
+ * // cell - 需要处理连接的 mxCell 对象。
+ * // isConnect - 布尔值，指定是连接（true）还是断开（false），默认值为 true。
+ * // 交互逻辑：
+ * // - 如果 isConnect 为 true，恢复源端点和目标端点的连接。
+ * // - 如果 isConnect 为 false，断开源端点和目标端点的连接。
+ * // - 递归处理子节点的连接。
+ * // 注意事项：确保端点非空时才进行操作。
  */
 mxChildChange.prototype.connect = function(cell, isConnect)
 {
@@ -3135,6 +3331,8 @@ mxChildChange.prototype.connect = function(cell, isConnect)
 		{
 			this.model.terminalForCellChanged(cell, null, true);
 		}
+        // 中文注释：
+        // 处理源端点的连接或断开。
 	}
 	
 	if (target != null)
@@ -3147,16 +3345,22 @@ mxChildChange.prototype.connect = function(cell, isConnect)
 		{
 			this.model.terminalForCellChanged(cell, null, false);
 		}
+        // 中文注释：
+        // 处理目标端点的连接或断开。
 	}
 	
 	cell.setTerminal(source, true);
 	cell.setTerminal(target, false);
-	
+    // 中文注释：
+    // 更新单元的端点引用，保持一致性。
+
 	var childCount = this.model.getChildCount(cell);
 	
 	for (var i=0; i<childCount; i++)
 	{
 		this.connect(this.model.getChildAt(cell, i), isConnect);
+        // 中文注释：
+        // 递归处理子节点的连接或断开。
 	}
 };
 
@@ -3169,6 +3373,23 @@ mxChildChange.prototype.connect = function(cell, isConnect)
  * 
  * Constructs a change of a terminal in the 
  * specified model.
+ *
+ * // 中文注释：
+ * // 类：mxTerminalChange
+ * // 用于更改模型中单元端点的动作类。
+ * // 构造函数：mxTerminalChange
+ * // 构造一个在指定模型中更改端点的动作。
+ * // 参数：
+ * // model - 图形模型对象。
+ * // cell - 需要更改端点的 mxCell 对象。
+ * // terminal - 新端点的 mxCell 对象。
+ * // source - 布尔值，指定更改源端点（true）还是目标端点（false）。
+ * // 关键变量：
+ * // - model - 关联的图形模型。
+ * // - cell - 需要更改端点的单元。
+ * // - terminal - 新端点。
+ * // - previous - 之前的端点，初始值为新端点。
+ * // - source - 指定更改的端点类型（源或目标）。
  */
 function mxTerminalChange(model, cell, terminal, source)
 {
@@ -3184,6 +3405,13 @@ function mxTerminalChange(model, cell, terminal, source)
  * 
  * Changes the terminal of <cell> to <previous> using
  * <mxGraphModel.terminalForCellChanged>.
+ *
+ * // 中文注释：
+ * // 函数：execute
+ * // 执行端点更改，使用 mxGraphModel.terminalForCellChanged 更新单元的端点。
+ * // 主要功能：交换当前端点和 previous 属性，并调用模型的 terminalForCellChanged 方法。
+ * // 交互逻辑：更新单元的源端点或目标端点，并返回之前的端点。
+ * // 注意事项：确保单元非空，否则不执行操作。
  */
 mxTerminalChange.prototype.execute = function()
 {
@@ -3204,6 +3432,21 @@ mxTerminalChange.prototype.execute = function()
  * 
  * Constructs a change of a user object in the 
  * specified model.
+ *
+ * // 中文注释：
+ * // 类：mxValueChange
+ * // 用于更改模型中单元用户对象的动作类。
+ * // 构造函数：mxValueChange
+ * // 构造一个在指定模型中更改用户对象的动作。
+ * // 参数：
+ * // model - 图形模型对象。
+ * // cell - 需要更改用户对象的 mxCell 对象。
+ * // value - 新用户对象的值。
+ * // 关键变量：
+ * // - model - 关联的图形模型。
+ * // - cell - 需要更改用户对象的单元。
+ * // - value - 新用户对象的值。
+ * // - previous - 之前的用户对象值，初始值为新值。
  */
 function mxValueChange(model, cell, value)
 {
@@ -3218,6 +3461,13 @@ function mxValueChange(model, cell, value)
  * 
  * Changes the value of <cell> to <previous> using
  * <mxGraphModel.valueForCellChanged>.
+ *
+ * // 中文注释：
+ * // 函数：execute
+ * // 执行用户对象更改，使用 mxGraphModel.valueForCellChanged 更新单元的用户对象。
+ * // 主要功能：交换当前值和 previous 属性，并调用模型的 valueForCellChanged 方法。
+ * // 交互逻辑：更新单元的用户对象并返回之前的值。
+ * // 注意事项：确保单元非空，否则不执行操作。
  */
 mxValueChange.prototype.execute = function()
 {
@@ -3238,6 +3488,22 @@ mxValueChange.prototype.execute = function()
  * 
  * Constructs a change of a style in the
  * specified model.
+ *
+ * // 中文注释：
+ * // 类：mxStyleChange
+ * // 用于更改模型中单元样式的动作类。
+ * // 构造函数：mxStyleChange
+ * // 构造一个在指定模型中更改样式的动作。
+ * // 参数：
+ * // model - 图形模型对象。
+ * // cell - 需要更改样式的 mxCell 对象。
+ * // style - 新样式的字符串，格式为 [stylename;|key=value;]。
+ * // 关键变量：
+ * // - model - 关联的图形模型。
+ * // - cell - 需要更改样式的单元。
+ * // - style - 新样式字符串。
+ * // - previous - 之前的样式字符串，初始值为新样式。
+ * // 样式说明：样式字符串以键值对形式定义单元的显示属性，如颜色、字体等。
  */
 function mxStyleChange(model, cell, style)
 {
@@ -3252,6 +3518,13 @@ function mxStyleChange(model, cell, style)
  * 
  * Changes the style of <cell> to <previous> using
  * <mxGraphModel.styleForCellChanged>.
+ *
+ * // 中文注释：
+ * // 函数：execute
+ * // 执行样式更改，使用 mxGraphModel.styleForCellChanged 更新单元的样式。
+ * // 主要功能：交换当前样式和 previous 属性，并调用模型的 styleForCellChanged 方法。
+ * // 交互逻辑：更新单元的样式并返回之前的样式。
+ * // 注意事项：确保单元非空，否则不执行操作。
  */
 mxStyleChange.prototype.execute = function()
 {
@@ -3272,6 +3545,21 @@ mxStyleChange.prototype.execute = function()
  * 
  * Constructs a change of a geometry in the
  * specified model.
+ *
+ * // 中文注释：
+ * // 类：mxGeometryChange
+ * // 用于更改模型中单元几何信息的动作类。
+ * // 构造函数：mxGeometryChange
+ * // 构造一个在指定模型中更改几何信息的动作。
+ * // 参数：
+ * // model - 图形模型对象。
+ * // cell - 需要更改几何信息的 mxCell 对象。
+ * // geometry - 新几何信息的 mxGeometry 对象。
+ * // 关键变量：
+ * // - model - 关联的图形模型。
+ * // - cell - 需要更改几何信息的单元。
+ * // - geometry - 新几何信息。
+ * // - previous - 之前的几何信息，初始值为新几何信息。
  */
 function mxGeometryChange(model, cell, geometry)
 {
@@ -3286,6 +3574,13 @@ function mxGeometryChange(model, cell, geometry)
  * 
  * Changes the geometry of <cell> ro <previous> using
  * <mxGraphModel.geometryForCellChanged>.
+ *
+ * // 中文注释：
+ * // 函数：execute
+ * // 执行几何信息更改，使用 mxGraphModel.geometryForCellChanged 更新单元的几何信息。
+ * // 主要功能：交换当前几何信息和 previous 属性，并调用模型的 geometryForCellChanged 方法。
+ * // 交互逻辑：更新单元的几何信息并返回之前的几何信息。
+ * // 注意事项：确保单元非空，否则不执行操作。
  */
 mxGeometryChange.prototype.execute = function()
 {
@@ -3306,6 +3601,21 @@ mxGeometryChange.prototype.execute = function()
  * 
  * Constructs a change of a collapsed state in the
  * specified model.
+ *
+ * // 中文注释：
+ * // 类：mxCollapseChange
+ * // 用于更改模型中单元折叠状态的动作类。
+ * // 构造函数：mxCollapseChange
+ * // 构造一个在指定模型中更改折叠状态的动作。
+ * // 参数：
+ * // model - 图形模型对象。
+ * // cell - 需要更改折叠状态的 mxCell 对象。
+ * // collapsed - 布尔值，指定新的折叠状态（true 表示折叠，false 表示展开）。
+ * // 关键变量：
+ * // - model - 关联的图形模型。
+ * // - cell - 需要更改折叠状态的单元。
+ * // - collapsed - 新折叠状态。
+ * // - previous - 之前的折叠状态，初始值为新折叠状态。
  */
 function mxCollapseChange(model, cell, collapsed)
 {
@@ -3320,6 +3630,13 @@ function mxCollapseChange(model, cell, collapsed)
  * 
  * Changes the collapsed state of <cell> to <previous> using
  * <mxGraphModel.collapsedStateForCellChanged>.
+ *
+ * // 中文注释：
+ * // 函数：execute
+ * // 执行折叠状态更改，使用 mxGraphModel.collapsedStateForCellChanged 更新单元的折叠状态。
+ * // 主要功能：交换当前折叠状态和 previous 属性，并调用模型的 collapsedStateForCellChanged 方法。
+ * // 交互逻辑：更新单元的折叠状态并返回之前的折叠状态。
+ * // 注意事项：确保单元非空，否则不执行操作。
  */
 mxCollapseChange.prototype.execute = function()
 {
@@ -3340,6 +3657,22 @@ mxCollapseChange.prototype.execute = function()
  * 
  * Constructs a change of a visible state in the
  * specified model.
+ *
+ * // 中文注释：
+ * // 类：mxVisibleChange
+ * // 用于更改模型中单元可见状态的动作类。
+ * // 构造函数：mxVisibleChange
+ * // 构造一个在指定模型中更改可见状态的动作。
+ * // 主要功能：封装单元可见状态的更改操作，支持撤销/重做。
+ * // 参数：
+ * // model - 图形模型对象（mxGraphModel 实例）。
+ * // cell - 需要更改可见状态的 mxCell 对象。
+ * // visible - 布尔值，指定新的可见状态（true 表示可见，false 表示隐藏）。
+ * // 关键变量：
+ * // - model - 关联的图形模型，用于执行更改。
+ * // - cell - 需要更改可见状态的单元。
+ * // - visible - 新可见状态。
+ * // - previous - 之前的可见状态，初始值为新可见状态，用于撤销/重做。
  */
 function mxVisibleChange(model, cell, visible)
 {
@@ -3354,6 +3687,14 @@ function mxVisibleChange(model, cell, visible)
  * 
  * Changes the visible state of <cell> to <previous> using
  * <mxGraphModel.visibleStateForCellChanged>.
+ *
+ * // 中文注释：
+ * // 函数：execute
+ * // 执行可见状态更改，使用 mxGraphModel.visibleStateForCellChanged 更新单元的可见状态。
+ * // 主要功能：交换当前可见状态和 previous 属性，调用模型的 visibleStateForCellChanged 方法完成状态更新。
+ * // 交互逻辑：通过交换 visible 和 previous 属性支持撤销/重做操作，更新单元的可见性。
+ * // 注意事项：仅当单元非空时执行操作，以避免无效更改。
+ * // 返回值：之前的可见状态。
  */
 mxVisibleChange.prototype.execute = function()
 {
@@ -3362,6 +3703,8 @@ mxVisibleChange.prototype.execute = function()
 		this.visible = this.previous;
 		this.previous = this.model.visibleStateForCellChanged(
 			this.cell, this.previous);
+        // 中文注释：
+        // 交换 visible 和 previous 属性，并调用模型方法更新单元的可见状态。
 	}
 };
 
@@ -3396,6 +3739,26 @@ mxVisibleChange.prototype.execute = function()
  * 
  * Constructs a change of a attribute of the DOM node
  * stored as the value of the given <mxCell>.
+ *
+ * // 中文注释：
+ * // 类：mxCellAttributeChange
+ * // 用于更改单元用户对象属性的动作类。
+ * // 构造函数：mxCellAttributeChange
+ * // 构造一个更改指定单元用户对象中 DOM 节点属性的动作。
+ * // 主要功能：封装单元用户对象属性的更改操作，支持撤销/重做。
+ * // 参数：
+ * // cell - 需要更改属性的 mxCell 对象。
+ * // attribute - 需要更改的属性名称（字符串）。
+ * // value - 新属性值。
+ * // 关键变量：
+ * // - cell - 需要更改属性的单元。
+ * // - attribute - 属性名称，标识用户对象中的特定属性。
+ * // - value - 新属性值。
+ * // - previous - 之前的属性值，初始值为新属性值，用于撤销/重做。
+ * // 注意事项：
+ * // - 模型中无直接方法使用此动作，需通过 model.execute 调用。
+ * // - 示例展示了如何在事务中更改属性，确保操作的原子性。
+ * // - 用户对象通常为 DOM 节点，属性更改影响单元的元数据。
  */
 function mxCellAttributeChange(cell, attribute, value)
 {
@@ -3410,22 +3773,43 @@ function mxCellAttributeChange(cell, attribute, value)
  * 
  * Changes the attribute of the cell's user object by
  * using <mxCell.setAttribute>.
+ *
+ * // 中文注释：
+ * // 函数：execute
+ * // 执行属性更改，使用 mxCell.setAttribute 更新单元用户对象的属性。
+ * // 主要功能：交换当前属性值和 previous 属性，调用单元的 setAttribute 方法完成属性更新。
+ * // 交互逻辑：
+ * // - 获取当前属性值。
+ * // - 如果 previous 为 null，移除属性；否则设置属性为 previous 值。
+ * // - 更新 previous 为当前属性值，支持撤销/重做。
+ * // 注意事项：
+ * // - 确保单元非空，否则不执行操作。
+ * // - 属性更改通常影响单元的元数据（如标签或自定义属性）。
+ * // 返回值：之前的属性值。
  */
 mxCellAttributeChange.prototype.execute = function()
 {
 	if (this.cell != null)
 	{
 		var tmp = this.cell.getAttribute(this.attribute);
-		
+        // 中文注释：
+        // 获取单元用户对象的当前属性值。
+
 		if (this.previous == null)
 		{
 			this.cell.value.removeAttribute(this.attribute);
+            // 中文注释：
+            // 如果 previous 为 null，移除指定属性。
 		}
 		else
 		{
 			this.cell.setAttribute(this.attribute, this.previous);
+            // 中文注释：
+            // 否则，将属性设置为 previous 值。
 		}
 		
 		this.previous = tmp;
+        // 中文注释：
+        // 更新 previous 为当前属性值，准备下一次撤销/重做。
 	}
 };

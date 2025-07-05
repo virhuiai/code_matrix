@@ -64,6 +64,14 @@
  * geometry - Optional <mxGeometry> that specifies the geometry.
  * style - Optional formatted string that defines the style.
  */
+// 中文注释：mxCell 是图模型中的单元格类，表示图中的组、顶点和边的状态。
+// 中文注释：自定义属性建议使用 XML 节点作为单元格的值，示例代码展示了如何创建带 XML 节点值的单元格。
+// 中文注释：为支持标签显示，需重写 mxGraph.convertValueToString 和 mxGraph.cellLabelChanged 方法。
+// 中文注释：onInit 是构造函数中的回调函数，在构造完成后调用。
+// 中文注释：构造函数 mxCell 用于创建图模型中的单元格，接受以下参数：
+// - value: 可选，用户定义的单元格值，通常为对象或 XML 节点。
+// - geometry: 可选，mxGeometry 对象，定义单元格的几何形状。
+// - style: 可选，格式化字符串，定义单元格的样式。
 function mxCell(value, geometry, style)
 {
 	this.value = value;
@@ -74,6 +82,8 @@ function mxCell(value, geometry, style)
 	{
 		this.onInit();
 	}
+    // 中文注释：初始化单元格的 value、geometry 和 style 属性。
+    // 中文注释：若 onInit 回调存在，则在构造完成后调用，处理初始化逻辑。
 };
 
 /**
@@ -81,6 +91,7 @@ function mxCell(value, geometry, style)
  *
  * Holds the Id. Default is null.
  */
+// 中文注释：id 变量存储单元格的唯一标识，默认值为 null。
 mxCell.prototype.id = null;
 
 /**
@@ -88,6 +99,7 @@ mxCell.prototype.id = null;
  *
  * Holds the user object. Default is null.
  */
+// 中文注释：value 变量存储用户定义的对象或数据，默认值为 null。
 mxCell.prototype.value = null;
 
 /**
@@ -95,6 +107,7 @@ mxCell.prototype.value = null;
  *
  * Holds the <mxGeometry>. Default is null.
  */
+// 中文注释：geometry 变量存储 mxGeometry 对象，描述单元格的几何形状，默认值为 null。
 mxCell.prototype.geometry = null;
 
 /**
@@ -103,6 +116,8 @@ mxCell.prototype.geometry = null;
  * Holds the style as a string of the form [(stylename|key=value);]. Default is
  * null.
  */
+// 中文注释：style 变量存储样式字符串，格式为 [(stylename|key=value);]，定义单元格的显示样式，默认值为 null。
+// 中文注释：样式字符串用于设置单元格的视觉属性，如颜色、形状等。
 mxCell.prototype.style = null;
 
 /**
@@ -110,6 +125,7 @@ mxCell.prototype.style = null;
  *
  * Specifies whether the cell is a vertex. Default is false.
  */
+// 中文注释：vertex 变量指定单元格是否为顶点，默认值为 false。
 mxCell.prototype.vertex = false;
 
 /**
@@ -117,6 +133,7 @@ mxCell.prototype.vertex = false;
  *
  * Specifies whether the cell is an edge. Default is false.
  */
+// 中文注释：edge 变量指定单元格是否为边，默认值为 false。
 mxCell.prototype.edge = false;
 
 /**
@@ -124,6 +141,8 @@ mxCell.prototype.edge = false;
  *
  * Specifies whether the cell is connectable. Default is true.
  */
+// 中文注释：connectable 变量指定单元格是否可连接，默认值为 true。
+// 中文注释：可连接性决定单元格是否可以作为边的起点或终点。
 mxCell.prototype.connectable = true;
 
 /**
@@ -131,6 +150,8 @@ mxCell.prototype.connectable = true;
  *
  * Specifies whether the cell is visible. Default is true.
  */
+// 中文注释：visible 变量指定单元格是否可见，默认值为 true。
+// 中文注释：可见性决定单元格是否在图中显示。
 mxCell.prototype.visible = true;
 
 /**
@@ -138,6 +159,8 @@ mxCell.prototype.visible = true;
  *
  * Specifies whether the cell is collapsed. Default is false.
  */
+// 中文注释：collapsed 变量指定单元格是否折叠，默认值为 false。
+// 中文注释：折叠状态通常用于组单元格，表示其子节点是否隐藏。
 mxCell.prototype.collapsed = false;
 
 /**
@@ -145,6 +168,7 @@ mxCell.prototype.collapsed = false;
  *
  * Reference to the parent cell.
  */
+// 中文注释：parent 变量存储父单元格的引用，表示当前单元格所属的父节点。
 mxCell.prototype.parent = null;
 
 /**
@@ -152,6 +176,7 @@ mxCell.prototype.parent = null;
  *
  * Reference to the source terminal.
  */
+// 中文注释：source 变量存储边的起始终端单元格的引用。
 mxCell.prototype.source = null;
 
 /**
@@ -159,6 +184,7 @@ mxCell.prototype.source = null;
  *
  * Reference to the target terminal.
  */
+// 中文注释：target 变量存储边的目标终端单元格的引用。
 mxCell.prototype.target = null;
 
 /**
@@ -166,6 +192,7 @@ mxCell.prototype.target = null;
  *
  * Holds the child cells.
  */
+// 中文注释：children 变量存储子单元格的数组，表示当前单元格的子节点。
 mxCell.prototype.children = null;
 
 /**
@@ -173,6 +200,7 @@ mxCell.prototype.children = null;
  *
  * Holds the edges.
  */
+// 中文注释：edges 变量存储与当前单元格关联的边的数组。
 mxCell.prototype.edges = null;
 
 /**
@@ -184,6 +212,9 @@ mxCell.prototype.edges = null;
  * to mark transient fields since transient modifiers are not supported by
  * the language.
  */
+// 中文注释：mxTransient 变量列出不需在 clone 方法中克隆的属性列表。
+// 中文注释：这些属性包括 id、value、parent、source、target、children 和 edges。
+// 中文注释：特殊处理：这些属性是临时的，不会被持久化存储。
 mxCell.prototype.mxTransient = ['id', 'value', 'parent', 'source',
                                 'target', 'children', 'edges'];
 
@@ -192,6 +223,7 @@ mxCell.prototype.mxTransient = ['id', 'value', 'parent', 'source',
  *
  * Returns the Id of the cell as a string.
  */
+// 中文注释：getId 方法返回单元格的唯一标识（id），以字符串形式。
 mxCell.prototype.getId = function()
 {
 	return this.id;
@@ -202,6 +234,8 @@ mxCell.prototype.getId = function()
  *
  * Sets the Id of the cell to the given string.
  */
+// 中文注释：setId 方法设置单元格的唯一标识（id）。
+// 中文注释：参数 id 为字符串，表示新的标识值。
 mxCell.prototype.setId = function(id)
 {
 	this.id = id;
@@ -213,6 +247,7 @@ mxCell.prototype.setId = function(id)
  * Returns the user object of the cell. The user
  * object is stored in <value>.
  */
+// 中文注释：getValue 方法返回单元格的用户对象，存储在 value 属性中。
 mxCell.prototype.getValue = function()
 {
 	return this.value;
@@ -224,6 +259,8 @@ mxCell.prototype.getValue = function()
  * Sets the user object of the cell. The user object
  * is stored in <value>.
  */
+// 中文注释：setValue 方法设置单元格的用户对象，存储在 value 属性中。
+// 中文注释：参数 value 为用户定义的对象或数据。
 mxCell.prototype.setValue = function(value)
 {
 	this.value = value;
@@ -237,6 +274,9 @@ mxCell.prototype.setValue = function(value)
  * replaces the user object with the given value and
  * returns the old user object.
  */
+// 中文注释：valueChanged 方法在原地编辑后更改用户对象，并返回旧值。
+// 中文注释：方法会用新值替换旧值，并返回旧的用户对象。
+// 中文注释：参数 newValue 为新的用户对象值。
 mxCell.prototype.valueChanged = function(newValue)
 {
 	var previous = this.getValue();
@@ -250,6 +290,7 @@ mxCell.prototype.valueChanged = function(newValue)
  *
  * Returns the <mxGeometry> that describes the <geometry>.
  */
+// 中文注释：getGeometry 方法返回描述单元格几何形状的 mxGeometry 对象。
 mxCell.prototype.getGeometry = function()
 {
 	return this.geometry;
@@ -260,6 +301,8 @@ mxCell.prototype.getGeometry = function()
  *
  * Sets the <mxGeometry> to be used as the <geometry>.
  */
+// 中文注释：setGeometry 方法设置单元格的几何形状。
+// 中文注释：参数 geometry 为 mxGeometry 对象，定义单元格的形状和位置。
 mxCell.prototype.setGeometry = function(geometry)
 {
 	this.geometry = geometry;
@@ -270,6 +313,7 @@ mxCell.prototype.setGeometry = function(geometry)
  *
  * Returns a string that describes the <style>.
  */
+// 中文注释：getStyle 方法返回描述单元格样式的字符串。
 mxCell.prototype.getStyle = function()
 {
 	return this.style;
@@ -280,6 +324,8 @@ mxCell.prototype.getStyle = function()
  *
  * Sets the string to be used as the <style>.
  */
+// 中文注释：setStyle 方法设置单元格的样式字符串。
+// 中文注释：参数 style 为格式化字符串，定义单元格的视觉样式。
 mxCell.prototype.setStyle = function(style)
 {
 	this.style = style;
@@ -290,6 +336,8 @@ mxCell.prototype.setStyle = function(style)
  *
  * Returns true if the cell is a vertex.
  */
+// 中文注释：isVertex 方法返回单元格是否为顶点（vertex）。
+// 中文注释：如果 vertex 属性非 0，则返回 true。
 mxCell.prototype.isVertex = function()
 {
 	return this.vertex != 0;
@@ -305,6 +353,9 @@ mxCell.prototype.isVertex = function()
  * 
  * vertex - Boolean that specifies if the cell is a vertex.
  */
+// 中文注释：setVertex 方法指定单元格是否为顶点。
+// 中文注释：参数 vertex 为布尔值，true 表示单元格为顶点。
+// 中文注释：注意事项：此属性应在构造时设置，不应在生命周期中更改。
 mxCell.prototype.setVertex = function(vertex)
 {
 	this.vertex = vertex;
@@ -315,6 +366,8 @@ mxCell.prototype.setVertex = function(vertex)
  *
  * Returns true if the cell is an edge.
  */
+// 中文注释：isEdge 方法返回单元格是否为边（edge）。
+// 中文注释：如果 edge 属性非 0，则返回 true。
 mxCell.prototype.isEdge = function()
 {
 	return this.edge != 0;
@@ -330,6 +383,9 @@ mxCell.prototype.isEdge = function()
  * 
  * edge - Boolean that specifies if the cell is an edge.
  */
+// 中文注释：setEdge 方法指定单元格是否为边。
+// 中文注释：参数 edge 为布尔值，true 表示单元格为边。
+// 中文注释：注意事项：此属性应在构造时设置，不应在生命周期中更改。
 mxCell.prototype.setEdge = function(edge)
 {
 	this.edge = edge;
@@ -340,6 +396,8 @@ mxCell.prototype.setEdge = function(edge)
  *
  * Returns true if the cell is connectable.
  */
+// 中文注释：isConnectable 方法返回单元格是否可连接。
+// 中文注释：如果 connectable 属性非 0，则返回 true。
 mxCell.prototype.isConnectable = function()
 {
 	return this.connectable != 0;
@@ -354,6 +412,8 @@ mxCell.prototype.isConnectable = function()
  * 
  * connectable - Boolean that specifies the new connectable state.
  */
+// 中文注释：setConnectable 方法设置单元格的可连接状态。
+// 中文注释：参数 connectable 为布尔值，true 表示单元格可连接。
 mxCell.prototype.setConnectable = function(connectable)
 {
 	this.connectable = connectable;
@@ -364,6 +424,8 @@ mxCell.prototype.setConnectable = function(connectable)
  *
  * Returns true if the cell is visibile.
  */
+// 中文注释：isVisible 方法返回单元格是否可见。
+// 中文注释：如果 visible 属性非 0，则返回 true。
 mxCell.prototype.isVisible = function()
 {
 	return this.visible != 0;
@@ -378,6 +440,8 @@ mxCell.prototype.isVisible = function()
  * 
  * visible - Boolean that specifies the new visible state.
  */
+// 中文注释：setVisible 方法设置单元格的可见状态。
+// 中文注释：参数 visible 为布尔值，true 表示单元格可见。
 mxCell.prototype.setVisible = function(visible)
 {
 	this.visible = visible;
@@ -388,6 +452,8 @@ mxCell.prototype.setVisible = function(visible)
  *
  * Returns true if the cell is collapsed.
  */
+// 中文注释：isCollapsed 方法返回单元格是否折叠。
+// 中文注释：如果 collapsed 属性非 0，则返回 true。
 mxCell.prototype.isCollapsed = function()
 {
 	return this.collapsed != 0;
@@ -402,6 +468,8 @@ mxCell.prototype.isCollapsed = function()
  * 
  * collapsed - Boolean that specifies the new collapsed state.
  */
+// 中文注释：setCollapsed 方法设置单元格的折叠状态。
+// 中文注释：参数 collapsed 为布尔值，true 表示单元格折叠。
 mxCell.prototype.setCollapsed = function(collapsed)
 {
 	this.collapsed = collapsed;
@@ -412,6 +480,7 @@ mxCell.prototype.setCollapsed = function(collapsed)
  *
  * Returns the cell's parent.
  */
+// 中文注释：getParent 方法返回单元格的父单元格引用。
 mxCell.prototype.getParent = function()
 {
 	return this.parent;
@@ -426,6 +495,8 @@ mxCell.prototype.getParent = function()
  * 
  * parent - <mxCell> that represents the new parent.
  */
+// 中文注释：setParent 方法设置单元格的父单元格。
+// 中文注释：参数 parent 为 mxCell 对象，表示新的父单元格。
 mxCell.prototype.setParent = function(parent)
 {
 	this.parent = parent;
@@ -441,6 +512,8 @@ mxCell.prototype.setParent = function(parent)
  * source - Boolean that specifies if the source terminal should be
  * returned.
  */
+// 中文注释：getTerminal 方法返回边的起始或目标终端。
+// 中文注释：参数 source 为布尔值，true 返回起始终端，false 返回目标终端。
 mxCell.prototype.getTerminal = function(source)
 {
 	return (source) ? this.source : this.target;
@@ -457,6 +530,9 @@ mxCell.prototype.getTerminal = function(source)
  * isSource - Boolean that specifies if the source or target terminal
  * should be set.
  */
+// 中文注释：setTerminal 方法设置边的起始或目标终端，并返回新终端。
+// 中文注释：参数 terminal 为 mxCell 对象，表示新的终端单元格。
+// 中文注释：参数 isSource 为布尔值，true 设置起始终端，false 设置目标终端。
 mxCell.prototype.setTerminal = function(terminal, isSource)
 {
 	if (isSource)
@@ -476,6 +552,8 @@ mxCell.prototype.setTerminal = function(terminal, isSource)
  *
  * Returns the number of child cells.
  */
+// 中文注释：getChildCount 方法返回子单元格的数量。
+// 中文注释：如果 children 为空，返回 0，否则返回 children 数组长度。
 mxCell.prototype.getChildCount = function()
 {
 	return (this.children == null) ? 0 : this.children.length;
@@ -490,6 +568,8 @@ mxCell.prototype.getChildCount = function()
  * 
  * child - Child whose index should be returned.
  */
+// 中文注释：getIndex 方法返回指定子单元格在子数组中的索引。
+// 中文注释：参数 child 为子单元格对象。
 mxCell.prototype.getIndex = function(child)
 {
 	return mxUtils.indexOf(this.children, child);
@@ -504,6 +584,9 @@ mxCell.prototype.getIndex = function(child)
  * 
  * index - Integer that specifies the child to be returned.
  */
+// 中文注释：getChildAt 方法返回指定索引处的子单元格。
+// 中文注释：参数 index 为整数，表示子单元格的索引。
+// 中文注释：如果 children 为空或索引无效，返回 null。
 mxCell.prototype.getChildAt = function(index)
 {
 	return (this.children == null) ? null : this.children[index];
@@ -523,6 +606,11 @@ mxCell.prototype.getChildAt = function(index)
  * index - Optional integer that specifies the index at which the child
  * should be inserted into the child array.
  */
+// 中文注释：insert 方法将指定子单元格插入到子数组的指定索引处，并更新子单元格的父引用。
+// 中文注释：参数 child 为要插入的 mxCell 对象。
+// 中文注释：参数 index 为可选整数，指定插入位置，若未提供则追加到末尾。
+// 中文注释：交互逻辑：若子单元格已有父单元格且为当前单元格，插入索引减 1 避免重复。
+// 中文注释：方法返回插入的子单元格。
 mxCell.prototype.insert = function(child, index)
 {
 	if (child != null)
@@ -566,6 +654,10 @@ mxCell.prototype.insert = function(child, index)
  * index - Integer that specifies the index of the child to be
  * removed.
  */
+// 中文注释：remove 方法从子数组中移除指定索引处的子单元格，并返回被移除的子单元格。
+// 中文注释：参数 index 为整数，指定要移除的子单元格索引。
+// 中文注释：交互逻辑：移除后会清除子单元格的父引用。
+// 中文注释：如果 children 为空或索引无效，返回 null。
 mxCell.prototype.remove = function(index)
 {
 	var child = null;
@@ -589,6 +681,8 @@ mxCell.prototype.remove = function(index)
  *
  * Removes the cell from its parent.
  */
+// 中文注释：removeFromParent 方法将当前单元格从其父单元格中移除。
+// 中文注释：交互逻辑：通过父单元格的 remove 方法移除当前单元格，并清除父引用。
 mxCell.prototype.removeFromParent = function()
 {
 	if (this.parent != null)
@@ -603,6 +697,8 @@ mxCell.prototype.removeFromParent = function()
  *
  * Returns the number of edges in the edge array.
  */
+// 中文注释：getEdgeCount 方法返回与当前单元格关联的边的数量。
+// 中文注释：如果 edges 为空，返回 0，否则返回 edges 数组长度。
 mxCell.prototype.getEdgeCount = function()
 {
 	return (this.edges == null) ? 0 : this.edges.length;
@@ -617,6 +713,8 @@ mxCell.prototype.getEdgeCount = function()
  * 
  * edge - <mxCell> whose index in <edges> should be returned.
  */
+// 中文注释：getEdgeIndex 方法返回指定边在 edges 数组中的索引。
+// 中文注释：参数 edge 为 mxCell 对象，表示要查找的边。
 mxCell.prototype.getEdgeIndex = function(edge)
 {
 	return mxUtils.indexOf(this.edges, edge);
@@ -631,6 +729,9 @@ mxCell.prototype.getEdgeIndex = function(edge)
  * 
  * index - Integer that specifies the index of the edge to be returned.
  */
+// 中文注释：getEdgeAt 方法返回 edges 数组中指定索引处的边。
+// 中文注释：参数 index 为整数，表示边的索引。
+// 中文注释：如果 edges 为空或索引无效，返回 null。
 mxCell.prototype.getEdgeAt = function(index)
 {
 	return (this.edges == null) ? null : this.edges[index];
@@ -647,6 +748,11 @@ mxCell.prototype.getEdgeAt = function(index)
  * edge - <mxCell> to be inserted into the edge array.
  * isOutgoing - Boolean that specifies if the edge is outgoing.
  */
+// 中文注释：insertEdge 方法将指定边插入到 edges 数组，并返回该边。
+// 中文注释：参数 edge 为 mxCell 对象，表示要插入的边。
+// 中文注释：参数 isOutgoing 为布尔值，true 表示边是输出的（从当前单元格出发）。
+// 中文注释：交互逻辑：插入前移除边的旧终端引用，并设置新终端引用。
+// 中文注释：特殊处理：仅当边未在 edges 数组中且终端引用正确时，才插入。
 mxCell.prototype.insertEdge = function(edge, isOutgoing)
 {
 	if (edge != null)
@@ -681,6 +787,10 @@ mxCell.prototype.insertEdge = function(edge, isOutgoing)
  * edge - <mxCell> to be removed from the edge array.
  * isOutgoing - Boolean that specifies if the edge is outgoing.
  */
+// 中文注释：removeEdge 方法从 edges 数组中移除指定边，并返回该边。
+// 中文注释：参数 edge 为 mxCell 对象，表示要移除的边。
+// 中文注释：参数 isOutgoing 为布尔值，true 表示边是输出的。
+// 中文注释：交互逻辑：移除边后清除其对应的终端引用。
 mxCell.prototype.removeEdge = function(edge, isOutgoing)
 {
 	if (edge != null)
@@ -712,6 +822,9 @@ mxCell.prototype.removeEdge = function(edge, isOutgoing)
  * isSource - Boolean that specifies if the edge should be removed from its
  * source or target terminal.
  */
+// 中文注释：removeFromTerminal 方法从边的起始或目标终端移除当前边。
+// 中文注释：参数 isSource 为布尔值，true 表示从起始终端移除，false 表示从目标终端移除。
+// 中文注释：交互逻辑：调用终端单元格的 removeEdge 方法移除边。
 mxCell.prototype.removeFromTerminal = function(isSource)
 {
 	var terminal = this.getTerminal(isSource);
@@ -732,6 +845,9 @@ mxCell.prototype.removeFromTerminal = function(isSource)
  * 
  * name - Name of the attribute.
  */
+// 中文注释：hasAttribute 方法检查用户对象是否为 XML 节点且包含指定属性。
+// 中文注释：参数 name 为属性名称。
+// 中文注释：返回 true 如果用户对象是 XML 节点且具有该属性。
 mxCell.prototype.hasAttribute = function(name)
 {
 	var userObject = this.getValue();
@@ -753,6 +869,10 @@ mxCell.prototype.hasAttribute = function(name)
  * defaultValue - Optional default value to use if the attribute has no
  * value.
  */
+// 中文注释：getAttribute 方法从用户对象（若为 XML 节点）中获取指定属性的值。
+// 中文注释：参数 name 为属性名称。
+// 中文注释：参数 defaultValue 为可选默认值，当属性不存在时返回。
+// 中文注释：返回属性值或默认值。
 mxCell.prototype.getAttribute = function(name, defaultValue)
 {
 	var userObject = this.getValue();
@@ -774,6 +894,9 @@ mxCell.prototype.getAttribute = function(name, defaultValue)
  * name - Name of the attribute whose value should be set.
  * value - New value of the attribute.
  */
+// 中文注释：setAttribute 方法在用户对象（若为 XML 节点）上设置指定属性的值。
+// 中文注释：参数 name 为属性名称。
+// 中文注释：参数 value 为属性的新值。
 mxCell.prototype.setAttribute = function(name, value)
 {
 	var userObject = this.getValue();
@@ -792,6 +915,9 @@ mxCell.prototype.setAttribute = function(name, value)
  * the user object. All fields in <mxTransient> are ignored
  * during the cloning.
  */
+// 中文注释：clone 方法返回单元格的克隆副本。
+// 中文注释：使用 cloneValue 方法克隆用户对象，忽略 mxTransient 列表中的属性。
+// 中文注释：返回克隆的单元格对象。
 mxCell.prototype.clone = function()
 {
 	var clone = mxUtils.clone(this, this.mxTransient);
@@ -805,6 +931,9 @@ mxCell.prototype.clone = function()
  *
  * Returns a clone of the cell's user object.
  */
+// 中文注释：cloneValue 方法返回单元格用户对象的克隆副本。
+// 中文注释：如果用户对象具有 clone 方法，则调用它进行克隆；若为 XML 节点，则使用 cloneNode。
+// 中文注释：返回克隆的用户对象。
 mxCell.prototype.cloneValue = function()
 {
 	var value = this.getValue();

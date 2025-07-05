@@ -9,11 +9,17 @@ var mxCellPath =
 	 * Class: mxCellPath
 	 * 
 	 * Implements a mechanism for temporary cell Ids.
-	 * 
+     */
+    // 中文注释：mxCellPath 类
+    // 实现了一个用于临时单元格 ID 的机制，用于生成、解析和比较单元格路径。
+
+    /**
 	 * Variable: PATH_SEPARATOR
 	 * 
 	 * Defines the separator between the path components. Default is ".".
 	 */
+    // 中文注释：路径分隔符
+    // 定义路径组件之间的分隔符，默认为 "."。
 	PATH_SEPARATOR: '.',
 	
 	/**
@@ -27,6 +33,11 @@ var mxCellPath =
 	 * 
 	 * cell - Cell whose path should be returned.
 	 */
+    // 中文注释：创建单元格路径
+    // 为给定的单元格生成路径，路径是由从该单元格到根节点的有限路径上所有祖先节点索引的连接，
+    // 例如 "0.0.0.1"。
+    // 参数：
+    // cell - 需要生成路径的单元格对象。
 	create: function(cell)
 	{
 		var result = '';
@@ -54,6 +65,8 @@ var mxCellPath =
 		}
 		
 		return result;
+        // 中文注释：返回生成的路径字符串
+        // 如果路径长度大于1，则移除末尾的分隔符后返回最终路径。
 	},
 	
 	/**
@@ -66,6 +79,10 @@ var mxCellPath =
 	 * 
 	 * path - Path whose parent path should be returned.
 	 */
+    // 中文注释：获取父路径
+    // 返回给定路径表示的单元格的父路径。如果给定路径没有父路径，则返回 null。
+    // 参数：
+    // path - 需要获取父路径的路径字符串。
 	getParentPath: function(path)
 	{
 		if (path != null)
@@ -83,6 +100,8 @@ var mxCellPath =
 		}
 
 		return null;
+        // 中文注释：返回父路径或 null
+        // 通过查找最后一个分隔符位置截取父路径，若路径为空或无分隔符，返回空字符串或 null。
 	},
 
 	/**
@@ -96,6 +115,11 @@ var mxCellPath =
 	 * root - Root cell of the path to be resolved.
 	 * path - String that defines the path.
 	 */
+    // 中文注释：解析路径
+    // 根据给定的根单元格和路径字符串，解析并返回对应的单元格对象。
+    // 参数：
+    // root - 路径解析的根单元格。
+    // path - 定义路径的字符串。
 	resolve: function(root, path)
 	{
 		var parent = root;
@@ -111,6 +135,8 @@ var mxCellPath =
 		}
 		
 		return parent;
+        // 中文注释：返回解析后的单元格
+        // 通过路径中的索引逐级查找子节点，返回最终的单元格对象。
 	},
 	
 	/**
@@ -119,6 +145,11 @@ var mxCellPath =
 	 * Compares the given cell paths and returns -1 if p1 is smaller, 0 if
 	 * p1 is equal and 1 if p1 is greater than p2.
 	 */
+    // 中文注释：比较路径
+    // 比较两个单元格路径，返回 -1（p1 小于 p2）、0（p1 等于 p2）或 1（p1 大于 p2）。
+    // 参数：
+    // p1 - 第一个路径字符串。
+    // p2 - 第二个路径字符串。
 	compare: function(p1, p2)
 	{
 		var min = Math.min(p1.length, p2.length);
@@ -158,6 +189,9 @@ var mxCellPath =
 		}
 		
 		return comp;
+        // 中文注释：返回比较结果
+        // 比较路径的每个索引值，若索引值不同则返回比较结果；若索引值相同，则比较路径长度。
+        // 注意事项：路径中的索引值必须是有效的整数，空字符串或无效值可能导致比较异常。
 	}
 
 };
