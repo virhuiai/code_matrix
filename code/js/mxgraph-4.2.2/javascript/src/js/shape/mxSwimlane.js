@@ -176,6 +176,22 @@ mxSwimlane.prototype.isHorizontal = function()
  *
  * Paints the swimlane vertex shape.
  */
+// 中文注释：
+// 方法：paintVertexShape
+// 功能：绘制泳道顶点形状。
+// 参数：c - 画布对象；x, y - 坐标；w, h - 宽度和高度。
+// 关键步骤：
+// 1. 获取标题区域大小、填充颜色（STYLE_SWIMLANE_FILLCOLOR）、分隔线设置（STYLE_SWIMLANE_LINE）。
+// 2. 根据是否启用圆角（isRounded），调用普通绘制（paintSwimlane）或圆角绘制（paintRoundedSwimlane）。
+// 3. 绘制分隔线（STYLE_SEPARATORCOLOR）。
+// 4. 若存在图像，绘制图像。
+// 5. 若启用玻璃效果（glass），绘制玻璃效果。
+// 重要配置参数：
+// - STYLE_SWIMLANE_FILLCOLOR：内容区域填充颜色。
+// - STYLE_SWIMLANE_LINE：标题与内容区域之间的分隔线是否显示。
+// - STYLE_SEPARATORCOLOR：额外分隔线的颜色。
+// 交互逻辑：根据配置动态调整绘制行为，支持圆角、图像和玻璃效果。
+// 特殊处理：确保标题区域大小不超过形状的宽度或高度。
 mxSwimlane.prototype.paintVertexShape = function(c, x, y, w, h)
 {
 	var start = this.getTitleSize();
@@ -227,6 +243,17 @@ mxSwimlane.prototype.paintVertexShape = function(c, x, y, w, h)
  *
  * Paints the swimlane vertex shape.
  */
+// 中文注释：
+// 方法：paintSwimlane
+// 功能：绘制非圆角泳道顶点形状。
+// 参数：c - 画布对象；x, y - 坐标；w, h - 宽度和高度；start - 标题区域大小；fill - 填充颜色；swimlaneLine - 是否绘制分隔线。
+// 关键步骤：
+// 1. 检查是否启用指针事件（STYLE_POINTER_EVENTS）。
+// 2. 根据方向（水平或垂直）绘制标题区域和内容区域。
+// 3. 若填充颜色为 NONE 或禁用事件，关闭指针事件。
+// 4. 若启用分隔线，调用 paintDivider 绘制。
+// 事件处理逻辑：根据 STYLE_POINTER_EVENTS 控制是否响应指针事件。
+// 特殊处理：确保填充颜色和事件设置正确影响交互行为。
 mxSwimlane.prototype.paintSwimlane = function(c, x, y, w, h, start, fill, swimlaneLine)
 {
 	c.begin();
@@ -327,6 +354,16 @@ mxSwimlane.prototype.paintSwimlane = function(c, x, y, w, h, start, fill, swimla
  *
  * Paints the swimlane vertex shape.
  */
+// 中文注释：
+// 方法：paintRoundedSwimlane
+// 功能：绘制带圆角的泳道顶点形状。
+// 参数：c - 画布对象；x, y - 坐标；w, h - 宽度和高度；start - 标题区域大小；r - 圆角大小；fill - 填充颜色；swimlaneLine - 是否绘制分隔线。
+// 关键步骤：
+// 1. 检查是否启用指针事件（STYLE_POINTER_EVENTS）。
+// 2. 根据方向（水平或垂直）绘制带圆角的标题区域和内容区域，使用 quadTo 绘制圆角曲线。
+// 3. 若启用分隔线，调用 paintDivider 绘制。
+// 事件处理逻辑：根据 STYLE_POINTER_EVENTS 控制是否响应指针事件。
+// 特殊处理：确保圆角绘制正确，填充颜色和事件设置影响交互行为。
 mxSwimlane.prototype.paintRoundedSwimlane = function(c, x, y, w, h, start, r, fill, swimlaneLine)
 {
 	c.begin();
@@ -435,6 +472,14 @@ mxSwimlane.prototype.paintRoundedSwimlane = function(c, x, y, w, h, start, r, fi
  *
  * Paints the divider between swimlane title and content area.
  */
+// 中文注释：
+// 方法：paintDivider
+// 功能：绘制标题区域与内容区域之间的分隔线。
+// 参数：c - 画布对象；x, y - 坐标；w, h - 宽度和高度；start - 标题区域大小；shadow - 是否禁用阴影。
+// 关键步骤：
+// 1. 若禁用阴影，设置画布无阴影。
+// 2. 根据方向（水平或垂直）绘制直线分隔线。
+// 特殊处理：确保阴影设置不影响分隔线绘制。
 mxSwimlane.prototype.paintDivider = function(c, x, y, w, h, start, shadow)
 {
 	if (!shadow)
@@ -463,6 +508,16 @@ mxSwimlane.prototype.paintDivider = function(c, x, y, w, h, start, shadow)
  *
  * Paints the vertical or horizontal separator line between swimlanes.
  */
+// 中文注释：
+// 方法：paintSeparator
+// 功能：绘制泳道之间的垂直或水平分隔线。
+// 参数：c - 画布对象；x, y - 坐标；w, h - 宽度和高度；start - 标题区域大小；color - 分隔线颜色。
+// 关键步骤：
+// 1. 若颜色不为 NONE，设置描边颜色并启用虚线样式。
+// 2. 根据方向绘制分隔线（水平或垂直）。
+// 3. 绘制后恢复非虚线样式。
+// 重要配置参数：STYLE_SEPARATORCOLOR - 定义分隔线颜色。
+// 特殊处理：仅在颜色有效时绘制，确保虚线样式正确应用和恢复。
 mxSwimlane.prototype.paintSeparator = function(c, x, y, w, h, start, color)
 {
 	if (color != mxConstants.NONE)
@@ -492,6 +547,12 @@ mxSwimlane.prototype.paintSeparator = function(c, x, y, w, h, start, color)
  *
  * Paints the swimlane vertex shape.
  */
+// 中文注释：
+// 方法：getImageBounds
+// 功能：计算并返回图像的边界框。
+// 参数：x, y - 坐标；w, h - 宽度和高度。
+// 关键步骤：根据方向（水平或垂直）计算图像位置，默认使用 imageSize（16）作为图像尺寸。
+// 返回值：mxRectangle 对象，表示图像的边界框。
 mxSwimlane.prototype.getImageBounds = function(x, y, w, h)
 {
 	if (this.isHorizontal())
