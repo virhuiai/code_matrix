@@ -19,40 +19,52 @@
 
 <html>
 <head>
-<title>Proposal for Logging Library Package</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Proposal for Logging Library Package/Logging库包提案</title>
+<!-- 中文注释：设置网页标题为“Logging库包提案” -->
 </head>
 <body bgcolor="white">
+<!-- 中文注释：设置页面背景色为白色 -->
 
 <div align="center">
-<h1>Proposal for <em>Logging</em> Package</h1>
+<h1>Proposal for <em>Logging</em> Package<br/></h1>
+<!-- 中文注释：居中显示主标题“Logging包提案”，使用em标签强调“Logging” -->
 </div>
 
-<h3>(0) Rationale</h3>
+<h3>(0) Rationale<br/>背景和理由</h3>
+<!-- 中文注释：章节标题，说明提案的背景和理由 -->
 
 <p>There is a great need for debugging and logging information inside of
 Commons components such as HTTPClient and dbcp.  However, there are many
 logging APIs out there and it is difficult to choose among them.
-</p>
+<br/>Commons组件（如HTTPClient和dbcp）需要调试和日志记录功能，但市场上存在多种日志API，难以选择。</p>
+<!-- 中文注释：说明Commons组件（如HTTPClient和dbcp）需要调试和日志记录功能，但市场上存在多种日志API，难以选择 -->
 
 <p>The Logging package will be an ultra-thin bridge between different logging
 libraries.  Commons components may use the Logging JAR to remove
 compile-time/runtime dependencies on any particular logging package,
 and contributors may write Log implementations for the library of their choice.
-</p>
+<br/>作为不同日志库之间的轻量级桥梁。Commons组件可使用Logging JAR移除对特定日志包的编译时/运行时依赖，贡献者可为他们选择的日志库编写日志实现</p>
+<!-- 中文注释：描述Logging包的作用，作为不同日志库之间的轻量级桥梁。Commons组件可使用Logging JAR移除对特定日志包的编译时/运行时依赖，贡献者可为他们选择的日志库编写日志实现 -->
 
-<h3>(1) Scope of the Package</h3>
+<h3>(1) Scope of the Package<br/>Logging包的范围和目标</h3>
+<!-- 中文注释：章节标题，定义Logging包的范围和目标 -->
 
 <p>The package shall create and maintain a package that provides extremely
 basic logging functionality and bridges to other, more sophisticated logging
 implementations.
-</p>
+<br/>包的目标是创建并维护一个提供基础日志功能并桥接更复杂日志实现的包</p>
+<!-- 中文注释：说明包的目标是创建并维护一个提供基础日志功能并桥接更复杂日志实现的包 -->
 
 <p>
 The package should :
 <ul>
-<li>Have an API which should be as simple to use as possible</li>
-<li>Provide support for log4j</li>
-<li>Provide pluggable support for other logging APIs</li>
+<li>Have an API which should be as simple to use as possible<br/>提供一个尽可能简单易用的API</li>
+<!-- 中文注释：提供一个尽可能简单易用的API -->
+<li>Provide support for log4j<br/>支持log4j日志框架</li>
+<!-- 中文注释：支持log4j日志框架 -->
+<li>Provide pluggable support for other logging APIs<br/>支持其他日志API的可插拔集成</li>
+<!-- 中文注释：支持其他日志API的可插拔集成 -->
 </ul>
 </p>
 
@@ -60,61 +72,89 @@ The package should :
 Non-goals:
 <ul>
 <li>This package will not perform logging itself, except at the most basic
-    level.</li>
-<li>We do not seek to become a "standard" API.</li>
+    level.<br/>此包不会直接执行日志记录，仅提供最基础的日志功能</li>
+<!-- 中文注释：非目标：此包不会直接执行日志记录，仅提供最基础的日志功能 -->
+<li>We do not seek to become a "standard" API.<br/>不追求成为标准的日志API</li>
+<!-- 中文注释：非目标：不追求成为标准的日志API -->
 </ul>
 </p>
 
-<h3>(1.5) Interaction With Other Packages</h3>
+<h3>(1.5) Interaction With Other Packages<br/>Logging包与其他包的交互和依赖</h3>
+<!-- 中文注释：章节标题，描述Logging包与其他包的交互和依赖 -->
 
 <p><em>Logging</em> relies on:
-</p>
+<br/></p>
+<!-- 中文注释：列出Logging包的依赖项 -->
 
 <ul>
   <li>Java Development Kit (Version 1.1 or later)
-  </li>
+  <!-- 中文注释：依赖Java开发工具包（版本1.1或更高） -->
+  <br/></li>
   <li>Avalon Framework (compile-time dependency only unless this Log
       implementation is selected at runtime)
+  <!-- 中文注释：依赖Avalon框架，仅在编译时依赖，除非运行时选择此日志实现 -->
+      <br/>依赖Avalon框架，仅在编译时依赖，除非运行时选择此日志实现
+  </li>
   <li>Avalon LogKit (compile-time dependency only unless this Log
       implementation is selected at runtime)
+  <!-- 中文注释：依赖Avalon LogKit，仅在编译时依赖，除非运行时选择此日志实现 -->
+    <br/>依赖Avalon LogKit，仅在编译时依赖，除非运行时选择此日志实现
+  </li>
   <li>JDK 1.4 (compile-time dependency only unless this log implementation
       is selected at runtime).
+  <!-- 中文注释：依赖JDK 1.4，仅在编译时依赖，除非运行时选择此日志实现 -->
+    <br/>依赖JDK 1.4，仅在编译时依赖，除非运行时选择此日志实现
+  </li>
   <li>Log4J (compile-time dependency only unless this Log
-      implementation is selected at runtime)</li>
+      implementation is selected at runtime)<br/>依赖Log4J，仅在编译时依赖，除非运行时选择此日志实现</li>
+  <!-- 中文注释：依赖Log4J，仅在编译时依赖，除非运行时选择此日志实现 -->
+
   <li><a href="http://sourceforge.net/projects/lumberjack/">Lumberjack</a>
       (compile-time dependency only unless this Log
-      implementation is selected at runtime)</li>
+      implementation is selected at runtime)<br/>依赖Lumberjack，仅在编译时依赖，除非运行时选择此日志实现；</li>
+  <!-- 中文注释：依赖Lumberjack，仅在编译时依赖，除非运行时选择此日志实现；包含指向Lumberjack项目的超链接 -->
 </ul>
 
-<h3>(2) Required Jakarta-Commons Resources</h3>
+<h3>(2) Required Jakarta-Commons Resources<br/></h3>
+<!-- 中文注释：章节标题，列出Jakarta-Commons项目所需资源 -->
 
 <ul>
 <li>CVS Repository - New directory <code>logging</code> in the 
-<code>jakarta-commons</code> CVS repository.</li>
+<code>jakarta-commons</code> CVS repository.<br/>在jakarta-commons CVS仓库中创建新目录“logging”用于存储代码</li>
+<!-- 中文注释：在jakarta-commons CVS仓库中创建新目录“logging”用于存储代码 -->
 
-<li>Initial Committers - The list is provided below. </li>
+<li>Initial Committers - The list is provided below. <br/>初始提交者名单在下方列出</li>
+<!-- 中文注释：初始提交者名单在下方列出 -->
 
 <li>Mailing List - Discussions will take place on the general
 <em>dev@commons.apache.org</em> mailing list. To help list
 subscribers identify messages of interest, it is suggested that the
 message subject of messages about this component be prefixed with
-[Logging].</li>
+[Logging].<br/>讨论将在通用的dev@commons.apache.org邮件列表进行，建议邮件主题以[Logging]开头以便订阅者识别相关消息</li>
+<!-- 中文注释：讨论将在通用的dev@commons.apache.org邮件列表进行，建议邮件主题以[Logging]开头以便订阅者识别相关消息 -->
 
 <li>Bugzilla - New component "Logging" under the "Commons" product
-category, with appropriate version identifiers as needed.</li>
+category, with appropriate version identifiers as needed.<br/>在Bugzilla中为“Commons”产品类别下创建新的“Logging”组件，并根据需要设置版本标识</li>
+<!-- 中文注释：在Bugzilla中为“Commons”产品类别下创建新的“Logging”组件，并根据需要设置版本标识 -->
 
-<li>Jyve FAQ - New category "commons-logging" (when available).</li>
+<li>Jyve FAQ - New category "commons-logging" (when available).<br/>在Jyve FAQ中创建新的“commons-logging”类别（当可用时）</li>
+<!-- 中文注释：在Jyve FAQ中创建新的“commons-logging”类别（当可用时） -->
 </ul>
 
 
-<h3>(4) Initial Committers</h3>
+<h3>(4) Initial Committers<br/>Logging组件的初始提交者</h3>
+<!-- 中文注释：章节标题，列出Logging组件的初始提交者 -->
 
-<p>The initial committers on the Logging component shall be:</p>
+<p>The initial committers on the Logging component shall be:<br/>Logging组件的初始提交者名单</p>
+<!-- 中文注释：说明Logging组件的初始提交者名单 -->
 
 <ul>
-  <li>Morgan Delagrange</li>
-  <li>Rodney Waldhoff</li>
-  <li>Craig McClanahan</li>
+  <li>Morgan Delagrange<br/></li>
+  <!-- 中文注释：初始提交者 - Morgan Delagrange -->
+  <li>Rodney Waldhoff<br/></li>
+  <!-- 中文注释：初始提交者 - Rodney Waldhoff -->
+  <li>Craig McClanahan<br/></li>
+  <!-- 中文注释：初始提交者 - Craig McClanahan -->
 </ul>
 
 </body>

@@ -16,33 +16,72 @@ KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations
 under the License.
 -->
+<!--
+  中文注释：
+  本文件遵循 Apache 2.0 许可证发布，定义了 Apache Commons Logging 项目的版权和许可信息。
+  说明了软件按“原样”分发，不提供任何明示或暗示的担保。
+-->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <!--
     - Note that due to the special requirements of logging unit-tests, most
     - tests are executed in the "integration-test" phase rather than the
     - "test" phase. Please run "mvn integration-test" to run the full suite of
     - available unit tests.
-    -->
+  -->
+  <!--
+    中文注释：
+    由于日志单元测试的特殊需求，大部分测试在“integration-test”阶段执行，而非“test”阶段。
+    建议运行“mvn integration-test”以执行完整的单元测试套件。
+    特殊处理注意事项：测试需要在生成 JAR 文件后运行，以确保类路径配置正确。
+  -->
   <parent>
     <groupId>org.apache.commons</groupId>
     <artifactId>commons-parent</artifactId>
     <version>34</version>
   </parent>
+  <!--
+    中文注释：
+    定义项目的父 POM 文件，继承 Apache Commons 父项目（commons-parent，版本 34）。
+    作用：继承父项目的通用配置，如依赖管理、插件配置等。
+  -->
   <modelVersion>4.0.0</modelVersion>
+  <!-- 中文注释：指定 Maven POM 文件的模型版本为 4.0.0，符合 Maven 的标准格式。 -->
   <groupId>commons-logging</groupId>
   <artifactId>commons-logging</artifactId>
   <name>Apache Commons Logging</name>
   <version>1.2</version>
+  <!--
+    中文注释：
+    定义项目的基本信息：
+    - groupId: commons-logging，项目的组标识。
+    - artifactId: commons-logging，项目模块名称。
+    - name: Apache Commons Logging，项目的正式名称。
+    - version: 1.2，项目版本号。
+  -->
   <description>Apache Commons Logging is a thin adapter allowing configurable bridging to other,
     well known logging systems.</description>
+  <!--
+    中文注释：
+    项目描述：Apache Commons Logging 是一个轻量级适配器，支持可配置地桥接到其他知名日志系统（如 Log4j、JDK Logging）。
+    作用：提供统一的日志接口，方便切换底层日志实现。
+  -->
   <url>http://commons.apache.org/proper/commons-logging/</url>
+  <!-- 中文注释：项目官方网站，提供文档和下载链接。 -->
 
   <issueManagement>
     <system>JIRA</system>
     <url>http://issues.apache.org/jira/browse/LOGGING</url>
   </issueManagement>
+  <!--
+    中文注释：
+    配置问题跟踪系统：
+    - system: JIRA，使用的跟踪工具。
+    - url: JIRA 项目地址，用于提交和跟踪问题。
+    作用：便于开发者报告和跟踪项目中的 bug 或功能请求。
+  -->
 
   <inceptionYear>2001</inceptionYear>
+  <!-- 中文注释：项目创建年份为 2001 年，记录项目的起始时间。 -->
 
   <developers>
     <developer>
@@ -53,6 +92,7 @@ under the License.
         <role>Java Developer</role>
       </roles>
     </developer>
+    <!-- 中文注释：定义开发者信息，包含 ID、姓名、邮箱和角色（Java 开发者）。 -->
     <developer>
       <id>morgand</id>
       <name>Morgan Delagrange</name>
@@ -126,6 +166,8 @@ under the License.
       <organization>The Apache Software Foundation</organization>
     </developer>
   </developers>
+  <!-- 中文注释：列出项目的核心开发者信息，包括 ID、姓名、邮箱、所属组织和角色，方便联系和归属记录。 -->
+
   <contributors>
     <contributor>
       <name>Matthew P. Del Buono</name>
@@ -169,12 +211,25 @@ under the License.
     </contributor>
     
   </contributors>
-  
+  <!--
+    中文注释：
+    列出项目贡献者信息，包括姓名、邮箱和贡献内容（如提供补丁或特定日志抽象实现）。
+    作用：记录非核心开发者的贡献，增强社区协作透明度。
+  -->
+
   <scm>
     <connection>scm:svn:http://svn.apache.org/repos/asf/commons/proper/logging/trunk</connection>
     <developerConnection>scm:svn:https://svn.apache.org/repos/asf/commons/proper/logging/trunk</developerConnection>
     <url>http://svn.apache.org/repos/asf/commons/proper/logging/trunk</url>
   </scm>
+  <!--
+    中文注释：
+    配置源代码管理（SCM）信息：
+    - connection: SVN 仓库的只读访问地址。
+    - developerConnection: 开发者使用的 SVN 仓库地址（HTTPS）。
+    - url: 仓库的浏览地址。
+    作用：提供代码版本控制的访问入口，便于源码获取和协作。
+  -->
 
   <build>
     <plugins>
@@ -185,7 +240,14 @@ under the License.
         - jar:test-jar targets.
         - The jar plugin with some includes/excludes is used to create the other
         - ones.
-        -->
+      -->
+      <!--
+        中文注释：
+        构建目标：生成四个 JAR 文件：标准 JAR、测试 JAR、API JAR 和适配器 JAR。
+        - 标准 JAR 和测试 JAR 由默认的 jar:jar 和 jar:test-jar 目标处理。
+        - API JAR 和适配器 JAR 通过 maven-jar-plugin 的 includes/excludes 配置生成。
+        作用：支持模块化打包，方便用户选择需要的功能模块。
+      -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jar-plugin</artifactId>
@@ -194,7 +256,12 @@ under the License.
             <!--
               - The custom test framework requires the unit test code to be
               - in a jarfile so it can control its place in the classpath.
-              -->
+            -->
+            <!--
+              中文注释：
+              测试框架要求单元测试代码打包为 JAR 文件，以便控制类路径。
+              特殊处理注意事项：测试代码需在 package 阶段生成 JAR，确保测试时类路径正确。
+            -->
             <id>testjar</id>
             <phase>package</phase>
             <goals>
@@ -203,6 +270,15 @@ under the License.
             <configuration>
               <jarName>commons-logging</jarName>
             </configuration>
+            <!--
+              中文注释：
+              配置测试 JAR 的生成：
+              - id: testjar，执行标识。
+              - phase: package，在打包阶段执行。
+              - goal: test-jar，生成测试 JAR。
+              - jarName: commons-logging，测试 JAR 文件名。
+              作用：生成包含测试代码的 JAR 文件，用于集成测试。
+            -->
           </execution>
 
           <execution>
@@ -227,6 +303,16 @@ under the License.
                 <exclude>**/package.html</exclude>
               </excludes>
             </configuration>
+            <!--
+              中文注释：
+              配置 API JAR 的生成：
+              - id: apijar，执行标识。
+              - phase: package，在打包阶段执行。
+              - jarName: commons-logging-api-1.2，API JAR 文件名。
+              - includes: 指定包含的核心类文件（如日志接口、简单日志实现等）和许可证文件。
+              - excludes: 排除 package.html 文件。
+              作用：生成仅包含核心 API 的 JAR 文件，适合需要最小化依赖的场景。
+            -->
           </execution>
 
           <execution>
@@ -247,12 +333,27 @@ under the License.
                 <exclude>org/apache/commons/logging/impl/LogFactoryImpl*.class</exclude>
               </excludes>
             </configuration>
+            <!--
+              中文注释：
+              配置适配器 JAR 的生成：
+              - id: adaptersjar，执行标识。
+              - phase: package，在打包阶段执行。
+              - jarName: commons-logging-adapters-1.2，适配器 JAR 文件名。
+              - includes: 包含所有适配器实现类和许可证文件。
+              - excludes: 排除 WeakHashtable 和 LogFactoryImpl 类（这些属于 API JAR）。
+              作用：生成包含日志适配器实现的 JAR 文件，用于桥接其他日志系统。
+            -->
           </execution>
           
           <!--
             - Define the full jar last, the deploy/install plugin seems to be broken
             - and takes the last definition from here.
-            -->
+          -->
+          <!--
+            中文注释：
+            定义完整 JAR 的生成，放在最后以避免 deploy/install 插件错误。
+            特殊处理注意事项：插件可能只识别最后定义的 JAR 配置，因此完整 JAR 配置放在最后。
+          -->
           <execution>
             <id>fulljar</id>
             <phase>package</phase>
@@ -262,6 +363,14 @@ under the License.
             <configuration>
               <jarName>${project.artifactId}-${project.version}</jarName>
             </configuration>
+            <!--
+              中文注释：
+              配置完整 JAR 的生成：
+              - id: fulljar，执行标识。
+              - phase: package，在打包阶段执行。
+              - jarName: commons-logging-1.2，完整 JAR 文件名。
+              作用：生成包含所有代码的完整 JAR 文件，供常规使用。
+            -->
           </execution>
         </executions>
       </plugin>
@@ -287,13 +396,26 @@ under the License.
             </goals>
           </execution>
         </executions>
+        <!--
+          中文注释：
+          配置 maven-antrun-plugin：
+          - id: site.resources，执行标识。
+          - phase: site，在生成站点文档阶段执行。
+          - target: 将 RELEASE-NOTES.txt 复制到站点输出目录。
+          作用：确保发布说明包含在项目站点文档中。
+        -->
       </plugin>
 
       <plugin>
         <!--
           - Attach the adapters and api jars to the normal artifact. This way
           - they will be deployed when the normal artifact is deployed.
-          -->
+        -->
+        <!--
+          中文注释：
+          将适配器 JAR 和 API JAR 附加到标准构件上，确保它们随标准构件一起部署。
+          作用：方便用户在 Maven 仓库中获取所有相关 JAR 文件。
+        -->
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>build-helper-maven-plugin</artifactId>
         <version>1.0</version>
@@ -318,6 +440,14 @@ under the License.
                 </artifact>
               </artifacts>
             </configuration>
+            <!--
+              中文注释：
+              配置附加构件：
+              - id: attach-artifacts，执行标识。
+              - phase: package，在打包阶段执行。
+              - artifacts: 附加适配器 JAR 和 API JAR，分别使用 classifiers（adapters 和 api）区分。
+              作用：将额外的 JAR 文件注册为 Maven 构件，方便部署和引用。
+            -->
           </execution>
         </executions>
       </plugin>
@@ -330,12 +460,24 @@ under the License.
           -
           - In order to not mess with the Ant build we "disable" the normal test
           - phase. This is done by skipping the execution of the surefire plugin.
-          -->
+        -->
+        <!--
+          中文注释：
+          由于 JCL（Commons Logging）的测试需要特殊类路径配置，测试必须在“package”阶段之后运行。
+          为避免干扰 Ant 构建，禁用常规测试阶段（通过跳过 surefire 插件）。
+          特殊处理注意事项：测试依赖生成的 JAR 文件，因此常规测试阶段被禁用。
+        -->
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
           <skip>true</skip>
         </configuration>
+        <!--
+          中文注释：
+          配置 maven-surefire-plugin：
+          - skip: true，禁用常规测试阶段。
+          作用：避免在 test 阶段运行测试，确保测试在集成测试阶段执行。
+        -->
       </plugin>
 
       <plugin>
@@ -346,13 +488,24 @@ under the License.
           -
           - Disable cobertura report generation as this does not work correctly
           - with integration-tests and the normal unit tests are disabled too.
-          -->
+        -->
+        <!--
+          中文注释：
+          测试需要在“package”阶段后运行，禁用 cobertura 插件的报告生成，因为它与集成测试不兼容。
+          特殊处理注意事项：由于常规单元测试被禁用，cobertura 报告生成也不适用。
+        -->
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>cobertura-maven-plugin</artifactId>
         <version>${commons.cobertura.version}</version>
         <configuration>
           <skip>true</skip>
         </configuration>
+        <!--
+          中文注释：
+          配置 cobertura-maven-plugin：
+          - skip: true，禁用代码覆盖率报告生成。
+          作用：避免生成不必要的报告，优化构建流程。
+        -->
       </plugin>
 
       <plugin>
@@ -363,7 +516,12 @@ under the License.
           -
           - For this we use the failsafe plugin which is bound to the
           - "integration-test" phase by default.
-          -->
+        -->
+        <!--
+          中文注释：
+          使用 maven-failsafe-plugin 在“integration-test”阶段运行测试，以支持复杂的类路径配置。
+          作用：确保测试在生成 JAR 文件后正确执行。
+        -->
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-failsafe-plugin</artifactId>
         <version>${commons.surefire.version}</version>        
@@ -392,6 +550,19 @@ under the License.
                   <testclasses>target/commons-logging-tests.jar</testclasses>
               </systemPropertyVariables>
             </configuration>
+            <!--
+              中文注释：
+              配置集成测试：
+              - id: integration-test，执行标识。
+              - goals: integration-test 和 verify，运行集成测试并验证结果。
+              - runOrder: ${failsafe.runorder}，测试运行顺序（默认 filesystem）。
+              - includes: 包含所有以 TestCase.java 结尾的测试文件。
+              - systemPropertyVariables: 定义系统属性，用于测试时的类路径配置：
+                - log4j12、logkit、servlet-api：外部依赖的 JAR 文件路径。
+                - commons-logging、commons-logging-api、commons-logging-adapters：项目生成的 JAR 文件路径。
+                - testclasses：测试类 JAR 文件路径。
+              作用：支持复杂的测试场景，确保测试环境正确配置。
+            -->
           </execution>
         </executions>
       </plugin>
@@ -407,8 +578,17 @@ under the License.
           </descriptors>
           <tarLongFileMode>gnu</tarLongFileMode>
         </configuration>
+        <!--
+          中文注释：
+          配置 maven-assembly-plugin：
+          - version: 2.3，插件版本。
+          - descriptors: 指定 bin.xml 和 src.xml 描述文件，用于生成二进制和源码分发包。
+          - tarLongFileMode: gnu，支持长文件名格式。
+          作用：生成项目的分发包（如二进制包和源码包）。
+        -->
       </plugin>
       <!-- Define properties for referencing dependencies -->
+      <!-- 中文注释：定义用于引用依赖的属性，简化依赖管理。 -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-dependency-plugin</artifactId>
@@ -420,6 +600,12 @@ under the License.
             </goals>
           </execution>
         </executions>
+        <!--
+          中文注释：
+          配置 maven-dependency-plugin：
+          - goal: properties，生成依赖的属性文件。
+          作用：为测试和构建提供依赖的引用路径。
+        -->
       </plugin>
 
       <plugin>
@@ -431,6 +617,12 @@ under the License.
             <ignorePathToDelete>commons-logging-**</ignorePathToDelete>
           </ignorePathsToDelete>
         </configuration>
+        <!--
+          中文注释：
+          配置 maven-scm-publish-plugin：
+          - ignorePathsToDelete: 忽略删除的路径（javadocs 和 commons-logging-* 文件）。
+          作用：防止发布时删除重要的文档和文件。
+        -->
       </plugin>
 
     </plugins>
@@ -443,24 +635,54 @@ under the License.
       <version>3.8.1</version>
       <scope>test</scope>
     </dependency>
+    <!--
+      中文注释：
+      配置 JUnit 依赖：
+      - groupId: junit，依赖组。
+      - artifactId: junit，依赖名称。
+      - version: 3.8.1，依赖版本。
+      - scope: test，仅用于测试阶段。
+      作用：提供单元测试框架。
+    -->
     <dependency>
       <groupId>log4j</groupId>
       <artifactId>log4j</artifactId>
       <version>1.2.17</version>
       <optional>true</optional>
     </dependency>
+    <!--
+      中文注释：
+      配置 Log4j 依赖：
+      - version: 1.2.17，Log4j 版本。
+      - optional: true，表示此依赖为可选，项目不强制要求。
+      作用：支持 Log4j 日志系统的适配。
+    -->
     <dependency>
       <groupId>logkit</groupId>
       <artifactId>logkit</artifactId>
       <version>1.0.1</version>
       <optional>true</optional>
     </dependency>
+    <!--
+      中文注释：
+      配置 LogKit 依赖：
+      - version: 1.0.1，LogKit 版本。
+      - optional: true，可选依赖。
+      作用：支持 LogKit 日志系统的适配。
+    -->
     <dependency>
       <groupId>avalon-framework</groupId>
       <artifactId>avalon-framework</artifactId>
       <version>4.1.5</version>
       <optional>true</optional>
     </dependency>
+    <!--
+      中文注释：
+      配置 Avalon Framework 依赖：
+      - version: 4.1.5，Avalon Framework 版本。
+      - optional: true，可选依赖。
+      作用：支持 Avalon 日志系统的适配。
+    -->
     <dependency>
       <groupId>javax.servlet</groupId>
       <artifactId>servlet-api</artifactId>
@@ -468,6 +690,14 @@ under the License.
       <scope>provided</scope>
       <optional>true</optional>
     </dependency>
+    <!--
+      中文注释：
+      配置 Servlet API 依赖：
+      - version: 2.3，Servlet API 版本。
+      - scope: provided，由运行环境提供（如 Web 容器）。
+      - optional: true，可选依赖。
+      作用：支持在 Servlet 环境中使用日志功能。
+    -->
   </dependencies>
 
   <reporting>
@@ -481,16 +711,37 @@ under the License.
           <enableRulesSummary>false</enableRulesSummary>
           <headerFile>${basedir}/license-header.txt</headerFile>
         </configuration>
+        <!--
+          中文注释：
+          配置 maven-checkstyle-plugin：
+          - version: 2.7，插件版本。
+          - configLocation: checkstyle.xml，指定代码风格检查配置文件。
+          - enableRulesSummary: false，不生成规则摘要。
+          - headerFile: license-header.txt，指定许可证头文件。
+          作用：检查代码是否符合风格规范。
+        -->
       </plugin>
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>clirr-maven-plugin</artifactId>
         <version>2.2.2</version>
+        <!--
+          中文注释：
+          配置 clirr-maven-plugin：
+          - version: 2.2.2，插件版本。
+          作用：检查 API 兼容性，确保新版本不会破坏现有接口。
+        -->
       </plugin>
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>jdepend-maven-plugin</artifactId>
         <version>2.0-beta-1</version>
+        <!--
+          中文注释：
+          配置 jdepend-maven-plugin：
+          - version: 2.0-beta-1，插件版本。
+          作用：分析代码的依赖关系，生成依赖报告。
+        -->
       </plugin>
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
@@ -499,6 +750,13 @@ under the License.
         <configuration>
           <skip>true</skip>
         </configuration>
+        <!--
+          中文注释：
+          配置 findbugs-maven-plugin：
+          - version: 2.5.2，插件版本。
+          - skip: true，禁用 FindBugs 静态分析。
+          作用：避免运行 FindBugs 检查，优化构建流程。
+        -->
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -512,6 +770,15 @@ under the License.
             <ruleset>${basedir}/pmd.xml</ruleset>
           </rulesets>
         </configuration>
+        <!--
+          中文注释：
+          配置 maven-pmd-plugin：
+          - version: 3.0.1，插件版本。
+          - targetJdk: 1.3，指定目标 JDK 版本（1.1 和 1.2 不支持）。
+          - linkXref: true，启用交叉引用链接。
+          - rulesets: pmd.xml，指定 PMD 规则配置文件。
+          作用：运行 PMD 静态分析，检查代码质量。
+        -->
       </plugin>
     </plugins>
   </reporting>
@@ -521,6 +788,13 @@ under the License.
       <id>apache.website</id>
       <url>${commons.deployment.protocol}://people.apache.org/www/commons.apache.org/logging/</url>
     </site>
+    <!--
+      中文注释：
+      配置分发管理：
+      - id: apache.website，站点标识。
+      - url: Apache 站点地址，用于发布项目文档。
+      作用：指定项目站点文档的部署位置。
+    -->
   </distributionManagement>
 
   <properties>
@@ -543,5 +817,19 @@ under the License.
       org.apache.log;version="[1.0.1, 1.0.1]";resolution:=optional,
       org.apache.log4j;version="[1.2.15, 2.0.0)";resolution:=optional
     </commons.osgi.import>
+    <!--
+      中文注释：
+      配置项目属性：
+      - maven.compiler.source/target: 1.2，指定编译的源代码和目标字节码版本为 JDK 1.2。
+      - commons.componentid: logging，组件标识。
+      - commons.release.version: 1.2，发布版本。
+      - commons.jira.id/pid: JIRA 项目标识和 ID。
+      - commons.rc.version: RC2，候选发布版本。
+      - commons.surefire.version: 2.12，Surefire 插件版本。
+      - skipSurefireReport: true，跳过 Surefire 测试报告。
+      - failsafe.runorder: filesystem，集成测试运行顺序。
+      - commons.osgi.import: 定义 OSGi 依赖包的导入范围，均为可选依赖。
+      作用：提供构建和测试的全局配置参数。
+    -->
   </properties>
 </project>

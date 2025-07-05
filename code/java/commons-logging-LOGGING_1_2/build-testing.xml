@@ -48,73 +48,101 @@
   -
   - $Id$
   -->
+  <!--
+    - 用于运行 commons-logging 测试的 Ant 文件。
+    - 快速构建说明：
+    -  * 执行 mvn package 打包项目
+    -  * 执行 ant getlibs 下载依赖
+    -  * 复制 build.properties.sample 为 build.properties
+    -  * 根据平台设置 JAVA_COMPILER=NONE（Windows 使用 set，Unix 使用 setenv）
+    -  * 执行 ant -lib lib/junit-3.8.1.jar -f build-testing.xml test 运行测试
+    - 注意：为绕过 1.2 JVM 的 bug，需禁用 JIT 编译器，设置 JAVA_COMPILER 为 NONE。
+    - 注意：此构建文件使用可选的 <junit> 任务，需确保 junit 库（3.8.1 或更高版本）可用。
+    - 建议在 JCL 发布前使用 1.2 JVM 运行测试。
+  -->
 
 <project name="Logging" default="all" basedir=".">
-
+  <!-- 项目名称为 Logging，默认目标为 all，基于当前目录 -->
 
 <!-- ========== Initialize Properties ===================================== -->
-
-
+  <!-- 初始化属性配置 -->
   <property file="build.properties"/>                <!-- Component local   -->
+  <!-- 加载组件本地的 build.properties 文件 -->
   <property file="../build.properties"/>             <!-- Commons local     -->
+  <!-- 加载 Commons 项目的 build.properties 文件 -->
   <property file="${user.home}/build.properties"/>   <!-- User local        -->
-
+  <!-- 加载用户主目录下的 build.properties 文件 -->
 
 <!-- ========== External Dependencies ===================================== -->
-
-
+  <!-- 外部依赖配置 -->
   <!-- The directories corresponding to your necessary dependencies -->
+  <!-- 定义必要依赖的目录 -->
   <property name="junit.home"              value="/usr/local/junit3.5"/>
+  <!-- JUnit 库的安装目录 -->
   <property name="jakarta.home"            value="../.."/>
+  <!-- Jakarta 项目的根目录 -->
 
   <!--
     - The names of the unit tests to run. By default all tests are run, but
     - this can be overridden from the command line by something like:
     -   ant -Dtestmatch=**/FooTestCase test
     -->
+  <!--
+    - 定义要运行的单元测试名称，默认运行所有测试，可通过命令行覆盖：
+    -   ant -Dtestmatch=**/FooTestCase test
+  -->
   <property name="testmatch" value="**/*TestCase"/>
-
+  <!-- 测试匹配模式，默认为所有以 TestCase 结尾的测试 -->
 
 <!-- ========== Derived Values ============================================ -->
-
-
+  <!-- 派生值配置 -->
   <!-- The locations of necessary jar files -->
+  <!-- 定义必要 jar 文件的路径 -->
   <property name="junit.jar"               value="junit-3.8.1.jar"/>
+  <!-- JUnit 库文件名 -->
   <property name="log4j12.jar"             value="log4j-1.2.12.jar"/>
+  <!-- Log4J 1.2.12 库文件名 -->
   <property name="log4j13.jar"             value="log4j-1.3.0.jar"/>
+  <!-- Log4J 1.3.0 库文件名 -->
   <property name="logkit.jar"              value="logkit-1.0.1.jar"/>
+  <!-- LogKit 库文件名 -->
   <property name="avalon-framework.jar"    value="avalon-framework-4.1.3.jar"/>
+  <!-- Avalon Framework 库文件名 -->
   <property name="servletapi.jar"          value="servletapi-2.3.jar"/>
-
+  <!-- Servlet API 库文件名 -->
 
 <!-- ========== Component Declarations ==================================== -->
-
-
+  <!-- 组件声明 -->
   <!-- The name of this component -->
   <property name="component.name"          value="logging"/>
-
+  <!-- 组件名称为 logging -->
   <!-- The primary package name of this component -->
   <property name="component.package"       value="org.apache.commons.logging"/>
-
+  <!-- 组件主包名为 org.apache.commons.logging -->
   <!-- The title of this component -->
   <property name="component.title"         value="Logging Wrapper Library"/>
-
+  <!-- 组件标题为 Logging Wrapper Library -->
   <!-- The current version number of this component -->
   <property name="component.version"       value="1.1.1-SNAPSHOT"/>
-
+  <!-- 组件当前版本号为 1.1.1-SNAPSHOT -->
   <!-- The base directory for compilation targets -->
   <property name="build.home"              value="${basedir}/target"/>
-
+  <!-- 编译目标的基目录 -->
   <!-- The base directory for component configuration files -->
   <property name="conf.home"               value="src/conf"/>
-
+  <!-- 组件配置文件的基目录 -->
   <!-- jar names -->
   <property name="core.jar.name" value="commons-${component.name}-${component.version}.jar"/>
+  <!-- 核心 jar 文件名 -->
   <property name="api.jar.name" value="commons-${component.name}-api-${component.version}.jar"/>
+  <!-- API jar 文件名 -->
   <property name="adapters.jar.name" value="commons-${component.name}-adapters-${component.version}.jar"/>
+  <!-- 适配器 jar 文件名 -->
   <property name="src.ide.name" value="commons-${component.name}-${component.version}-ide.zip"/>
+  <!-- IDE 源代码 zip 文件名 -->
 
   <!-- Construct compile classpath -->
+  <!-- 构建编译类路径 -->
   <path id="compile.classpath">
     <pathelement location="${build.home}/classes"/>
     <pathelement location="${junit.jar}"/>
@@ -122,11 +150,10 @@
     <pathelement location="${avalon-framework.jar}"/>
     <pathelement location="${servletapi.jar}"/>
   </path>
-
+  <!-- 定义编译类路径，包括构建目录、JUnit、LogKit、Avalon Framework 和 Servlet API -->
 
 <!-- ========== Test Execution Defaults =================================== -->
-
-
+  <!-- 测试执行默认配置 -->
   <!-- 
     - Construct unit test classpath (generic tests).
     -
@@ -135,6 +162,11 @@
     - to configure their classpath will need the basic classes to be provided
     - via this mechanism.
     -->
+  <!--
+    - 构建通用单元测试类路径
+    - 注意：使用 PathableTestSuite 的测试无需额外配置类路径（除 JUnit 外）
+    - 非 PathableTestSuite 的测试需通过此机制提供基本类
+  -->
   <path id="test.classpath">
     <pathelement location="${build.home}/classes"/>
     <pathelement location="${build.home}/test-classes"/>
@@ -144,70 +176,96 @@
     <pathelement location="${conf.home}"/>
     <pathelement location="${servletapi.jar}"/>
   </path>
+  <!-- 定义通用测试类路径，包括构建目录、测试类、JUnit、LogKit、Avalon Framework、配置文件目录和 Servlet API -->
 
   <!-- Construct unit test classpath (Log4J tests) -->
+  <!-- 构建 Log4J 1.3 测试类路径 -->
   <path id="test.classpath.log4j13">
     <pathelement location="${build.home}/classes"/>
     <pathelement location="${build.home}/test-classes"/>
     <pathelement location="${junit.jar}"/>
     <pathelement location="${log4j13.jar}"/>
   </path>
+  <!-- 定义 Log4J 1.3 测试类路径，包括构建目录、测试类、JUnit 和 Log4J 1.3 -->
 
   <!-- Construct unit test classpath (Log4J tests) -->
+  <!-- 构建 Log4J 1.2 测试类路径 -->
   <path id="test.classpath.log4j12">
     <pathelement location="${build.home}/classes"/>
     <pathelement location="${build.home}/test-classes"/>
     <pathelement location="${junit.jar}"/>
     <pathelement location="${log4j12.jar}"/>
   </path>
+  <!-- 定义 Log4J 1.2 测试类路径，包括构建目录、测试类、JUnit 和 Log4J 1.2 -->
 
   <!-- Should all tests fail if one does? -->
   <property name="test.failonerror"        value="true"/>
-
+  <!-- 如果一个测试失败，是否所有测试都失败，默认为 true -->
   <!-- The test runner to execute -->
   <property name="test.runner" value="junit.textui.TestRunner"/>
-
+  <!-- 测试运行器，设置为 JUnit 的文本界面运行器 -->
   <!-- libs to pass to the tests -->
   <property name="test.sysprops.testclasses" value="${build.home}/test-classes"/>
+  <!-- 测试类目录的系统属性 -->
   <property name="test.sysprops.log4j12" value="${log4j12.jar}"/>
+  <!-- Log4J 1.2 库的系统属性 -->
   <property name="test.sysprops.log4j13" value="${log4j13.jar}"/>
+  <!-- Log4J 1.3 库的系统属性 -->
   <property name="test.sysprops.logkit" value="${logkit.jar}"/>
+  <!-- LogKit 库的系统属性 -->
   <property name="test.sysprops.servlet-api" value="${servletapi.jar}"/>
+  <!-- Servlet API 库的系统属性 -->
   <property name="test.sysprops.commons-logging" value="${build.home}/${core.jar.name}"/>
+  <!-- Commons Logging 核心 jar 的系统属性 -->
   <property name="test.sysprops.commons-logging-api" value="${build.home}/${api.jar.name}"/>
+  <!-- Commons Logging API jar 的系统属性 -->
   <property name="test.sysprops.commons-logging-adapters" value="${build.home}/${adapters.jar.name}"/>
+  <!-- Commons Logging 适配器 jar 的系统属性 -->
   <propertyset id="test-lib-props">
     <propertyref prefix="test.sysprops."/>
     <mapper type="glob" from="test.sysprops.*" to="*"/>
   </propertyset>
+  <!-- 定义测试库的属性集合，用于传递给测试 -->
 
 <!-- ========== Executable Targets ======================================== -->
-
-
+  <!-- 可执行目标 -->
   <!--
     - Running this target will download all the necessary dependencies into the "lib" subdirectory.
     -->
+  <!-- 执行此目标将下载所有必要依赖到 lib 子目录 -->
   <property name="getlibs.base" value="http://repo1.maven.org/maven"/>
+  <!-- 依赖下载的基础 URL -->
   <target name="getlibs">
     <mkdir dir="lib"/>
+    <!-- 创建 lib 目录 -->
     <get dest="lib/junit-3.8.1.jar" src="${getlibs.base}/junit/jars/junit-3.8.1.jar"/>
+    <!-- 下载 JUnit 3.8.1 jar -->
     <get dest="lib/logkit-1.0.1.jar" src="${getlibs.base}/logkit/jars/logkit-1.0.1.jar"/>
+    <!-- 下载 LogKit 1.0.1 jar -->
     <get dest="lib/avalon-framework-4.1.3.jar" src="${getlibs.base}/avalon-framework/jars/avalon-framework-4.1.3.jar"/>
+    <!-- 下载 Avalon Framework 4.1.3 jar -->
     <get dest="lib/log4j-1.2.12.jar" src="${getlibs.base}/log4j/jars/log4j-1.2.12.jar"/>
+    <!-- 下载 Log4J 1.2.12 jar -->
     <get dest="lib/servletapi-2.3.jar" src="${getlibs.base}/servletapi/jars/servletapi-2.3.jar"/>
+    <!-- 下载 Servlet API 2.3 jar -->
   </target>
 
   <target name="init"
    description="Initialize and evaluate conditionals">
+    <!-- 初始化并评估条件 -->
     <echo message="-------- ${component.title} ${component.version} --------"/>
+    <!-- 输出组件标题和版本信息 -->
     <filter  token="name"                  value="${component.name}"/>
+    <!-- 设置 name 过滤器为组件名称 -->
     <filter  token="package"               value="${component.package}"/>
+    <!-- 设置 package 过滤器为组件包名 -->
     <filter  token="version"               value="${component.version}"/>
-  </target>  
+    <!-- 设置 version 过滤器为组件版本 -->
+  </target>
   
   <target name="prepare" depends="init"
    description="Prepare build directory">
-
+    <!-- 准备构建目录，依赖 init 目标 -->
     <echo>
     Log4j12: ${log4j12.jar}
     <!-- Note: log4j13 support is not available in the 1.1 release. -->
@@ -215,51 +273,65 @@
     LogKit: ${logkit.jar}
     Avalon-Framework: ${avalon-framework.jar}
     </echo>
-
+    <!-- 输出依赖库信息 -->
     <mkdir dir="${build.home}"/>
+    <!-- 创建构建主目录 -->
     <mkdir dir="${build.home}/classes"/>
+    <!-- 创建编译类目录 -->
     <mkdir dir="${build.home}/conf"/>
+    <!-- 创建配置文件目录 -->
     <mkdir dir="${build.home}/tests"/>
+    <!-- 创建测试目录 -->
   </target>
 
-
-  <target name='discovery' depends='init'>
+  <target name="discovery" depends="init">
+    <!-- 检测环境和依赖，依赖 init 目标 -->
     <available property="jdk.1.4.present"
                classname="java.util.logging.Logger"/>
-
+    <!-- 检查 JDK 1.4 的 Logger 类是否可用 -->
     <available property="logkit.present"
                classpathref="compile.classpath"
                classname="org.apache.log.Logger"/>
-
+    <!-- 检查 LogKit 的 Logger 类是否可用 -->
     <available property="avalon-framework.present"
                classpathref="compile.classpath"
                classname="org.apache.avalon.framework.logger.Logger"/>
-
+    <!-- 检查 Avalon Framework 的 Logger 类是否可用 -->
     <available file="${log4j12.jar}" property="log4j12.present"/>
+    <!-- 检查 Log4J 1.2 jar 文件是否存在 -->
     <available file="${log4j13.jar}" property="log4j13.present"/>
+    <!-- 检查 Log4J 1.3 jar 文件是否存在 -->
     <available file="${build.home}/docs" property="maven.generated.docs.present"/>
+    <!-- 检查 Maven 生成的文档目录是否存在 -->
   </target>
 
-  <target name="log4j12-test-warning" unless='log4j12.jar' depends='init,discovery'>
+  <target name="log4j12-test-warning" unless="log4j12.jar" depends="init,discovery">
+    <!-- 如果 Log4J 1.2 jar 不存在，输出警告，依赖 init 和 discovery 目标 -->
     <echo>
     *** WARNING ***
     Log4J 1.2.x Jar not found: Cannot execute 1.2.x tests
     </echo>
+    <!-- 输出 Log4J 1.2 jar 未找到的警告 -->
   </target>
     
   <target name="show-lib-presence">
+    <!-- 显示库的可用性 -->
     <echo  message="jdk.1.4.present=${jdk.1.4.present}"/>
+    <!-- 输出 JDK 1.4 是否存在的状态 -->
     <echo  message="log4j12.present=${log4j12.present}"/>
+    <!-- 输出 Log4J 1.2 是否存在的状态 -->
     <!-- Note: log4j13 support is not available in the 1.1 release. -->
     <!--<echo  message="log4j13.present=${log4j13.present}"/>-->
     <echo  message="logkit.present=${logkit.present}"/>
+    <!-- 输出 LogKit 是否存在的状态 -->
     <echo  message="avalon-framework.present=${avalon-framework.present}"/>
+    <!-- 输出 Avalon Framework 是否存在的状态 -->
   </target>
 
 
   <target name="all" depends="test"
    description="Test all components"/>
-
+  <!-- 执行所有组件测试，依赖 test 目标 -->
 
 <!-- ========== Unit Test Targets ========================================= -->
 
@@ -281,36 +353,59 @@
     - Individual tests (or subsets of tests) can be run by doing
     -   ant -Dtestmatch=**/FooTestCase testall
     -->
-
+  <!--
+    - 运行所有单元测试的目标
+    - batchtest 任务自动检测可用测试，无需在代码中定义 TestSuite
+    - 测试结果将存储在 ${build.home}/test-reports 目录中，包括标准输出和错误输出
+    - 如果运行此目标因使用 junit 任务出现问题，参考文件开头的注释
+    - 可通过 ant -Dtestmatch=**/FooTestCase testall 运行单个或部分测试
+  -->
   <target name="test" depends="log4j12-test-warning"
    description="Run all unit tests">
+    <!-- 运行所有单元测试，依赖 log4j12-test-warning 目标 -->
     <echo message="Test output can be found in directory ${build.home}/test-reports."/>
+    <!-- 输出测试结果存储目录 -->
     <delete dir="${build.home}/test-reports"/>
+    <!-- 删除旧的测试报告目录 -->
     <mkdir dir="${build.home}/test-reports"/>
+    <!-- 创建新的测试报告目录 -->
 
       <echo message="executing tests [${testmatch}.java]"/>
+      <!-- 输出正在执行的测试文件模式 -->
     <!--
       - Note that the fork/forkmode settings define default behaviour for tests. 
       - The <test> and <batchtest> tags can override these settings if needed.
       - The default settings cause a single VM to be created in which all of
       - the tests are then run. 
       -->
+    <!--
+      - fork 和 forkmode 设置定义测试的默认行为
+      - <test> 和 <batchtest> 标签可覆盖这些设置
+      - 默认设置创建单一虚拟机运行所有测试
+    -->
     <junit printsummary="off" showoutput="no" fork="yes" forkmode="once" failureproperty="test.failure">
+      <!-- 执行 JUnit 测试，禁用摘要输出，启用 fork 模式，单虚拟机运行 -->
       <!-- plain output to file; brief output to console. -->
       <formatter type="plain"/>
+      <!-- 输出详细测试结果到文件 -->
       <formatter usefile="false" type="brief"/>
+      <!-- 输出简要测试结果到控制台 -->
 
       <!-- 
         - Provide a set of properties pointing to the logging libs for
         - the use of the PathableClassLoader class used by some unit tests.
         -->
+      <!-- 为 PathableClassLoader 提供日志库的属性，供部分单元测试使用 -->
       <syspropertyset refid="test-lib-props"/>
+      <!-- 应用测试库的属性集合 -->
       <classpath refid="test.classpath"/>
+      <!-- 使用测试类路径 -->
 
       <!--
         - Uncomment this to enable logging diagnostics for tests
         - <jvmarg value="-Dorg.apache.commons.logging.diagnostics.dest=STDERR"/>
         -->
+      <!-- 取消注释以启用测试的日志诊断，输出到标准错误 -->
 
       <!--
         - Auto-detect the tests to run. Checking the ${build.home}/tests
@@ -324,20 +419,30 @@
         - fail to compile then we won't notice it here. However that
         - should have been reported earlier anyway.
         -->
+      <!--
+        - 自动检测要运行的测试，检查 ${build.home}/tests 目录中的 .class 文件
+        - 如果某些组件（如 JDK 1.4 日志）不可用，跳过编译的测试也会被跳过
+        - 注意：如果测试意外编译失败，此处可能不会察觉，但应在早期报告
+      -->
       <batchtest todir="${build.home}/test-reports">
         <fileset dir="${build.home}/test-classes">
           <include name="${testmatch}.class"/>
+          <!-- 包含匹配 ${testmatch} 的测试类文件 -->
           <!--
             - Exclude the jdk14 tests because we are running these tests on
             - a jvm < 1.4
             -->
+          <!-- 排除 JDK 1.4 测试，因为测试运行在低于 1.4 的 JVM 上 -->
           <exclude name="org/apache/commons/logging/jdk14/*"/>
+          <!-- 排除 JDK 1.4 相关测试 -->
           <!--
             - Exclude the security tests because they rely on the
             - MockSecurityManager that uses code that was first introduced in
             - Java 1.4
             -->
+          <!-- 排除安全测试，因为它们依赖 Java 1.4 引入的 MockSecurityManager -->
           <exclude name="org/apache/commons/logging/security/*"/>
+          <!-- 排除安全相关测试 -->
         </fileset>
       </batchtest>
     </junit>
@@ -345,6 +450,7 @@
     <fail if="test.failure">
       One or more unit tests failed.
     </fail>
+    <!-- 如果 test.failure 属性为真，报告测试失败 -->
   </target>
 
 </project>

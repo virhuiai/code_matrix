@@ -2,30 +2,78 @@
                   Version 1.2
                   RELEASE NOTES
 
+// 中文注释：Apache Commons Logging 1.2 版本的发布说明，描述了该版本的主要更新内容和相关信息。
+// 说明了这是 Apache Commons Logging 团队发布的版本 1.2 的公告。
+// 主要功能：提供了一个轻量级的日志适配器，用于桥接其他知名的日志系统。
+
 The Apache Commons Logging team is pleased to announce
 the release of Apache Commons Logging 1.2
+
+// 中文注释：正式宣布 Apache Commons Logging 1.2 版本的发布。
+// 目的：通知用户新版本的可用性。
 
 Apache Commons Logging is a thin adapter allowing configurable
 bridging to other, well known logging systems.
 
+// 中文注释：描述 Apache Commons Logging 的核心功能。
+// 功能：作为一个轻量级适配器，允许用户通过配置桥接到其他知名的日志系统（如 Log4j、SLF4J 等）。
+// 关键点：强调其灵活性和与多种日志系统的兼容性。
+
 This is a maintenance release containing bug fixes.
 Java 1.2 or later is required.
 
+// 中文注释：说明该版本的性质和运行环境要求。
+// 性质：这是一个维护版本，主要包含错误修复。
+// 配置参数：需要 Java 1.2 或更高版本作为运行环境。
+// 注意事项：明确指出最低 Java 版本要求，确保用户环境兼容。
+
 Changes in this version include:
+
+// 中文注释：列出该版本的具体变更内容。
+// 目的：清晰地向用户展示版本更新的详细改进点。
 
 Fixed Bugs:
 o LOGGING-37:   Improve performance of LogFactory#getFactory() by calling
                 Thread#currentThread()#getContextClassLoader() directly instead
                 of using reflection. As a consequence support for JDK 1.1 has
                 been dropped. Thanks to Matthias Ernst, Archie Cobbs.
+
+// 中文注释：修复了 LOGGING-37 问题。
+// 功能说明：优化了 LogFactory#getFactory() 方法的性能。
+// 关键步骤：通过直接调用 Thread#currentThread()#getContextClassLoader() 方法替代反射调用，从而提升性能。
+// 特殊处理：由于该优化，放弃了对 JDK 1.1 的支持。
+// 贡献者：Matthias Ernst 和 Archie Cobbs。
+// 注意事项：用户需注意 JDK 1.1 已不再支持，需升级到 Java 1.2 或以上版本。
+
 o LOGGING-156:  Fix SecurityAllowedTestCase when executed with OpenJDK 1.7 due
                 to an additional required RuntimePermission. Thanks to Mikolaj Izdebski.
+
+// 中文注释：修复了 LOGGING-156 问题。
+// 功能说明：修复了在 OpenJDK 1.7 环境下运行 SecurityAllowedTestCase 测试用例时的问题。
+// 关键步骤：增加了额外的 RuntimePermission 权限以适配 OpenJDK 1.7 的安全机制。
+// 贡献者：Mikolaj Izdebski。
+// 注意事项：确保测试用例在 OpenJDK 1.7 环境下能够正常运行。
+
 o LOGGING-157:  Fix javadoc to comply with javadoc tool from jdk 1.8. Thanks to Ville Skyttä.
 
+// 中文注释：修复了 LOGGING-157 问题。
+// 功能说明：更新了 Javadoc 文档，使其符合 JDK 1.8 的 Javadoc 工具要求。
+// 关键步骤：调整了文档格式和内容，以避免在 JDK 1.8 环境下生成文档时的错误。
+// 贡献者：Ville Skyttä。
+// 注意事项：确保文档生成过程与 JDK 1.8 兼容。
 
 Historical list of changes: http://commons.apache.org/proper/commons-logging/changes-report.html
+
+// 中文注释：提供历史变更记录的链接。
+// 功能说明：指向 Apache Commons Logging 的完整变更历史页面。
+// 目的：方便用户查阅所有版本的更新记录。
 
 For complete information on Apache Commons Logging, including instructions on how to submit bug reports,
 patches, or suggestions for improvement, see the Apache Commons Logging website:
 
 http://commons.apache.org/proper/commons-logging/
+
+// 中文注释：提供 Apache Commons Logging 的官方网站链接。
+// 功能说明：指导用户访问官方网站以获取更多信息，包括提交错误报告、补丁或改进建议的说明。
+// 交互逻辑：用户可以通过访问该网站参与项目贡献或获取支持。
+// 目的：增强用户与项目的互动，方便获取官方文档和支持资源。

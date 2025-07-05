@@ -15,12 +15,45 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 -->
+<!--
+    中文注释：
+    该文件遵循 Apache 软件基金会（ASF）的许可协议，使用 Apache License 2.0 版本。
+    说明了版权归属和使用许可的限制条件，软件按“原样”分发，不提供任何明示或暗示的担保。
+-->
+
 <ruleset name="mybraces"
     xmlns="http://pmd.sourceforge.net/ruleset/2.0.0"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://pmd.sourceforge.net/ruleset/2.0.0 http://pmd.sourceforge.net/ruleset_2_0_0.xsd">
+  <!--
+    中文注释：
+    定义了一个名为“mybraces”的规则集，用于 PMD（静态代码分析工具）规则配置。
+    重要配置参数：
+    - name: 规则集名称，设置为“mybraces”，用于标识该规则集。
+    - xmlns: 指定命名空间为 PMD 的规则集 2.0.0 版本。
+    - xsi:schemaLocation: 定义 XML 模式的位置，确保规则集文件格式符合 PMD 的 schema 标准。
+    用途说明：该规则集用于自定义 PMD 的代码检查规则，控制代码分析的行为。
+  -->
+
   <description>Excludes from default PMD rules.</description>
+  <!--
+    中文注释：
+    描述：此规则集用于从默认的 PMD 规则中排除某些特定规则。
+    用途说明：通过设置排除规则，减少不必要的检查，提升代码分析的针对性。
+  -->
+
   <rule ref="rulesets/java/unusedcode.xml">
+    <!--
+      中文注释：
+      引用规则：引用了 PMD 内置的 Java 规则集“unusedcode.xml”，用于检测未使用的代码。
+      用途说明：通过引用此规则集，应用其内置的代码检查逻辑，但可以进一步定制。
+    -->
     <exclude name="UnnecessaryParentheses"/>
+    <!--
+      中文注释：
+      排除规则：从“unusedcode.xml”规则集中排除名为“UnnecessaryParentheses”的规则。
+      功能说明：禁止检查代码中不必要的括号，以避免对某些合法括号使用情况的误报。
+      特殊处理的注意事项：此排除确保 PMD 不会标记代码中可能出于可读性或风格添加的括号。
+    -->
   </rule>
 </ruleset>

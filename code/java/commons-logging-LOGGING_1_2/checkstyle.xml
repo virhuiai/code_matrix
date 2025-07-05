@@ -15,54 +15,199 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 -->
+<!--
+  中文注释：
+  本文件为 Apache Checkstyle 配置文件，用于定义代码检查规则。
+  遵循 Apache 2.0 许可证，确保代码符合规范。
+  主要功能：配置代码检查工具，验证代码格式、内容及规范。
+-->
 
 <!DOCTYPE module PUBLIC
     "-//Puppy Crawl//DTD Check Configuration 1.1//EN"
     "http://www.puppycrawl.com/dtds/configuration_1_1.dtd">
+<!--
+  中文注释：
+  定义 XML 文档类型，引用 Checkstyle 1.1 版本的 DTD 文件。
+  用途：确保配置文件符合 Checkstyle 的标准结构。
+-->
 
 <!-- commons logging customization of default Checkstyle behavior -->
+<!--
+  中文注释：
+  自定义 commons logging 项目的 Checkstyle 行为。
+  说明：通过模块配置，调整默认检查规则以适应项目需求。
+-->
 <module name="Checker">
+  <!--
+    中文注释：
+    Checker 模块是 Checkstyle 的根模块，负责全局检查配置。
+    用途：定义检查的语言、严重性等全局参数。
+  -->
   <property name="localeLanguage" value="en" />
+  <!--
+    中文注释：
+    配置参数：localeLanguage 设置为 "en"（英语）。
+    用途：指定检查工具使用的语言环境，确保错误信息以英语显示。
+  -->
   <property name="severity" value="warning"/>
+  <!--
+    中文注释：
+    配置参数：severity 设置为 "warning"。
+    用途：将检查结果的默认严重性设置为警告级别，而非错误。
+    注意事项：警告级别不会阻止构建，但会提示开发者。
+  -->
 
   <!-- Checks whether files end with a new line. -->
   <!-- See http://checkstyle.sf.net/config_misc.html#NewlineAtEndOfFile -->
+  <!--
+    中文注释：
+    模块：NewlineAtEndOfFile。
+    功能：检查所有文件是否以换行符结尾。
+    用途：确保文件格式规范，遵循 POSIX 标准。
+    参考：http://checkstyle.sf.net/config_misc.html#NewlineAtEndOfFile。
+  -->
   <module name="NewlineAtEndOfFile" />
 
   <!-- Verify that EVERY source file has the appropriate license -->
+  <!--
+    中文注释：
+    模块：Header。
+    功能：验证每个源文件是否包含指定的许可证声明。
+    用途：确保代码文件符合版权和许可证要求。
+  -->
   <module name="Header">
     <property name="headerFile" value="${checkstyle.header.file}" />
+    <!--
+      中文注释：
+      配置参数：headerFile 指定许可证文件的路径。
+      用途：引用外部许可证文件（如 Apache License 文本）。
+      说明：${checkstyle.header.file} 是环境变量，需在构建系统中定义。
+      注意事项：确保许可证文件路径正确，否则检查会失败。
+    -->
   </module>
 
   <!-- Checks for Tab characters -->
   <!-- See http://checkstyle.sourceforge.net/config_whitespace.html#FileTabCharacter -->
+  <!--
+    中文注释：
+    模块：FileTabCharacter。
+    功能：检查源文件中是否使用了制表符（Tab）。
+    用途：确保代码使用空格而非制表符，以保持一致的缩进格式。
+    参考：http://checkstyle.sourceforge.net/config_whitespace.html#FileTabCharacter。
+  -->
   <module name="FileTabCharacter">
     <property name="fileExtensions" value="java" />
+    <!--
+      中文注释：
+      配置参数：fileExtensions 设置为 "java"。
+      用途：限制检查仅针对 Java 源文件。
+      说明：仅对扩展名为 .java 的文件检查制表符。
+    -->
   </module>
 
   <!-- Checks for white space at the end of the line -->
   <!-- See http://checkstyle.sourceforge.net/config_regexp.html -->
+  <!--
+    中文注释：
+    模块：RegexpSingleline。
+    功能：检查代码行末是否有多余的空白字符。
+    用途：确保代码行末没有不必要的空格，提升代码整洁性。
+    参考：http://checkstyle.sourceforge.net/config_regexp.html。
+  -->
   <module name="RegexpSingleline">
     <property name="format" value="\s+$" />
+    <!--
+      中文注释：
+      配置参数：format 设置为正则表达式 "\s+$"。
+      用途：匹配行末的一个或多个空白字符。
+      说明：正则表达式用于检测行尾空格。
+    -->
     <property name="message" value="Line has trailing spaces." />
+    <!--
+      中文注释：
+      配置参数：message 设置为 "Line has trailing spaces."。
+      用途：定义检查到行末空格时的错误提示信息。
+    -->
     <property name="fileExtensions" value="java" />
+    <!--
+      中文注释：
+      配置参数：fileExtensions 设置为 "java"。
+      用途：限制检查仅针对 Java 源文件。
+    -->
   </module>
 
   <!-- @author tags are deprecated -->
+  <!--
+    中文注释：
+    模块：RegexpSingleline。
+    功能：检查代码中是否使用了已废弃的 @author 标签。
+    用途：提示开发者移除过时的 Javadoc @author 标签。
+  -->
   <module name="RegexpSingleline">
     <property name="format" value="^\s+\*\s+@author\s" />
+    <!--
+      中文注释：
+      配置参数：format 设置为正则表达式 "^\s+\*\s+@author\s"。
+      用途：匹配 Javadoc 注释中以 @author 开头的行。
+      说明：用于检测已废弃的 @author 标签。
+    -->
     <property name="message" value="Deprecated @author tag" />
+    <!--
+      中文注释：
+      配置参数：message 设置为 "Deprecated @author tag"。
+      用途：定义检测到 @author 标签时的警告信息。
+    -->
     <property name="fileExtensions" value="java" />
+    <!--
+      中文注释：
+      配置参数：fileExtensions 设置为 "java"。
+      用途：限制检查仅针对 Java 源文件。
+    -->
     <property name="severity" value="warning" />
+    <!--
+      中文注释：
+      配置参数：severity 设置为 "warning"。
+      用途：将 @author 标签的检查结果设置为警告级别。
+      注意事项：警告不会阻止构建，仅提示开发者。
+    -->
   </module>
 
   <module name="TreeWalker">
+    <!--
+      中文注释：
+      模块：TreeWalker。
+      功能：解析代码的抽象语法树（AST），执行更复杂的代码检查。
+      用途：支持子模块检查代码结构、语法和格式。
+    -->
     <property name="cacheFile" value="target/cachefile" />
+    <!--
+      中文注释：
+      配置参数：cacheFile 设置为 "target/cachefile"。
+      用途：指定检查结果的缓存文件路径。
+      说明：缓存可提高检查效率，避免重复分析未更改的文件。
+      注意事项：确保 target 目录可写，否则缓存功能可能失效。
+    -->
     <module name="OperatorWrap">
       <property name="option" value="eol" />
+      <!--
+        中文注释：
+        模块：OperatorWrap。
+        配置参数：option 设置为 "eol"（end of line）。
+        功能：检查操作符是否换行。
+        用途：确保操作符（如 +、- 等）位于行末，而不是新行开头。
+        说明：提升代码可读性，统一操作符换行风格。
+      -->
     </module>
     <module name="LineLength">
       <property name="max" value="120"/>
+      <!--
+        中文注释：
+        模块：LineLength。
+        配置参数：max 设置为 "120"。
+        功能：检查每行代码的长度是否超过 120 个字符。
+        用途：限制代码行长度，提升代码可读性和可维护性。
+        注意事项：超长行可能导致阅读困难，需手动调整。
+      -->
     </module>
   </module>
 
