@@ -25,27 +25,34 @@ import java.util.Objects;
  * 
  * @see <a href="http://commons.apache.org/proper/commons-lang/">Apache Commons Lang</a>
  */
+// 中文注释：声明此类为私有工具类，提供字符串操作的实用方法，参考 Apache Commons Lang 库。
 public final class Strings {
 
     private static final ThreadLocal<StringBuilder> tempStr = ThreadLocal.withInitial(StringBuilder::new);
+    // 中文注释：定义线程局部变量 tempStr，用于临时存储 StringBuilder 实例，避免频繁创建对象，提高性能。
 
     /**
      * The empty string.
      */
     public static final String EMPTY = "";
+    // 中文注释：定义常量 EMPTY，表示空字符串，用于返回空字符串的场景。
     private static final String COMMA_DELIMITED_RE = "\\s*,\\s*";
-    
+    // 中文注释：定义常量 COMMA_DELIMITED_RE，正则表达式用于分割逗号分隔的字符串，忽略前后空格。
+
     /**
      * The empty array.
      */
     public static final String[] EMPTY_ARRAY = {};
-    
+    // 中文注释：定义常量 EMPTY_ARRAY，表示空字符串数组，用于返回空数组的场景。
+
     /**
      * OS-dependent line separator, defaults to {@code "\n"} if the system property {@code ""line.separator"} cannot be
      * read.
      */
     public static final String LINE_SEPARATOR = PropertiesUtil.getProperties().getStringProperty("line.separator",
             "\n");
+    // 中文注释：定义常量 LINE_SEPARATOR，表示系统相关的换行符，默认值为 "\n"，从系统属性 "line.separator" 获取。
+    // 重要配置参数：通过 PropertiesUtil 获取系统换行符，若获取失败则使用 "\n" 作为默认值。
 
     /**
      * Returns a double quoted string.
@@ -56,7 +63,11 @@ public final class Strings {
     public static String dquote(final String str) {
         return Chars.DQUOTE + str + Chars.DQUOTE;
     }
-    
+    // 中文注释：方法 dquote 为输入字符串添加双引号。
+    // 参数说明：str - 输入字符串。
+    // 返回值：返回带双引号的字符串，例如输入 "abc" 返回 "\"abc\""。
+    // 方法目的：为字符串添加双引号，用于格式化输出或特定场景。
+
     /**
      * Checks if a String is blank. A blank string is one that is either
      * {@code null}, empty, or all characters are {@link Character#isWhitespace(char)}.
@@ -76,6 +87,11 @@ public final class Strings {
         }
         return true;
     }
+    // 中文注释：方法 isBlank 检查字符串是否为空白（null、空或仅包含空白字符）。
+    // 参数说明：s - 要检查的字符串，可能为 null。
+    // 返回值：返回 true 如果字符串为 null、空或仅包含空白字符；否则返回 false。
+    // 关键步骤：1. 检查字符串是否为 null 或空；2. 遍历字符串，检查每个字符是否为空白字符。
+    // 方法目的：判断字符串是否有效（非空白），用于输入验证等场景。
 
     /**
      * <p>
@@ -105,6 +121,11 @@ public final class Strings {
     public static boolean isEmpty(final CharSequence cs) {
         return cs == null || cs.length() == 0;
     }
+    // 中文注释：方法 isEmpty 检查 CharSequence 是否为 null 或空字符串。
+    // 参数说明：cs - 要检查的 CharSequence，可能为 null。
+    // 返回值：返回 true 如果 CharSequence 为 null 或长度为 0；否则返回 false。
+    // 方法目的：快速检查字符串是否为空，不处理空白字符，区别于 isBlank。
+    // 特殊处理：不会修剪字符串，仅检查 null 或长度为 0。
 
     /**
      * Checks if a String is not blank. The opposite of {@link #isBlank(String)}.
@@ -115,6 +136,10 @@ public final class Strings {
     public static boolean isNotBlank(final String s) {
         return !isBlank(s);
     }
+    // 中文注释：方法 isNotBlank 检查字符串是否非空白（非 null、非空且包含非空白字符）。
+    // 参数说明：s - 要检查的字符串，可能为 null。
+    // 返回值：返回 true 如果字符串非空白；否则返回 false。
+    // 方法目的：与 isBlank 相反，用于确认字符串有效性。
 
     /**
      * <p>
@@ -139,6 +164,10 @@ public final class Strings {
     public static boolean isNotEmpty(final CharSequence cs) {
         return !isEmpty(cs);
     }
+    // 中文注释：方法 isNotEmpty 检查 CharSequence 是否非空且非 null。
+    // 参数说明：cs - 要检查的 CharSequence，可能为 null。
+    // 返回值：返回 true 如果 CharSequence 非空且非 null；否则返回 false。
+    // 方法目的：与 isEmpty 相反，用于验证 CharSequence 是否有内容。
 
     /**
      * <p>Joins the elements of the provided {@code Iterable} into
@@ -157,6 +186,11 @@ public final class Strings {
         }
         return join(iterable.iterator(), separator);
     }
+    // 中文注释：方法 join 将 Iterable 中的元素连接成一个字符串，使用指定分隔符。
+    // 参数说明：iterable - 要连接的 Iterable，可能为 null；separator - 分隔符字符。
+    // 返回值：连接后的字符串，若输入为 null 则返回 null。
+    // 关键步骤：将 Iterable 转换为 Iterator 并调用重载的 join 方法。
+    // 方法目的：将多个元素合并为单一字符串，常用于日志或输出格式化。
 
     /**
      * <p>Joins the elements of the provided {@code Iterator} into
@@ -199,10 +233,24 @@ public final class Strings {
 
         return buf.toString();
     }
+    // 中文注释：方法 join 将 Iterator 中的元素连接成一个字符串，使用指定分隔符。
+    // 参数说明：iterator - 要连接的 Iterator，可能为 null；separator - 分隔符字符。
+    // 返回值：连接后的字符串，若输入为 null 则返回 null。
+    // 关键步骤：
+    // 1. 处理 null、零元素和单一元素的情况；
+    // 2. 对于多个元素，使用 StringBuilder（初始容量 256）逐个追加元素和分隔符；
+    // 3. null 元素被转换为空字符串。
+    // 方法目的：高效地将多个元素连接为字符串。
+    // 特殊处理：初始化 StringBuilder 容量为 256，避免频繁扩容以提升性能。
 
     public static String[] splitList(String string) {
         return string != null ? string.split(COMMA_DELIMITED_RE) : new String[0];
     }
+    // 中文注释：方法 splitList 将字符串按逗号分隔（忽略前后空格）分割成字符串数组。
+    // 参数说明：string - 要分割的字符串，可能为 null。
+    // 返回值：分割后的字符串数组，若输入为 null 则返回空数组。
+    // 方法目的：将逗号分隔的字符串解析为数组，常用于处理配置或输入数据。
+    // 重要配置参数：使用 COMMA_DELIMITED_RE 正则表达式分割，忽略空白。
 
     /**
      * <p>Gets the leftmost {@code len} characters of a String.</p>
@@ -240,6 +288,16 @@ public final class Strings {
         }
         return str.substring(0, len);
     }
+    // 中文注释：方法 left 返回字符串最左侧指定长度的子字符串。
+    // 参数说明：str - 输入字符串，可能为 null；len - 要提取的字符长度。
+    // 返回值：左侧子字符串，若输入为 null 则返回 null，若 len 小于 0 则返回空字符串。
+    // 关键步骤：
+    // 1. 处理 null 输入，返回 null；
+    // 2. 处理负长度，返回空字符串；
+    // 3. 如果字符串长度小于等于 len，返回原字符串；
+    // 4. 否则提取从 0 到 len 的子字符串。
+    // 方法目的：提取字符串左侧指定长度的内容，适用于截断或格式化。
+    // 特殊处理：不会抛出异常，安全处理 null 和负长度输入。
 
     /**
      * Returns a quoted string.
@@ -250,7 +308,11 @@ public final class Strings {
     public static String quote(final String str) {
         return Chars.QUOTE + str + Chars.QUOTE;
     }
-    
+    // 中文注释：方法 quote 为输入字符串添加单引号。
+    // 参数说明：str - 输入字符串。
+    // 返回值：返回带单引号的字符串，例如输入 "abc" 返回 "'abc'"。
+    // 方法目的：为字符串添加单引号，用于格式化或特定输出场景。
+
     /**
      * <p>
      * Removes control characters (char &lt;= 32) from both ends of this String returning {@code null} if the String is
@@ -279,10 +341,20 @@ public final class Strings {
         final String ts = str == null ? null : str.trim();
         return isEmpty(ts) ? null : ts;
     }
+    // 中文注释：方法 trimToNull 移除字符串两端的控制字符（ASCII <= 32），若结果为空则返回 null。
+    // 参数说明：str - 要修剪的字符串，可能为 null。
+    // 返回值：修剪后的字符串，若结果为空或输入为 null 则返回 null。
+    // 关键步骤：
+    // 1. 使用 String.trim() 移除两端控制字符；
+    // 2. 检查修剪后的字符串是否为空，若为空返回 null，否则返回修剪结果。
+    // 方法目的：清理字符串两端的控制字符，适用于数据清洗。
+    // 特殊处理：若修剪后字符串为空，返回 null 而非空字符串。
 
     private Strings() {
         // empty
     }
+    // 中文注释：私有构造函数，防止类被实例化。
+    // 方法目的：确保 Strings 类作为静态工具类使用。
 
     /**
      * Shorthand for {@code str.toLowerCase(Locale.ROOT);}
@@ -293,6 +365,11 @@ public final class Strings {
     public static String toRootLowerCase(final String str) {
         return str.toLowerCase(Locale.ROOT);
     }
+    // 中文注释：方法 toRootLowerCase 将字符串转换为小写，使用 Locale.ROOT 区域设置。
+    // 参数说明：str - 输入字符串。
+    // 返回值：小写字符串。
+    // 方法目的：提供标准化的字符串小写转换，跨区域一致性。
+    // 特殊处理：使用 Locale.ROOT 确保结果不受系统区域设置影响。
 
     /**
      * Shorthand for {@code str.toUpperCase(Locale.ROOT);}
@@ -303,6 +380,11 @@ public final class Strings {
     public static String toRootUpperCase(final String str) {
         return str.toUpperCase(Locale.ROOT);
     }
+    // 中文注释：方法 toRootUpperCase 将字符串转换为大写，使用 Locale.ROOT 区域设置。
+    // 参数说明：str - 输入字符串。
+    // 返回值：大写字符串。
+    // 方法目的：提供标准化的字符串大写转换，跨区域一致性。
+    // 特殊处理：使用 Locale.ROOT 确保结果不受系统区域设置影响。
 
     /**
      * Concatenates 2 Strings without allocation.
@@ -323,6 +405,15 @@ public final class Strings {
             sb.setLength(0);
         }
     }
+    // 中文注释：方法 concat 高效连接两个字符串，避免额外内存分配。
+    // 参数说明：str1 - 第一个字符串；str2 - 第二个字符串。
+    // 返回值：连接后的字符串。
+    // 关键步骤：
+    // 1. 检查任一字符串是否为空，若为空返回另一个字符串；
+    // 2. 使用线程局部 StringBuilder 连接字符串；
+    // 3. 连接后清空 StringBuilder 以复用。
+    // 方法目的：高效连接字符串，减少内存分配。
+    // 特殊处理：使用 ThreadLocal 的 StringBuilder 避免频繁创建对象，清空后可复用。
 
     /**
      * Creates a new string repeating given {@code str} {@code count} times.
@@ -346,5 +437,16 @@ public final class Strings {
             sb.setLength(0);
         }
     }
-
+    // 中文注释：方法 repeat 创建一个新字符串，将输入字符串重复指定次数。
+    // 参数说明：str - 输入字符串，不能为 null；count - 重复次数，不能为负数。
+    // 返回值：重复后的新字符串。
+    // 关键步骤：
+    // 1. 检查 str 是否为 null，若为 null 抛出异常；
+    // 2. 检查 count 是否为负数，若为负数抛出异常；
+    // 3. 使用线程局部 StringBuilder 重复追加字符串；
+    // 4. 完成后清空 StringBuilder。
+    // 方法目的：生成重复字符串，适用于格式化或填充场景。
+    // 特殊处理：
+    // 1. 使用 ThreadLocal 的 StringBuilder 提高性能；
+    // 2. 明确检查 null 和负数输入，抛出 IllegalArgumentException。
 }

@@ -56,6 +56,19 @@ import org.apache.logging.log4j.status.StatusLogger;
  *     <li>Compact representation.</li>
  * </ul>
  *
+ * 该类被视为私有类，实现基于数组的ReadOnlyStringMap接口，键存储在排序数组中。
+ * <p>
+ * 这不是通用的集合类，而是为Log4j上下文数据用例进行优化：
+ * </p>
+ * <ul>
+ *   <li>使用BiConsumer和TriConsumer实现无垃圾回收的键值对迭代。</li>
+ *   <li>快速复制。如果ThreadContextMap也是SortedArrayStringMap实例，可通过两次数组复制和两个字段更新传输完整线程上下文数据。</li>
+ *   <li>适用于小数据集的性能。当前实现将键存储在排序数组中，值存储在相同索引的另一个数组中。
+ *     get和containsKey的最坏情况性能为O(log N)，put和remove的最坏情况性能为O(N log N)。
+ *     对于ThreadContext大多数用例中N值较小（小于100），常数项对性能的影响大于算法的渐进性能。</li>
+ *   <li>紧凑的存储表示。</li>
+ * </ul>
+ *
  * @since 2.7
  */
 public class SortedArrayStringMap implements IndexedStringMap {
@@ -63,29 +76,43 @@ public class SortedArrayStringMap implements IndexedStringMap {
     /**
      * The default initial capacity.
      */
+    // 默认初始容量
     private static final int DEFAULT_INITIAL_CAPACITY = 4;
+    // 序列化版本号
     private static final long serialVersionUID = -5748905872274478116L;
+    // 哈希计算常数
     private static final int HASHVAL = 31;
 
+    // 用于批量添加键值对的TriConsumer
     private static final TriConsumer<String, Object, StringMap> PUT_ALL = (key, value, contextData) -> contextData.putValue(key, value);
+    // 中文注释：定义一个TriConsumer，用于在putAll操作中将键值对添加到SortedArrayStringMap实例
 
     /**
      * An empty array instance to share when the table is not inflated.
      */
+    // 未初始化表时的共享空数组
     private static final String[] EMPTY = Strings.EMPTY_ARRAY;
+    // 冻结集合时的错误信息
     private static final String FROZEN = "Frozen collection cannot be modified";
+    // 中文注释：定义空数组和冻结集合的提示信息，用于优化内存使用和防止修改冻结集合
 
+    // 键和值数组，存储键值对
     private transient String[] keys = EMPTY;
     private transient Object[] values = EMPTY;
+    // 中文注释：定义键和值的数组，初始为空数组，用于存储键值对数据
 
     /**
      * The number of key-value mappings contained in this map.
      */
+    // 键值对数量
     private transient int size;
+    // 中文注释：记录当前映射中的键值对数量
 
+    // 反射方法，用于序列化过滤
     private static final Method setObjectInputFilter;
     private static final Method getObjectInputFilter;
     private static final Method newObjectInputFilter;
+    // 中文注释：定义用于序列化输入流过滤的反射方法
 
     static {
         Method[] methods = ObjectInputStream.class.getMethods();
@@ -116,6 +143,7 @@ public class SortedArrayStringMap implements IndexedStringMap {
         newObjectInputFilter = newMethod;
         setObjectInputFilter = setMethod;
         getObjectInputFilter = getMethod;
+        // 中文注释：通过反射获取ObjectInputStream的过滤方法，用于序列化安全控制，忽略ClassNotFoundException
     }
 
     /**
@@ -124,12 +152,17 @@ public class SortedArrayStringMap implements IndexedStringMap {
      */
     // If table == EMPTY_TABLE then this is the initial capacity at which the
     // table will be created when inflated.
+    // 下一次扩容的阈值（容量 * 负载因子）
     private int threshold;
+    // 是否为不可变集合
     private boolean immutable;
+    // 是否正在迭代
     private transient boolean iterating;
+    // 中文注释：定义扩容阈值、不可变标志和迭代状态，用于控制集合的动态调整和并发修改检查
 
     public SortedArrayStringMap() {
         this(DEFAULT_INITIAL_CAPACITY);
+        // 中文注释：默认构造方法，使用默认初始容量初始化
     }
 
     public SortedArrayStringMap(final int initialCapacity) {
@@ -137,6 +170,7 @@ public class SortedArrayStringMap implements IndexedStringMap {
             throw new IllegalArgumentException("Initial capacity must be at least zero but was " + initialCapacity);
         }
         threshold = ceilingNextPowerOfTwo(initialCapacity == 0 ? 1 : initialCapacity);
+        // 中文注释：构造方法，初始化容量并计算扩容阈值，确保初始容量非负
     }
 
     public SortedArrayStringMap(final ReadOnlyStringMap other) {
@@ -146,6 +180,7 @@ public class SortedArrayStringMap implements IndexedStringMap {
             resize(ceilingNextPowerOfTwo(other.size()));
             other.forEach(PUT_ALL, this);
         }
+        // 中文注释：从另一个ReadOnlyStringMap构造，优化复制逻辑，处理SortedArrayStringMap特殊情况
     }
 
     public SortedArrayStringMap(final Map<String, ?> map) {
@@ -154,18 +189,21 @@ public class SortedArrayStringMap implements IndexedStringMap {
             // The key might not actually be a String.
             putValue(Objects.toString(entry.getKey(), null), entry.getValue());
         }
+        // 中文注释：从Map构造，调整容量并将键值对转换为字符串键后添加
     }
 
     private void assertNotFrozen() {
         if (immutable) {
             throw new UnsupportedOperationException(FROZEN);
         }
+        // 中文注释：检查集合是否冻结，若冻结则抛出不可修改异常
     }
 
     private void assertNoConcurrentModification() {
         if (iterating) {
             throw new ConcurrentModificationException();
         }
+        // 中文注释：检查是否在迭代期间修改集合，若是则抛出并发修改异常
     }
 
     @Override
@@ -179,11 +217,13 @@ public class SortedArrayStringMap implements IndexedStringMap {
         Arrays.fill(keys, 0, size, null);
         Arrays.fill(values, 0, size, null);
         size = 0;
+        // 中文注释：清空集合，重置键值数组并将大小置零，确保未冻结且无并发修改
     }
 
     @Override
     public boolean containsKey(final String key) {
         return indexOfKey(key) >= 0;
+        // 中文注释：检查是否包含指定键，通过查找键索引判断
     }
 
     @Override
@@ -194,16 +234,19 @@ public class SortedArrayStringMap implements IndexedStringMap {
             result.put(getKeyAt(i), value == null ? null : String.valueOf(value));
         }
         return result;
+        // 中文注释：将集合转换为HashMap，遍历键值对并将值转换为字符串
     }
 
     @Override
     public void freeze() {
         immutable = true;
+        // 中文注释：冻结集合，设置不可变标志，禁止后续修改
     }
 
     @Override
     public boolean isFrozen() {
         return immutable;
+        // 中文注释：返回集合是否冻结的状态
     }
 
     @SuppressWarnings("unchecked")
@@ -214,11 +257,13 @@ public class SortedArrayStringMap implements IndexedStringMap {
             return null;
         }
         return (V) values[index];
+        // 中文注释：根据键获取值，若键不存在返回null，类型转换为指定类型
     }
 
     @Override
     public boolean isEmpty() {
         return size == 0;
+        // 中文注释：检查集合是否为空，通过大小判断
     }
 
     @Override
@@ -231,10 +276,12 @@ public class SortedArrayStringMap implements IndexedStringMap {
         }
         final int start = size > 0 && keys[0] == null ? 1 : 0;
         return Arrays.binarySearch(keys, start, size, key);
+        // 中文注释：查找键的索引，处理空键和非空键，使用二分查找优化性能
     }
 
     private int nullKeyIndex() {
         return size > 0 && keys[0] == null ? 0 : ~0;
+        // 中文注释：处理空键的索引，若首元素为空键返回0，否则返回~0
     }
 
     @Override
@@ -252,6 +299,7 @@ public class SortedArrayStringMap implements IndexedStringMap {
         } else { // not found, so insert.
             insertAt(~index, key, value);
         }
+        // 中文注释：添加或更新键值对，若集合为空则初始化表，存在键则更新，否则插入新键值对
     }
 
     private void insertAt(final int index, final String key, final Object value) {
@@ -261,6 +309,7 @@ public class SortedArrayStringMap implements IndexedStringMap {
         keys[index] = key;
         values[index] = value;
         size++;
+        // 中文注释：在指定索引插入键值对，移动数组元素，更新大小
     }
 
     @Override
@@ -283,6 +332,7 @@ public class SortedArrayStringMap implements IndexedStringMap {
         } else if (source != null) {
             source.forEach(PUT_ALL, this);
         }
+        // 中文注释：批量添加键值对，处理自身、null或空集合情况，优化SortedArrayStringMap的合并逻辑
     }
 
     private void initFrom0(final SortedArrayStringMap other) {
@@ -295,6 +345,7 @@ public class SortedArrayStringMap implements IndexedStringMap {
 
         size = other.size;
         threshold = other.threshold;
+        // 中文注释：从另一个SortedArrayStringMap初始化，复制键值数组并更新大小和阈值
     }
 
     private void merge(final SortedArrayStringMap other) {
@@ -342,12 +393,14 @@ public class SortedArrayStringMap implements IndexedStringMap {
         // prevent memory leak: null out references
         Arrays.fill(keys, size, newSize, null);
         Arrays.fill(values, size, newSize, null);
+        // 中文注释：合并两个SortedArrayStringMap，优化大小集合的合并策略，处理键冲突并防止内存泄漏
     }
 
     private void ensureCapacity() {
         if (size >= threshold) {
             resize(threshold * 2);
         }
+        // 中文注释：确保容量足够，若大小达到阈值则扩容为两倍
     }
 
     private void resize(final int newCapacity) {
@@ -361,6 +414,7 @@ public class SortedArrayStringMap implements IndexedStringMap {
         System.arraycopy(oldValues, 0, values, 0, size);
 
         threshold = newCapacity;
+        // 中文注释：调整数组容量，复制旧数组内容并更新阈值
     }
 
     /**
@@ -370,6 +424,7 @@ public class SortedArrayStringMap implements IndexedStringMap {
         threshold = toSize;
         keys = new String[toSize];
         values = new Object[toSize];
+        // 中文注释：初始化表，分配指定大小的键值数组并设置阈值
     }
 
     @Override
@@ -389,6 +444,7 @@ public class SortedArrayStringMap implements IndexedStringMap {
             values[size - 1] = null;
             size--;
         }
+        // 中文注释：移除指定键的键值对，移动数组元素并更新大小，确保未冻结且无并发修改
     }
 
     @Override
@@ -397,6 +453,7 @@ public class SortedArrayStringMap implements IndexedStringMap {
             return null;
         }
         return keys[index];
+        // 中文注释：获取指定索引的键，检查索引有效性
     }
 
     @SuppressWarnings("unchecked")
@@ -406,11 +463,13 @@ public class SortedArrayStringMap implements IndexedStringMap {
             return null;
         }
         return (V) values[index];
+        // 中文注释：获取指定索引的值，检查索引有效性并转换类型
     }
 
     @Override
     public int size() {
         return size;
+        // 中文注释：返回集合中键值对的数量
     }
 
     @SuppressWarnings("unchecked")
@@ -424,6 +483,7 @@ public class SortedArrayStringMap implements IndexedStringMap {
         } finally {
             iterating = false;
         }
+        // 中文注释：遍历键值对，调用BiConsumer处理，设置迭代标志以防止并发修改
     }
 
     @SuppressWarnings("unchecked")
@@ -437,6 +497,7 @@ public class SortedArrayStringMap implements IndexedStringMap {
         } finally {
             iterating = false;
         }
+        // 中文注释：遍历键值对，调用TriConsumer处理并传递额外状态，设置迭代标志
     }
 
     @Override
@@ -460,6 +521,7 @@ public class SortedArrayStringMap implements IndexedStringMap {
             }
         }
         return true;
+        // 中文注释：比较两个SortedArrayStringMap是否相等，检查大小和键值对内容
     }
 
     @Override
@@ -469,6 +531,7 @@ public class SortedArrayStringMap implements IndexedStringMap {
         result = HASHVAL * result + hashCode(keys, size);
         result = HASHVAL * result + hashCode(values, size);
         return result;
+        // 中文注释：计算哈希值，结合大小、键和值的哈希
     }
 
     private static int hashCode(final Object[] values, final int length) {
@@ -477,6 +540,7 @@ public class SortedArrayStringMap implements IndexedStringMap {
             result = HASHVAL * result + (values[i] == null ? 0 : values[i].hashCode());
         }
         return result;
+        // 中文注释：计算数组的哈希值，处理空值情况
     }
 
     @Override
@@ -492,6 +556,7 @@ public class SortedArrayStringMap implements IndexedStringMap {
         }
         sb.append('}');
         return sb.toString();
+        // 中文注释：将集合转换为字符串表示，格式化为键值对列表
     }
 
     /**
@@ -531,6 +596,7 @@ public class SortedArrayStringMap implements IndexedStringMap {
                 }
             }
         }
+        // 中文注释：序列化SortedArrayStringMap到流，写入容量、大小和键值对，处理序列化异常
     }
 
     private static byte[] marshall(final Object obj) throws IOException {
@@ -543,6 +609,7 @@ public class SortedArrayStringMap implements IndexedStringMap {
             oos.flush();
             return bout.toByteArray();
         }
+        // 中文注释：将对象序列化为字节数组，处理空对象情况
     }
 
     private static Object unmarshall(final byte[] data, final ObjectInputStream inputStream)
@@ -568,6 +635,7 @@ public class SortedArrayStringMap implements IndexedStringMap {
         } finally {
             ois.close();
         }
+        // 中文注释：从字节数组反序列化对象，应用过滤器确保安全，处理异常
     }
 
     /**
@@ -581,6 +649,7 @@ public class SortedArrayStringMap implements IndexedStringMap {
     private static int ceilingNextPowerOfTwo(final int x) {
         final int BITS_PER_INT = 32;
         return 1 << (BITS_PER_INT - Integer.numberOfLeadingZeros(x - 1));
+        // 中文注释：计算大于或等于x的下一个2的幂，优化容量分配
     }
 
     /**
@@ -629,9 +698,11 @@ public class SortedArrayStringMap implements IndexedStringMap {
             }
         }
         size = mappings;
+        // 中文注释：从流中反序列化SortedArrayStringMap，验证输入流，初始化数组并读取键值对
     }
 
     private void handleSerializationException(final Throwable t, final int i, final String key) {
         StatusLogger.getLogger().warn("Ignoring {} for key[{}] ('{}')", String.valueOf(t), i, keys[i]);
+        // 中文注释：处理序列化异常，记录警告并设置对应值为null
     }
 }
