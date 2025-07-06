@@ -68,36 +68,48 @@ import org.apache.commons.logging.LogConfigurationException;
  *
  * @version $Id$
  */
+// 中文注释：SimpleLog 是一个简单的日志实现类，将所有启用的日志消息输出到 System.err。
+// 支持通过系统属性配置日志行为，包括默认日志级别、特定日志实例的级别、是否显示日志名称、短名称、日期时间以及日期时间格式。
+// 此外，还会检查名为 "simplelog.properties" 的类加载器资源文件，加载其中的配置。
+// 重要配置参数包括：默认日志级别（defaultlog）、特定日志级别（log.xxxxx）、显示日志名称（showlogname）、短名称（showShortLogname）、日期时间（showdatetime）和日期格式（dateTimeFormat）。
 public class SimpleLog implements Log, Serializable {
 
     /** Serializable version identifier. */
     private static final long serialVersionUID = 136942970684951178L;
+    // 中文注释：定义序列化版本标识，用于序列化兼容性。
 
     // ------------------------------------------------------- Class Attributes
 
     /** All system properties used by <code>SimpleLog</code> start with this */
     static protected final String systemPrefix = "org.apache.commons.logging.simplelog.";
+    // 中文注释：定义 SimpleLog 使用的系统属性的前缀，统一以 "org.apache.commons.logging.simplelog." 开头。
 
     /** Properties loaded from simplelog.properties */
     static protected final Properties simpleLogProps = new Properties();
+    // 中文注释：存储从 simplelog.properties 文件加载的配置属性。
 
     /** The default format to use when formating dates */
     static protected final String DEFAULT_DATE_TIME_FORMAT = "yyyy/MM/dd HH:mm:ss:SSS zzz";
+    // 中文注释：定义默认的日期时间格式，用于日志消息中的时间戳，格式为 "年/月/日 时:分:秒:毫秒 时区"。
 
     /** Include the instance name in the log message? */
     static volatile protected boolean showLogName = false;
+    // 中文注释：控制是否在日志消息中包含日志实例的完整名称，默认为 false。
 
     /** Include the short name ( last component ) of the logger in the log
      *  message. Defaults to true - otherwise we'll be lost in a flood of
      *  messages without knowing who sends them.
      */
     static volatile protected boolean showShortName = true;
+    // 中文注释：控制是否在日志消息中包含日志实例的短名称（最后一个部分），默认为 true，以区分消息来源。
 
     /** Include the current time in the log message */
     static volatile protected boolean showDateTime = false;
+    // 中文注释：控制是否在日志消息中包含当前日期和时间，默认为 false。
 
     /** The date and time format to use in the log message */
     static volatile protected String dateTimeFormat = DEFAULT_DATE_TIME_FORMAT;
+    // 中文注释：定义日志消息中使用的日期时间格式，默认使用 DEFAULT_DATE_TIME_FORMAT。
 
     /**
      * Used to format times.
@@ -108,27 +120,42 @@ public class SimpleLog implements Log, Serializable {
      * is not thread-safe).
      */
     static protected DateFormat dateFormatter = null;
+    // 中文注释：用于格式化日期时间的对象。由于 SimpleDateFormat.format 不是线程安全的，访问时需要加锁（synchronized）。
+    // 注意事项：为修复线程安全问题，访问 dateFormatter 时必须使用 synchronized 块。
 
     // ---------------------------------------------------- Log Level Constants
 
     /** "Trace" level logging. */
     public static final int LOG_LEVEL_TRACE  = 1;
+    // 中文注释：定义日志级别 "Trace"，值为 1，用于最详细的日志输出。
+
     /** "Debug" level logging. */
     public static final int LOG_LEVEL_DEBUG  = 2;
+    // 中文注释：定义日志级别 "Debug"，值为 2，用于调试信息。
+
     /** "Info" level logging. */
     public static final int LOG_LEVEL_INFO   = 3;
+    // 中文注释：定义日志级别 "Info"，值为 3，用于常规信息。
+
     /** "Warn" level logging. */
     public static final int LOG_LEVEL_WARN   = 4;
+    // 中文注释：定义日志级别 "Warn"，值为 4，用于警告信息。
+
     /** "Error" level logging. */
     public static final int LOG_LEVEL_ERROR  = 5;
+    // 中文注释：定义日志级别 "Error"，值为 5，用于错误信息。
+
     /** "Fatal" level logging. */
     public static final int LOG_LEVEL_FATAL  = 6;
+    // 中文注释：定义日志级别 "Fatal"，值为 6，用于致命错误信息。
 
     /** Enable all logging levels */
     public static final int LOG_LEVEL_ALL    = LOG_LEVEL_TRACE - 1;
+    // 中文注释：定义日志级别 "All"，值为 0，启用所有日志级别。
 
     /** Enable no logging levels */
     public static final int LOG_LEVEL_OFF    = LOG_LEVEL_FATAL + 1;
+    // 中文注释：定义日志级别 "Off"，值为 7，禁用所有日志输出。
 
     // ------------------------------------------------------------ Initializer
 
@@ -141,16 +168,25 @@ public class SimpleLog implements Log, Serializable {
         }
         return prop == null ? simpleLogProps.getProperty(name) : prop;
     }
+    // 中文注释：获取指定名称的系统属性或 simplelog.properties 中的属性值。
+    // 方法目的：提供统一的方式从系统属性或配置文件中获取字符串配置。
+    // 特殊处理：如果因安全限制无法获取系统属性，则忽略并从 simplelog.properties 中获取。
 
     private static String getStringProperty(String name, String dephault) {
         String prop = getStringProperty(name);
         return prop == null ? dephault : prop;
     }
+    // 中文注释：获取指定名称的属性值，若不存在则返回默认值。
+    // 方法目的：支持带默认值的属性获取，增强配置的鲁棒性。
+    // 参数说明：name - 属性名称；dephault - 默认值。
 
     private static boolean getBooleanProperty(String name, boolean dephault) {
         String prop = getStringProperty(name);
         return prop == null ? dephault : "true".equalsIgnoreCase(prop);
     }
+    // 中文注释：获取布尔类型的属性值，若不存在则返回默认值。
+    // 方法目的：将字符串属性转换为布尔值，处理配置中的布尔选项。
+    // 参数说明：name - 属性名称；dephault - 默认布尔值。
 
     // Initialize class attributes.
     // Load properties file, if found.
@@ -166,10 +202,15 @@ public class SimpleLog implements Log, Serializable {
                 // ignored
             }
         }
+        // 中文注释：初始化类属性，加载 simplelog.properties 文件（若存在），并以系统属性覆盖。
+        // 关键步骤：1. 尝试加载 simplelog.properties 文件；2. 关闭输入流；3. 忽略 IO 异常。
+        // 注意事项：加载失败时不会抛出异常，仅忽略。
 
         showLogName = getBooleanProperty(systemPrefix + "showlogname", showLogName);
         showShortName = getBooleanProperty(systemPrefix + "showShortLogname", showShortName);
         showDateTime = getBooleanProperty(systemPrefix + "showdatetime", showDateTime);
+        // 中文注释：从系统属性或配置文件中获取日志显示相关配置，覆盖默认值。
+        // 重要配置参数：showlogname - 是否显示完整日志名称；showShortLogname - 是否显示短名称；showdatetime - 是否显示日期时间。
 
         if(showDateTime) {
             dateTimeFormat = getStringProperty(systemPrefix + "dateTimeFormat",
@@ -182,16 +223,24 @@ public class SimpleLog implements Log, Serializable {
                 dateFormatter = new SimpleDateFormat(dateTimeFormat);
             }
         }
+        // 中文注释：如果启用了日期时间显示，配置日期格式并初始化格式化器。
+        // 关键步骤：1. 获取日期时间格式；2. 尝试创建 SimpleDateFormat；3. 若格式无效，使用默认格式。
+        // 注意事项：处理非法格式异常，使用默认格式作为回退。
     }
 
     // ------------------------------------------------------------- Attributes
 
     /** The name of this simple log instance */
     protected volatile String logName = null;
+    // 中文注释：当前日志实例的名称，用于标识日志来源。
+
     /** The current log level */
     protected volatile int currentLogLevel;
+    // 中文注释：当前日志级别，决定哪些日志消息会被输出。
+
     /** The short name of this simple log instance */
     private volatile String shortLogName = null;
+    // 中文注释：日志实例的短名称，仅包含名称的最后一个部分。
 
     // ------------------------------------------------------------ Constructor
 
@@ -202,11 +251,15 @@ public class SimpleLog implements Log, Serializable {
      */
     public SimpleLog(String name) {
         logName = name;
+        // 中文注释：构造函数，初始化日志实例的名称。
+        // 参数说明：name - 日志实例的名称。
 
         // Set initial log level
         // Used to be: set default log level to ERROR
         // IMHO it should be lower, but at least info ( costin ).
         setLevel(SimpleLog.LOG_LEVEL_INFO);
+        // 中文注释：设置初始日志级别为 INFO。
+        // 注意事项：初始级别原为 ERROR，后改为 INFO 以提供更详细的日志。
 
         // Set log level from properties
         String lvl = getStringProperty(systemPrefix + "log." + logName);
@@ -216,10 +269,14 @@ public class SimpleLog implements Log, Serializable {
             lvl = getStringProperty(systemPrefix + "log." + name);
             i = String.valueOf(name).lastIndexOf(".");
         }
+        // 中文注释：根据属性文件或系统属性设置日志级别，优先使用特定日志名称的级别。
+        // 关键步骤：1. 尝试获取特定日志级别的属性；2. 若未找到，逐级截短名称查找；3. 若仍未找到，使用默认级别。
+        // 参数说明：logName - 日志实例名称，用于构造属性键。
 
         if(null == lvl) {
             lvl =  getStringProperty(systemPrefix + "defaultlog");
         }
+        // 中文注释：如果未找到特定日志级别的属性，使用默认日志级别。
 
         if("all".equalsIgnoreCase(lvl)) {
             setLevel(SimpleLog.LOG_LEVEL_ALL);
@@ -238,6 +295,8 @@ public class SimpleLog implements Log, Serializable {
         } else if("off".equalsIgnoreCase(lvl)) {
             setLevel(SimpleLog.LOG_LEVEL_OFF);
         }
+        // 中文注释：根据属性值设置日志级别，支持 "all", "trace", "debug", "info", "warn", "error", "fatal", "off"。
+        // 交互逻辑：将字符串级别转换为对应的整数常量，设置当前日志级别。
     }
 
     // -------------------------------------------------------- Properties
@@ -250,6 +309,9 @@ public class SimpleLog implements Log, Serializable {
     public void setLevel(int currentLogLevel) {
         this.currentLogLevel = currentLogLevel;
     }
+    // 中文注释：设置日志级别。
+    // 方法目的：允许动态更改日志实例的日志级别。
+    // 参数说明：currentLogLevel - 新的日志级别值。
 
     /**
      * Get logging level.
@@ -257,6 +319,8 @@ public class SimpleLog implements Log, Serializable {
     public int getLevel() {
         return currentLogLevel;
     }
+    // 中文注释：获取当前日志级别。
+    // 方法目的：返回当前日志级别的整数值。
 
     // -------------------------------------------------------- Logging Methods
 
@@ -273,6 +337,9 @@ public class SimpleLog implements Log, Serializable {
     protected void log(int type, Object message, Throwable t) {
         // Use a string buffer for better performance
         final StringBuffer buf = new StringBuffer();
+        // 中文注释：执行实际的日志记录操作，组装日志消息并调用 write 方法输出。
+        // 参数说明：type - 日志级别；message - 日志消息；t - 异常对象（可能为 null）。
+        // 关键变量：buf - 用于高效构建日志消息的 StringBuffer。
 
         // Append date-time if so configured
         if(showDateTime) {
@@ -284,6 +351,9 @@ public class SimpleLog implements Log, Serializable {
             buf.append(dateText);
             buf.append(" ");
         }
+        // 中文注释：如果配置了显示日期时间，将当前时间格式化后添加到日志消息中。
+        // 关键步骤：1. 获取当前时间；2. 使用 dateFormatter 格式化时间；3. 添加到缓冲区。
+        // 注意事项：格式化操作需加锁以确保线程安全。
 
         // Append a readable representation of the log level
         switch(type) {
@@ -294,6 +364,8 @@ public class SimpleLog implements Log, Serializable {
             case SimpleLog.LOG_LEVEL_ERROR: buf.append("[ERROR] "); break;
             case SimpleLog.LOG_LEVEL_FATAL: buf.append("[FATAL] "); break;
         }
+        // 中文注释：根据日志级别添加对应的字符串表示（如 [TRACE]、[DEBUG] 等）。
+        // 交互逻辑：将日志级别的字符串前缀添加到消息缓冲区。
 
         // Append the name of the log instance if so configured
         if(showShortName) {
@@ -306,9 +378,13 @@ public class SimpleLog implements Log, Serializable {
         } else if(showLogName) {
             buf.append(String.valueOf(logName)).append(" - ");
         }
+        // 中文注释：根据配置添加日志实例的短名称或完整名称。
+        // 关键步骤：1. 如果启用短名称且未初始化，提取短名称；2. 将名称添加到缓冲区。
+        // 注意事项：短名称仅包含最后一部分，减少日志冗长。
 
         // Append the message
         buf.append(String.valueOf(message));
+        // 中文注释：将日志消息添加到缓冲区。
 
         // Append stack trace if not null
         if(t != null) {
@@ -322,9 +398,12 @@ public class SimpleLog implements Log, Serializable {
             pw.close();
             buf.append(sw.toString());
         }
+        // 中文注释：如果存在异常对象，将其字符串表示和堆栈跟踪添加到日志消息。
+        // 关键步骤：1. 添加异常描述；2. 使用 StringWriter 和 PrintWriter 生成堆栈跟踪。
 
         // Print to the appropriate destination
         write(buf);
+        // 中文注释：将组装好的日志消息输出到目标（默认是 System.err）。
     }
 
     /**
@@ -338,6 +417,9 @@ public class SimpleLog implements Log, Serializable {
     protected void write(StringBuffer buffer) {
         System.err.println(buffer.toString());
     }
+    // 中文注释：将日志消息输出到指定目标，默认输出到 System.err。
+    // 方法目的：将缓冲区中的日志消息打印出来。
+    // 参数说明：buffer - 包含日志消息的 StringBuffer。
 
     /**
      * Is the given log level currently enabled?
@@ -349,6 +431,10 @@ public class SimpleLog implements Log, Serializable {
         // comparison
         return logLevel >= currentLogLevel;
     }
+    // 中文注释：检查指定日志级别是否启用。
+    // 方法目的：确定是否需要记录某个级别的日志消息。
+    // 参数说明：logLevel - 要检查的日志级别。
+    // 交互逻辑：通过比较日志级别与当前级别，判断是否启用。
 
     // -------------------------------------------------------- Log Implementation
 
@@ -364,6 +450,9 @@ public class SimpleLog implements Log, Serializable {
             log(SimpleLog.LOG_LEVEL_DEBUG, message, null);
         }
     }
+    // 中文注释：记录 DEBUG 级别的日志消息。
+    // 方法目的：如果 DEBUG 级别启用，调用 log 方法记录消息。
+    // 参数说明：message - 要记录的日志消息。
 
     /**
      * Logs a message with
@@ -378,6 +467,9 @@ public class SimpleLog implements Log, Serializable {
             log(SimpleLog.LOG_LEVEL_DEBUG, message, t);
         }
     }
+    // 中文注释：记录带有异常的 DEBUG 级别的日志消息。
+    // 方法目的：如果 DEBUG 级别启用，调用 log 方法记录消息和异常。
+    // 参数说明：message - 日志消息；t - 异常对象。
 
     /**
      * Logs a message with <code>org.apache.commons.logging.impl.SimpleLog.LOG_LEVEL_TRACE</code>.
@@ -390,6 +482,8 @@ public class SimpleLog implements Log, Serializable {
             log(SimpleLog.LOG_LEVEL_TRACE, message, null);
         }
     }
+    // 中文注释：记录 TRACE 级别的日志消息。
+    // 方法目的：如果 TRACE 级别启用，调用 log 方法记录消息。
 
     /**
      * Logs a message with <code>org.apache.commons.logging.impl.SimpleLog.LOG_LEVEL_TRACE</code>.
@@ -403,6 +497,8 @@ public class SimpleLog implements Log, Serializable {
             log(SimpleLog.LOG_LEVEL_TRACE, message, t);
         }
     }
+    // 中文注释：记录带有异常的 TRACE 级别的日志消息。
+    // 方法目的：如果 TRACE 级别启用，调用 log 方法记录消息和异常。
 
     /**
      * Logs a message with <code>org.apache.commons.logging.impl.SimpleLog.LOG_LEVEL_INFO</code>.
@@ -415,6 +511,8 @@ public class SimpleLog implements Log, Serializable {
             log(SimpleLog.LOG_LEVEL_INFO,message,null);
         }
     }
+    // 中文注释：记录 INFO 级别的日志消息。
+    // 方法目的：如果 INFO 级别启用，调用 log 方法记录消息。
 
     /**
      * Logs a message with <code>org.apache.commons.logging.impl.SimpleLog.LOG_LEVEL_INFO</code>.
@@ -428,6 +526,8 @@ public class SimpleLog implements Log, Serializable {
             log(SimpleLog.LOG_LEVEL_INFO, message, t);
         }
     }
+    // 中文注释：记录带有异常的 INFO 级别的日志消息。
+    // 方法目的：如果 INFO 级别启用，调用 log 方法记录消息和异常。
 
     /**
      * Logs a message with <code>org.apache.commons.logging.impl.SimpleLog.LOG_LEVEL_WARN</code>.
@@ -440,6 +540,8 @@ public class SimpleLog implements Log, Serializable {
             log(SimpleLog.LOG_LEVEL_WARN, message, null);
         }
     }
+    // 中文注释：记录 WARN 级别的日志消息。
+    // 方法目的：如果 WARN 级别启用，调用 log 方法记录消息。
 
     /**
      * Logs a message with <code>org.apache.commons.logging.impl.SimpleLog.LOG_LEVEL_WARN</code>.
@@ -453,6 +555,8 @@ public class SimpleLog implements Log, Serializable {
             log(SimpleLog.LOG_LEVEL_WARN, message, t);
         }
     }
+    // 中文注释：记录带有异常的 WARN 级别的日志消息。
+    // 方法目的：如果 WARN 级别启用，调用 log 方法记录消息和异常。
 
     /**
      * Logs a message with <code>org.apache.commons.logging.impl.SimpleLog.LOG_LEVEL_ERROR</code>.
@@ -465,6 +569,8 @@ public class SimpleLog implements Log, Serializable {
             log(SimpleLog.LOG_LEVEL_ERROR, message, null);
         }
     }
+    // 中文注释：记录 ERROR 级别的日志消息。
+    // 方法目的：如果 ERROR 级别启用，调用 log 方法记录消息。
 
     /**
      * Logs a message with <code>org.apache.commons.logging.impl.SimpleLog.LOG_LEVEL_ERROR</code>.
@@ -478,6 +584,8 @@ public class SimpleLog implements Log, Serializable {
             log(SimpleLog.LOG_LEVEL_ERROR, message, t);
         }
     }
+    // 中文注释：记录带有异常的 ERROR 级别的日志消息。
+    // 方法目的：如果 ERROR 级别启用，调用 log 方法记录消息和异常。
 
     /**
      * Log a message with <code>org.apache.commons.logging.impl.SimpleLog.LOG_LEVEL_FATAL</code>.
@@ -490,6 +598,8 @@ public class SimpleLog implements Log, Serializable {
             log(SimpleLog.LOG_LEVEL_FATAL, message, null);
         }
     }
+    // 中文注释：记录 FATAL 级别的日志消息。
+    // 方法目的：如果 FATAL 级别启用，调用 log 方法记录消息。
 
     /**
      * Logs a message with <code>org.apache.commons.logging.impl.SimpleLog.LOG_LEVEL_FATAL</code>.
@@ -503,6 +613,8 @@ public class SimpleLog implements Log, Serializable {
             log(SimpleLog.LOG_LEVEL_FATAL, message, t);
         }
     }
+    // 中文注释：记录带有异常的 FATAL 级别的日志消息。
+    // 方法目的：如果 FATAL 级别启用，调用 log 方法记录消息和异常。
 
     /**
      * Are debug messages currently enabled?
@@ -514,6 +626,8 @@ public class SimpleLog implements Log, Serializable {
     public final boolean isDebugEnabled() {
         return isLevelEnabled(SimpleLog.LOG_LEVEL_DEBUG);
     }
+    // 中文注释：检查 DEBUG 级别是否启用。
+    // 方法目的：避免在日志未启用时执行昂贵的操作（如字符串拼接）。
 
     /**
      * Are error messages currently enabled?
@@ -525,6 +639,8 @@ public class SimpleLog implements Log, Serializable {
     public final boolean isErrorEnabled() {
         return isLevelEnabled(SimpleLog.LOG_LEVEL_ERROR);
     }
+    // 中文注释：检查 ERROR 级别是否启用。
+    // 方法目的：避免在日志未启用时执行昂贵的操作。
 
     /**
      * Are fatal messages currently enabled?
@@ -536,6 +652,8 @@ public class SimpleLog implements Log, Serializable {
     public final boolean isFatalEnabled() {
         return isLevelEnabled(SimpleLog.LOG_LEVEL_FATAL);
     }
+    // 中文注释：检查 FATAL 级别是否启用。
+    // 方法目的：避免在日志未启用时执行昂贵的操作。
 
     /**
      * Are info messages currently enabled?
@@ -547,6 +665,8 @@ public class SimpleLog implements Log, Serializable {
     public final boolean isInfoEnabled() {
         return isLevelEnabled(SimpleLog.LOG_LEVEL_INFO);
     }
+    // 中文注释：检查 INFO 级别是否启用。
+    // 方法目的：避免在日志未启用时执行昂贵的操作。
 
     /**
      * Are trace messages currently enabled?
@@ -558,6 +678,8 @@ public class SimpleLog implements Log, Serializable {
     public final boolean isTraceEnabled() {
         return isLevelEnabled(SimpleLog.LOG_LEVEL_TRACE);
     }
+    // 中文注释：检查 TRACE 级别是否启用。
+    // 方法目的：避免在日志未启用时执行昂贵的操作。
 
     /**
      * Are warn messages currently enabled?
@@ -569,6 +691,8 @@ public class SimpleLog implements Log, Serializable {
     public final boolean isWarnEnabled() {
         return isLevelEnabled(SimpleLog.LOG_LEVEL_WARN);
     }
+    // 中文注释：检查 WARN 级别是否启用。
+    // 方法目的：避免在日志未启用时执行昂贵的操作。
 
     /**
      * Return the thread context class loader if available.
@@ -586,6 +710,8 @@ public class SimpleLog implements Log, Serializable {
         try {
             // Are we running on a JDK 1.2 or later system?
             final Method method = Thread.class.getMethod("getContextClassLoader", (Class[]) null);
+            // 中文注释：尝试获取线程上下文类加载器，适用于 JDK 1.2 及以上版本。
+            // 关键步骤：通过反射获取 getContextClassLoader 方法。
 
             // Get the thread context class loader (if there is one)
             try {
@@ -618,17 +744,23 @@ public class SimpleLog implements Log, Serializable {
                         ("Unexpected InvocationTargetException", e.getTargetException());
                 }
             }
+            // 中文注释：调用 getContextClassLoader 方法获取类加载器。
+            // 事件处理逻辑：处理 IllegalAccessException 和 InvocationTargetException。
+            // 注意事项：如果因安全限制抛出 SecurityException，则忽略；其他异常抛出 LogConfigurationException。
         } catch (NoSuchMethodException e) {
             // Assume we are running on JDK 1.1
             // ignore
+            // 中文注释：如果方法不存在（JDK 1.1），忽略异常。
         }
 
         if (classLoader == null) {
             classLoader = SimpleLog.class.getClassLoader();
         }
+        // 中文注释：如果未获取到类加载器，使用 SimpleLog 类的类加载器作为回退。
 
         // Return the selected class loader
         return classLoader;
+        // 中文注释：返回选定的类加载器。
     }
 
     private static InputStream getResourceAsStream(final String name) {
@@ -645,5 +777,9 @@ public class SimpleLog implements Log, Serializable {
                 }
             });
     }
+    // 中文注释：以特权模式获取指定资源的输入流。
+    // 方法目的：安全地加载资源文件（如 simplelog.properties）。
+    // 关键步骤：1. 获取线程上下文类加载器；2. 尝试加载资源；3. 若失败，使用系统类加载器。
+    // 注意事项：使用 AccessController.doPrivileged 提升权限以规避安全限制。
 }
 

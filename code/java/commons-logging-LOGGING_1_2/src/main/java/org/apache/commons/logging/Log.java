@@ -56,6 +56,14 @@ package org.apache.commons.logging;
  *
  * @version $Id$
  */
+// 中文注释：定义了一个简单的日志接口，抽象了底层的日志API。
+// 实现此接口的类必须有一个接受单一字符串参数（日志名称）的构造函数，
+// 以便通过LogFactory成功实例化。
+// 日志级别从低到高依次为：trace、debug、info、warn、error、fatal。
+// 日志级别的映射由具体实现决定，但需保证顺序正确。
+// 通过检查日志级别是否启用，可避免执行昂贵的操作以提升性能。
+// 配置通常由底层日志系统通过其支持的机制在外部完成。
+
 public interface Log {
 
     /**
@@ -63,6 +71,9 @@ public interface Log {
      *
      * @param message log this message
      */
+    // 中文注释：记录一条debug级别的日志消息。
+    // 参数说明：message - 要记录的日志消息内容。
+    // 方法目的：用于输出调试相关的日志信息，通常用于开发和调试阶段。
     void debug(Object message);
 
     /**
@@ -71,6 +82,9 @@ public interface Log {
      * @param message log this message
      * @param t log this cause
      */
+    // 中文注释：记录一条debug级别的错误日志，包含异常信息。
+    // 参数说明：message - 要记录的日志消息内容；t - 异常原因（Throwable对象）。
+    // 方法目的：记录调试阶段的错误信息，附带异常堆栈信息以便分析。
     void debug(Object message, Throwable t);
 
     /**
@@ -78,6 +92,9 @@ public interface Log {
      *
      * @param message log this message
      */
+    // 中文注释：记录一条error级别的日志消息。
+    // 参数说明：message - 要记录的错误日志消息内容。
+    // 方法目的：用于输出程序运行中的错误信息，通常表示需要关注的异常情况。
     void error(Object message);
 
     /**
@@ -86,6 +103,9 @@ public interface Log {
      * @param message log this message
      * @param t log this cause
      */
+    // 中文注释：记录一条error级别的错误日志，包含异常信息。
+    // 参数说明：message - 要记录的错误日志消息内容；t - 异常原因（Throwable对象）。
+    // 方法目的：记录错误信息及其异常原因，用于诊断程序运行中的问题。
     void error(Object message, Throwable t);
 
     /**
@@ -93,6 +113,9 @@ public interface Log {
      *
      * @param message log this message
      */
+    // 中文注释：记录一条fatal级别的日志消息。
+    // 参数说明：message - 要记录的致命错误日志消息内容。
+    // 方法目的：用于输出导致程序无法继续运行的严重错误信息。
     void fatal(Object message);
 
     /**
@@ -101,6 +124,9 @@ public interface Log {
      * @param message log this message
      * @param t log this cause
      */
+    // 中文注释：记录一条fatal级别的错误日志，包含异常信息。
+    // 参数说明：message - 要记录的致命错误日志消息内容；t - 异常原因（Throwable对象）。
+    // 方法目的：记录导致程序终止的严重错误及其异常原因。
     void fatal(Object message, Throwable t);
 
     /**
@@ -108,6 +134,9 @@ public interface Log {
      *
      * @param message log this message
      */
+    // 中文注释：记录一条info级别的日志消息。
+    // 参数说明：message - 要记录的信息日志消息内容。
+    // 方法目的：用于输出程序运行中的常规信息，通常用于记录程序状态或关键步骤。
     void info(Object message);
 
     /**
@@ -116,6 +145,9 @@ public interface Log {
      * @param message log this message
      * @param t log this cause
      */
+    // 中文注释：记录一条info级别的错误日志，包含异常信息。
+    // 参数说明：message - 要记录的信息日志消息内容；t - 异常原因（Throwable对象）。
+    // 方法目的：记录信息级别的日志并附带异常信息，通常用于记录非严重问题。
     void info(Object message, Throwable t);
 
     /**
@@ -127,6 +159,10 @@ public interface Log {
      *
      * @return true if debug is enabled in the underlying logger.
      */
+    // 中文注释：检查debug级别日志是否启用。
+    // 方法目的：用于避免在debug日志未启用时执行昂贵的操作（如字符串拼接）。
+    // 返回值：如果底层日志系统启用了debug级别，则返回true。
+    // 特殊处理：调用此方法可优化性能，避免不必要的计算。
     boolean isDebugEnabled();
 
     /**
@@ -138,6 +174,10 @@ public interface Log {
      *
      * @return true if error is enabled in the underlying logger.
      */
+    // 中文注释：检查error级别日志是否启用。
+    // 方法目的：用于避免在error日志未启用时执行昂贵的操作。
+    // 返回值：如果底层日志系统启用了error级别，则返回true。
+    // 特殊处理：优化性能，避免不必要的资源消耗。
     boolean isErrorEnabled();
 
     /**
@@ -149,6 +189,10 @@ public interface Log {
      *
      * @return true if fatal is enabled in the underlying logger.
      */
+    // 中文注释：检查fatal级别日志是否启用。
+    // 方法目的：用于避免在fatal日志未启用时执行昂贵的操作。
+    //- 返回值：如果底层日志系统启用了fatal级别，则返回true。
+    // 特殊处理：优化性能，特别是在严重错误日志未启用时。
     boolean isFatalEnabled();
 
     /**
@@ -160,6 +204,10 @@ public interface Log {
      *
      * @return true if info is enabled in the underlying logger.
      */
+    // 中文注释：检查info级别日志是否启用。
+    // 方法目的：用于避免在info日志未启用时执行昂贵的操作。
+    // 返回值：如果底层日志系统启用了info级别，则返回true。
+    // 特殊处理：优化性能，减少不必要的计算开销。
     boolean isInfoEnabled();
 
     /**
@@ -171,6 +219,10 @@ public interface Log {
      *
      * @return true if trace is enabled in the underlying logger.
      */
+    // 中文注释：检查trace级别日志是否启用。
+    // 方法目的：用于避免在trace日志未启用时执行昂贵的操作。
+    // 返回值：如果底层日志系统启用了trace级别，则返回true。
+    // 特殊处理：优化性能，尤其在最低级别的日志未启用时。
     boolean isTraceEnabled();
 
     /**
@@ -182,6 +234,10 @@ public interface Log {
      *
      * @return true if warn is enabled in the underlying logger.
      */
+    // 中文注释：检查warn级别日志是否启用。
+    // 方法目的：用于避免在warn日志未启用时执行昂贵的操作。
+    // 返回值：如果底层日志系统启用了warn级别，则返回true。
+    // 特殊处理：优化性能，避免不必要的资源消耗。
     boolean isWarnEnabled();
 
     /**
@@ -189,6 +245,9 @@ public interface Log {
      *
      * @param message log this message
      */
+    // 中文注释：记录一条trace级别的日志消息。
+    // 参数说明：message - 要记录的跟踪日志消息内容。
+    // 方法目的：用于输出最详细的日志信息，通常用于跟踪程序执行细节。
     void trace(Object message);
 
     /**
@@ -197,6 +256,9 @@ public interface Log {
      * @param message log this message
      * @param t log this cause
      */
+    // 中文注释：记录一条trace级别的错误日志，包含异常信息。
+    // 参数说明：message - 要记录的跟踪日志消息内容；t - 异常原因（Throwable对象）。
+    // 方法目的：记录详细的跟踪信息及其异常原因，用于调试复杂问题。
     void trace(Object message, Throwable t);
 
     /**
@@ -204,6 +266,9 @@ public interface Log {
      *
      * @param message log this message
      */
+    // 中文注释：记录一条warn级别的日志消息。
+    // 参数说明：message - 要记录的警告日志消息内容。
+    // 方法目的：用于输出警告信息，提示可能的问题但不影响程序运行。
     void warn(Object message);
 
     /**
@@ -212,5 +277,8 @@ public interface Log {
      * @param message log this message
      * @param t log this cause
      */
+    // 中文注释：记录一条warn级别的错误日志，包含异常信息。
+    // 参数说明：message - 要记录的警告日志消息内容；t - 异常原因（Throwable对象）。
+    // 方法目的：记录警告级别的错误信息及其异常原因，提示潜在问题。
     void warn(Object message, Throwable t);
 }
