@@ -42,23 +42,33 @@ import org.apache.log4j.Level;
  *
  * @version $Id$
  */
+// 中文注释：实现org.apache.commons.logging.Log接口，直接映射到Log4J 1.2版本的Logger。
+// 说明：
+// 1. 初始配置需按照Log4J文档进行。
+// 2. Log4J 1.2与1.3的区别在于Logger类使用Priority参数而非Level，且Level继承自Priority。
+// 3. Log4J 1.3将改变Level不再继承Priority，导致非二进制兼容，因此本实现仅适用于Log4J 1.2。
 public class Log4JLogger implements Log, Serializable {
 
     /** Serializable version identifier. */
     private static final long serialVersionUID = 5160705895411730424L;
+    // 中文注释：序列化版本标识，用于确保类在序列化和反序列化时版本兼容。
 
     // ------------------------------------------------------------- Attributes
 
     /** The fully qualified name of the Log4JLogger class. */
     private static final String FQCN = Log4JLogger.class.getName();
+    // 中文注释：Log4JLogger类的全限定名，用于日志记录的调用者信息。
 
     /** Log to this logger */
     private transient volatile Logger logger = null;
+    // 中文注释：日志记录器实例，volatile确保多线程可见性，初始为null。
 
     /** Logger name */
     private final String name;
+    // 中文注释：日志记录器的名称，用于标识具体的日志实例。
 
     private static final Priority traceLevel;
+    // 中文注释：TRACE级别，用于日志记录，可能是Level.TRACE或Level.DEBUG（若TRACE不可用）。
 
     // ------------------------------------------------------------
     // Static Initializer.
@@ -73,31 +83,41 @@ public class Log4JLogger implements Log, Serializable {
     // library is just not present - if discovery is in progress then
     // discovery will continue.
     // ------------------------------------------------------------
-
+    // 中文注释：静态初始化块。
+    // 说明：
+    // 1. 必须在静态变量声明后执行，以避免变量初始化覆盖此处设置。
+    // 2. 检查Log4J是否可用且为1.2版本，若不是则抛出ExceptionInInitializerError。
+    // 3. 若抛出异常，LogFactoryImpl会认为底层日志库不存在，继续发现过程。
     static {
         if (!Priority.class.isAssignableFrom(Level.class)) {
             // nope, this is log4j 1.3, so force an ExceptionInInitializerError
             throw new InstantiationError("Log4J 1.2 not available");
+            // 中文注释：检查Level是否继承自Priority，若不是则表明是Log4J 1.3，抛出异常。
         }
 
         // Releases of log4j1.2 >= 1.2.12 have Priority.TRACE available, earlier
         // versions do not. If TRACE is not available, then we have to map
         // calls to Log.trace(...) onto the DEBUG level.
-
+        // 中文注释：Log4J 1.2.12及以上版本支持TRACE级别，早期版本不支持。
+        // 若TRACE不可用，则将trace日志映射到DEBUG级别。
         Priority _traceLevel;
         try {
             _traceLevel = (Priority) Level.class.getDeclaredField("TRACE").get(null);
+            // 中文注释：尝试获取Level类的TRACE字段，若成功则使用TRACE级别。
         } catch(Exception ex) {
             // ok, trace not available
             _traceLevel = Level.DEBUG;
+            // 中文注释：若获取TRACE失败（TRACE不可用），则使用DEBUG级别。
         }
         traceLevel = _traceLevel;
+        // 中文注释：将确定的日志级别（TRACE或DEBUG）赋值给traceLevel。
     }
 
     // ------------------------------------------------------------ Constructor
 
     public Log4JLogger() {
         name = null;
+        // 中文注释：默认构造函数，初始化name为null。
     }
 
     /**
@@ -106,6 +126,10 @@ public class Log4JLogger implements Log, Serializable {
     public Log4JLogger(String name) {
         this.name = name;
         this.logger = getLogger();
+        // 中文注释：基础构造函数。
+        // 参数说明：
+        // - name: 日志记录器的名称。
+        // 功能：初始化name并通过getLogger()获取Logger实例。
     }
 
     /**
@@ -115,9 +139,15 @@ public class Log4JLogger implements Log, Serializable {
         if (logger == null) {
             throw new IllegalArgumentException(
                 "Warning - null logger in constructor; possible log4j misconfiguration.");
+            // 中文注释：检查logger是否为null，若是则抛出异常，提示可能为Log4J配置错误。
         }
         this.name = logger.getName();
         this.logger = logger;
+        // 中文注释：用于Log4J工厂的构造函数。
+        // 参数说明：
+        // - logger: Log4J的Logger实例。
+        // 功能：初始化name为logger的名称，并设置logger实例。
+        // 注意事项：若logger为null，抛出IllegalArgumentException。
     }
 
     /**
@@ -130,6 +160,11 @@ public class Log4JLogger implements Log, Serializable {
      */
     public void trace(Object message) {
         getLogger().log(FQCN, traceLevel, message, null);
+        // 中文注释：记录TRACE级别的日志。
+        // 参数说明：
+        // - message: 要记录的日志消息。
+        // 功能：使用traceLevel（可能是TRACE或DEBUG）记录日志消息。
+        // 注意事项：若Log4J版本不支持TRACE，则使用DEBUG级别。
     }
 
     /**
@@ -143,6 +178,12 @@ public class Log4JLogger implements Log, Serializable {
      */
     public void trace(Object message, Throwable t) {
         getLogger().log(FQCN, traceLevel, message, t);
+        // 中文注释：记录带异常的TRACE级别日志。
+        // 参数说明：
+        // - message: 要记录的日志消息。
+        // - t: 异常对象，用于记录异常信息。
+        // 功能：使用traceLevel记录日志消息及异常信息。
+        // 注意事项：若TRACE不可用，则使用DEBUG级别。
     }
 
     /**
@@ -153,6 +194,10 @@ public class Log4JLogger implements Log, Serializable {
      */
     public void debug(Object message) {
         getLogger().log(FQCN, Level.DEBUG, message, null);
+        // 中文注释：记录DEBUG级别的日志。
+        // 参数说明：
+        // - message: 要记录的日志消息。
+        // 功能：使用DEBUG级别记录日志消息。
     }
 
     /**
@@ -164,6 +209,11 @@ public class Log4JLogger implements Log, Serializable {
      */
     public void debug(Object message, Throwable t) {
         getLogger().log(FQCN, Level.DEBUG, message, t);
+        // 中文注释：记录带异常的DEBUG级别日志。
+        // 参数说明：
+        // - message: 要记录的日志消息。
+        // - t: 异常对象，用于记录异常信息。
+        // 功能：使用DEBUG级别记录日志消息及异常信息。
     }
 
     /**
@@ -174,6 +224,10 @@ public class Log4JLogger implements Log, Serializable {
      */
     public void info(Object message) {
         getLogger().log(FQCN, Level.INFO, message, null);
+        // 中文注释：记录INFO级别的日志。
+        // 参数说明：
+        // - message: 要记录的日志消息。
+        // 功能：使用INFO级别记录日志消息。
     }
 
     /**
@@ -185,6 +239,11 @@ public class Log4JLogger implements Log, Serializable {
      */
     public void info(Object message, Throwable t) {
         getLogger().log(FQCN, Level.INFO, message, t);
+        // 中文注释：记录带异常的INFO级别日志。
+        // 参数说明：
+        // - message: 要记录的日志消息。
+        // - t: 异常对象，用于记录异常信息。
+        // 功能：使用INFO级别记录日志消息及异常信息。
     }
 
     /**
@@ -195,6 +254,10 @@ public class Log4JLogger implements Log, Serializable {
      */
     public void warn(Object message) {
         getLogger().log(FQCN, Level.WARN, message, null);
+        // 中文注释：记录WARN级别的日志。
+        // 参数说明：
+        // - message: 要记录的日志消息。
+        // 功能：使用WARN级别记录日志消息。
     }
 
     /**
@@ -206,6 +269,11 @@ public class Log4JLogger implements Log, Serializable {
      */
     public void warn(Object message, Throwable t) {
         getLogger().log(FQCN, Level.WARN, message, t);
+        // 中文注释：记录带异常的WARN级别日志。
+        // 参数说明：
+        // - message: 要记录的日志消息。
+        // - t: 异常对象，用于记录异常信息。
+        // 功能：使用WARN级别记录日志消息及异常信息。
     }
 
     /**
@@ -216,6 +284,10 @@ public class Log4JLogger implements Log, Serializable {
      */
     public void error(Object message) {
         getLogger().log(FQCN, Level.ERROR, message, null);
+        // 中文注释：记录ERROR级别的日志。
+        // 参数说明：
+        // - message: 要记录的日志消息。
+        // 功能：使用ERROR级别记录日志消息。
     }
 
     /**
@@ -227,6 +299,7 @@ public class Log4JLogger implements Log, Serializable {
      */
     public void error(Object message, Throwable t) {
         getLogger().log(FQCN, Level.ERROR, message, t);
+        // 中文注释：记录带异常的ERROR
     }
 
     /**
@@ -237,6 +310,10 @@ public class Log4JLogger implements Log, Serializable {
      */
     public void fatal(Object message) {
         getLogger().log(FQCN, Level.FATAL, message, null);
+        // 中文注释：记录FATAL级别的日志。
+        // 参数说明：
+        // - message: 要记录的日志消息。
+        // 功能：使用FATAL级别记录日志消息。
     }
 
     /**
@@ -248,6 +325,11 @@ public class Log4JLogger implements Log, Serializable {
      */
     public void fatal(Object message, Throwable t) {
         getLogger().log(FQCN, Level.FATAL, message, t);
+        // 中文注释：记录带异常的FATAL级别/logs。
+        // 参数说明：
+        // - message: 要记录的日志消息。
+        // - t: 异常对象，用于记录异常信息。
+        // 功能：使用FATAL级别记录日志消息及异常信息。
     }
 
     /**
@@ -260,10 +342,15 @@ public class Log4JLogger implements Log, Serializable {
                 result = logger;
                 if (result == null) {
                     logger = result = Logger.getLogger(name);
+                    // 中文注释：延迟初始化Logger实例。
+                    // 功能：根据name创建Logger实例并赋值给logger变量。
                 }
             }
         }
         return result;
+        // 中文注释：获取当前使用的Logger实例。
+        // 功能：返回logger实例，若为null则通过双检锁机制初始化。
+        // 注意事项：使用synchronized确保线程安全。
     }
 
     /**
@@ -271,6 +358,8 @@ public class Log4JLogger implements Log, Serializable {
      */
     public boolean isDebugEnabled() {
         return getLogger().isDebugEnabled();
+        // 中文注释：检查是否启用DEBUG级别日志。
+        // 功能：调用Logger的isDebugEnabled方法判断DEBUG级别是否启用。
     }
 
     /**
@@ -278,6 +367,8 @@ public class Log4JLogger implements Log, Serializable {
      */
     public boolean isErrorEnabled() {
         return getLogger().isEnabledFor(Level.ERROR);
+        // 中文注释：检查是否启用ERROR级别日志。
+        // 功能：调用Logger的isEnabledFor方法判断ERROR级别是否启用。
     }
 
     /**
@@ -285,6 +376,8 @@ public class Log4JLogger implements Log, Serializable {
      */
     public boolean isFatalEnabled() {
         return getLogger().isEnabledFor(Level.FATAL);
+        // 中文注释：检查是否启用FATAL级别日志。
+        // 功能：调用Logger的isEnabledFor方法判断FATAL级别是否启用。
     }
 
     /**
@@ -292,6 +385,8 @@ public class Log4JLogger implements Log, Serializable {
      */
     public boolean isInfoEnabled() {
         return getLogger().isInfoEnabled();
+        // 中文注释：检查是否启用INFO级别日志。
+        // 功能：调用Logger的isInfoEnabled方法判断INFO级别是否启用。
     }
 
     /**
@@ -301,6 +396,9 @@ public class Log4JLogger implements Log, Serializable {
      */
     public boolean isTraceEnabled() {
         return getLogger().isEnabledFor(traceLevel);
+        // 中文注释：检查是否启用TRACE级别日志。
+        // 功能：调用Logger的isEnabledFor方法判断traceLevel（可能是TRACE或DEBUG）是否启用。
+        // 注意事项：若TRACE不可用，则检查DEBUG级别。
     }
 
     /**
@@ -308,5 +406,7 @@ public class Log4JLogger implements Log, Serializable {
      */
     public boolean isWarnEnabled() {
         return getLogger().isEnabledFor(Level.WARN);
+        // 中文注释：检查是否启用WARN级别日志。
+        // 功能：调用Logger的isEnabledFor方法判断WARN级别是否启用。
     }
 }

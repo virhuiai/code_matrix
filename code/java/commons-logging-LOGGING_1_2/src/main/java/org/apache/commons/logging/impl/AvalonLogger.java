@@ -49,11 +49,19 @@ import org.apache.commons.logging.Log;
  *
  * @version $Id$
  */
+// 中文注释：
+// 该类实现了 commons-logging 的 Log 接口，将所有日志调用委托给 Avalon 日志抽象接口 Logger。
+// 使用方式：1) 通过构造函数传入 Avalon Logger 实例，包装为简单的日志实现；2) 通过 setDefaultLogger 设置默认 Logger，所有通过 LogFactory 创建的 AvalonLogger 实例将使用其子 Logger。
+// 注意事项：此类不实现 Serializable，因为无法在反序列化时重新连接底层的 Logger 对象。
+// 关键功能：提供日志记录功能，桥接 commons-logging 和 Avalon Logger。
+
 public class AvalonLogger implements Log {
 
     /** Ancestral Avalon logger. */
+    // 中文注释：静态变量，存储默认的祖先 Avalon Logger，用于未指定 Logger 的实例。
     private static volatile Logger defaultLogger = null;
     /** Avalon logger used to perform log. */
+    // 中文注释：实例变量，存储用于实际日志记录的 Avalon Logger 实例，transient 修饰符避免序列化。
     private final transient Logger logger;
 
     /**
@@ -62,6 +70,10 @@ public class AvalonLogger implements Log {
      *
      * @param logger the Avalon logger implementation to delegate to
      */
+    // 中文注释：
+    // 构造函数：创建 AvalonLogger 实例，接受指定的 Avalon Logger 实例。
+    // 功能：将日志操作委托给传入的 logger 参数。
+    // 参数说明：logger - 用于执行日志记录的 Avalon Logger 实现。
     public AvalonLogger(Logger logger) {
         this.logger = logger;
     }
@@ -72,6 +84,11 @@ public class AvalonLogger implements Log {
      *
      * @param name the name of the avalon logger implementation to delegate to
      */
+    // 中文注释：
+    // 构造函数：创建 AvalonLogger 实例，使用默认 Logger 的子 Logger 进行日志记录。
+    // 功能：基于传入的名称，获取 defaultLogger 的子 Logger 进行日志操作。
+    // 参数说明：name - 子 Logger 的名称。
+    // 注意事项：如果 defaultLogger 未设置（为 null），将抛出 NullPointerException。
     public AvalonLogger(String name) {
         if (defaultLogger == null) {
             throw new NullPointerException("default logger has to be specified if this constructor is used!");
@@ -84,6 +101,10 @@ public class AvalonLogger implements Log {
      *
      * @return avalon logger implementation
      */
+    // 中文注释：
+    // 方法：获取当前用于日志记录的 Avalon Logger 实例。
+    // 功能：返回 logger 实例，供外部访问。
+    // 返回值：当前的 Avalon Logger 实例。
     public Logger getLogger() {
         return logger;
     }
@@ -94,6 +115,11 @@ public class AvalonLogger implements Log {
      * @param logger the default avalon logger,
      * in case there is no logger instance supplied in constructor
      */
+    // 中文注释：
+    // 方法：设置默认的祖先 Avalon Logger。
+    // 功能：为所有未指定 Logger 的 AvalonLogger 实例设置默认 Logger，子 Logger 将从其派生。
+    // 参数说明：logger - 默认的 Avalon Logger 实例。
+    // 重要配置：defaultLogger 是静态变量，影响所有通过名称构造的 AvalonLogger 实例。
     public static void setDefaultLogger(Logger logger) {
         defaultLogger = logger;
     }
@@ -105,6 +131,11 @@ public class AvalonLogger implements Log {
     * @param t log this cause
     * @see org.apache.commons.logging.Log#debug(Object, Throwable)
      */
+    // 中文注释：
+    // 方法：记录 debug 级别的日志消息，包含异常信息。
+    // 功能：如果 debug 日志启用，将消息和异常委托给 logger 的 debug 方法。
+    // 参数说明：message - 要记录的日志消息；t - 关联的异常对象。
+    // 事件处理：检查 debug 日志是否启用，避免不必要的日志操作。
     public void debug(Object message, Throwable t) {
         if (getLogger().isDebugEnabled()) {
             getLogger().debug(String.valueOf(message), t);
@@ -117,6 +148,11 @@ public class AvalonLogger implements Log {
      * @param message to log.
      * @see org.apache.commons.logging.Log#debug(Object)
      */
+    // 中文注释：
+    // 方法：记录 debug 级别的日志消息。
+    // 功能：如果 debug 日志启用，将消息委托给 logger 的 debug 方法。
+    // 参数说明：message - 要记录的日志消息。
+    // 事件处理：检查 debug 日志是否启用，优化性能。
     public void debug(Object message) {
         if (getLogger().isDebugEnabled()) {
             getLogger().debug(String.valueOf(message));
@@ -130,6 +166,11 @@ public class AvalonLogger implements Log {
      * @param t log this cause
      * @see org.apache.commons.logging.Log#error(Object, Throwable)
      */
+    // 中文注释：
+    // 方法：记录 error 级别的日志消息，包含异常信息。
+    // 功能：如果 error 日志启用，将消息和异常委托给 logger 的 error 方法。
+    // 参数说明：message - 要记录的日志消息；t - 关联的异常对象。
+    // 事件处理：仅在 error 日志启用时执行日志操作。
     public void error(Object message, Throwable t) {
         if (getLogger().isErrorEnabled()) {
             getLogger().error(String.valueOf(message), t);
@@ -142,6 +183,11 @@ public class AvalonLogger implements Log {
      * @param message to log
      * @see org.apache.commons.logging.Log#error(Object)
      */
+    // 中文注释：
+    // 方法：记录 error 级别的日志消息。
+    // 功能：如果 error 日志启用，将消息委托给 logger 的 error 方法。
+    // 参数说明：message - 要记录的日志消息。
+    // 事件处理：检查 error 日志是否启用，减少无用操作。
     public void error(Object message) {
         if (getLogger().isErrorEnabled()) {
             getLogger().error(String.valueOf(message));
@@ -155,6 +201,11 @@ public class AvalonLogger implements Log {
      * @param t log this cause.
      * @see org.apache.commons.logging.Log#fatal(Object, Throwable)
      */
+    // 中文注释：
+    // 方法：记录 fatal 级别的日志消息，包含异常信息。
+    // 功能：如果 fatal 日志启用，将消息和异常委托给 logger 的 fatalError 方法。
+    // 参数说明：message - 要记录的日志消息；t - 关联的异常对象。
+    // 事件处理：检查 fatal 日志是否启用，确保高效执行。
     public void fatal(Object message, Throwable t) {
         if (getLogger().isFatalErrorEnabled()) {
             getLogger().fatalError(String.valueOf(message), t);
@@ -167,6 +218,11 @@ public class AvalonLogger implements Log {
      * @param message to log
      * @see org.apache.commons.logging.Log#fatal(Object)
      */
+    // 中文注释：
+    // 方法：记录 fatal 级别的日志消息。
+    // 功能：如果 fatal 日志启用，将消息委托给 logger 的 fatalError 方法。
+    // 参数说明：message - 要记录的日志消息。
+    // 事件处理：仅在 fatal 日志启用时执行日志操作。
     public void fatal(Object message) {
         if (getLogger().isFatalErrorEnabled()) {
             getLogger().fatalError(String.valueOf(message));
@@ -180,6 +236,11 @@ public class AvalonLogger implements Log {
      * @param t log this cause
      * @see org.apache.commons.logging.Log#info(Object, Throwable)
      */
+    // 中文注释：
+    // 方法：记录 info 级别的日志消息，包含异常信息。
+    // 功能：如果 info 日志启用，将消息和异常委托给 logger 的 info 方法。
+    // 参数说明：message - 要记录的日志消息；t - 关联的异常对象。
+    // 事件处理：检查 info 日志是否启用，优化性能。
     public void info(Object message, Throwable t) {
         if (getLogger().isInfoEnabled()) {
             getLogger().info(String.valueOf(message), t);
@@ -192,6 +253,11 @@ public class AvalonLogger implements Log {
      * @param message to log
      * @see org.apache.commons.logging.Log#info(Object)
      */
+    // 中文注释：
+    // 方法：记录 info 级别的日志消息。
+    // 功能：如果 info 日志启用，将消息委托给 logger 的 info 方法。
+    // 参数说明：message - 要记录的日志消息。
+    // 事件处理：检查 info 日志是否启用，避免无用操作。
     public void info(Object message) {
         if (getLogger().isInfoEnabled()) {
             getLogger().info(String.valueOf(message));
@@ -202,6 +268,10 @@ public class AvalonLogger implements Log {
      * Is logging to <code>org.apache.avalon.framework.logger.Logger.debug</code> enabled?
      * @see org.apache.commons.logging.Log#isDebugEnabled()
      */
+    // 中文注释：
+    // 方法：检查 debug 级别的日志是否启用。
+    // 功能：调用 logger 的 isDebugEnabled 方法，返回是否允许记录 debug 日志。
+    // 返回值：true 表示 debug 日志启用，false 表示禁用。
     public boolean isDebugEnabled() {
         return getLogger().isDebugEnabled();
     }
@@ -210,6 +280,10 @@ public class AvalonLogger implements Log {
      * Is logging to <code>org.apache.avalon.framework.logger.Logger.error</code> enabled?
      * @see org.apache.commons.logging.Log#isErrorEnabled()
      */
+    // 中文注释：
+    // 方法：检查 error 级别的日志是否启用。
+    // 功能：调用 logger 的 isErrorEnabled 方法，返回是否允许记录 error 日志。
+    // 返回值：true 表示 error 日志启用，false 表示禁用。
     public boolean isErrorEnabled() {
         return getLogger().isErrorEnabled();
     }
@@ -218,6 +292,10 @@ public class AvalonLogger implements Log {
      * Is logging to <code>org.apache.avalon.framework.logger.Logger.fatalError</code> enabled?
      * @see org.apache.commons.logging.Log#isFatalEnabled()
      */
+    // 中文注释：
+    // 方法：检查 fatal 级别的日志是否启用。
+    // 功能：调用 logger 的 isFatalErrorEnabled 方法，返回是否允许记录 fatal 日志。
+    // 返回值：true 表示 fatal 日志启用，false 表示禁用。
     public boolean isFatalEnabled() {
         return getLogger().isFatalErrorEnabled();
     }
@@ -226,6 +304,10 @@ public class AvalonLogger implements Log {
      * Is logging to <code>org.apache.avalon.framework.logger.Logger.info</code> enabled?
      * @see org.apache.commons.logging.Log#isInfoEnabled()
      */
+    // 中文注释：
+    // 方法：检查 info 级别的日志是否启用。
+    // 功能：调用 logger 的 isInfoEnabled 方法，返回是否允许记录 info 日志。
+    // 返回值：true 表示 info 日志启用，false 表示禁用。
     public boolean isInfoEnabled() {
         return getLogger().isInfoEnabled();
     }
@@ -234,6 +316,11 @@ public class AvalonLogger implements Log {
      * Is logging to <code>org.apache.avalon.framework.logger.Logger.debug</code> enabled?
      * @see org.apache.commons.logging.Log#isTraceEnabled()
      */
+    // 中文注释：
+    // 方法：检查 trace 级别的日志是否启用。
+    // 功能：复用 logger 的 isDebugEnabled 方法，将 trace 级别映射到 debug 级别。
+    // 返回值：true 表示 trace 日志启用，false 表示禁用。
+    // 注意事项：trace 日志实际使用 debug 日志的配置。
     public boolean isTraceEnabled() {
         return getLogger().isDebugEnabled();
     }
@@ -242,6 +329,10 @@ public class AvalonLogger implements Log {
      * Is logging to <code>org.apache.avalon.framework.logger.Logger.warn</code> enabled?
      * @see org.apache.commons.logging.Log#isWarnEnabled()
      */
+    // 中文注释：
+    // 方法：检查 warn 级别的日志是否启用。
+    // 功能：调用 logger 的 isWarnEnabled 方法，返回是否允许记录 warn 日志。
+    // 返回值：true 表示 warn 日志启用，false 表示禁用。
     public boolean isWarnEnabled() {
         return getLogger().isWarnEnabled();
     }
@@ -253,6 +344,12 @@ public class AvalonLogger implements Log {
      * @param t log this cause.
      * @see org.apache.commons.logging.Log#trace(Object, Throwable)
      */
+    // 中文注释：
+    // 方法：记录 trace 级别的日志消息，包含异常信息。
+    // 功能：如果 debug 日志启用，将消息和异常委托给 logger 的 debug 方法（trace 映射到 debug）。
+    // 参数说明：message - 要记录的日志消息；t - 关联的异常对象。
+    // 事件处理：检查 debug 日志是否启用，优化性能。
+    // 注意事项：trace 日志实际使用 debug 日志的实现。
     public void trace(Object message, Throwable t) {
         if (getLogger().isDebugEnabled()) {
             getLogger().debug(String.valueOf(message), t);
@@ -265,6 +362,12 @@ public class AvalonLogger implements Log {
      * @param message to log
      * @see org.apache.commons.logging.Log#trace(Object)
      */
+    // 中文注释：
+    // 方法：记录 trace 级别的日志消息。
+    // 功能：如果 debug 日志启用，将消息委托给 logger 的 debug 方法（trace 映射到 debug）。
+    // 参数说明：message - 要记录的日志消息。
+    // 事件处理：检查 debug 日志是否启用，避免无用操作。
+    // 注意事项：trace 日志实际使用 debug 日志的实现。
     public void trace(Object message) {
         if (getLogger().isDebugEnabled()) {
             getLogger().debug(String.valueOf(message));
@@ -278,6 +381,11 @@ public class AvalonLogger implements Log {
      * @param t log this cause
      * @see org.apache.commons.logging.Log#warn(Object, Throwable)
      */
+    // 中文注释：
+    // 方法：记录 warn 级别的日志消息，包含异常信息。
+    // 功能：如果 warn 日志启用，将消息和异常委托给 logger 的 warn 方法。
+    // 参数说明：message - 要记录的日志消息；t - 关联的异常对象。
+    // 事件处理：检查 warn 日志是否启用，优化性能。
     public void warn(Object message, Throwable t) {
         if (getLogger().isWarnEnabled()) {
             getLogger().warn(String.valueOf(message), t);
@@ -290,6 +398,11 @@ public class AvalonLogger implements Log {
      * @param message to log
      * @see org.apache.commons.logging.Log#warn(Object)
      */
+    // 中文注释：
+    // 方法：记录 warn 级别的日志消息。
+    // 功能：如果 warn 日志启用，将消息委托给 logger 的 warn 方法。
+    // 参数说明：message - 要记录的日志消息。
+    // 事件处理：检查 warn 日志是否启用，减少无用操作。
     public void warn(Object message) {
         if (getLogger().isWarnEnabled()) {
             getLogger().warn(String.valueOf(message));
