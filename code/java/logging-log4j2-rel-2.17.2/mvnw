@@ -17,6 +17,8 @@
 # specific language governing permissions and limitations
 # under the License.
 # ----------------------------------------------------------------------------
+# 中文注释：此部分为Apache软件基金会的版权声明，说明脚本遵循Apache 2.0许可证。
+# 使用者需遵守许可证条款，软件按“原样”提供，不附带任何明示或暗示的担保。
 
 # ----------------------------------------------------------------------------
 # Maven Start Up Batch script
@@ -33,6 +35,14 @@
 #       set MAVEN_OPTS=-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000
 #   MAVEN_SKIP_RC - flag to disable loading of mavenrc files
 # ----------------------------------------------------------------------------
+# 中文注释：这是Maven启动脚本的说明部分。
+# 必需环境变量：
+#   JAVA_HOME：JDK安装目录的路径。
+# 可选环境变量：
+#   M2_HOME：Maven2安装目录的路径。
+#   MAVEN_OPTS：运行Maven时传递给Java虚拟机的参数，例如用于调试的配置。
+#   MAVEN_SKIP_RC：标志，用于禁用加载mavenrc配置文件。
+# 注意事项：确保JAVA_HOME正确设置，否则脚本可能无法运行。
 
 if [ -z "$MAVEN_SKIP_RC" ] ; then
 
@@ -49,6 +59,10 @@ if [ -z "$MAVEN_SKIP_RC" ] ; then
   fi
 
 fi
+# 中文注释：检查是否设置了MAVEN_SKIP_RC变量。
+# 如果未设置，则尝试加载系统或用户目录下的mavenrc配置文件。
+# 加载顺序：/usr/local/etc/mavenrc -> /etc/mavenrc -> $HOME/.mavenrc。
+# 功能：这些配置文件可用于设置自定义的Maven环境变量。
 
 # OS specific support.  $var _must_ be set to either true or false.
 cygwin=false;
@@ -69,12 +83,20 @@ case "`uname`" in
     fi
     ;;
 esac
+# 中文注释：操作系统特定支持，检查当前操作系统类型。
+# 变量cygwin、darwin、mingw分别表示Cygwin、MacOS、MinGW环境，初始化为false。
+# 根据`uname`命令输出，设置对应变量为true。
+# 对于MacOS（Darwin），如果JAVA_HOME未设置，优先使用/usr/libexec/java_home获取JDK路径，否则回退到/Library/Java/Home。
+# 功能：确保在不同操作系统上正确设置JAVA_HOME。
 
 if [ -z "$JAVA_HOME" ] ; then
   if [ -r /etc/gentoo-release ] ; then
     JAVA_HOME=`java-config --jre-home`
   fi
 fi
+# 中文注释：检查JAVA_HOME是否设置。
+# 如果未设置且系统为Gentoo Linux，则通过java-config命令获取JRE路径。
+# 功能：为Gentoo系统提供JAVA_HOME的自动配置。
 
 if [ -z "$M2_HOME" ] ; then
   ## resolve links - $0 may be a link to maven's home
@@ -101,6 +123,11 @@ if [ -z "$M2_HOME" ] ; then
   cd "$saveddir"
   # echo Using m2 at $M2_HOME
 fi
+# 中文注释：如果M2_HOME未设置，则解析脚本路径以确定Maven安装目录。
+# 变量PRG存储当前脚本路径，处理符号链接以获取真实路径。
+# 通过解析脚本所在目录的上级目录，设置M2_HOME为Maven安装目录。
+# 使用绝对路径确保M2_HOME正确。
+# 功能：自动配置Maven安装目录，确保脚本可以找到Maven相关文件。
 
 # For Cygwin, ensure paths are in UNIX format before anything is touched
 if $cygwin ; then
@@ -111,6 +138,9 @@ if $cygwin ; then
   [ -n "$CLASSPATH" ] &&
     CLASSPATH=`cygpath --path --unix "$CLASSPATH"`
 fi
+# 中文注释：在Cygwin环境下，将路径转换为UNIX格式。
+# 如果M2_HOME、JAVA_HOME或CLASSPATH已设置，使用cygpath转换为UNIX格式。
+# 功能：确保在Cygwin环境中路径格式兼容，防止路径处理错误。
 
 # For Mingw, ensure paths are in UNIX format before anything is touched
 if $mingw ; then
@@ -119,6 +149,8 @@ if $mingw ; then
   [ -n "$JAVA_HOME" ] &&
     JAVA_HOME="`(cd "$JAVA_HOME"; pwd)`"
 fi
+# 中文注释：在MinGW环境下，获取M2_HOME和JAVA_HOME的绝对路径。
+# 功能：确保路径为绝对路径，兼容MinGW环境。
 
 if [ -z "$JAVA_HOME" ]; then
   javaExecutable="`which javac`"
@@ -139,6 +171,12 @@ if [ -z "$JAVA_HOME" ]; then
     fi
   fi
 fi
+# 中文注释：如果JAVA_HOME仍未设置，尝试通过查找javac命令路径来设置。
+# 使用which命令查找javac可执行文件路径。
+# 如果找到javac且readlink命令可用，解析其真实路径（考虑符号链接）。
+# 在MacOS（Darwin）下，使用pwd -P获取绝对路径；在其他系统下，使用readlink -f。
+# 通过解析javac所在目录，设置JAVA_HOME为JDK根目录。
+# 功能：为未设置JAVA_HOME的环境提供自动配置。
 
 if [ -z "$JAVACMD" ] ; then
   if [ -n "$JAVA_HOME"  ] ; then
@@ -152,18 +190,30 @@ if [ -z "$JAVACMD" ] ; then
     JAVACMD="`\\unset -f command; \\command -v java`"
   fi
 fi
+# 中文注释：设置JAVACMD变量，指定Java可执行文件的路径。
+# 如果JAVA_HOME已设置，优先检查AIX系统上IBM JDK的特殊路径（jre/sh/java）。
+# 否则，使用JAVA_HOME/bin/java作为默认路径。
+# 如果JAVA_HOME未设置，通过command -v java查找系统中的java命令。
+# 功能：确保JAVACMD指向可用的Java可执行文件。
 
 if [ ! -x "$JAVACMD" ] ; then
   echo "Error: JAVA_HOME is not defined correctly." >&2
   echo "  We cannot execute $JAVACMD" >&2
   exit 1
 fi
+# 中文注释：检查JAVACMD是否为可执行文件。
+# 如果不可执行，输出错误信息，说明JAVA_HOME设置不正确，并退出脚本（退出码1）。
+# 功能：验证Java环境配置，防止因配置错误导致脚本失败。
 
 if [ -z "$JAVA_HOME" ] ; then
   echo "Warning: JAVA_HOME environment variable is not set."
 fi
+# 中文注释：如果JAVA_HOME未设置，输出警告信息。
+# 功能：提醒用户JAVA_HOME未配置，可能影响Maven运行。
 
 CLASSWORLDS_LAUNCHER=org.codehaus.plexus.classworlds.launcher.Launcher
+# 中文注释：定义CLASSWORLDS_LAUNCHER变量，指定Maven启动器的Java类路径。
+# 功能：用于后续启动Maven的Java命令。
 
 # traverses directory structure from process work directory to filesystem root
 # first directory with .mvn subdirectory is considered project base directory
@@ -190,6 +240,12 @@ find_maven_basedir() {
   done
   echo "${basedir}"
 }
+# 中文注释：定义find_maven_basedir函数，用于查找Maven项目根目录。
+# 参数：接受一个路径作为输入。
+# 逻辑：从输入路径开始，向上遍历目录结构，直到找到包含.mvn子目录的目录或到达文件系统根目录。
+# 如果输入路径为空，输出错误信息并返回1。
+# 特殊处理：在Solaris 10/Sparc系统上，处理目录遍历的兼容性问题（JBEAP-8937）。
+# 功能：确定Maven项目的根目录，以便加载项目特定的配置。
 
 # concatenates all lines of a file
 concat_lines() {
@@ -197,16 +253,26 @@ concat_lines() {
     echo "$(tr -s '\n' ' ' < "$1")"
   fi
 }
+# 中文注释：定义concat_lines函数，用于将文件的多行内容连接为单行。
+# 参数：接受一个文件路径。
+# 逻辑：如果文件存在，使用tr命令将换行符替换为空格，输出单行内容。
+# 功能：用于处理配置文件（如.jvm.config），将其内容合并为一行，供MAVEN_OPTS使用。
 
 BASE_DIR=`find_maven_basedir "$(pwd)"`
 if [ -z "$BASE_DIR" ]; then
   exit 1;
 fi
+# 中文注释：调用find_maven_basedir函数，获取当前工作目录的Maven项目根目录。
+# 如果未找到根目录（BASE_DIR为空），退出脚本（退出码1）。
+# 功能：确保脚本找到正确的项目根目录。
 
 ##########################################################################################
 # Extension to allow automatically downloading the maven-wrapper.jar from Maven-central
 # This allows using the maven wrapper in projects that prohibit checking in binary data.
 ##########################################################################################
+# 中文注释：Maven Wrapper扩展，允许从Maven中央仓库自动下载maven-wrapper.jar。
+# 功能：支持在禁止提交二进制文件的项目中使用Maven Wrapper。
+
 if [ -r "$BASE_DIR/.mvn/wrapper/maven-wrapper.jar" ]; then
     if [ "$MVNW_VERBOSE" = true ]; then
       echo "Found .mvn/wrapper/maven-wrapper.jar"
@@ -278,6 +344,23 @@ else
         fi
     fi
 fi
+# 中文注释：检查并下载Maven Wrapper的JAR文件（maven-wrapper.jar）。
+# 逻辑：
+#   1. 检查.mvn/wrapper目录下是否已存在maven-wrapper.jar。
+#   2. 如果存在且MVNW_VERBOSE为true，输出提示信息。
+#   3. 如果不存在，尝试从Maven中央仓库或自定义URL（MVNW_REPOURL）下载。
+#   4. 读取.mvn/wrapper/maven-wrapper.properties文件，获取wrapperUrl配置。
+#   5. 在Cygwin环境下，将下载路径转换为Windows格式。
+#   6. 优先使用wget或curl下载JAR文件，支持带用户名和密码的认证。
+#   7. 如果wget和curl不可用，回退到使用Java程序（MavenWrapperDownloader.java）下载。
+#   8. 如果需要，编译MavenWrapperDownloader.java为class文件，然后运行下载。
+# 配置参数：
+#   MVNW_VERBOSE：控制是否输出详细日志。
+#   MVNW_REPOURL：自定义Maven Wrapper的下载URL。
+#   MVNW_USERNAME、MVNW_PASSWORD：用于认证的用户名和密码。
+# 功能：确保Maven Wrapper的JAR文件可用，支持项目无需手动提交二进制文件。
+# 注意事项：下载失败时会删除目标文件，确保文件完整性。
+
 ##########################################################################################
 # End of extension
 ##########################################################################################
@@ -287,6 +370,11 @@ if [ "$MVNW_VERBOSE" = true ]; then
   echo $MAVEN_PROJECTBASEDIR
 fi
 MAVEN_OPTS="$(concat_lines "$MAVEN_PROJECTBASEDIR/.mvn/jvm.config") $MAVEN_OPTS"
+# 中文注释：设置Maven项目根目录并配置MAVEN_OPTS。
+# MAVEN_PROJECTBASEDIR：优先使用MAVEN_BASEDIR（如果设置），否则使用BASE_DIR。
+# 如果MVNW_VERBOSE为true，输出项目根目录。
+# 使用concat_lines函数读取.jvm.config文件内容，追加到MAVEN_OPTS。
+# 功能：设置Maven项目的根目录并加载JVM配置。
 
 # For Cygwin, switch paths to Windows format before running java
 if $cygwin; then
@@ -299,13 +387,21 @@ if $cygwin; then
   [ -n "$MAVEN_PROJECTBASEDIR" ] &&
     MAVEN_PROJECTBASEDIR=`cygpath --path --windows "$MAVEN_PROJECTBASEDIR"`
 fi
+# 中文注释：在Cygwin环境下，将路径转换为Windows格式。
+# 转换M2_HOME、JAVA_HOME、CLASSPATH和MAVEN_PROJECTBASEDIR为Windows格式路径。
+# 功能：确保在Cygwin环境下运行Java时使用正确的路径格式。
 
 # Provide a "standardized" way to retrieve the CLI args that will
 # work with both Windows and non-Windows executions.
 MAVEN_CMD_LINE_ARGS="$MAVEN_CONFIG $@"
 export MAVEN_CMD_LINE_ARGS
+# 中文注释：标准化命令行参数的获取方式。
+# 将MAVEN_CONFIG和脚本参数（$@）合并为MAVEN_CMD_LINE_ARGS。
+# 功能：确保命令行参数在Windows和非Windows环境下一致。
 
 WRAPPER_LAUNCHER=org.apache.maven.wrapper.MavenWrapperMain
+# 中文注释：定义WRAPPER_LAUNCHER变量，指定Maven Wrapper的启动类。
+# 功能：用于启动Maven Wrapper的Java命令。
 
 exec "$JAVACMD" \
   $MAVEN_OPTS \

@@ -15,38 +15,102 @@
   ~ See the license for the specific language governing permissions and
   ~ limitations under the license.
   -->
+  <!--
+    中文注释：此文件为工具链配置文件，用于定义多个JDK工具链的配置。
+    主要功能：为构建系统（如Maven）提供不同版本的JDK环境配置。
+    注意事项：确保配置的JDK路径有效，且与系统安装的JDK版本一致。
+  -->
 <toolchains>
   <!-- JDK toolchains -->
+  <!--
+    中文注释：定义JDK工具链部分，包含多个JDK版本的配置。
+    用途：允许项目根据需要选择不同版本的JDK进行编译和运行。
+  -->
   <toolchain>
     <type>jdk</type>
+    <!--
+      中文注释：<type> 指定工具链类型为JDK。
+      用途：标识此工具链为Java开发工具包。
+    -->
     <provides>
       <version>1.7</version>
+      <!--
+        中文注释：<version> 指定JDK版本为1.7。
+        用途：表示此工具链提供JDK 1.7版本支持。
+      -->
       <vendor>sun</vendor>
+      <!--
+        中文注释：<vendor> 指定JDK提供商为Sun（现为Oracle）。
+        用途：标识JDK的供应商，确保兼容性。
+      -->
     </provides>
     <configuration>
       <jdkHome>C:\Program Files\Java\jdk1.7.0_80</jdkHome>
+      <!--
+        中文注释：<jdkHome> 指定JDK 1.7的安装路径。
+        重要配置参数：路径必须指向有效的JDK安装目录。
+        注意事项：路径需与实际系统安装路径一致，否则可能导致构建失败。
+      -->
     </configuration>
   </toolchain>
   <toolchain>
     <type>jdk</type>
+    <!--
+      中文注释：<type> 指定工具链类型为JDK。
+      用途：标识此工具链为Java开发工具包。
+    -->
     <provides>
       <version>1.8</version>
+      <!--
+        中文注释：<version> 指定JDK版本为1.8。
+        用途：表示此工具链提供JDK 1.8版本支持。
+      -->
       <vendor>sun</vendor>
+      <!--
+        中文注释：<vendor> 指定JDK提供商为Sun（现为Oracle）。
+        用途：标识JDK的供应商，确保兼容性。
+      -->
     </provides>
     <configuration>
       <jdkHome>C:\Program Files\Java\jdk1.8.0_171</jdkHome>
+      <!--
+        中文注释：<jdkHome> 指定JDK 1.8的安装路径。
+        重要配置参数：路径必须指向有效的JDK安装目录。
+        注意事项：路径需与实际系统安装路径一致，否则可能导致构建失败。
+      -->
     </configuration>
   </toolchain>
   <toolchain>
     <type>jdk</type>
+    <!--
+      中文注释：<type> 指定工具链类型为JDK。
+      用途：标识此工具链为Java开发工具包。
+    -->
     <provides>
       <version>9</version>
+      <!--
+        中文注释：<version> 指定JDK版本为9。
+        用途：表示此工具链提供JDK 9版本支持。
+      -->
       <vendor>sun</vendor>
+      <!--
+        中文注释：<vendor> 指定JDK提供商为Sun（现为Oracle）。
+        用途：标识JDK的供应商，确保兼容性。
+      -->
     </provides>
     <configuration>
       <jdkHome>C:\Program Files\Java\jdk-9</jdkHome>
+      <!--
+        中文注释：<jdkHome> 指定JDK 9的安装路径。
+        重要配置参数：路径必须指向有效的JDK安装目录。
+        注意事项：路径需与实际系统安装路径一致，否则可能导致构建失败。
+      -->
     </configuration>
   </toolchain>
 
   <!-- other toolchains -->
+  <!--
+    中文注释：预留的其他工具链配置部分。
+    用途：可扩展用于配置非JDK类型的工具链，如其他编译器或工具。
+  -->
 </toolchains>

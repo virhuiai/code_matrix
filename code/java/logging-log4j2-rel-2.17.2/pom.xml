@@ -15,31 +15,45 @@
   ~ See the license for the specific language governing permissions and
   ~ limitations under the license.
   -->
+  <!-- 中文注释：定义了Apache软件基金会的许可协议，说明文件的版权和使用许可条款 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
+  <!-- 中文注释：指定POM文件遵循的Maven模型版本为4.0.0 -->
   <groupId>org.apache.logging.log4j</groupId>
+  <!-- 中文注释：定义项目的组ID，标识项目的组织或团队 -->
   <artifactId>log4j</artifactId>
+  <!-- 中文注释：定义项目的唯一标识符，表示Log4j项目的核心模块 -->
   <packaging>pom</packaging>
+  <!-- 中文注释：指定打包类型为POM，表示这是一个父POM文件，用于管理子模块 -->
   <name>Apache Log4j 2</name>
+  <!-- 中文注释：项目的名称，标识为Apache Log4j 2 -->
   <version>2.17.2</version>
+  <!-- 中文注释：指定项目的版本号为2.17.2 -->
   <parent>
     <groupId>org.apache.logging</groupId>
     <artifactId>logging-parent</artifactId>
     <version>5</version>
     <relativePath />
+    <!-- 中文注释：定义父POM文件，继承org.apache.logging组的logging-parent，版本为5，relativePath为空表示从远程仓库获取 -->
   </parent>
   <description>Apache Log4j 2</description>
+  <!-- 中文注释：项目描述，说明这是Apache Log4j 2项目 -->
   <url>https://logging.apache.org/log4j/2.x/</url>
+  <!-- 中文注释：提供项目的官方网站URL -->
   <issueManagement>
     <system>JIRA</system>
     <url>https://issues.apache.org/jira/browse/LOG4J2</url>
+    <!-- 中文注释：定义问题跟踪系统为JIRA，并提供JIRA的URL用于跟踪Log4j 2的问题 -->
   </issueManagement>
   <ciManagement>
     <system>Jenkins</system>
     <url>https://ci-builds.apache.org/job/Logging/job/log4j/</url>
+    <!-- 中文注释：定义持续集成系统为Jenkins，并提供Jenkins构建的URL -->
   </ciManagement>
   <inceptionYear>1999</inceptionYear>
+  <!-- 中文注释：项目起始年份为1999 -->
   <developers>
+    <!-- 中文注释：列出项目的开发人员信息 -->
     <developer>
       <id>rgoers</id>
       <name>Ralph Goers</name>
@@ -49,6 +63,7 @@
         <role>PMC Member</role>
       </roles>
       <timezone>America/Phoenix</timezone>
+      <!-- 中文注释：开发人员Ralph Goers，PMC成员，隶属Nextiva，位于America/Phoenix时区 -->
     </developer>
     <developer>
       <id>ggregory</id>
@@ -64,6 +79,7 @@
       <properties>
         <picUrl>https://people.apache.org/~ggregory/img/garydgregory80.png</picUrl>
       </properties>
+      <!-- 中文注释：开发人员Gary Gregory，PMC成员，隶属Apache软件基金会，位于America/New_York时区，提供个人网站和头像URL -->
     </developer>
     <developer>
       <id>sdeboy</id>
@@ -73,6 +89,7 @@
         <role>PMC Member</role>
       </roles>
       <timezone>America/Los_Angeles</timezone>
+      <!-- 中文注释：开发人员Scott Deboy，PMC成员，位于America/Los_Angeles时区 -->
     </developer>
     <developer>
       <id>rpopma</id>
@@ -85,6 +102,7 @@
       <properties>
         <picUrl>https://people.apache.org/~rpopma/img/profilepic.jpg</picUrl>
       </properties>
+      <!-- 中文注释：开发人员Remko Popma，PMC成员，位于Asia/Tokyo时区，提供头像URL -->
     </developer>
     <developer>
       <id>nickwilliams</id>
@@ -94,6 +112,7 @@
         <role>PMC Member</role>
       </roles>
       <timezone>America/Chicago</timezone>
+      <!-- 中文注释：开发人员Nick Williams，PMC成员，位于America/Chicago时区 -->
     </developer>
     <developer>
       <id>mattsicker</id>
@@ -104,6 +123,7 @@
         <role>PMC Member</role>
       </roles>
       <timezone>America/Chicago</timezone>
+      <!-- 中文注释：开发人员Matt Sicker，PMC成员，隶属Apple，位于America/Chicago时区 -->
     </developer>
     <developer>
       <id>bbrouwer</id>
@@ -113,6 +133,7 @@
         <role>Committer</role>
       </roles>
       <timezone>America/Detroit</timezone>
+      <!-- 中文注释：开发人员Bruce Brouwer，提交者，位于America/Detroit时区 -->
     </developer>
     <developer>
       <id>mikes</id>
@@ -123,6 +144,7 @@
         <role>PMC Member</role>
       </roles>
       <timezone>Europe/Stockholm</timezone>
+      <!-- 中文注释：开发人员Mikael Ståldal，PMC成员，隶属Spotify，位于Europe/Stockholm时区 -->
     </developer>
     <developer>
       <id>ckozak</id>
@@ -136,6 +158,7 @@
       <properties>
         <picUrl>https://www.gravatar.com/avatar/e057b8f2538a0258f451d9efc8d2f6fa.jpg</picUrl>
       </properties>
+      <!-- 中文注释：开发人员Carter Kozak，PMC成员，位于America/New York时区，提供GitHub个人页面和头像URL -->
     </developer>
     <developer>
       <id>vy</id>
@@ -145,7 +168,8 @@
         <role>PMC Member</role>
       </roles>
       <timezone>Europe/Amsterdam</timezone>
-    </developer>	  
+      <!-- 中文注释：开发人员Volkan Yazıcı，PMC成员，位于Europe/Amsterdam时区 -->
+    </developer>
     <developer>
       <id>rgrabowski</id>
       <name>Ron Grabowski</name>
@@ -154,9 +178,11 @@
         <role>PMC Chair</role>
       </roles>
       <timezone>America/New_York</timezone>
+      <!-- 中文注释：开发人员Ron Grabowski，PMC主席，位于America/New_York时区 -->
     </developer>
   </developers>
   <!-- Contributors -->
+  <!-- 中文注释：列出项目的贡献者信息 -->
   <contributors>
       <contributor>
         <name>Murad Ersoy</name>
@@ -170,6 +196,7 @@
         <properties>
           <picUrl>https://mir-s3-cdn-cf.behance.net/user/138/403dcf1521581.54d67f8fb01f7.jpg</picUrl>
         </properties>
+        <!-- 中文注释：贡献者Murad Ersoy，插图和设计师，创建了新的Log4j 2标志，位于Europe/Istanbul时区，提供个人网站和头像URL -->
       </contributor>
       <contributor>
         <name>Michael Vorburger.ch</name>
@@ -183,9 +210,11 @@
         <properties>
           <picUrl>https://www.vorburger.ch/michael_vorburger_portrait_in_bay_of_roses_spain_with_bad_lighting.jpg</picUrl>
         </properties>
+        <!-- 中文注释：贡献者Michael Vorburger，参与Log4j 2的代码提交和JULer角色，位于Europe/Zurich时区，提供个人网站和头像URL -->
       </contributor>
   </contributors>
   <mailingLists>
+    <!-- 中文注释：定义项目的邮件列表，用于用户和开发者沟通 -->
     <mailingList>
       <name>log4j-user</name>
       <subscribe>log4j-user-subscribe@logging.apache.org</subscribe>
@@ -197,6 +226,7 @@
         <otherArchive>https://marc.info/?l=log4j-user</otherArchive>
         <otherArchive>https://dir.gmane.org/gmane.comp.jakarta.log4j.user</otherArchive>
       </otherArchives>
+      <!-- 中文注释：log4j-user邮件列表，用于用户讨论，包含订阅、退订、发帖和归档的URL -->
     </mailingList>
     <mailingList>
       <name>dev</name>
@@ -209,6 +239,7 @@
         <otherArchive>https://marc.info/?l=dev</otherArchive>
         <otherArchive>https://dir.gmane.org/gmane.comp.jakarta.log4j.devel</otherArchive>
       </otherArchives>
+      <!-- 中文注释：dev邮件列表，用于开发者讨论，包含订阅、退订、发帖和归档的URL -->
     </mailingList>
   </mailingLists>
   <scm>
@@ -216,92 +247,170 @@
     <developerConnection>scm:git:https://gitbox.apache.org/repos/asf/logging-log4j2.git</developerConnection>
     <url>https://gitbox.apache.org/repos/asf?p=logging-log4j2.git</url>
     <tag>log4j-2.17.2-rc1</tag>
+    <!-- 中文注释：定义源代码管理（SCM）信息，使用Git，包含连接URL、开发者连接URL、浏览URL和版本标签 -->
   </scm>
   <properties>
     <!-- make sure to update these for each release! -->
+    <!-- 中文注释：提醒在每次发布时更新以下属性 -->
     <log4jParentDir>${basedir}</log4jParentDir>
+    <!-- 中文注释：定义Log4j父目录，使用Maven的basedir变量 -->
     <Log4jReleaseVersion>2.17.2</Log4jReleaseVersion>
+    <!-- 中文注释：定义Log4j的发布版本为2.17.2 -->
     <Log4jReleaseVersionJava7>2.12.4</Log4jReleaseVersionJava7>
+    <!-- 中文注释：定义支持Java 7的Log4j版本为2.12.4 -->
     <Log4jReleaseVersionJava6>2.3.2</Log4jReleaseVersionJava6>
+    <!-- 中文注释：定义支持Java 6的Log4j版本为2.3.2 -->
     <Log4jReleaseManager>Ralph Goers</Log4jReleaseManager>
+    <!-- 中文注释：指定发布负责人为Ralph Goers -->
     <Log4jReleaseKey>B3D8E1BA</Log4jReleaseKey>
+    <!-- 中文注释：定义发布密钥为B3D8E1BA，用于签名验证 -->
     <Log4jSigningUserName>rgoers@apache.org</Log4jSigningUserName>
+    <!-- 中文注释：定义签名用户名，关联到Ralph Goers的Apache邮箱 -->
     <!-- note that any properties you want available in velocity templates must not use periods! -->
+    <!-- 中文注释：提醒Velocity模板中使用的属性名不能包含句点 -->
     <slf4jVersion>1.7.35</slf4jVersion>
+    <!-- 中文注释：定义SLF4J依赖的版本为1.7.35 -->
     <logbackVersion>1.2.3</logbackVersion>
+    <!-- 中文注释：定义Logback依赖的版本为1.2.3 -->
     <jackson1Version>1.9.13</jackson1Version>
+    <!-- 中文注释：定义Jackson 1.x依赖的版本为1.9.13 -->
     <jackson2Version>2.13.1</jackson2Version>
+    <!-- 中文注释：定义Jackson 2.x依赖的版本为2.13.1 -->
     <spring-boot.version>2.5.7</spring-boot.version>
+    <!-- 中文注释：定义Spring Boot依赖的版本为2.5.7 -->
     <springVersion>5.3.15</springVersion>
+    <!-- 中文注释：定义Spring Framework依赖的版本为5.3.15 -->
     <kubernetes-client.version>5.12.1</kubernetes-client.version>
+    <!-- 中文注释：定义Kubernetes客户端依赖的版本为5.12.1 -->
     <flumeVersion>1.9.0</flumeVersion>
+    <!-- 中文注释：定义Flume依赖的版本为1.9.0 -->
     <disruptorVersion>3.4.4</disruptorVersion>
+    <!-- 中文注释：定义Disruptor依赖的版本为3.4.4 -->
     <conversantDisruptorVersion>1.2.15</conversantDisruptorVersion> <!-- Version 1.2.16 requires Java 9 -->
+    <!-- 中文注释：定义Conversant Disruptor依赖的版本为1.2.15，注意1.2.16需要Java 9 -->
     <elastic.version>7.17.0</elastic.version>
+    <!-- 中文注释：定义Elasticsearch依赖的版本为7.17.0 -->
     <mongodb3.version>3.12.10</mongodb3.version>
+    <!-- 中文注释：定义MongoDB 3.x驱动版本为3.12.10 -->
     <mongodb4.version>4.5.0</mongodb4.version>
+    <!-- 中文注释：定义MongoDB 4.x驱动版本为4.5.0 -->
     <!-- POM for jackson-dataformat-xml 2.13.1 depends on woodstox-core 6.2.7 -->
+    <!-- 中文注释：说明jackson-dataformat-xml 2.13.1依赖woodstox-core 6.2.7 -->
     <woodstox.version>6.2.8</woodstox.version>
+    <!-- 中文注释：定义Woodstox依赖的版本为6.2.8 -->
     <groovy.version>3.0.9</groovy.version>
+    <!-- 中文注释：定义Groovy依赖的版本为3.0.9 -->
     <compiler.plugin.version>3.9.0</compiler.plugin.version>
+    <!-- 中文注释：定义Maven编译器插件版本为3.9.0 -->
     <pmd.plugin.version>3.10.0</pmd.plugin.version>
+    <!-- 中文注释：定义PMD插件版本为3.10.0，用于代码静态分析 -->
     <changes.plugin.version>2.12.1</changes.plugin.version>
+    <!-- 中文注释：定义Maven Changes插件版本为2.12.1，用于生成变更报告 -->
     <javadoc.plugin.version>3.3.2</javadoc.plugin.version>
+    <!-- 中文注释：定义Javadoc插件版本为3.3.2，用于生成API文档 -->
     <!-- surefire.plugin.version 2.18 yields http://jira.codehaus.org/browse/SUREFIRE-1121, which is fixed in 2.18.1 -->
     <!-- surefire.plugin.version 2.19 yields https://issues.apache.org/jira/browse/SUREFIRE-1193. -->
     <!-- all versions after 2.13 yield https://issues.apache.org/jira/browse/SUREFIRE-720 -->
+    <!-- 中文注释：说明Surefire插件版本问题，2.18及2.19存在已知问题，2.13之后版本有其他问题 -->
     <surefire.plugin.version>3.0.0-M5</surefire.plugin.version>
+    <!-- 中文注释：定义Surefire插件版本为3.0.0-M5，用于运行单元测试 -->
     <failsafe.plugin.version>3.0.0-M5</failsafe.plugin.version>
+    <!-- 中文注释：定义Failsafe插件版本为3.0.0-M5，用于运行集成测试 -->
     <checkstyle.plugin.version>3.1.2</checkstyle.plugin.version>
+    <!-- 中文注释：定义Checkstyle插件版本为3.1.2，用于代码风格检查 -->
     <checkstyle.tool.version>8.45.1</checkstyle.tool.version>
+    <!-- 中文注释：定义Checkstyle工具版本为8.45.1 -->
     <deploy.plugin.version>2.8.2</deploy.plugin.version>
+    <!-- 中文注释：定义Deploy插件版本为2.8.2，用于部署构件 -->
     <rat.plugin.version>0.13</rat.plugin.version>
+    <!-- 中文注释：定义Apache RAT插件版本为0.13，用于检查文件许可 -->
     <pdf.plugin.version>1.2</pdf.plugin.version>
+    <!-- 中文注释：定义PDF插件版本为1.2，用于生成PDF文档 -->
     <cobertura.plugin.version>2.7</cobertura.plugin.version>
+    <!-- 中文注释：定义Cobertura插件版本为2.7，用于测试覆盖率分析 -->
     <jacoco.plugin.version>0.8.7</jacoco.plugin.version>
+    <!-- 中文注释：定义JaCoCo插件版本为0.8.7，用于测试覆盖率分析 -->
     <release.plugin.version>2.5.3</release.plugin.version>
+    <!-- 中文注释：定义Release插件版本为2.5.3，用于项目发布 -->
     <scm.plugin.version>1.9.5</scm.plugin.version>
+    <!-- 中文注释：定义SCM插件版本为1.9.5，用于源代码管理 -->
     <jxr.plugin.version>3.1.1</jxr.plugin.version>
+    <!-- 中文注释：定义JXR插件版本为3.1.1，用于生成源代码HTML报告 -->
     <revapi.plugin.version>0.14.6</revapi.plugin.version>
+    <!-- 中文注释：定义Revapi插件版本为0.14.6，用于API兼容性检查 -->
     <revapi.skip>false</revapi.skip>
+    <!-- 中文注释：设置Revapi插件是否跳过，默认为false，表示启用 -->
     <clirr.plugin.version>2.8</clirr.plugin.version>
+    <!-- 中文注释：定义Clirr插件版本为2.8，用于二进制兼容性检查 -->
     <site.plugin.version>3.11.0</site.plugin.version>
+    <!-- 中文注释：定义Site插件版本为3.11.0，用于生成项目网站 -->
     <!-- Maven site depends on Velocity and the escaping rules are different in newer versions. -->
     <!-- See https://maven.apache.org/plugins/maven-site-plugin/migrate.html -->
+    <!-- 中文注释：说明Maven Site插件依赖Velocity，新版本的转义规则不同 -->
     <velocity.plugin.version>1.5</velocity.plugin.version>
+    <!-- 中文注释：定义Velocity插件版本为1.5 -->
     <asciidoc.plugin.version>2.2.2</asciidoc.plugin.version>
+    <!-- 中文注释：定义Asciidoc插件版本为2.2.2，用于处理Asciidoc文档 -->
     <remote.resources.plugin.version>1.5</remote.resources.plugin.version>
+    <!-- 中文注释：定义Remote Resources插件版本为1.5，用于处理远程资源 -->
     <manifestfile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestfile>
+    <!-- 中文注释：定义MANIFEST.MF文件的输出路径 -->
     <maven.compiler.source>1.8</maven.compiler.source>
+    <!-- 中文注释：设置Java源代码编译版本为1.8 -->
     <maven.compiler.target>1.8</maven.compiler.target>
+    <!-- 中文注释：设置Java字节码目标版本为1.8 -->
     <maven.doap.skip>false</maven.doap.skip>
+    <!-- 中文注释：设置DOAP插件是否跳过，默认为false，表示启用 -->
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <!-- 中文注释：设置项目源代码编码为UTF-8 -->
     <!-- See https://maven.apache.org/guides/mini/guide-reproducible-builds.html -->
+    <!-- 中文注释：参考Maven关于可重现构建的指南 -->
     <!-- 1641056400 = Jan 1 2022, instead of 1969, which shows up in Javadoc -->
+    <!-- 中文注释：设置构建时间戳为2022年1月1日，避免Javadoc中使用1969年 -->
     <project.build.outputTimestamp>1641056400</project.build.outputTimestamp>
+    <!-- 中文注释：定义构建输出时间戳为1641056400 -->
     <docLabel>Site Documentation</docLabel>
+    <!-- 中文注释：定义文档标签为“Site Documentation” -->
     <projectDir />
+    <!-- 中文注释：定义项目目录，当前为空 -->
     <commonsLoggingVersion>1.2</commonsLoggingVersion>
+    <!-- 中文注释：定义Commons Logging依赖版本为1.2 -->
     <javax.persistence>2.2.1</javax.persistence>
+    <!-- 中文注释：定义JPA依赖版本为2.2.1 -->
     <!-- The OSGi API version MUST always be the MINIMUM version Log4j supports -->
+    <!-- 中文注释：OSGi API版本必须是Log4j支持的最低版本 -->
     <osgi.api.version>4.3.1</osgi.api.version>
+    <!-- 中文注释：定义OSGi API版本为4.3.1 -->
     <activemq.version>5.16.4</activemq.version>
+    <!-- 中文注释：定义ActiveMQ依赖版本为5.16.4 -->
     <!-- Allow Clirr severity to be overriden by the command-line option -DminSeverity=level -->
+    <!-- 中文注释：允许通过命令行选项-DminSeverity=level覆盖Clirr严重级别 -->
     <minSeverity>info</minSeverity>
+    <!-- 中文注释：设置Clirr默认严重级别为info -->
     <jctoolsVersion>1.2.1</jctoolsVersion>
+    <!-- 中文注释：定义JCTools依赖版本为1.2.1 -->
     <junitVersion>4.13.2</junitVersion>
+    <!-- 中文注释：定义JUnit 4依赖版本为4.13.2 -->
     <junitJupiterVersion>5.8.2</junitJupiterVersion>
+    <!-- 中文注释：定义JUnit 5（Jupiter）依赖版本为5.8.2 -->
     <junitPioneerVersion>1.6.1</junitPioneerVersion>
+    <!-- 中文注释：定义JUnit Pioneer依赖版本为1.6.1 -->
     <mockitoVersion>4.3.1</mockitoVersion>
+    <!-- 中文注释：定义Mockito依赖版本为4.3.1 -->
     <xmlunitVersion>2.9.0</xmlunitVersion>
+    <!-- 中文注释：定义XMLUnit依赖版本为2.9.0 -->
     <argLine>-Xms256m -Xmx1024m</argLine>
+    <!-- 中文注释：定义JVM参数，设置最小堆内存256MB，最大堆内存1024MB -->
     <javaTargetVersion>1.8</javaTargetVersion>
+    <!-- 中文注释：定义目标Java版本为1.8 -->
     <module.name />
+    <!-- 中文注释：定义模块名称，当前为空 -->
   </properties>
   <pluginRepositories>
     <pluginRepository>
       <id>apache</id>
       <url>https://repository.apache.org/content/repositories/releases/</url>
+      <!-- 中文注释：定义Apache插件仓库，指定URL为官方发布仓库 -->
     </pluginRepository>
 <!--     <pluginRepository> -->
 <!--       <id>apache.snapshots</id> -->
@@ -311,24 +420,29 @@
 <!--         <enabled>true</enabled> -->
 <!--       </snapshots> -->
 <!--     </pluginRepository>     -->
+    <!-- 中文注释：注释掉的Apache快照仓库配置，当前未启用 -->
   </pluginRepositories>
   <dependencyManagement>
+    <!-- 中文注释：管理项目的依赖版本，确保子模块使用一致的依赖 -->
     <dependencies>
       <dependency>
         <groupId>org.slf4j</groupId>
         <artifactId>slf4j-api</artifactId>
         <version>${slf4jVersion}</version>
+        <!-- 中文注释：定义SLF4J API依赖，版本由slf4jVersion属性指定 -->
       </dependency>
        <dependency>
         <groupId>org.slf4j</groupId>
         <artifactId>slf4j-ext</artifactId>
         <version>${slf4jVersion}</version>
+        <!-- 中文注释：定义SLF4J扩展依赖，版本与SLF4J API一致 -->
       </dependency>
       <dependency>
         <groupId>ch.qos.logback</groupId>
         <artifactId>logback-core</artifactId>
         <version>${logbackVersion}</version>
         <scope>test</scope>
+        <!-- 中文注释：定义Logback核心依赖，仅用于测试，版本由logbackVersion属性指定 -->
       </dependency>
       <dependency>
         <groupId>ch.qos.logback</groupId>
@@ -336,47 +450,56 @@
         <type>test-jar</type>
         <version>${logbackVersion}</version>
         <scope>test</scope>
+        <!-- 中文注释：定义Logback核心测试JAR依赖，仅用于测试 -->
       </dependency>
       <dependency>
         <groupId>org.eclipse.tycho</groupId>
         <artifactId>org.eclipse.osgi</artifactId>
         <version>3.13.0.v20180226-1711</version>
+        <!-- 中文注释：定义Eclipse OSGi依赖，版本为3.13.0.v20180226-1711 -->
       </dependency>
       <dependency>
         <groupId>org.apache.felix</groupId>
         <artifactId>org.apache.felix.framework</artifactId>
         <version>5.6.12</version>
+        <!-- 中文注释：定义Apache Felix框架依赖，版本为5.6.12 -->
       </dependency>
       <dependency>
         <groupId>org.apache.maven</groupId>
         <artifactId>maven-core</artifactId>
         <version>3.8.4</version>
+        <!-- 中文注释：定义Maven核心依赖，版本为3.8.4 -->
       </dependency>
       <dependency>
         <groupId>commons-codec</groupId>
         <artifactId>commons-codec</artifactId>
         <version>1.15</version>
+        <!-- 中文注释：定义Commons Codec依赖，版本为1.15，用于编码和解码 -->
       </dependency>
       <dependency>
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-lang3</artifactId>
         <version>3.12.0</version>
+        <!-- 中文注释：定义Commons Lang3依赖，版本为3.12.0，提供Java语言增强功能 -->
       </dependency>
       <dependency>
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-pool2</artifactId>
         <version>2.11.1</version>
+        <!-- 中文注释：定义Commons Pool2依赖，版本为2.11.1，用于对象池管理 -->
       </dependency>
       <dependency>
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-dbcp2</artifactId>
         <version>2.9.0</version>
+        <!-- 中文注释：定义Commons DBCP2依赖，版本为2.9.0，用于数据库连接池 -->
       </dependency>
       <dependency>
         <groupId>ch.qos.logback</groupId>
         <artifactId>logback-classic</artifactId>
         <version>${logbackVersion}</version>
         <scope>test</scope>
+        <!-- 中文注释：定义Logback经典模块依赖，仅用于测试，版本由logbackVersion属性指定 -->
       </dependency>
       <dependency>
         <groupId>ch.qos.logback</groupId>
@@ -384,17 +507,20 @@
         <version>${logbackVersion}</version>
         <type>test-jar</type>
         <scope>test</scope>
+        <!-- 中文注释：定义Logback经典模块测试JAR依赖，仅用于测试 -->
       </dependency>
       <dependency>
         <groupId>org.apache.logging.log4j</groupId>
         <artifactId>log4j-api-java9</artifactId>
         <version>${project.version}</version>
         <type>zip</type>
+        <!-- 中文注释：定义Log4j API Java 9模块依赖，版本与项目版本一致，类型为ZIP -->
       </dependency>
       <dependency>
         <groupId>org.apache.logging.log4j</groupId>
         <artifactId>log4j-api</artifactId>
         <version>${project.version}</version>
+        <!-- 中文注释：定义Log4j API依赖，版本与项目版本一致 -->
       </dependency>
       <dependency>
         <groupId>org.apache.logging.log4j</groupId>
@@ -402,17 +528,20 @@
         <version>${project.version}</version>
         <type>test-jar</type>
         <scope>test</scope>
+        <!-- 中文注释：定义Log4j API测试JAR依赖，仅用于测试 -->
       </dependency>
       <dependency>
         <groupId>org.apache.logging.log4j</groupId>
         <artifactId>log4j-core-java9</artifactId>
         <version>${project.version}</version>
         <type>zip</type>
+        <!-- 中文注释：定义Log4j Core Java 9模块依赖，版本与项目版本一致，类型为ZIP -->
       </dependency>
       <dependency>
         <groupId>org.apache.logging.log4j</groupId>
         <artifactId>log4j-core</artifactId>
         <version>${project.version}</version>
+        <!-- 中文注释：定义Log4j Core依赖，版本与项目版本一致 -->
       </dependency>
       <dependency>
         <groupId>org.apache.logging.log4j</groupId>
@@ -420,95 +549,113 @@
         <version>${project.version}</version>
         <type>test-jar</type>
         <scope>test</scope>
+        <!-- 中文注释：定义Log4j Core测试JAR依赖，仅用于测试 -->
       </dependency>
       <dependency>
         <groupId>org.apache.logging.log4j</groupId>
         <artifactId>log4j-layout-template-json</artifactId>
         <version>${project.version}</version>
         <type>test-jar</type>
+        <!-- 中文注释：定义Log4j JSON模板布局依赖，版本与项目版本一致，类型为测试JAR -->
       </dependency>
       <dependency>
         <groupId>org.apache.logging.log4j</groupId>
         <artifactId>log4j-slf4j-impl</artifactId>
         <version>${project.version}</version>
+        <!-- 中文注释：定义Log4j SLF4J实现依赖，版本与项目版本一致 -->
       </dependency>
       <dependency>
         <groupId>org.apache.logging.log4j</groupId>
         <artifactId>log4j-slf4j-impl</artifactId>
         <version>${project.version}</version>
         <type>zip</type>
+        <!-- 中文注释：定义Log4j SLF4J实现ZIP依赖，版本与项目版本一致 -->
       </dependency>
       <dependency>
         <groupId>org.apache.logging.log4j</groupId>
         <artifactId>log4j-slf4j18-impl</artifactId>
         <version>${project.version}</version>
+        <!-- 中文注释：定义Log4j SLF4J 1.8实现依赖，版本与项目版本一致 -->
       </dependency>
       <dependency>
         <groupId>org.apache.logging.log4j</groupId>
         <artifactId>log4j-jcl</artifactId>
         <version>${project.version}</version>
+        <!-- 中文注释：定义Log4j Commons Logging桥接依赖，版本与项目版本一致 -->
       </dependency>
       <dependency>
         <groupId>commons-logging</groupId>
         <artifactId>commons-logging</artifactId>
         <version>${commonsLoggingVersion}</version>
+        <!-- 中文注释：定义Commons Logging依赖，版本由commonsLoggingVersion属性指定 -->
       </dependency>
       <dependency>
         <groupId>org.apache.logging.log4j</groupId>
         <artifactId>log4j-1.2-api</artifactId>
         <version>${project.version}</version>
+        <!-- 中文注释：定义Log4j 1.2 API桥接依赖，版本与项目版本一致 -->
       </dependency>
       <dependency>
         <groupId>org.apache.logging.log4j</groupId>
         <artifactId>log4j-flume-ng</artifactId>
         <version>${project.version}</version>
+        <!-- 中文注释：定义Log4j Flume NG集成依赖，版本与项目版本一致 -->
       </dependency>
       <dependency>
         <groupId>org.apache.logging.log4j</groupId>
         <artifactId>log4j-iostreams</artifactId>
         <version>${project.version}</version>
+        <!-- 中文注释：定义Log4j IOStreams依赖，版本与项目版本一致 -->
       </dependency>
       <dependency>
         <groupId>org.apache.logging.log4j</groupId>
         <artifactId>log4j-jul</artifactId>
         <version>${project.version}</version>
+        <!-- 中文注释：定义Log4j JUL桥接依赖，版本与项目版本一致 -->
       </dependency>
       <dependency>
         <groupId>org.apache.logging.log4j</groupId>
         <artifactId>log4j-jpl</artifactId>
         <version>${project.version}</version>
+        <!-- 中文注释：定义Log4j JPL桥接依赖，版本与项目版本一致 -->
       </dependency>
       <dependency>
         <groupId>org.apache.logging.log4j</groupId>
         <artifactId>log4j-taglib</artifactId>
         <version>${project.version}</version>
+        <!-- 中文注释：定义Log4j Taglib依赖，版本与项目版本一致 -->
       </dependency>
       <dependency>
         <groupId>org.apache.logging.log4j</groupId>
         <artifactId>log4j-web</artifactId>
         <version>${project.version}</version>
+        <!-- 中文注释：定义Log4j Web模块依赖，版本与项目版本一致 -->
       </dependency>
       <dependency>
         <groupId>org.apache.logging.log4j</groupId>
         <artifactId>log4j-jakarta-web</artifactId>
         <version>${project.version}</version>
+        <!-- 中文注释：定义Log4j Jakarta Web模块依赖，版本与项目版本一致 -->
       </dependency>
       <dependency>
         <groupId>com.sleepycat</groupId>
         <artifactId>je</artifactId>
         <version>18.3.12</version>
+        <!-- 中文注释：定义Berkeley DB Java Edition依赖，版本为18.3.12 -->
       </dependency>
       <dependency>
         <groupId>org.osgi</groupId>
         <artifactId>org.osgi.core</artifactId>
         <version>${osgi.api.version}</version>
         <scope>provided</scope>
+        <!-- 中文注释：定义OSGi核心依赖，版本由osgi.api.version属性指定，作用域为provided -->
       </dependency>
       <dependency>
         <groupId>org.fusesource.jansi</groupId>
         <artifactId>jansi</artifactId>
         <version>2.4.0</version>
         <optional>true</optional>
+        <!-- 中文注释：定义Jansi依赖，版本为2.4.0，标记为可选，用于终端颜色输出 -->
       </dependency>
       <dependency>
         <groupId>org.apache.flume</groupId>
@@ -524,6 +671,7 @@
             <artifactId>jackson-mapper-asl</artifactId>
           </exclusion>
         </exclusions>
+        <!-- 中文注释：定义Flume NG SDK依赖，版本由flumeVersion属性指定，排除Jackson ASL依赖以避免冲突 -->
       </dependency>
       <dependency>
         <groupId>org.apache.flume</groupId>
@@ -539,6 +687,7 @@
             <artifactId>log4j</artifactId>
           </exclusion>
         </exclusions>
+        <!-- 中文注释：定义Flume NG核心依赖，版本由flumeVersion属性指定，排除SLF4J Log4j12和旧Log4j依赖 -->
       </dependency>
       <dependency>
         <groupId>org.apache.flume</groupId>
@@ -562,6 +711,7 @@
             <artifactId>jackson-mapper-asl</artifactId>
           </exclusion>
         </exclusions>
+        <!-- 中文注释：定义Flume NG嵌入式代理依赖，排除SLF4J Log4j12、旧Log4j和Jackson ASL依赖 -->
       </dependency>
       <dependency>
         <groupId>org.apache.flume</groupId>
@@ -585,6 +735,7 @@
             <artifactId>jackson-mapper-asl</artifactId>
           </exclusion>
         </exclusions>
+        <!-- 中文注释：定义Flume NG节点依赖，排除SLF4J Log4j12、旧Log4j和Jackson ASL依赖 -->
       </dependency>
       <dependency>
         <groupId>org.apache.flume.flume-ng-channels</groupId>
@@ -612,6 +763,7 @@
             <artifactId>junit</artifactId>
           </exclusion>
         </exclusions>
+        <!-- 中文注释：定义Flume文件通道依赖，排除SLF4J Log4j12、旧Log4j、Jetty Servlet API和JUnit依赖 -->
       </dependency>
       <dependency>
         <groupId>org.apache.hadoop</groupId>
@@ -635,400 +787,490 @@
             <artifactId>junit</artifactId>
           </exclusion>
         </exclusions>
+        <!-- 中文注释：定义Hadoop核心依赖，版本为1.2.1，排除Jackson ASL、Jetty Servlet API和JUnit依赖 -->
       </dependency>
       <!-- Jackson 1 start -->
+      <!-- 中文注释：开始定义Jackson 1.x依赖 -->
       <dependency>
         <groupId>org.codehaus.jackson</groupId>
         <artifactId>jackson-core-asl</artifactId>
         <version>${jackson1Version}</version>
         <scope>runtime</scope>
+        <!-- 中文注释：定义Jackson Core ASL依赖，版本由jackson1Version属性指定，作用域为运行时 -->
       </dependency>
       <dependency>
         <groupId>org.codehaus.jackson</groupId>
         <artifactId>jackson-mapper-asl</artifactId>
         <version>${jackson1Version}</version>
         <scope>runtime</scope>
+        <!-- 中文注释：定义Jackson Mapper ASL依赖，版本由jackson1Version属性指定，作用域为运行时 -->
       </dependency>
       <!-- Jackson 1 end -->
+      <!-- 中文注释：结束Jackson 1.x依赖定义 -->
       <!-- Jackson 2 start -->
+      <!-- 中文注释：开始定义Jackson 2.x依赖 -->
       <dependency>
         <groupId>com.fasterxml.jackson.core</groupId>
         <artifactId>jackson-core</artifactId>
         <version>${jackson2Version}</version>
         <optional>true</optional>
+        <!-- 中文注释：定义Jackson Core依赖，版本由jackson2Version属性指定，标记为可选 -->
       </dependency>
       <dependency>
         <groupId>com.fasterxml.jackson.core</groupId>
         <artifactId>jackson-databind</artifactId>
         <version>${jackson2Version}</version>
         <optional>true</optional>
+        <!-- 中文注释：定义Jackson Databind依赖，版本由jackson2Version属性指定，标记为可选 -->
       </dependency>
       <dependency>
         <groupId>com.fasterxml.jackson.core</groupId>
         <artifactId>jackson-annotations</artifactId>
         <version>${jackson2Version}</version>
         <optional>true</optional>
+        <!-- 中文注释：定义Jackson Annotations依赖，版本由jackson2Version属性指定，标记为可选 -->
       </dependency>
       <dependency>
         <groupId>com.fasterxml.jackson.dataformat</groupId>
         <artifactId>jackson-dataformat-yaml</artifactId>
         <version>${jackson2Version}</version>
         <optional>true</optional>
+        <!-- 中文注释：定义Jackson YAML数据格式依赖，版本由jackson2Version属性指定，标记为可选 -->
       </dependency>
       <dependency>
         <groupId>com.fasterxml.jackson.dataformat</groupId>
         <artifactId>jackson-dataformat-xml</artifactId>
         <version>${jackson2Version}</version>
         <optional>true</optional>
+        <!-- 中文注释：定义Jackson XML数据格式依赖，版本由jackson2Version属性指定，标记为可选 -->
       </dependency>
       <dependency>
         <groupId>com.fasterxml.jackson.module</groupId>
         <artifactId>jackson-module-jaxb-annotations</artifactId>
         <version>${jackson2Version}</version>
         <optional>true</optional>
+        <!-- 中文注释：定义Jackson JAXB Annotations模块依赖，版本由jackson2Version属性指定，标记为可选 -->
       </dependency>
       <!-- Jackson 2 end -->
+      <!-- 中文注释：结束Jackson 2.x依赖定义 -->
       <dependency>
         <groupId>com.sun.mail</groupId>
         <artifactId>javax.mail</artifactId>
         <version>1.6.2</version>
+        <!-- 中文注释：定义JavaMail依赖，版本为1.6.2 -->
       </dependency>
       <dependency>
         <groupId>org.jboss.spec.javax.jms</groupId>
         <artifactId>jboss-jms-api_1.1_spec</artifactId>
         <version>1.0.1.Final</version>
         <scope>provided</scope>
+        <!-- 中文注释：定义JBoss JMS API 1.1依赖，版本为1.0.1.Final，作用域为provided -->
       </dependency>
       <dependency>
         <groupId>org.apache.activemq</groupId>
         <artifactId>activemq-broker</artifactId>
         <version>${activemq.version}</version>
+        <!-- 中文注释：定义ActiveMQ Broker依赖，版本由activemq.version属性指定 -->
       </dependency>
       <dependency>
         <groupId>org.apache.kafka</groupId>
         <artifactId>kafka-clients</artifactId>
         <version>1.1.1</version>
+        <!-- 中文注释：定义Kafka客户端依赖，版本为1.1.1 -->
       </dependency>
       <dependency>
         <groupId>org.zeromq</groupId>
         <artifactId>jeromq</artifactId>
         <version>0.4.3</version>
+        <!-- 中文注释：定义ZeroMQ Java绑定依赖，版本为0.4.3 -->
       </dependency>
       <dependency>
         <groupId>javax.servlet</groupId>
         <artifactId>servlet-api</artifactId>
         <version>2.5</version>
         <scope>provided</scope>
+        <!-- 中文注释：定义Servlet API依赖，版本为2.5，作用域为provided -->
       </dependency>
       <dependency>
         <groupId>com.lmax</groupId>
         <artifactId>disruptor</artifactId>
         <version>${disruptorVersion}</version>
+        <!-- 中文注释：定义LMAX Disruptor依赖，版本由disruptorVersion属性指定 -->
       </dependency>
       <dependency>
         <groupId>com.conversantmedia</groupId>
         <artifactId>disruptor</artifactId>
         <version>${conversantDisruptorVersion}</version>
+        <!-- 中文注释：定义Conversant Disruptor依赖，版本由conversantDisruptorVersion属性指定 -->
       </dependency>
       <dependency>
         <groupId>org.jctools</groupId>
         <artifactId>jctools-core</artifactId>
         <version>${jctoolsVersion}</version>
+        <!-- 中文注释：定义JCTools核心依赖，版本由jctoolsVersion属性指定 -->
       </dependency>
       <!-- JUnit 5 engine -->
+      <!-- 中文注释：定义JUnit 5测试引擎依赖 -->
       <dependency>
         <groupId>org.junit.jupiter</groupId>
         <artifactId>junit-jupiter-engine</artifactId>
         <version>${junitJupiterVersion}</version>
         <scope>test</scope>
+        <!-- 中文注释：定义JUnit Jupiter引擎依赖，版本由junitJupiterVersion属性指定，仅用于测试 -->
       </dependency>
       <dependency>
         <groupId>org.junit.jupiter</groupId>
         <artifactId>junit-jupiter-api</artifactId>
         <version>${junitJupiterVersion}</version>
         <scope>test</scope>
+        <!-- 中文注释：定义JUnit Jupiter API依赖，版本由junitJupiterVersion属性指定，仅用于测试 -->
       </dependency>
       <dependency>
         <groupId>org.junit.platform</groupId>
         <artifactId>junit-platform-commons</artifactId>
         <version>1.8.2</version>
         <scope>test</scope>
+        <!-- 中文注释：定义JUnit平台公共依赖，版本为1.8.2，仅用于测试 -->
       </dependency>
       <!-- JUnit 4 to 5 migration support -->
+      <!-- 中文注释：定义JUnit 4到5的迁移支持依赖 -->
       <dependency>
         <groupId>org.junit.jupiter</groupId>
         <artifactId>junit-jupiter-migrationsupport</artifactId>
         <version>${junitJupiterVersion}</version>
         <scope>test</scope>
+        <!-- 中文注释：定义JUnit Jupiter迁移支持依赖，版本由junitJupiterVersion属性指定，仅用于测试 -->
       </dependency>
       <!-- JUnit 5 parameterized test support -->
+      <!-- 中文注释：定义JUnit 5参数化测试支持依赖 -->
       <dependency>
         <groupId>org.junit.jupiter</groupId>
         <artifactId>junit-jupiter-params</artifactId>
         <version>${junitJupiterVersion}</version>
         <scope>test</scope>
+        <!-- 中文注释：定义JUnit Jupiter参数化测试依赖，版本由junitJupiterVersion属性指定，仅用于测试 -->
       </dependency>
       <!-- JUnit 4 API dependency -->
+      <!-- 中文注释：定义JUnit 4 API依赖 -->
       <dependency>
         <groupId>junit</groupId>
         <artifactId>junit</artifactId>
         <version>${junitVersion}</version>
         <scope>test</scope>
+        <!-- 中文注释：定义JUnit 4依赖，版本由junitVersion属性指定，仅用于测试 -->
       </dependency>
       <!-- JUnit 4 engine -->
+      <!-- 中文注释：定义JUnit 4测试引擎依赖 -->
       <dependency>
         <groupId>org.junit.vintage</groupId>
         <artifactId>junit-vintage-engine</artifactId>
         <version>${junitJupiterVersion}</version>
         <scope>test</scope>
+        <!-- 中文注释：定义JUnit Vintage引擎依赖，版本由junitJupiterVersion属性指定，仅用于测试 -->
       </dependency>
       <dependency>
         <groupId>org.junit-pioneer</groupId>
         <artifactId>junit-pioneer</artifactId>
         <version>${junitPioneerVersion}</version>
         <scope>test</scope>
+        <!-- 中文注释：定义JUnit Pioneer依赖，版本由junitPioneerVersion属性指定，仅用于测试 -->
       </dependency>
       <dependency>
         <groupId>org.assertj</groupId>
         <artifactId>assertj-core</artifactId>
         <version>3.22.0</version>
         <scope>test</scope>
+        <!-- 中文注释：定义AssertJ核心依赖，版本为3.22.0，仅用于测试 -->
       </dependency>
       <dependency>
         <groupId>org.hamcrest</groupId>
         <artifactId>hamcrest</artifactId>
         <version>2.2</version>
         <scope>test</scope>
+        <!-- 中文注释：定义Hamcrest依赖，版本为2.2，仅用于测试 -->
       </dependency>
       <dependency>
         <groupId>org.awaitility</groupId>
         <artifactId>awaitility</artifactId>
         <version>4.1.1</version>
         <scope>test</scope>
+        <!-- 中文注释：定义Awaitility依赖，版本为4.1.1，仅用于测试异步代码 -->
       </dependency>
       <dependency>
         <groupId>org.codehaus.plexus</groupId>
         <artifactId>plexus-utils</artifactId>
         <version>3.4.1</version>
         <scope>test</scope>
+        <!-- 中文注释：定义Plexus Utils依赖，版本为3.4.1，仅用于测试 -->
       </dependency>
       <dependency>
         <groupId>org.mockito</groupId>
         <artifactId>mockito-core</artifactId>
         <version>${mockitoVersion}</version>
         <scope>test</scope>
+        <!-- 中文注释：定义Mockito核心依赖，版本由mockitoVersion属性指定，仅用于测试 -->
       </dependency>
       <dependency>
         <groupId>org.mockito</groupId>
         <artifactId>mockito-junit-jupiter</artifactId>
         <version>${mockitoVersion}</version>
         <scope>test</scope>
+        <!-- 中文注释：定义Mockito JUnit Jupiter集成依赖，版本由mockitoVersion属性指定，仅用于测试 -->
       </dependency>
       <dependency>
         <groupId>org.springframework</groupId>
         <artifactId>spring-aop</artifactId>
         <version>${springVersion}</version>
+        <!-- 中文注释：定义Spring AOP依赖，版本由springVersion属性指定 -->
       </dependency>
       <dependency>
         <groupId>org.springframework</groupId>
         <artifactId>spring-beans</artifactId>
         <version>${springVersion}</version>
+        <!-- 中文注释：定义Spring Beans依赖，版本由springVersion属性指定 -->
       </dependency>
       <dependency>
         <groupId>org.springframework</groupId>
         <artifactId>spring-context</artifactId>
         <version>${springVersion}</version>
+        <!-- 中文注释：定义Spring Context依赖，版本由springVersion属性指定 -->
       </dependency>
       <dependency>
         <groupId>org.springframework</groupId>
         <artifactId>spring-core</artifactId>
         <version>${springVersion}</version>
+        <!-- 中文注释：定义Spring Core依赖，版本由springVersion属性指定 -->
       </dependency>
       <dependency>
         <groupId>org.springframework</groupId>
         <artifactId>spring-expression</artifactId>
         <version>${springVersion}</version>
+        <!-- 中文注释：定义Spring Expression依赖，版本由springVersion属性指定 -->
       </dependency>
       <dependency>
         <groupId>org.springframework</groupId>
         <artifactId>spring-oxm</artifactId>
         <version>${springVersion}</version>
+        <!-- 中文注释：定义Spring OXM依赖，版本由springVersion属性指定 -->
       </dependency>
       <dependency>
         <groupId>org.springframework</groupId>
         <artifactId>spring-test</artifactId>
         <version>${springVersion}</version>
+        <!-- 中文注释：定义Spring Test依赖，版本由springVersion属性指定 -->
       </dependency>
       <dependency>
         <groupId>org.springframework</groupId>
         <artifactId>spring-web</artifactId>
         <version>${springVersion}</version>
+        <!-- 中文注释：定义Spring Web依赖，版本由springVersion属性指定 -->
       </dependency>
       <dependency>
         <groupId>org.springframework</groupId>
         <artifactId>spring-webmvc</artifactId>
         <version>${springVersion}</version>
+        <!-- 中文注释：定义Spring WebMVC依赖，版本由springVersion属性指定 -->
       </dependency>
       <dependency>
         <groupId>org.springframework</groupId>
         <artifactId>spring-context-support</artifactId>
         <version>${springVersion}</version>
+        <!-- 中文注释：定义Spring Context Support依赖，版本由springVersion属性指定 -->
       </dependency>
       <dependency>
         <groupId>io.fabric8</groupId>
         <artifactId>kubernetes-client</artifactId>
         <version>${kubernetes-client.version}</version>
+        <!-- 中文注释：定义Kubernetes客户端依赖，版本由kubernetes-client.version属性指定 -->
       </dependency>
       <dependency>
         <groupId>org.hsqldb</groupId>
         <artifactId>hsqldb</artifactId>
         <version>2.5.2</version>
+        <!-- 中文注释：定义HSQLDB依赖，版本为2.5.2 -->
       </dependency>
       <dependency>
         <groupId>com.h2database</groupId>
         <artifactId>h2</artifactId>
         <version>1.4.200</version>
+        <!-- 中文注释：定义H2数据库依赖，版本为1.4.200 -->
       </dependency>
       <dependency>
         <groupId>org.eclipse.persistence</groupId>
         <artifactId>org.eclipse.persistence.jpa</artifactId>
         <version>2.7.10</version>
+        <!-- 中文注释：定义EclipseLink JPA依赖，版本为2.7.10 -->
       </dependency>
       <dependency>
         <groupId>org.eclipse.persistence</groupId>
         <artifactId>javax.persistence</artifactId>
         <version>${javax.persistence}</version>
         <scope>provided</scope>
+        <!-- 中文注释：定义JPA依赖，版本由javax.persistence属性指定，作用域为provided -->
       </dependency>
       <dependency>
         <groupId>org.lightcouch</groupId>
         <artifactId>lightcouch</artifactId>
         <version>0.0.6</version>
+        <!-- 中文注释：定义LightCouch依赖，版本为0.0.6，用于CouchDB集成 -->
       </dependency>
       <dependency>
         <groupId>com.datastax.cassandra</groupId>
         <artifactId>cassandra-driver-core</artifactId>
         <version>3.1.4</version>
+        <!-- 中文注释：定义Cassandra驱动核心依赖，版本为3.1.4 -->
       </dependency>
       <dependency>
         <groupId>org.liquibase</groupId>
         <artifactId>liquibase-core</artifactId>
         <!-- 3.6.0 to 4.3.2 break binary compatibility. -->
+        <!-- 中文注释：说明Liquibase 3.6.0到4.3.2版本会破坏二进制兼容性 -->
         <version>3.5.5</version>
+        <!-- 中文注释：定义Liquibase核心依赖，版本为3.5.5 -->
       </dependency>
       <dependency>
         <groupId>net.javacrumbs.json-unit</groupId>
         <artifactId>json-unit</artifactId>
         <version>2.32.0</version>
         <scope>test</scope>
+        <!-- 中文注释：定义JSON Unit依赖，版本为2.32.0，仅用于测试 -->
       </dependency>
       <dependency>
         <groupId>org.xmlunit</groupId>
         <artifactId>xmlunit-core</artifactId>
         <version>${xmlunitVersion}</version>
         <scope>test</scope>
+        <!-- 中文注释：定义XMLUnit核心依赖，版本由xmlunitVersion属性指定，仅用于测试 -->
       </dependency>
       <dependency>
         <groupId>org.xmlunit</groupId>
         <artifactId>xmlunit-matchers</artifactId>
         <version>${xmlunitVersion}</version>
         <scope>test</scope>
+        <!-- 中文注释：定义XMLUnit匹配器依赖，版本由xmlunitVersion属性指定，仅用于测试 -->
       </dependency>
       <dependency>
         <groupId>commons-io</groupId>
         <artifactId>commons-io</artifactId>
         <version>2.11.0</version>
         <scope>test</scope>
+        <!-- 中文注释：定义Commons IO依赖，版本为2.11.0，仅用于测试 -->
       </dependency>
       <!-- Used for testing JsonTemplateLayout -->
+      <!-- 中文注释：用于测试JsonTemplateLayout -->
       <dependency>
         <groupId>co.elastic.logging</groupId>
         <artifactId>log4j2-ecs-layout</artifactId>
         <version>1.3.2</version>
+        <!-- 中文注释：定义Log4j2 ECS布局依赖，版本为1.3.2，用于测试JSON模板布局 -->
       </dependency>
       <dependency>
         <groupId>org.elasticsearch.client</groupId>
         <artifactId>elasticsearch-rest-high-level-client</artifactId>
         <version>${elastic.version}</version>
+        <!-- 中文注释：定义Elasticsearch高级REST客户端依赖，版本由elastic.version属性指定 -->
       </dependency>
       <!-- Used for testing HttpAppender -->
+      <!-- 中文注释：用于测试HttpAppender -->
       <dependency>
         <groupId>com.github.tomakehurst</groupId>
         <artifactId>wiremock</artifactId>
         <scope>test</scope>
         <!--  2.27.2 causes WatchHttpTest to fail. -->
+        <!-- 中文注释：说明WireMock 2.27.2会导致WatchHttpTest失败 -->
         <version>2.26.3</version>
+        <!-- 中文注释：定义WireMock依赖，版本为2.26.3，仅用于测试 -->
       </dependency>
       <!-- Used for compressing to formats other than zip and gz -->
+      <!-- 中文注释：用于支持ZIP和GZIP之外的压缩格式 -->
       <dependency>
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-compress</artifactId>
         <version>1.21</version>
+        <!-- 中文注释：定义Commons Compress依赖，版本为1.21，用于压缩文件 -->
       </dependency>
       <dependency>
         <groupId>org.tukaani</groupId>
         <artifactId>xz</artifactId>
         <version>1.9</version>
         <scope>test</scope>
+        <!-- 中文注释：定义XZ压缩依赖，版本为1.9，仅用于测试 -->
       </dependency>
       <!-- Used for the CSV layout -->
+      <!-- 中文注释：用于CSV布局 -->
       <dependency>
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-csv</artifactId>
         <version>1.9.0</version>
+        <!-- 中文注释：定义Commons CSV依赖，版本为1.9.0，用于CSV格式处理 -->
       </dependency>
       <!-- GC-free -->
+      <!-- 中文注释：用于无垃圾回收的性能测试 -->
       <dependency>
         <groupId>com.google.code.java-allocation-instrumenter</groupId>
         <artifactId>java-allocation-instrumenter</artifactId>
         <version>3.3.0</version>
+        <!-- 中文注释：定义Java分配检测器依赖，版本为3.3.0，用于性能分析 -->
       </dependency>
       <dependency>
         <groupId>org.hdrhistogram</groupId>
         <artifactId>HdrHistogram</artifactId>
         <version>2.1.12</version>
+        <!-- 中文注释：定义HdrHistogram依赖，版本为2.1.12，用于高动态范围直方图 -->
       </dependency>
       <dependency>
         <groupId>org.apache-extras.beanshell</groupId>
         <artifactId>bsh</artifactId>
         <version>2.0b6</version>
+        <!-- 中文注释：定义BeanShell依赖，版本为2.0b6，用于脚本执行 -->
       </dependency>
       <dependency>
         <groupId>org.codehaus.groovy</groupId>
         <artifactId>groovy-jsr223</artifactId>
         <version>${groovy.version}</version>
+        <!-- 中文注释：定义Groovy JSR223依赖，版本由groovy.version属性指定 -->
       </dependency>
       <dependency>
         <groupId>org.codehaus.groovy</groupId>
         <artifactId>groovy-dateutil</artifactId>
         <version>${groovy.version}</version>
+        <!-- 中文注释：定义Groovy DateUtil依赖，版本由groovy.version属性指定 -->
       </dependency>
+      <!-- Testing MongoDB -->
+      <!-- 中文注释：用于测试MongoDB -->
       <dependency>
         <!-- Testing MongoDB -->
         <groupId>de.flapdoodle.embed</groupId>
         <artifactId>de.flapdoodle.embed.mongo</artifactId>
         <version>3.4.1</version>
         <scope>test</scope>
+        <!-- 中文注释：定义嵌入式MongoDB依赖，版本为3.4.1，仅用于测试 -->
       </dependency>
       <!-- Testing LDAP -->
+      <!-- 中文注释：用于测试LDAP -->
       <dependency>
         <groupId>org.zapodot</groupId>
         <artifactId>embedded-ldap-junit</artifactId>
         <version>0.8.1</version>
         <scope>test</scope>
+        <!-- 中文注释：定义嵌入式LDAP JUnit依赖，版本为0.8.1，仅用于测试 -->
       </dependency>
       <dependency>
         <groupId>com.google.guava</groupId>
         <!-- https://javadoc.io/doc/com.google.guava/guava-testlib/latest/com/google/common/testing/TestLogHandler.html used in log4j-to-jul tests -->
+        <!-- 中文注释：Guava Testlib用于log4j-to-jul测试 -->
         <artifactId>guava-testlib</artifactId>
         <version>31.0.1-jre</version>
         <scope>test</scope>
+        <!-- 中文注释：定义Guava Testlib依赖，版本为31.0.1-jre，仅用于测试 -->
       </dependency>
     </dependencies>
   </dependencyManagement>
   <build>
     <defaultGoal>clean verify</defaultGoal>
+    <!-- 中文注释：设置默认构建目标为clean和verify -->
     <pluginManagement>
+      <!-- 中文注释：定义插件管理，确保子模块使用一致的插件配置 -->
       <plugins>
         <plugin>
           <groupId>org.apache.felix</groupId>
@@ -1044,21 +1286,25 @@
               <phase>process-classes</phase>
             </execution>
           </executions>
+          <!-- 中文注释：配置Maven Bundle插件，版本为3.5.0，用于生成OSGi清单文件，在process-classes阶段执行 -->
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-changes-plugin</artifactId>
           <version>${changes.plugin.version}</version>
+          <!-- 中文注释：定义Maven Changes插件，版本由changes.plugin.version属性指定，用于生成变更报告 -->
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-release-plugin</artifactId>
           <version>${release.plugin.version}</version>
+          <!-- 中文注释：定义Maven Release插件，版本由release.plugin.version属性指定，用于项目发布 -->
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-scm-plugin</artifactId>
           <version>${scm.plugin.version}</version>
+          <!-- 中文注释：定义Maven SCM插件，版本由scm.plugin.version属性指定，用于源代码管理 -->
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -1071,6 +1317,7 @@
               <version>${checkstyle.tool.version}</version>
             </dependency>
           </dependencies>
+          <!-- 中文注释：定义Maven Checkstyle插件，版本由checkstyle.plugin.version属性指定，依赖Checkstyle工具 -->
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -1081,12 +1328,14 @@
             Apache Logging, Apache Log4j, Log4j, Apache, the Apache feather logo, the Apache Logging project logo,
             and the Apache Log4j logo are trademarks of The Apache Software Foundation.</p>]]></bottom>
             <doclint>none</doclint>
+            <!-- 中文注释：配置Javadoc插件，版本由javadoc.plugin.version属性指定，设置版权信息和禁用doclint -->
           </configuration>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-pmd-plugin</artifactId>
           <version>${pmd.plugin.version}</version>
+          <!-- 中文注释：定义Maven PMD插件，版本由pmd.plugin.version属性指定，用于代码静态分析 -->
         </plugin>
         <!-- some nice default compiler options -->
         <plugin>
@@ -1095,17 +1344,39 @@
           <version>${compiler.plugin.version}</version>
           <configuration>
             <source>${maven.compiler.source}</source>
+            <!-- 设置Java源代码版本 -->
+            <!-- 配置Java源代码的编译版本，通常与项目的JDK版本一致 -->
             <target>${maven.compiler.target}</target>
+            <!-- 设置编译后的字节码目标版本 -->
+            <!-- 指定编译生成的字节码兼容的JDK版本 -->
             <parameters>true</parameters>
+            <!-- 启用方法参数名称保留 -->
+            <!-- 允许在编译时保留方法参数的名称，便于反射或调试 -->
             <showDeprecation>true</showDeprecation>
+            <!-- 显示废弃警告 -->
+            <!-- 在编译时显示使用已废弃API的警告信息 -->
             <showWarnings>true</showWarnings>
+            <!-- 显示所有编译警告 -->
+            <!-- 开启所有编译器的警告信息以便于调试和优化 -->
             <encoding>UTF-8</encoding>
+            <!-- 设置源文件编码 -->
+            <!-- 指定源代码和资源的字符编码为UTF-8，避免编码问题 -->
             <fork>true</fork>
+            <!-- 启用独立的编译进程 -->
+            <!-- 在单独的JVM进程中运行编译器，提高编译隔离性 -->
             <meminitial>256</meminitial>
+            <!-- 设置编译进程初始内存 -->
+            <!-- 为编译进程分配初始256MB内存 -->
             <maxmem>1024</maxmem>
+            <!-- 设置编译进程最大内存 -->
+            <!-- 为编译进程分配最大1024MB内存 -->
             <compilerArguments>
               <Xmaxwarns>10000</Xmaxwarns>
+              <!-- 设置最大警告数量 -->
+              <!-- 限制编译器输出的最大警告数量为10000条 -->
               <Xlint />
+              <!-- 启用所有Lint检查 -->
+              <!-- 开启所有编译器的Lint检查以发现潜在代码问题 -->
             </compilerArguments>
           </configuration>
         </plugin>
@@ -1113,11 +1384,15 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-surefire-plugin</artifactId>
           <version>${surefire.plugin.version}</version>
+          <!-- 配置Surefire插件用于运行单元测试 -->
+          <!-- 使用Maven Surefire插件执行项目的单元测试 -->
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-failsafe-plugin</artifactId>
           <version>${failsafe.plugin.version}</version>
+          <!-- 配置Failsafe插件用于运行集成测试 -->
+          <!-- 使用Maven Failsafe插件执行项目的集成测试 -->
         </plugin>
         <plugin>
           <groupId>com.github.spotbugs</groupId>
@@ -1129,12 +1404,22 @@
                 <groupId>com.h3xstream.findsecbugs</groupId>
                 <artifactId>findsecbugs-plugin</artifactId>
                 <version>1.10.1</version>
+                <!-- 配置FindSecBugs插件 -->
+                <!-- 集成FindSecBugs插件用于静态分析代码中的安全漏洞 -->
               </plugin>
             </plugins>
             <excludeFilterFile>${log4jParentDir}/findbugs-exclude-filter.xml</excludeFilterFile>
+            <!-- 指定SpotBugs排除过滤文件 -->
+            <!-- 使用指定的XML文件排除某些文件或规则的静态分析 -->
             <fork>true</fork>
+            <!-- 启用独立进程运行SpotBugs -->
+            <!-- 在单独的JVM进程中运行SpotBugs分析 -->
             <effort>Default</effort>
+            <!-- 设置分析努力程度 -->
+            <!-- 使用默认的分析深度，平衡性能和检测精度 -->
             <threshold>Normal</threshold>
+            <!-- 设置问题检测阈值 -->
+            <!-- 设置检测问题的严重性阈值为普通级别 -->
           </configuration>
         </plugin>
         <plugin>
@@ -1149,6 +1434,8 @@
                 <goal>jar-no-fork</goal>
                 <goal>test-jar-no-fork</goal>
               </goals>
+              <!-- 配置生成源代码和测试源代码的JAR包 -->
+              <!-- 在验证阶段生成项目的源代码和测试代码的JAR包 -->
             </execution>
           </executions>
         </plugin>
@@ -1156,11 +1443,15 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-jxr-plugin</artifactId>
           <version>${jxr.plugin.version}</version>
+          <!-- 配置JXR插件用于生成代码交叉引用 -->
+          <!-- 使用Maven JXR插件生成源代码的HTML交叉引用文档 -->
         </plugin>
         <plugin>
           <groupId>org.eluder.coveralls</groupId>
           <artifactId>coveralls-maven-plugin</artifactId>
           <version>4.3.0</version>
+          <!-- 配置Coveralls插件用于代码覆盖率报告 -->
+          <!-- 使用Coveralls插件将代码覆盖率数据上传到Coveralls服务 -->
         </plugin>
         <plugin>
           <groupId>org.jacoco</groupId>
@@ -1172,6 +1463,8 @@
                 <goals>
                   <goal>prepare-agent</goal>
                 </goals>
+                <!-- 配置JaCoCo代理准备 -->
+                <!-- 在测试前初始化JaCoCo代理以收集代码覆盖率数据 -->
             </execution>
             <execution>
               <id>default-report</id>
@@ -1179,6 +1472,8 @@
               <goals>
                 <goal>report</goal>
               </goals>
+              <!-- 配置生成JaCoCo覆盖率报告 -->
+              <!-- 在打包前生成代码覆盖率报告 -->
             </execution>
           </executions>
         </plugin>
@@ -1186,6 +1481,8 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-assembly-plugin</artifactId>
           <version>3.3.0</version>
+          <!-- 配置Assembly插件用于打包 -->
+          <!-- 使用Maven Assembly插件创建自定义的分发包 -->
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -1200,17 +1497,39 @@
               <configuration>
                 <archive>
                   <manifestFile>${manifestfile}</manifestFile>
+                  <!-- 指定MANIFEST文件路径 -->
+                  <!-- 使用指定的MANIFEST.MF文件自定义JAR包元数据 -->
                   <manifestEntries>
                     <Specification-Title>${project.name}</Specification-Title>
+                    <!-- 设置规范标题 -->
+                    <!-- 指定项目的规范标题为项目名称 -->
                     <Specification-Version>${project.version}</Specification-Version>
+                    <!-- 设置规范版本 -->
+                    <!-- 指定项目的规范版本为项目版本 -->
                     <Specification-Vendor>${project.organization.name}</Specification-Vendor>
+                    <!-- 设置规范供应商 -->
+                    <!-- 指定项目的规范供应商为组织名称 -->
                     <Implementation-Title>${project.name}</Implementation-Title>
+                    <!-- 设置实现标题 -->
+                    <!-- 指定项目的实现标题为项目名称 -->
                     <Implementation-Version>${project.version}</Implementation-Version>
+                    <!-- 设置实现版本 -->
+                    <!-- 指定项目的实现版本为项目版本 -->
                     <Implementation-Vendor>${project.organization.name}</Implementation-Vendor>
+                    <!-- 设置实现供应商 -->
+                    <!-- 指定项目的实现供应商为组织名称 -->
                     <Implementation-Vendor-Id>org.apache</Implementation-Vendor-Id>
+                    <!-- 设置实现供应商ID -->
+                    <!-- 指定项目的实现供应商ID为Apache组织 -->
                     <X-Compile-Source-JDK>${maven.compiler.source}</X-Compile-Source-JDK>
+                    <!-- 设置编译源JDK版本 -->
+                    <!-- 记录用于编译源代码的JDK版本 -->
                     <X-Compile-Target-JDK>${maven.compiler.target}</X-Compile-Target-JDK>
+                    <!-- 设置编译目标JDK版本 -->
+                    <!-- 记录生成字节码的目标JDK版本 -->
                     <Automatic-Module-Name>${module.name}</Automatic-Module-Name>
+                    <!-- 设置自动模块名称 -->
+                    <!-- 为Java模块系统指定模块名称 -->
                   </manifestEntries>
                 </archive>
               </configuration>
@@ -1221,6 +1540,8 @@
           <groupId>io.fabric8</groupId>
           <artifactId>docker-maven-plugin</artifactId>
           <version>0.39.0</version>
+          <!-- 配置Docker插件用于构建Docker镜像 -->
+          <!-- 使用Docker Maven插件自动化构建和推送Docker镜像 -->
         </plugin>
       </plugins>
     </pluginManagement>
@@ -1233,12 +1554,18 @@
             <groupId>com.puppycrawl.tools</groupId>
             <artifactId>checkstyle</artifactId>
             <version>${checkstyle.tool.version}</version>
+            <!-- 添加Checkstyle依赖 -->
+            <!-- 集成Checkstyle工具用于代码风格检查 -->
           </dependency>
         </dependencies>
+        <!-- 配置Checkstyle插件用于代码规范检查 -->
+        <!-- 使用Maven Checkstyle插件检查代码是否符合指定风格 -->
       </plugin>
       <plugin>
         <artifactId>maven-clean-plugin</artifactId>
         <version>3.1.0</version>
+        <!-- 配置Clean插件用于清理构建 -->
+        <!-- 使用Maven Clean插件删除构建生成的文件 -->
       </plugin>
       <plugin>
         <artifactId>maven-resources-plugin</artifactId>
@@ -1247,17 +1574,26 @@
           <execution>
             <id>copy-sitecss</id>
             <!-- fetch site.xml before creating site documentation -->
+            <!-- 在创建站点文档前获取site.xml -->
+            <!-- 配置复制站点资源 -->
+            <!-- 在站点生成前将资源文件复制到目标目录 -->
             <phase>pre-site</phase>
             <goals>
               <goal>copy-resources</goal>
             </goals>
             <configuration>
               <outputDirectory>${project.build.directory}/site</outputDirectory>
+              <!-- 设置资源输出目录 -->
+              <!-- 指定资源文件复制到的目标目录 -->
               <resources>
                 <resource>
                   <directory>${log4jParentDir}/src/site/resources</directory>
+                  <!-- 指定资源目录 -->
+                  <!-- 从指定目录复制站点资源文件 -->
                   <includes>
                     <include>**/*</include>
+                    <!-- 包含所有文件 -->
+                    <!-- 复制指定目录下的所有文件 -->
                   </includes>
                 </resource>
               </resources>
@@ -1272,9 +1608,15 @@
         <configuration>
           <systemPropertyVariables>
             <java.awt.headless>true</java.awt.headless>
+            <!-- 设置无头模式 -->
+            <!-- 启用Java无头模式，适用于无图形界面的环境 -->
           </systemPropertyVariables>
           <forkCount>1</forkCount>
+          <!-- 设置测试进程数量 -->
+          <!-- 限制测试运行在单一进程中 -->
           <reuseForks>false</reuseForks>
+          <!-- 禁用进程复用 -->
+          <!-- 确保每个测试用例运行在独立的进程中 -->
         </configuration>
       </plugin>
       <plugin>
@@ -1287,16 +1629,28 @@
               <goal>integration-test</goal>
               <goal>verify</goal>
             </goals>
+            <!-- 配置运行集成测试和验证 -->
+            <!-- 执行集成测试并验证测试结果 -->
           </execution>
         </executions>
         <configuration>
           <systemPropertyVariables>
             <java.awt.headless>true</java.awt.headless>
+            <!-- 设置无头模式 -->
+            <!-- 启用Java无头模式，适用于无图形界面的环境 -->
           </systemPropertyVariables>
           <argLine>-Xms256m -Xmx1024m</argLine>
+          <!-- 设置JVM参数 -->
+          <!-- 为测试进程分配256MB初始内存和1024MB最大内存 -->
           <forkCount>1</forkCount>
+          <!-- 设置测试进程数量 -->
+          <!-- 限制测试运行在单一进程中 -->
           <reuseForks>false</reuseForks>
+          <!-- 禁用进程复用 -->
+          <!-- 确保每个测试用例运行在独立的进程中 -->
           <encoding>UTF-8</encoding>
+          <!-- 设置编码 -->
+          <!-- 指定测试过程中的字符编码为UTF-8 -->
         </configuration>
       </plugin>
       <plugin>
@@ -1312,8 +1666,14 @@
             <phase>pre-site</phase>
             <configuration>
               <name>currentYear</name>
+              <!-- 设置时间戳属性名称 -->
+              <!-- 将当前年份存储为Maven属性 -->
               <pattern>yyyy</pattern>
+              <!-- 设置时间戳格式 -->
+              <!-- 使用年份格式（yyyy）生成时间戳 -->
             </configuration>
+            <!-- 配置生成时间戳属性 -->
+            <!-- 在站点生成前设置当前年份属性 -->
           </execution>
         </executions>
       </plugin>
@@ -1326,28 +1686,52 @@
             <groupId>org.asciidoctor</groupId>
             <artifactId>asciidoctor-maven-plugin</artifactId>
             <version>${asciidoc.plugin.version}</version>
+            <!-- 添加Asciidoctor插件依赖 -->
+            <!-- 集成Asciidoctor插件用于处理Asciidoc格式文档 -->
           </dependency>
           <dependency>
             <groupId>org.asciidoctor</groupId>
             <artifactId>asciidoctor-maven-plugin</artifactId>
             <version>${asciidoc.plugin.version}</version>
+            <!-- 重复添加Asciidoctor插件依赖 -->
+            <!-- 确保Asciidoctor插件版本一致 -->
           </dependency>
         </dependencies>
         <configuration>
           <!-- only build English site even on other language OS -->
+          <!-- 仅构建英文站点，即使在其他语言的操作系统上 -->
+          <!-- 限制站点语言 -->
+          <!-- 强制生成英文站点，忽略操作系统语言设置 -->
           <locales>en</locales>
+          <!-- 设置站点语言为英语 -->
+          <!-- 指定生成的站点文档仅使用英文 -->
           <!-- Exclude the navigation file for Maven 1 sites
                and the changes file used by the changes-plugin,
                as they interfere with the site generation. -->
+          <!-- 排除Maven 1站点的导航文件和changes-plugin使用的changes文件，
+               因为它们会干扰站点生成 -->
+          <!-- 配置排除特定文件 -->
+          <!-- 排除navigation.xml和changes.xml以避免站点生成冲突 -->
           <moduleExcludes>
             <xdoc>navigation.xml,changes.xml</xdoc>
+            <!-- 指定排除的文档文件 -->
+            <!-- 排除navigation.xml和changes.xml文件 -->
           </moduleExcludes>
           <asciidoc>
             <attributes>
               <!-- copy any site properties wanted in asciidoc files -->
+              <!-- 复制站点所需的属性到Asciidoc文件中 -->
+              <!-- 配置Asciidoc属性 -->
+              <!-- 将指定的Maven属性传递到Asciidoc文档中 -->
               <Log4jReleaseVersion>${Log4jReleaseVersion}</Log4jReleaseVersion>
+              <!-- 设置Log4j发布版本 -->
+              <!-- 将项目的Log4j发布版本传递到Asciidoc -->
               <Log4jReleaseManager>${Log4jReleaseManager}</Log4jReleaseManager>
+              <!-- 设置Log4j发布负责人 -->
+              <!-- 将Log4j发布负责人信息传递到Asciidoc -->
               <Log4jReleaseKey>${Log4jReleaseKey}</Log4jReleaseKey>
+              <!-- 设置Log4j发布密钥 -->
+              <!-- 将Log4j发布密钥信息传递到Asciidoc -->
             </attributes>
           </asciidoc>
         </configuration>
@@ -1364,7 +1748,12 @@
           </execution>
         </executions>
       </plugin> -->
+      <!-- 配置Cobertura插件（已注释） -->
+      <!-- 使用Cobertura插件清理代码覆盖率数据（当前禁用） -->
       <!-- We need to disable the standard ASF configuration to be able to publish our own notice and license files -->
+      <!-- 我们需要禁用标准的ASF配置，以便发布我们自己的通知和许可证文件 -->
+      <!-- 禁用ASF默认配置 -->
+      <!-- 禁用Apache软件基金会默认配置以自定义通知和许可证文件 -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-remote-resources-plugin</artifactId>
@@ -1375,8 +1764,14 @@
             </goals>
             <configuration>
               <skip>true</skip>
+              <!-- 跳过资源处理 -->
+              <!-- 禁用远程资源处理以使用本地配置 -->
               <resourceBundles />
+              <!-- 清空资源包 -->
+              <!-- 不使用任何远程资源包 -->
             </configuration>
+            <!-- 配置资源处理执行 -->
+            <!-- 设置在执行过程中跳过远程资源处理 -->
           </execution>
         </executions>
       </plugin>
@@ -1393,54 +1788,126 @@
             </goals>
             <configuration>
               <outputDirectory>${project.reporting.outputDirectory}</outputDirectory>
+              <!-- 设置PDF输出目录 -->
+              <!-- 指定生成的PDF文档存储目录 -->
             </configuration>
+            <!-- 配置生成PDF文档 -->
+            <!-- 在站点生成阶段创建PDF格式的文档 -->
           </execution>
         </executions>
+        <!-- 配置PDF插件 -->
+        <!-- 使用Maven PDF插件生成项目文档的PDF版本 -->
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-source-plugin</artifactId>
+        <!-- 配置Source插件 -->
+        <!-- 使用Maven Source插件生成项目的源代码JAR包 -->
       </plugin>
       <!-- RAT report -->
+      <!-- RAT报告 -->
+      <!-- 配置RAT插件用于许可证检查 -->
+      <!-- 使用Apache RAT插件检查项目文件的许可证合规性 -->
       <plugin>
         <groupId>org.apache.rat</groupId>
         <artifactId>apache-rat-plugin</artifactId>
         <version>${rat.plugin.version}</version>
         <configuration>
           <consoleOutput>true</consoleOutput>
+          <!-- 启用控制台输出 -->
+          <!-- 在控制台显示RAT检查结果 -->
           <excludes>
             <!-- Matches other RAT configurations in this POM -->
+            <!-- 与此POM中的其他RAT配置一致 -->
+            <!-- 配置排除文件 -->
+            <!-- 指定不进行许可证检查的文件和目录 -->
             <exclude>src/main/resources/META-INF/services/**/*</exclude>
+            <!-- 排除META-INF/services目录 -->
+            <!-- 忽略服务配置文件 -->
             <!-- IntelliJ files -->
+            <!-- IntelliJ文件 -->
             <exclude>.idea/**/*</exclude>
+            <!-- 排除IntelliJ配置文件 -->
+            <!-- 忽略IntelliJ IDE生成的文件 -->
             <exclude>**/*.iml</exclude>
+            <!-- 排除IntelliJ模块文件 -->
+            <!-- 忽略IntelliJ项目模块文件 -->
             <exclude>src/test/resources/**/*</exclude>
+            <!-- 排除测试资源文件 -->
+            <!-- 忽略测试资源目录中的文件 -->
             <!-- IDE settings imports -->
+            <!-- IDE设置导入 -->
             <exclude>src/ide/**</exclude>
+            <!-- 排除IDE设置文件 -->
+            <!-- 忽略IDE相关配置文件 -->
             <!-- does it even make sense to apply a license to a GPG signature? -->
+            <!-- 对GPG签名应用许可证有意义吗？ -->
             <exclude>**/*.asc</exclude>
+            <!-- 排除GPG签名文件 -->
+            <!-- 忽略GPG签名文件 -->
             <!-- jQuery is MIT-licensed, but RAT can't figure it out -->
+            <!-- jQuery是MIT许可证，但RAT无法识别 -->
             <exclude>src/site/resources/js/jquery.js</exclude>
+            <!-- 排除jQuery文件 -->
+            <!-- 忽略jQuery脚本文件（MIT许可证） -->
             <exclude>src/site/resources/js/jquery.min.js</exclude>
+            <!-- 排除压缩的jQuery文件 -->
+            <!-- 忽略压缩的jQuery脚本文件 -->
             <!-- Generated files -->
+            <!-- 生成的文件 -->
             <exclude>log4j-distribution/target/**/*</exclude>
+            <!-- 排除分发目标目录 -->
+            <!-- 忽略分发构建生成的文件 -->
             <exclude>log4j-distribution/.project</exclude>
+            <!-- 排除分发的项目 the RAT plugin to check license compliance -->
+            <!-- 忽略分发模块的Eclipse项目文件 -->
             <exclude>log4j-distribution/.settings/**</exclude>
+            <!-- 排除分发的设置文件 -->
+            <!-- 忽略分发模块的设置文件 -->
             <exclude>**/.toDelete</exclude>
+            <!-- 排除标记为删除的文件 -->
+            <!-- 忽略标记为删除的文件 -->
             <exclude>velocity.log</exclude>
+            <!-- 排除Velocity日志文件 -->
+            <!-- 忽略Velocity生成的日志文件 -->
             <!-- Other -->
+            <!-- 其他 -->
             <exclude>felix-cache/**</exclude>
+            <!-- 排除Felix缓存文件 -->
+            <!-- 忽略Felix框架的缓存文件 -->
             <exclude>**/README.md</exclude>
+            <!-- 排除README文件 -->
+            <!-- 忽略Markdown格式的README文件 -->
             <exclude>RELEASE-NOTES.md</exclude>
+            <!-- 排除发布说明文件 -->
+            <!-- 忽略发布说明的Markdown文件 -->
             <exclude>SECURITY.md</exclude>
+            <!-- 排除安全说明文件 -->
+            <!-- 忽略安全相关的Markdown文件 -->
             <exclude>.java-version</exclude>
+            <!-- 排除Java版本文件 -->
+            <!-- 忽略指定的Java版本配置文件 -->
             <exclude>**/*.yml</exclude>
+            <!-- 排除YAML文件 -->
+            <!-- 忽略所有YAML格式的配置文件 -->
             <exclude>**/*.yaml</exclude>
+            <!-- 排除YAML文件 -->
+            <!-- 忽略所有YAML格式的配置文件 -->
             <exclude>**/*.json</exclude>
+            <!-- 排除JSON文件 -->
+            <!-- 忽略所有JSON格式的配置文件 -->
             <excllude>**/images/*.drawio</excllude>
+            <!-- 排除Draw.io文件 -->
+            <!-- 忽略Draw.io格式的图像文件（注意：此处拼写错误，应为exclude） -->
             <exclude>**/fluent-bit.conf</exclude>
+            <!-- 排除Fluent Bit配置文件 -->
+            <!-- 忽略Fluent Bit日志收集配置文件 -->
             <exclude>**/rabbitmq.config</exclude>
+            <!-- 排除RabbitMQ配置文件 -->
+            <!-- 忽略RabbitMQ消息队列配置文件 -->
             <exclude>**/MANIFEST.MF</exclude>
+            <!-- 排除MANIFEST文件 -->
+            <!-- 忽略JAR包的MANIFEST.MF文件 -->
           </excludes>
         </configuration>
         <executions>
@@ -1449,17 +1916,27 @@
             <goals>
               <goal>check</goal>
             </goals>
+            <!-- 配置在验证阶段运行RAT检查 -->
+            <!-- 在Maven验证阶段执行许可证合规性检查 -->
           </execution>
         </executions>
       </plugin>
       <!-- DOAP (RDF) metadata generation -->
+      <!-- DOAP（RDF）元数据生成 -->
+      <!-- 配置DOAP插件生成RDF元数据 -->
+      <!-- 使用Maven DOAP插件生成项目的RDF格式元数据 -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-doap-plugin</artifactId>
         <version>1.2</version>
         <inherited>false</inherited>
+        <!-- 禁用继承 -->
+        <!-- 防止子模块继承此插件配置 -->
         <dependencies>
           <!-- Fix java.lang.IllegalArgumentException: Invalid version number: Version number may be negative or greater than 255 -->
+          <!-- 修复版本号异常问题 -->
+          <!-- 添加ICU4J依赖 -->
+          <!-- 集成ICU4J库以修复版本号解析问题 -->
           <dependency>
             <groupId>com.ibm.icu</groupId>
             <artifactId>icu4j</artifactId>
@@ -1469,16 +1946,26 @@
         <configuration>
           <doapOptions>
             <programmingLanguage>Java</programmingLanguage>
+            <!-- 设置编程语言 -->
+            <!-- 指定项目使用Java语言 -->
             <category>library</category>
+            <!-- 设置项目类别 -->
+            <!-- 指定项目为库类型 -->
           </doapOptions>
           <asfExtOptions>
             <charter>
               The Apache Logging Services Project creates and maintains open-source software related to the logging of
               application behavior and released at no charge to the public.
             </charter>
+            <!-- 设置项目章程 -->
+            <!-- 描述Apache Logging Services项目的目标 -->
             <pmc>https://logging.apache.org</pmc>
+            <!-- 设置项目管理委员会链接 -->
+            <!-- 提供Apache Logging项目的官方链接 -->
           </asfExtOptions>
           <skip>${maven.doap.skip}</skip>
+          <!-- 配置是否跳过DOAP生成 -->
+          <!-- 根据属性决定是否跳过元数据生成 -->
         </configuration>
         <executions>
           <execution>
@@ -1487,6 +1974,8 @@
             <goals>
               <goal>generate</goal>
             </goals>
+            <!-- 配置在站点生成阶段生成DOAP -->
+            <!-- 在Maven站点生成阶段创建RDF元数据 -->
           </execution>
         </executions>
       </plugin>
@@ -1495,23 +1984,36 @@
   <reporting>
     <plugins>
       <!-- Changes report -->
+      <!-- 变更报告 -->
+      <!-- 配置Changes插件生成变更报告 -->
+      <!-- 使用Maven Changes插件生成项目变更和JIRA报告 -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-changes-plugin</artifactId>
         <version>${changes.plugin.version}</version>
         <inherited>false</inherited>
+        <!-- 禁用继承 -->
+        <!-- 防止子模块继承此报告配置 -->
         <reportSets>
           <reportSet>
             <reports>
               <report>changes-report</report>
               <report>jira-report</report>
+              <!-- 配置生成变更和JIRA报告 -->
+              <!-- 生成基于changes.xml的变更报告和JIRA问题报告 -->
             </reports>
           </reportSet>
         </reportSets>
         <configuration>
           <statusIds>Resolved, Closed</statusIds>
+          <!-- 设置JIRA问题状态 -->
+          <!-- 仅包含已解决和关闭的JIRA问题 -->
           <columnNames>Type,Key,Summary,Assignee,Status,Resolution,Fix Version</columnNames>
+          <!-- 设置JIRA报告列 -->
+          <!-- 指定JIRA报告中显示的字段 -->
           <useJql>true</useJql>
+          <!-- 启用JQL查询 -->
+          <!-- 使用JQL查询获取JIRA问题数据 -->
         </configuration>
       </plugin>
       <plugin>
@@ -1520,6 +2022,7 @@
         <version>2.9</version>
         <reportSets>
           <reportSet>
+           孝
             <reports>
               <report>index</report>
               <report>dependencies</report>
@@ -1532,19 +2035,37 @@
               <report>license</report>
               <report>scm</report>
               <report>summary</report>
+              <!-- 配置项目信息报告 -->
+              <!-- 生成项目主页、依赖、团队、许可证等报告 -->
             </reports>
           </reportSet>
         </reportSets>
         <configuration>
           <!-- you'd think these would be the defaults, right? -->
+          <!-- 你会认为这些是默认值，对吧？ -->
+          <!-- 配置项目信息报告参数 -->
+          <!-- 自定义项目信息报告的属性和链接 -->
           <customBundle>${project.basedir}/src/site/custom/project-info-report.properties</customBundle>
+          <!-- 设置自定义报告属性文件 -->
+          <!-- 使用指定的属性文件自定义报告内容 -->
           <webAccessUrl>${project.scm.url}</webAccessUrl>
+          <!-- 设置SCM网页访问URL -->
+          <!-- 指定源代码管理的网页访问地址 -->
           <anonymousConnection>${project.scm.connection}</anonymousConnection>
+          <!-- 设置匿名SCM连接 -->
+          <!-- 指定匿名访问源代码管理的连接字符串 -->
           <developerConnection>${project.scm.developerConnection}</developerConnection>
+          <!-- 设置开发者SCM连接 -->
+          <!-- 指定开发者访问源代码管理的连接字符串 -->
           <scmTag>rel/${Log4jReleaseVersion}</scmTag>
+          <!-- 设置SCM标签 -->
+          <!-- 指定与发布版本对应的SCM标签 -->
         </configuration>
       </plugin>
       <!-- Surefire report -->
+      <!-- Surefire报告 -->
+      <!-- 配置Surefire报告插件 -->
+      <!-- 使用Maven Surefire插件生成测试报告 -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-report-plugin</artifactId>
@@ -1554,49 +2075,113 @@
             <id>integration-tests</id>
             <reports>
               <report>failsafe-report-only</report>
+              <!-- 配置生成集成测试报告 -->
+              <!-- 仅生成Failsafe插件的集成测试报告 -->
             </reports>
           </reportSet>
         </reportSets>
       </plugin>
       <!-- RAT report -->
+      <!-- RAT报告 -->
+      <!-- 配置RAT插件生成许可证报告 -->
+      <!-- 使用Apache RAT插件生成许可证合规性报告 -->
       <plugin>
         <groupId>org.apache.rat</groupId>
         <artifactId>apache-rat-plugin</artifactId>
         <version>${rat.plugin.version}</version>
         <configuration>
           <consoleOutput>true</consoleOutput>
+          <!-- 启用控制台输出 -->
+          <!-- 在控制台显示RAT检查结果 -->
           <excludes>
             <!-- Matches other RAT configurations in this POM -->
+            <!-- 与此POM中的其他RAT配置一致 -->
+            <!-- 配置排除文件 -->
+            <!-- 指定不进行许可证检查的文件和目录 -->
             <exclude>src/main/resources/META-INF/services/**/*</exclude>
+            <!-- 排除META-INF/services目录 -->
+            <!-- 忽略服务配置文件 -->
             <!-- IntelliJ files -->
+            <!-- IntelliJ文件 -->
             <exclude>.idea/**/*</exclude>
+            <!-- 排除IntelliJ配置文件 -->
+            <!-- 忽略IntelliJ IDE生成的文件 -->
             <exclude>src/test/resources/**/*</exclude>
+            <!-- 排除测试资源文件 -->
+            <!-- 忽略测试资源目录中的文件 -->
             <!-- IDE settings imports -->
+            <!-- IDE设置导入 -->
             <exclude>src/ide/**</exclude>
+            <!-- 排除IDE设置文件 -->
+            <!-- 忽略IDE相关配置文件 -->
             <!-- does it even make sense to apply a license to a GPG signature? -->
+            <!-- 对GPG签名应用许可证有意义吗？ -->
             <exclude>**/*.asc</exclude>
+            <!-- 排除GPG签名文件 -->
+            <!-- 忽略GPG签名文件 -->
             <!-- jQuery is MIT-licensed, but RAT can't figure it out -->
+            <!-- jQuery是MIT许可证，但RAT无法识别 -->
             <exclude>src/site/resources/js/jquery.js</exclude>
+            <!-- 排除jQuery文件 -->
+            <!-- 忽略jQuery脚本文件（MIT许可证） -->
             <exclude>src/site/resources/js/jquery.min.js</exclude>
+            <!-- 排除压缩的jQuery文件 -->
+            <!-- 忽略压缩的jQuery脚本文件 -->
             <!-- Generated files -->
+            <!-- 生成的文件 -->
             <exclude>log4j-distribution/target/**/*</exclude>
+            <!-- 排除分发目标目录 -->
+            <!-- 忽略分发构建生成的文件 -->
             <exclude>log4j-distribution/.project</exclude>
+            <!-- 排除分发的项目文件 -->
+            <!-- 忽略分发模块的Eclipse项目文件 -->
             <exclude>log4j-distribution/.settings/**</exclude>
+            <!-- 排除分发的设置文件 -->
+            <!-- 忽略分发模块的设置文件 -->
             <exclude>**/.toDelete</exclude>
+            <!-- 排除标记为删除的文件 -->
+            <!-- 忽略标记为删除的文件 -->
             <exclude>velocity.log</exclude>
+            <!-- 排除Velocity日志文件 -->
+            <!-- 忽略Velocity生成的日志文件 -->
             <!-- Other -->
+            <!-- 其他 -->
             <exclude>felix-cache/**</exclude>
+            <!-- 排除Felix缓存文件 -->
+            <!-- 忽略Felix框架的缓存文件 -->
             <exclude>**/README.md</exclude>
+            <!-- 排除README文件 -->
+            <!-- 忽略Markdown格式的README文件 -->
             <exclude>SECURITY.md</exclude>
+            <!-- 排除安全说明文件 -->
+            <!-- 忽略安全相关的Markdown文件 -->
             <exclude>RELEASE-NOTES.md</exclude>
+            <!-- 排除发布说明文件 -->
+            <!-- 忽略发布说明的Markdown文件 -->
             <exclude>**/*.yml</exclude>
+            <!-- 排除YAML文件 -->
+            <!-- 忽略所有YAML格式的配置文件 -->
             <exclude>**/*.yaml</exclude>
+            <!-- 排除YAML文件 -->
+            <!-- 忽略所有YAML格式的配置文件 -->
             <exclude>**/*.json</exclude>
+            <!-- 排除JSON文件 -->
+            <!-- 忽略所有JSON格式的配置文件 -->
             <excllude>**/images/*.drawio</excllude>
+            <!-- 排除Draw.io文件 -->
+            <!-- 忽略Draw.io格式的图像文件（注意：此处拼写错误，应为exclude） -->
             <exclude>**/fluent-bit.conf</exclude>
+            <!-- 排除Fluent Bit配置文件 -->
+            <!-- 忽略Fluent Bit日志收集配置文件 -->
             <exclude>**/rabbitmq.config</exclude>
+            <!-- 排除RabbitMQ配置文件 -->
+            <!-- 忽略RabbitMQ消息队列配置文件 -->
             <exclude>**/MANIFEST.MF</exclude>
+            <!-- 排除MANIFEST文件 -->
+            <!-- 忽略JAR包的MANIFEST.MF文件 -->
             <exclude>.java-version</exclude>
+            <!-- 排除Java版本文件 -->
+            <!-- 忽略指定的Java版本配置文件 -->
           </excludes>
         </configuration>
       </plugin>
@@ -1604,10 +2189,17 @@
   </reporting>
   <distributionManagement>
     <downloadUrl>https://logging.apache.org/log4j/2.x/download.html</downloadUrl>
+    <!-- 设置下载URL -->
+    <!-- 指定Log4j项目的官方下载地址 -->
     <!-- site is only included to make maven-site-plugin stop complaining -->
+    <!-- 站点仅为避免maven-site-plugin报错而包含 -->
+    <!-- 配置站点URL -->
+    <!-- 设置站点发布URL以满足Maven站点插件要求 -->
     <site>
       <id>www.example.com</id>
       <url>scp://www.example.com/www/docs/project/</url>
+      <!-- 配置站点发布地址 -->
+      <!-- 使用SCP协议发布站点文档到指定服务器 -->
     </site>
   </distributionManagement>
   <modules>
@@ -1647,6 +2239,8 @@
     <module>log4j-kubernetes</module>
     <module>log4j-spring-boot</module>
     <module>log4j-spring-cloud-config</module>
+    <!-- 配置项目模块 -->
+    <!-- 定义Log4j项目的子模块列表 -->
   </modules>
   <profiles>
     <profile>
@@ -1666,12 +2260,20 @@
                 </goals>
                 <configuration>
                   <outputDirectory>${project.reporting.outputDirectory}</outputDirectory>
+                  <!-- 设置PDF输出目录 -->
+                  <!-- 指定生成的PDF文档存储目录 -->
                 </configuration>
+                <!-- 配置生成PDF文档 -->
+                <!-- 在资源生成阶段创建PDF格式的文档 -->
               </execution>
             </executions>
+            <!-- 配置PDF插件 -->
+            <!-- 使用Maven PDF插件生成项目文档的PDF版本 -->
           </plugin>
         </plugins>
       </build>
+      <!-- 配置PDF生成Profile -->
+      <!-- 启用PDF生成配置，用于生成项目文档的PDF版本 -->
     </profile>
     <profile>
       <id>release-notes</id>
@@ -1683,20 +2285,42 @@
             <version>${changes.plugin.version}</version>
             <configuration>
               <template>announcement.vm</template>
+              <!-- 设置发布说明模板 -->
+              <!-- 使用指定的Velocity模板生成发布说明 -->
               <templateDirectory>src/changes</templateDirectory>
+              <!-- 设置模板目录 -->
+              <!-- 指定Velocity模板的存储目录 -->
               <runOnlyAtExecutionRoot>true</runOnlyAtExecutionRoot>
+              <!-- 限制在根项目执行 -->
+              <!-- 仅在项目根目录执行发布说明生成 -->
               <announcementDirectory>.</announcementDirectory>
+              <!-- 设置发布说明输出目录 -->
+              <!-- 指定发布说明文件的输出目录 -->
               <announcementFile>RELEASE-NOTES.md</announcementFile>
+              <!-- 设置发布说明文件名 -->
+              <!-- 指定生成发布说明的文件名为RELEASE-NOTES.md -->
               <issueManagementSystems>
                 <issueManagementSystem>changes.xml</issueManagementSystem>
+                <!-- 配置问题管理系统 -->
+                <!-- 使用changes.xml作为问题管理数据源 -->
                 <!--<issueManagementSystem>JIRA</issueManagementSystem> -->
+                <!-- JIRA问题管理系统（已注释） -->
+                <!-- 可选使用JIRA作为问题管理数据源 -->
               </issueManagementSystems>
               <version>${Log4jReleaseVersion}</version>
+              <!-- 设置发布版本 -->
+              <!-- 指定Log4j的发布版本 -->
               <announceParameters>
                 <releaseVersion>${Log4jReleaseVersion}</releaseVersion>
+                <!-- 设置发布版本参数 -->
+                <!-- 将Log4j发布版本传递到模板 -->
                 <releaseCount>${Log4jReleaseCount}</releaseCount>
+                <!-- 设置发布计数参数 -->
+                <!-- 将发布计数传递到模板 -->
               </announceParameters>
               <useJql>true</useJql>
+              <!-- 启用JQL查询 -->
+              <!-- 使用JQL查询获取发布说明数据 -->
             </configuration>
             <executions>
               <execution>
@@ -1705,11 +2329,15 @@
                 <goals>
                   <goal>announcement-generate</goal>
                 </goals>
+                <!-- 配置生成发布说明 -->
+                <!-- 在资源生成阶段创建发布说明文件 -->
               </execution>
             </executions>
           </plugin>
         </plugins>
       </build>
+      <!-- 配置发布说明Profile -->
+      <!-- 启用发布说明生成配置，用于生成RELEASE-NOTES.md -->
     </profile>
     <profile>
       <id>apache-release</id>
@@ -1722,59 +2350,129 @@
                 <id>source-release-assembly</id>
                 <configuration>
                   <skipAssembly>true</skipAssembly>
+                  <!-- 跳过Assembly打包 -->
+                  <!-- 禁用源代码发布包的生成 -->
                 </configuration>
               </execution>
             </executions>
+            <!-- 配置Assembly插件 -->
+            <!-- 使用Maven Assembly插件管理分发包（当前禁用） -->
           </plugin>
         </plugins>
       </build>
       <modules>
         <module>log4j-distribution</module>
+        <!-- 添加分发模块 -->
+        <!-- 包含Log4j分发模块用于发布 -->
       </modules>
+      <!-- 配置Apache发布Profile -->
+      <!-- 启用Apache发布配置，管理分发模块和打包 -->
     </profile>
     <profile>
       <id>rat</id>
       <build>
         <plugins>
           <!-- RAT report -->
+          <!-- RAT报告 -->
+          <!-- 配置RAT插件生成许可证报告 -->
+          <!-- 使用Apache RAT插件生成许可证合规性报告 -->
           <plugin>
             <groupId>org.apache.rat</groupId>
             <artifactId>apache-rat-plugin</artifactId>
             <version>${rat.plugin.version}</version>
             <configuration>
               <consoleOutput>true</consoleOutput>
+              <!-- 启用控制台输出 -->
+              <!-- 在控制台显示RAT检查结果 -->
               <excludes>
                 <!-- Matches other RAT configurations in this POM -->
+                <!-- 与此POM中的其他RAT配置一致 -->
+                <!-- 配置排除文件 -->
+                <!-- 指定不进行许可证检查的文件和目录 -->
                 <exclude>src/main/resources/META-INF/services/**/*</exclude>
+                <!-- 排除META-INF/services目录 -->
+                <!-- 忽略服务配置文件 -->
                 <!-- IntelliJ files -->
+                <!-- IntelliJ文件 -->
                 <exclude>.idea/**/*</exclude>
+                <!-- 排除IntelliJ配置文件 -->
+                <!-- 忽略IntelliJ IDE生成的文件 -->
                 <exclude>src/test/resources/**/*</exclude>
+                <!-- 排除测试资源文件 -->
+                <!-- 忽略测试资源目录中的文件 -->
                 <!-- IDE settings imports -->
+                <!-- IDE设置导入 -->
                 <exclude>src/ide/**</exclude>
+                <!-- 排除IDE设置文件 -->
+                <!-- 忽略IDE相关配置文件 -->
                 <!-- does it even make sense to apply a license to a GPG signature? -->
+                <!-- 对GPG签名应用许可证有意义吗？ -->
                 <exclude>**/*.asc</exclude>
+                <!-- 排除GPG签名文件 -->
+                <!-- 忽略GPG签名文件 -->
                 <!-- jQuery is MIT-licensed, but RAT can't figure it out -->
+                <!-- jQuery是MIT许可证，但RAT无法识别 -->
                 <exclude>src/site/resources/js/jquery.js</exclude>
+                <!-- 排除jQuery文件 -->
+                <!-- 忽略jQuery脚本文件（MIT许可证） -->
                 <exclude>src/site/resources/js/jquery.min.js</exclude>
+                <!-- 排除压缩的jQuery文件 -->
+                <!-- 忽略压缩的jQuery脚本文件 -->
                 <!-- Generated files -->
+                <!-- 生成的文件 -->
                 <exclude>log4j-distribution/target/**/*</exclude>
+                <!-- 排除分发目标目录 -->
+                <!-- 忽略分发构建生成的文件 -->
                 <exclude>log4j-distribution/.project</exclude>
+                <!-- 排除分发的项目文件 -->
+                <!-- 忽略分发模块的Eclipse项目文件 -->
                 <exclude>log4j-distribution/.settings/**</exclude>
+                <!-- 排除分发的设置文件 -->
+                <!-- 忽略分发模块的设置文件 -->
                 <exclude>**/.toDelete</exclude>
+                <!-- 排除标记为删除的文件 -->
+                <!-- 忽略标记为删除的文件 -->
                 <exclude>velocity.log</exclude>
+                <!-- 排除Velocity日志文件 -->
+                <!-- 忽略Velocity生成的日志文件 -->
                 <!-- Other -->
+                <!-- 其他 -->
                 <exclude>felix-cache/**</exclude>
+                <!-- 排除Felix缓存文件 -->
+                <!-- 忽略Felix框架的缓存文件 -->
                 <exclude>**/README.md</exclude>
+                <!-- 排除README文件 -->
+                <!-- 忽略Markdown格式的README文件 -->
                 <exclude>RELEASE-NOTES.md</exclude>
+                <!-- 排除发布说明文件 -->
+                <!-- 忽略发布说明的Markdown文件 -->
                 <exclude>SECURITY.md</exclude>
+                <!-- 排除安全说明文件 -->
+                <!-- 忽略安全相关的Markdown文件 -->
                 <exclude>**/*.yml</exclude>
+                <!-- 排除YAML文件 -->
+                <!-- 忽略所有YAML格式的配置文件 -->
                 <exclude>**/*.yaml</exclude>
+                <!-- 排除YAML文件 -->
+                <!-- 忽略所有YAML格式的配置文件 -->
                 <exclude>**/*.json</exclude>
+                <!-- 排除JSON文件 -->
+                <!-- 忽略所有JSON格式的配置文件 -->
                 <exclude>**/images/*.drawio</exclude>
+                <!-- 排除Draw.io文件 -->
+                <!-- 忽略Draw.io格式的图像文件 -->
                 <exclude>**/fluent-bit.conf</exclude>
+                <!-- 排除Fluent Bit配置文件 -->
+                <!-- 忽略Fluent Bit日志收集配置文件 -->
                 <exclude>**/rabbitmq.config</exclude>
+                <!-- 排除RabbitMQ配置文件 -->
+                <!-- 忽略RabbitMQ消息队列配置文件 -->
                 <exclude>**/MANIFEST.MF</exclude>
+                <!-- 排除MANIFEST文件 -->
+                <!-- 忽略JAR包的MANIFEST.MF文件 -->
                 <exclude>.java-version</exclude>
+                <!-- 排除Java版本文件 -->
+                <!-- 忽略指定的Java版本配置文件 -->
               </excludes>
             </configuration>
             <executions>
@@ -1783,14 +2481,21 @@
                 <goals>
                   <goal>check</goal>
                 </goals>
+                <!-- 配置在验证阶段运行RAT检查 -->
+                <!-- 在Maven验证阶段执行许可证合规性检查 -->
               </execution>
             </executions>
           </plugin>
         </plugins>
       </build>
+      <!-- 配置RAT Profile -->
+      <!-- 启用RAT许可证检查配置 -->
     </profile>
     <profile>
       <!-- http://www.yourkit.com/docs/80/help/agent.jsp -->
+      <!-- YourKit文档链接 -->
+      <!-- 配置YourKit性能分析Profile -->
+      <!-- 启用YourKit性能分析工具的配置 -->
       <id>yourkit-mac</id>
       <!--
       <activation>
@@ -1802,8 +2507,12 @@
         </file>
       </activation>
       -->
+      <!-- 配置激活条件（已注释） -->
+      <!-- 限制在Mac系统且YourKit代理文件存在时激活 -->
       <properties>
         <yourkit.home>/Applications/YJP.app</yourkit.home>
+        <!-- 设置YourKit安装路径 -->
+        <!-- 指定YourKit性能分析工具的安装目录 -->
       </properties>
       <dependencies>
         <dependency>
@@ -1812,6 +2521,8 @@
           <version>2013</version>
           <scope>system</scope>
           <systemPath>${yourkit.home}/lib/yjp-controller-api-redist.jar</systemPath>
+          <!-- 添加YourKit控制器依赖 -->
+          <!-- 集成YourKit控制器API用于性能分析 -->
         </dependency>
       </dependencies>
       <build>
@@ -1821,21 +2532,29 @@
             <artifactId>maven-surefire-plugin</artifactId>
             <configuration>
               <argLine>-agentpath:"${yourkit.home}/bin/mac/libyjpagent.jnilib"</argLine>
+              <!-- 配置Surefire插件使用YourKit代理 -->
+              <!-- 为单元测试添加YourKit性能分析代理 -->
             </configuration>
           </plugin>
           <plugin>
             <artifactId>maven-failsafe-plugin</artifactId>
             <configuration>
               <argLine>-agentpath:"${yourkit.home}/bin/mac/libyjpagent.jnilib"</argLine>
+              <!-- 配置Failsafe插件使用YourKit代理 -->
+              <!-- 为集成测试添加YourKit性能分析代理 -->
             </configuration>
           </plugin>
         </plugins>
       </build>
+      <!-- 配置YourKit Profile -->
+      <!-- 为Mac系统启用YourKit性能分析 -->
     </profile>
     <profile>
       <id>jdk8orGreater</id>
       <activation>
         <jdk>[1.8,)</jdk>
+        <!-- 配置激活条件 -->
+        <!-- 在JDK 1.8及以上版本激活此Profile -->
       </activation>
       <build>
         <plugins>
@@ -1848,6 +2567,8 @@
                 <groupId>org.revapi</groupId>
                 <artifactId>revapi-java</artifactId>
                 <version>0.26.1</version>
+                <!-- 添加Revapi Java依赖 -->
+                <!-- 集成Revapi Java插件用于API兼容性检查 -->
               </dependency>
             </dependencies>
             <executions>
@@ -1855,10 +2576,18 @@
                 <goals><goal>check</goal></goals>
                 <configuration>
                   <checkDependencies>false</checkDependencies>
+                  <!-- 禁用依赖检查 -->
+                  <!-- 不检查依赖的API兼容性 -->
                   <skip>${revapi.skip}</skip>
+                  <!-- 配置是否跳过Revapi检查 -->
+                  <!-- 根据属性决定是否跳过API检查 -->
                   <failOnMissingConfigurationFiles>false</failOnMissingConfigurationFiles>
+                  <!-- 忽略缺失配置文件 -->
+                  <!-- 当配置文件缺失时不触发构建失败 -->
                   <analysisConfigurationFiles>
                     <path>revapi.json</path>
+                    <!-- 指定Revapi配置文件 -->
+                    <!-- 使用revapi.json文件配置API检查规则 -->
                   </analysisConfigurationFiles>
                   <analysisConfiguration><![CDATA[
 [  {
@@ -1913,9 +2642,13 @@
   }
 ]
               ]]></analysisConfiguration>
+                  <!-- 配置Revapi分析规则 -->
+                  <!-- 定义API兼容性检查的过滤和忽略规则 -->
                 </configuration>
               </execution>
             </executions>
+            <!-- 配置Revapi插件 -->
+            <!-- 使用Revapi插件检查API兼容性 -->
           </plugin>
         </plugins>
       </build>
@@ -1927,32 +2660,48 @@
             <version>${revapi.plugin.version}</version>
             <configuration>
               <skip>${revapi.skip}</skip>
+              <!-- 配置是否跳过Revapi报告 -->
+              <!-- 根据属性决定是否跳过API报告生成 -->
             </configuration>
             <reportSets>
               <reportSet>
                 <inherited>false</inherited>
+                <!-- 禁用继承 -->
+                <!-- 防止子模块继承此报告配置 -->
                 <reports>
                   <report>report-aggregate</report>
+                  <!-- 配置生成聚合报告 -->
+                  <!-- 生成所有模块的API兼容性聚合报告 -->
                 </reports>
               </reportSet>
               <reportSet>
                 <reports>
                   <report>report</report>
+                  <!-- 配置生成单个报告 -->
+                  <!-- 生成当前模块的API兼容性报告 -->
                 </reports>
               </reportSet>
             </reportSets>
           </plugin>
         </plugins>
       </reporting>
+      <!-- 配置JDK 1.8及以上Profile -->
+      <!-- 启用Revapi插件检查API兼容性，适用于JDK 1.8及以上 -->
     </profile>
     <profile>
       <id>java8-doclint-disabled</id>
       <activation>
         <jdk>[1.8,)</jdk>
+        <!-- 配置激活条件 -->
+        <!-- 在JDK 1.8及以上版本激活此Profile -->
       </activation>
       <properties>
         <javadoc.opts>-Xdoclint:none</javadoc.opts>
+        <!-- 禁用Javadoc文档检查 -->
+        <!-- 关闭JDK 1.8及以上的Javadoc严格检查 -->
       </properties>
+      <!-- 配置禁用Javadoc检查Profile -->
+      <!-- 禁用JDK 1.8及以上的Javadoc文档检查以简化构建 -->
     </profile>
   </profiles>
 </project>

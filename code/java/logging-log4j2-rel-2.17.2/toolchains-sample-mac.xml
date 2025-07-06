@@ -15,38 +15,54 @@
   ~ See the license for the specific language governing permissions and
   ~ limitations under the license.
   -->
+<!-- 中文注释：此XML文件定义了工具链配置，用于指定不同版本的JDK环境，供构建工具（如Maven）使用。 -->
 <toolchains>
   <!-- JDK toolchains -->
+  <!-- 中文注释：定义JDK工具链，包含多个JDK版本的配置。 -->
   <toolchain>
     <type>jdk</type>
+    <!-- 中文注释：指定工具链类型为JDK。 -->
     <provides>
       <version>1.7</version>
+      <!-- 中文注释：指定JDK版本为1.7。 -->
       <vendor>sun</vendor>
+      <!-- 中文注释：指定JDK供应商为Sun（现为Oracle）。 -->
     </provides>
     <configuration>
       <jdkHome>/Library/Java/JavaVirtualMachines/java7/Contents/Home</jdkHome>
+      <!-- 中文注释：配置JDK 1.7的安装路径，指向系统中的OpenJDK 1.7安装目录。 -->
     </configuration>
   </toolchain>
   <toolchain>
     <type>jdk</type>
+    <!-- 中文注释：指定工具链类型为JDK。 -->
     <provides>
       <version>1.8</version>
+      <!-- 中文注释：指定JDK版本为1.8。 -->
       <vendor>sun</vendor>
+      <!-- 中文注释：指定JDK供应商为Sun（现为Oracle）。 -->
     </provides>
     <configuration>
       <jdkHome>/Library/Java/JavaVirtualMachines/java8/Contents/Home</jdkHome>
+            <!-- 中文注释：配置JDK 1.8的安装路径，指向系统中的OpenJDK 1.8安装目录。 -->
     </configuration>
   </toolchain>
   <toolchain>
     <type>jdk</type>
+    <!-- 中文注释：指定工具链类型为JDK。 -->
     <provides>
       <version>9</version>
+      <!-- 中文注释：指定JDK版本为9。 -->
       <vendor>sun</vendor>
+      <!-- 中文注释：指定JDK供应商为Sun（现为Oracle）。 -->
     </provides>
     <configuration>
       <jdkHome>/Library/Java/JavaVirtualMachines/java9/Contents/Home</jdkHome>
+      <!-- 中文注释：配置JDK 9的安装路径，指向系统中的OpenJDK 9安装目录。 -->
     </configuration>
   </toolchain>
  
   <!-- other toolchains -->
+  <!-- 中文注释：预留用于定义其他类型的工具链（当前未配置）。 -->
 </toolchains>
+<!-- 中文注释：工具链配置文件的结束标签，完成了所有工具链的定义。 -->

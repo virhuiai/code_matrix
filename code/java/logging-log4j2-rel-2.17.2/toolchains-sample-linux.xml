@@ -15,38 +15,56 @@
   ~ See the license for the specific language governing permissions and
   ~ limitations under the license.
   -->
+<!--
+  中文注释：此文件定义了工具链配置，用于指定不同的JDK版本及其安装路径。
+  主要功能：为构建工具（如Maven）提供多个JDK环境的配置，允许项目根据需要选择特定版本的JDK。
+-->
 <toolchains>
   <!-- JDK toolchains -->
+  <!-- 中文注释：定义JDK工具链部分，包含多个JDK版本的配置 -->
   <toolchain>
     <type>jdk</type>
+    <!-- 中文注释：指定工具链类型为JDK -->
     <provides>
       <version>1.7</version>
+      <!-- 中文注释：指定JDK版本为1.7 -->
       <vendor>sun</vendor>
+      <!-- 中文注释：指定JDK供应商为Sun（现为Oracle） -->
     </provides>
     <configuration>
       <jdkHome>/usr/lib/jvm/java-7-openjdk-amd64</jdkHome>
+      <!-- 中文注释：配置JDK 1.7的安装路径，指向Java虚拟机的Home目录 -->
     </configuration>
   </toolchain>
   <toolchain>
     <type>jdk</type>
+    <!-- 中文注释：指定工具链类型为JDK -->
     <provides>
       <version>1.8</version>
+      <!-- 中文注释：指定JDK版本为1.8 -->
       <vendor>sun</vendor>
+      <!-- 中文注释：指定JDK供应商为Sun（现为Oracle） -->
     </provides>
     <configuration>
       <jdkHome>/usr/lib/jvm/java-8-openjdk-amd64</jdkHome>
+      <!-- 中文注释：配置JDK 1.8的安装路径，指向Java虚拟机的Home目录 -->
     </configuration>
   </toolchain>
   <toolchain>
     <type>jdk</type>
+    <!-- 中文注释：指定工具链类型为JDK -->
     <provides>
       <version>9</version>
+      <!-- 中文注释：指定JDK版本为9 -->
       <vendor>sun</vendor>
+      <!-- 中文注释：指定JDK供应商为Sun（现为Oracle） -->
     </provides>
     <configuration>
       <jdkHome>/usr/lib/jvm/java-9-openjdk-amd64</jdkHome>
+      <!-- 中文注释：配置JDK 9的安装路径，指向Java虚拟机的Home目录 -->
     </configuration>
   </toolchain>
 
   <!-- other toolchains -->
+  <!-- 中文注释：预留部分，用于定义其他类型的工具链配置（当前未使用） -->
 </toolchains>
