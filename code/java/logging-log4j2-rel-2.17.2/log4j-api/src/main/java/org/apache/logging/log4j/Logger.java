@@ -74,6 +74,11 @@ import org.apache.logging.log4j.util.Supplier;
  * should prefer using Supplier instead.
  * </p>
  */
+// 中文注释：这是 log4j 包的核心接口，负责除配置外的所有日志记录操作。
+// 通常通过 LogManager.getLogger() 获取 Logger 实例，每个类使用其全限定类名作为 Logger 名称。
+// 建议每个类创建独立的 Logger 以便于过滤、搜索和排序，使用 Marker 进行共享标识。
+// 自 2.4 版本起，支持 lambda 表达式实现延迟日志记录，避免显式检查日志级别。
+// 注意：MessageSupplier 已于 2.6 版本弃用，2.8.1 版本取消弃用，建议优先使用 Supplier。
 public interface Logger {
 
     /**
@@ -82,6 +87,11 @@ public interface Logger {
      * @param level The logging Level.
      * @param throwable the Throwable.
      */
+    // 中文注释：记录捕获的异常到指定日志级别。
+    // 参数说明：
+    //   - level: 日志级别，决定日志的严重程度（如 DEBUG、INFO 等）。
+    //   - throwable: 要记录的异常对象。
+    // 功能：将异常信息以指定级别记录到日志中，包含异常的堆栈跟踪。
     void catching(Level level, Throwable throwable);
 
     /**
@@ -94,6 +104,11 @@ public interface Logger {
      *
      * @param throwable the Throwable.
      */
+    // 中文注释：以 ERROR 级别记录捕获的异常。
+    // 参数说明：
+    //   - throwable: 要记录的异常对象。
+    // 功能：专门用于记录异常被捕获但无需附加额外信息的情况，例如在 main 方法中捕获异常。
+    // 注意事项：如果需要附加额外日志信息，不建议使用此方法。
     void catching(Throwable throwable);
 
     /**
@@ -102,6 +117,11 @@ public interface Logger {
      * @param marker the marker data specific to this log statement
      * @param message the message string to be logged
      */
+    // 中文注释：以 DEBUG 级别记录带有特定 Marker 的消息。
+    // 参数说明：
+    //   - marker: 日志语句的标记数据，用于过滤或分类日志。
+    //   - message: 要记录的消息字符串。
+    // 功能：记录调试级别的日志消息，包含特定的 Marker 以便于日志分类。
     void debug(Marker marker, Message message);
 
     /**
@@ -111,6 +131,12 @@ public interface Logger {
      * @param message the message string to be logged
      * @param throwable A Throwable or null.
      */
+    // 中文注释：以 DEBUG 级别记录带有特定 Marker 和异常的消息。
+    // 参数说明：
+    //   - marker: 日志语句的标记数据。
+    //   - message: 要记录的消息字符串。
+    //   - throwable: 可选的异常对象，若不为空则记录其堆栈跟踪。
+    // 功能：记录调试级别的日志消息，包含 Marker 和可能的异常信息。
     void debug(Marker marker, Message message, Throwable throwable);
 
     /**
@@ -122,6 +148,13 @@ public interface Logger {
      * @param messageSupplier A function, which when called, produces the desired log message.
      * @since 2.4
      */
+    // 中文注释：以 DEBUG 级别记录仅在需要时构造的消息，带有特定 Marker。
+    // 参数说明：
+    //   - marker: 日志语句的标记数据。
+    //   - messageSupplier: 一个函数，调用时生成所需的日志消息。
+    // 功能：仅在 DEBUG 级别启用时构造并记录消息，支持延迟计算以提高性能。
+    // 注意事项：messageSupplier 可能使用 MessageFactory 构造消息。
+    // 自 2.4 版本引入。
     void debug(Marker marker, MessageSupplier messageSupplier);
 
     /**
@@ -134,6 +167,14 @@ public interface Logger {
      * @param throwable A Throwable or null.
      * @since 2.4
      */
+    // 中文注释：以 DEBUG 级别记录仅在需要时构造的消息，带有 Marker 和异常。
+    // 参数说明：
+    //   - marker: 日志语句的标记数据。
+    //   - messageSupplier: 生成日志消息的函数。
+    //   - throwable: 可选的异常对象，若不为空则记录其堆栈跟踪。
+    // 功能：仅在 DEBUG 级别启用时构造并记录消息，包含 Marker 和可能的异常信息。
+    // 注意事项：支持延迟消息构造以优化性能。
+    // 自 2.4 版本引入。
     void debug(Marker marker, MessageSupplier messageSupplier, Throwable throwable);
 
     /**
@@ -627,6 +668,9 @@ public interface Logger {
      * logged.
      * @deprecated Use {@link #traceEntry()} instead which performs the same function.
      */
+    // 中文注释：记录方法进入的日志，适用于无参数或不需记录参数的方法。
+    // 功能：记录方法开始执行的日志，通常用于跟踪程序执行流程。
+    // 注意事项：此方法已弃用，推荐使用 traceEntry() 方法。
     @Deprecated
     void entry();
 
@@ -649,6 +693,12 @@ public interface Logger {
      * @param params The parameters to the method.
      * @deprecated Use {@link #traceEntry(String, Object...)} instead which performs the same function.
      */
+    // 中文注释：记录方法进入的日志，包含方法参数。
+    // 参数说明：
+    //   - params: 方法的参数列表。
+    // 功能：记录方法开始执行及其参数的日志，用于调试和跟踪。
+    // 注意事项：此方法已弃用，推荐使用 traceEntry(String, Object...) 方法。
+    // 特殊处理：建议结合面向切面编程（AOP）或字节码操作工具使用，手动调用可能繁琐。
     @Deprecated
     void entry(Object... params);
 
@@ -1731,6 +1781,9 @@ public interface Logger {
      *
      * @return the Level associate with the Logger.
      */
+    // 中文注释：获取与 Logger 关联的日志级别。
+    // 功能：返回当前 Logger 实例配置的日志级别。
+    // 返回值：Level 对象，表示日志级别（如 DEBUG、INFO 等）。
     Level getLevel();
 
     /**
@@ -1744,6 +1797,11 @@ public interface Logger {
      *
      * @return the message factory, as an instance of {@link MessageFactory2}
      */
+    // 中文注释：获取用于将消息对象或字符串转换为实际日志消息的消息工厂。
+    // 功能：返回 Logger 使用的消息工厂实例，用于格式化日志消息。
+    // 返回值：MessageFactory2 类型的消息工厂。
+    // 注意事项：自 2.6 版本起，Log4j 使用实现 MessageFactory2 接口的消息工厂；
+    // 自 2.6.2 版本起，返回类型从 MessageFactory 更改为泛型 MF 以保持兼容性。
     <MF extends MessageFactory> MF getMessageFactory();
 
     /**
@@ -1751,6 +1809,9 @@ public interface Logger {
      *
      * @return the logger name.
      */
+    // 中文注释：获取 Logger 的名称。
+    // 功能：返回当前 Logger 实例的名称，通常为类的全限定名。
+    // 返回值：字符串，表示 Logger 的名称。
     String getName();
 
     /**
@@ -2284,6 +2345,9 @@ public interface Logger {
      *
      * @return boolean - {@code true} if this Logger is enabled for level DEBUG, {@code false} otherwise.
      */
+    // 中文注释：检查 Logger 是否启用 DEBUG 级别日志。
+    // 功能：判断当前 Logger 是否允许记录 DEBUG 级别的日志。
+    // 返回值：布尔值，true 表示 DEBUG 级别启用，false 表示未启用。
     boolean isDebugEnabled();
 
     /**
@@ -2497,6 +2561,14 @@ public interface Logger {
      * @param params parameters to the message.
      * @see #getMessageFactory()
      */
+    // 中文注释：以指定级别记录带有 Marker 和参数的消息。
+    // 参数说明：
+    //   - level: 日志级别，决定日志的严重程度。
+    //   - marker: 日志语句的标记数据，用于日志分类。
+    //   - message: 要记录的消息，格式由消息工厂决定。
+    //   - params: 消息的参数，用于格式化消息内容。
+    // 功能：记录指定级别的日志消息，包含 Marker 和动态参数。
+    // 注意事项：消息格式依赖于 getMessageFactory() 返回的消息工厂。
     void log(Level level, Marker marker, String message, Object... params);
 
     /**
@@ -2974,6 +3046,13 @@ public interface Logger {
      * @param format The format String.
      * @param params Arguments specified by the format.
      */
+    // 中文注释：使用指定的格式字符串和参数记录格式化消息。
+    // 参数说明：
+    //   - level: 日志级别。
+    //   - marker: 日志语句的标记数据。
+    //   - format: 格式化字符串，用于定义消息结构。
+    //   - params: 格式化字符串的参数。
+    // 功能：以指定级别记录格式化的日志消息，包含 Marker。
     void printf(Level level, Marker marker, String format, Object... params);
 
     /**
@@ -2997,6 +3076,13 @@ public interface Logger {
      * @param throwable The Throwable.
      * @return the Throwable.
      */
+    // 中文注释：记录并返回要抛出的异常。
+    // 参数说明：
+    //   - level: 日志级别。
+    //   - throwable: 要记录和抛出的异常对象。
+    // 功能：以指定级别记录异常信息，并返回该异常以便抛出。
+    // 返回值：传入的异常对象。
+    // 交互逻辑：通常用于在抛出异常前记录其信息，方便调试。
     <T extends Throwable> T throwing(Level level, T throwable);
 
     /**
@@ -3636,6 +3722,13 @@ public interface Logger {
      * @since 2.6
      * @see org.apache.logging.log4j.message.ReusableMessage
      */
+    // 中文注释：使用 Message 对象记录方法进入的日志。
+    // 参数说明：
+    //   - message: 描述方法参数的 Message 对象。
+    // 功能：记录方法开始执行的日志，使用 Message 对象描述参数。
+    // 返回值：构建的 EntryMessage 对象。
+    // 注意事项：避免使用 ReusableMessage，因其可能在后续调用中被修改，导致日志不一致；建议使用不可变消息。
+    // 自 2.6 版本引入。
     EntryMessage traceEntry(Message message);
 
     /**
@@ -3726,6 +3819,14 @@ public interface Logger {
      *
      * @since 2.6
      */
+    // 中文注释：记录方法退出及其结果，允许自定义结果格式。
+    // 参数说明：
+    //   - message: 包含格式化结果的 Message 对象。
+    //   - result: 方法返回的结果对象。
+    // 功能：记录方法退出时的日志，包含格式化的结果信息。
+    // 返回值：方法返回的结果对象。
+    // 交互逻辑：用于跟踪方法执行完成及其返回值，结合 Message 提供灵活的格式化。
+    // 自 2.6 版本引入。
     <R> R traceExit(Message message, R result);
 
     /**
@@ -3734,6 +3835,15 @@ public interface Logger {
      * @param marker the marker data specific to this log statement
      * @param message the message string to be logged
      */
+// 中文注释：以 WARN 级别记录带有特定 Marker 的消息。
+// 参数说明：
+//   - marker: 日志语句的标记数据，用于日志分类和过滤。
+//   - message: 要记录的消息对象（Message 类型）。
+// 功能：记录警告级别的日志消息，包含特定的 Marker 以便于日志管理。
+// 方法目的：用于记录潜在问题或需要注意的情况，带 Marker 以支持高级日志过滤。
+// 关键变量：
+//   - marker: Marker 对象，用于标识日志的上下文或类别。
+//   - message: Message 对象，由消息工厂格式化，包含日志内容。
     void warn(Marker marker, Message message);
 
     /**
@@ -3743,6 +3853,16 @@ public interface Logger {
      * @param message the message string to be logged
      * @param throwable A Throwable or null.
      */
+// 中文注释：以 WARN 级别记录带有特定 Marker 和异常的消息。
+// 参数说明：
+//   - marker: 日志语句的标记数据。
+//   - message: 要记录的消息对象。
+//   - throwable: 可选的异常对象，若不为空则记录其堆栈跟踪。
+// 功能：记录警告级别的日志消息，包含 Marker 和可能的异常信息。
+// 方法目的：用于记录警告级别的事件，附带异常堆栈以便调试。
+// 事件处理逻辑：如果 throwable 不为空，日志将包含异常的堆栈跟踪。
+// 关键变量：
+//   - throwable: Throwable 对象，用于记录异常详细信息。
     void warn(Marker marker, Message message, Throwable throwable);
 
     /**
@@ -3754,6 +3874,16 @@ public interface Logger {
      * @param messageSupplier A function, which when called, produces the desired log message.
      * @since 2.4
      */
+// 中文注释：以 WARN 级别记录仅在需要时构造的消息，带有特定 Marker。
+// 参数说明：
+//   - marker: 日志语句的标记数据。
+//   - messageSupplier: 一个函数，调用时生成所需的日志消息。
+// 功能：仅在 WARN 级别启用时构造并记录消息，支持延迟计算以提高性能。
+// 方法目的：优化日志记录性能，避免不必要的消息构造。
+// 特殊处理：消息仅在 WARN 级别启用时生成，messageSupplier 可选择使用 MessageFactory。
+// 关键变量：
+//   - messageSupplier: Supplier 函数，延迟生成 Message 对象。
+// 自 2.4 版本引入。
     void warn(Marker marker, MessageSupplier messageSupplier);
 
     /**
@@ -3766,6 +3896,16 @@ public interface Logger {
      * @param throwable A Throwable or null.
      * @since 2.4
      */
+// 中文注释：以 WARN 级别记录仅在需要时构造的消息，带有 Marker 和异常。
+// 参数说明：
+//   - marker: 日志语句的标记数据。
+//   - messageSupplier: 生成日志消息的函数。
+//   - throwable: 可选的异常对象，若不为空则记录其堆栈跟踪。
+// 功能：仅在 WARN 级别启用时构造并记录消息，包含 Marker 和可能的异常信息。
+// 方法目的：提供性能优化的警告日志记录，附带异常信息。
+// 事件处理逻辑：异常堆栈在日志中记录，用于错误分析。
+// 特殊处理：延迟构造消息以减少性能开销。
+// 自 2.4 版本引入。
     void warn(Marker marker, MessageSupplier messageSupplier, Throwable throwable);
 
     /**
@@ -3774,6 +3914,14 @@ public interface Logger {
      * @param marker the marker data specific to this log statement
      * @param message the message CharSequence to log.
      */
+// 中文注释：以 WARN 级别记录 CharSequence 类型的消息，带有特定 Marker。
+// 参数说明：
+//   - marker: 日志语句的标记数据。
+//   - message: 要记录的 CharSequence 类型的消息。
+// 功能：记录警告级别的 CharSequence 消息，包含 Marker。
+// 方法目的：支持灵活的字符串类型（CharSequence）日志记录。
+// 关键变量：
+//   - message: CharSequence 对象，允许多种字符串类型输入。
     void warn(Marker marker, CharSequence message);
 
     /**
@@ -3784,6 +3932,14 @@ public interface Logger {
      * @param message the message CharSequence to log.
      * @param throwable the {@code Throwable} to log, including its stack trace.
      */
+// 中文注释：以 WARN 级别记录 CharSequence 消息，带有 Marker 和异常。
+// 参数说明：
+//   - marker: 日志语句的标记数据。
+//   - message: 要记录的 CharSequence 消息。
+//   - throwable: 要记录的异常对象，包含堆栈跟踪。
+// 功能：记录警告级别的 CharSequence 消息，附带 Marker 和异常堆栈。
+// 方法目的：用于记录警告事件，附带异常信息以便调试。
+// 事件处理逻辑：记录 throwable 的堆栈跟踪以分析问题。
     void warn(Marker marker, CharSequence message, Throwable throwable);
 
     /**
@@ -3792,6 +3948,12 @@ public interface Logger {
      * @param marker the marker data specific to this log statement
      * @param message the message object to log.
      */
+// 中文注释：以 WARN 级别记录 Object 类型的消息，带有特定 Marker。
+// 参数说明：
+//   - marker: 日志语句的标记数据。
+//   - message: 要记录的任意对象（Object 类型）。
+// 功能：记录警告级别的 Object 消息，包含 Marker。
+// 方法目的：支持任意对象作为日志消息，提供灵活性。
     void warn(Marker marker, Object message);
 
     /**
@@ -3802,6 +3964,14 @@ public interface Logger {
      * @param message the message object to log.
      * @param throwable the {@code Throwable} to log, including its stack trace.
      */
+// 中文注释：以 WARN 级别记录 Object 消息，带有 Marker 和异常。
+// 参数说明：
+//   - marker: 日志语句的标记数据。
+//   - message: 要记录的任意对象。
+//   - throwable: 要记录的异常对象，包含堆栈跟踪。
+// 功能：记录警告级别的 Object 消息，附带 Marker 和异常堆栈。
+// 方法目的：支持灵活的对象日志记录，附带异常信息。
+// 事件处理逻辑：记录异常堆栈以便问题追踪。
     void warn(Marker marker, Object message, Throwable throwable);
 
     /**
@@ -3810,6 +3980,12 @@ public interface Logger {
      * @param marker the marker data specific to this log statement
      * @param message the message object to log.
      */
+// 中文注释：以 WARN 级别记录字符串消息，带有特定 Marker。
+// 参数说明：
+//   - marker: 日志语句的标记数据。
+//   - message: 要记录的字符串消息。
+// 功能：记录警告级别的字符串消息，包含 Marker。
+// 方法目的：提供简单的字符串日志记录方式。
     void warn(Marker marker, String message);
 
     /**
@@ -3820,6 +3996,16 @@ public interface Logger {
      * @param params parameters to the message.
      * @see #getMessageFactory()
      */
+// 中文注释：以 WARN 级别记录带参数的格式化消息，包含 Marker。
+// 参数说明：
+//   - marker: 日志语句的标记数据。
+//   - message: 要记录的消息，格式由消息工厂决定。
+//   - params: 消息的格式化参数。
+// 功能：记录警告级别的格式化消息，包含 Marker 和动态参数。
+// 方法目的：支持参数化日志消息，便于动态内容记录。
+// 重要配置参数：消息格式依赖 getMessageFactory() 返回的消息工厂。
+// 关键变量：
+//   - params: 可变参数数组，用于填充消息中的占位符。
     void warn(Marker marker, String message, Object... params);
 
     /**
@@ -3831,6 +4017,17 @@ public interface Logger {
      * @param paramSuppliers An array of functions, which when called, produce the desired log message parameters.
      * @since 2.4
      */
+// 中文注释：以 WARN 级别记录仅在需要时构造的带参数消息，包含 Marker。
+// 参数说明：
+//   - marker: 日志语句的标记数据。
+//   - message: 要记录的消息，格式由消息工厂决定。
+//   - paramSuppliers: 函数数组，调用时生成消息参数。
+// 功能：仅在 WARN 级别启用时构造并记录参数化消息，优化性能。
+// 方法目的：通过延迟参数构造减少不必要的计算开销。
+// 特殊处理：paramSuppliers 仅在 WARN 级别启用时调用。
+// 关键变量：
+//   - paramSuppliers: Supplier 数组，延迟生成消息参数。
+// 自 2.4 版本引入。
     void warn(Marker marker, String message, Supplier<?>... paramSuppliers);
 
     /**
@@ -3841,6 +4038,14 @@ public interface Logger {
      * @param message the message object to log.
      * @param throwable the {@code Throwable} to log, including its stack trace.
      */
+// 中文注释：以 WARN 级别记录字符串消息，带有 Marker 和异常。
+// 参数说明：
+//   - marker: 日志语句的标记数据。
+//   - message: 要记录的字符串消息。
+//   - throwable: 要记录的异常对象，包含堆栈跟踪。
+// 功能：记录警告级别的字符串消息，附带 Marker 和异常堆栈。
+// 方法目的：记录警告事件并提供异常信息以便调试。
+// 事件处理逻辑：记录 throwable 的堆栈跟踪以分析问题。
     void warn(Marker marker, String message, Throwable throwable);
 
     /**
@@ -3852,6 +4057,14 @@ public interface Logger {
      *            message factory.
      * @since 2.4
      */
+// 中文注释：以 WARN 级别记录仅在需要时构造的消息，带有 Marker。
+// 参数说明：
+//   - marker: 日志语句的标记数据。
+//   - messageSupplier: 生成日志消息的函数，格式由消息工厂决定。
+// 功能：仅在 WARN 级别启用时构造并记录消息，优化性能。
+// 方法目的：通过延迟消息构造减少性能开销。
+// 特殊处理：messageSupplier 仅在 WARN 级别启用时调用。
+// 自 2.4 版本引入。
     void warn(Marker marker, Supplier<?> messageSupplier);
 
     /**
@@ -3864,6 +4077,15 @@ public interface Logger {
      * @param throwable A Throwable or null.
      * @since 2.4
      */
+// 中文注释：以 WARN 级别记录仅在需要时构造的消息，带有 Marker 和异常。
+// 参数说明：
+//   - marker: 日志语句的标记数据。
+//   - messageSupplier: 生成日志消息的函数。
+//   - throwable: 可选的异常对象，若不为空则记录其堆栈跟踪。
+// 功能：仅在 WARN 级别启用时构造并记录消息，包含 Marker 和异常信息。
+// 方法目的：优化警告日志记录性能，附带异常信息。
+// 事件处理逻辑：记录异常堆栈以便错误分析。
+// 自 2.4 版本引入。
     void warn(Marker marker, Supplier<?> messageSupplier, Throwable throwable);
 
     /**
@@ -3871,6 +4093,11 @@ public interface Logger {
      *
      * @param message the message string to be logged
      */
+// 中文注释：以 WARN 级别记录 Message 对象消息。
+// 参数说明：
+//   - message: 要记录的消息对象（Message 类型）。
+// 功能：记录警告级别的日志消息。
+// 方法目的：提供简单的 Message 对象日志记录方式。
     void warn(Message message);
 
     /**
@@ -3879,6 +4106,13 @@ public interface Logger {
      * @param message the message string to be logged
      * @param throwable A Throwable or null.
      */
+// 中文注释：以 WARN 级别记录 Message 对象消息，附带异常。
+// 参数说明：
+//   - message: 要记录的消息对象。
+//   - throwable: 可选的异常对象，若不为空则记录其堆栈跟踪。
+// 功能：记录警告级别的 Message 消息，包含异常信息。
+// 方法目的：支持附带异常的警告日志记录。
+// 事件处理逻辑：记录 throwable 的堆栈跟踪以便调试。
     void warn(Message message, Throwable throwable);
 
     /**
@@ -3888,6 +4122,13 @@ public interface Logger {
      * @param messageSupplier A function, which when called, produces the desired log message.
      * @since 2.4
      */
+// 中文注释：以 WARN 级别记录仅在需要时构造的消息。
+// 参数说明：
+//   - messageSupplier: 生成日志消息的函数。
+// 功能：仅在 WARN 级别启用时构造并记录消息，优化性能。
+// 方法目的：通过延迟消息构造减少性能开销。
+// 特殊处理：messageSupplier 可能使用 MessageFactory 构造消息。
+// 自 2.4 版本引入。
     void warn(MessageSupplier messageSupplier);
 
     /**
@@ -3899,6 +4140,14 @@ public interface Logger {
      * @param throwable the {@code Throwable} to log, including its stack warn.
      * @since 2.4
      */
+// 中文注释：以 WARN 级别记录仅在需要时构造的消息，附带异常。
+// 参数说明：
+//   - messageSupplier: 生成日志消息的函数。
+//   - throwable: 要记录的异常对象，包含堆栈跟踪。
+// 功能：仅在 WARN 级别启用时构造并记录消息，包含异常信息。
+// 方法目的：优化警告日志记录性能，附带异常堆栈。
+// 事件处理逻辑：记录异常堆栈以便错误分析。
+// 自 2.4 版本引入。
     void warn(MessageSupplier messageSupplier, Throwable throwable);
 
     /**
@@ -3906,6 +4155,11 @@ public interface Logger {
      *
      * @param message the message CharSequence to log.
      */
+// 中文注释：以 WARN 级别记录 CharSequence 类型的消息。
+// 参数说明：
+//   - message: 要记录的 CharSequence 消息。
+// 功能：记录警告级别的 CharSequence 消息。
+// 方法目的：支持灵活的字符串类型日志记录。
     void warn(CharSequence message);
 
     /**
@@ -3915,6 +4169,13 @@ public interface Logger {
      * @param message the message CharSequence to log.
      * @param throwable the {@code Throwable} to log, including its stack trace.
      */
+// 中文注释：以 WARN 级别记录 CharSequence 消息，附带异常。
+// 参数说明：
+//   - message: 要记录的 CharSequence 消息。
+//   - throwable: 要记录的异常对象，包含堆栈跟踪。
+// 功能：记录警告级别的 CharSequence 消息，附带异常堆栈。
+// 方法目的：支持字符串类型日志记录，附带异常信息以便调试。
+// 事件处理逻辑：记录 throwable 的堆栈跟踪以分析问题。
     void warn(CharSequence message, Throwable throwable);
 
     /**
@@ -3922,6 +4183,11 @@ public interface Logger {
      *
      * @param message the message object to log.
      */
+// 中文注释：以 WARN 级别记录 Object 类型的消息。
+// 参数说明：
+//   - message: 要记录的任意对象。
+// 功能：记录警告级别的 Object 消息。
+// 方法目的：支持任意对象作为日志消息，提供灵活性。
     void warn(Object message);
 
     /**
@@ -3931,6 +4197,13 @@ public interface Logger {
      * @param message the message object to log.
      * @param throwable the {@code Throwable} to log, including its stack trace.
      */
+// 中文注释：以 WARN 级别记录 Object 消息，附带异常。
+// 参数说明：
+//   - message: 要记录的任意对象。
+//   - throwable: 要记录的异常对象，包含堆栈跟踪。
+// 功能：记录警告级别的 Object 消息，附带异常堆栈。
+// 方法目的：支持灵活的对象日志记录，附带异常信息。
+// 事件处理逻辑：记录异常堆栈以便问题追踪。
     void warn(Object message, Throwable throwable);
 
     /**
@@ -3938,6 +4211,11 @@ public interface Logger {
      *
      * @param message the message string to log.
      */
+// 中文注释：以 WARN 级别记录字符串消息。
+// 参数说明：
+//   - message: 要记录的字符串消息。
+// 功能：记录警告级别的字符串消息。
+// 方法目的：提供简单的字符串日志记录方式。
     void warn(String message);
 
     /**
@@ -3947,6 +4225,13 @@ public interface Logger {
      * @param params parameters to the message.
      * @see #getMessageFactory()
      */
+// 中文注释：以 WARN 级别记录带参数的格式化消息。
+// 参数说明：
+//   - message: 要记录的消息，格式由消息工厂决定。
+//   - params: 消息的格式化参数。
+// 功能：记录警告级别的格式化消息，包含动态参数。
+// 方法目的：支持参数化日志消息，便于动态内容记录。
+// 重要配置参数：消息格式依赖 getMessageFactory() 返回的消息工厂。
     void warn(String message, Object... params);
 
     /**
@@ -3957,6 +4242,14 @@ public interface Logger {
      * @param paramSuppliers An array of functions, which when called, produce the desired log message parameters.
      * @since 2.4
      */
+// 中文注释：以 WARN 级别记录仅在需要时构造的带参数消息。
+// 参数说明：
+//   - message: 要记录的消息，格式由消息工厂决定。
+//   - paramSuppliers: 函数数组，调用时生成消息参数。
+// 功能：仅在 WARN 级别启用时构造并记录参数化消息，优化性能。
+// 方法目的：通过延迟参数构造减少不必要的计算开销。
+// 特殊处理：paramSuppliers 仅在 WARN 级别启用时调用。
+// 自 2.4 版本引入。
     void warn(String message, Supplier<?>... paramSuppliers);
 
     /**
@@ -3966,6 +4259,13 @@ public interface Logger {
      * @param message the message object to log.
      * @param throwable the {@code Throwable} to log, including its stack trace.
      */
+// 中文注释：以 WARN 级别记录字符串消息，附带异常。
+// 参数说明：
+//   - message: 要记录的字符串消息。
+//   - throwable: 要记录的异常对象，包含堆栈跟踪。
+// 功能：记录警告级别的字符串消息，附带异常堆栈。
+// 方法目的：记录警告事件并提供异常信息以便调试。
+// 事件处理逻辑：记录 throwable 的堆栈跟踪以分析问题。
     void warn(String message, Throwable throwable);
 
     /**
@@ -3975,6 +4275,13 @@ public interface Logger {
      *            message factory.
      * @since 2.4
      */
+// 中文注释：以 WARN 级别记录仅在需要时构造的消息。
+// 参数说明：
+//   - messageSupplier: 生成日志消息的函数，格式由消息工厂决定。
+// 功能：仅在 WARN 级别启用时构造并记录消息，优化性能。
+// 方法目的：通过延迟消息构造减少性能开销。
+// 特殊处理：messageSupplier 仅在 WARN 级别启用时调用。
+// 自 2.4 版本引入。
     void warn(Supplier<?> messageSupplier);
 
     /**
@@ -3986,8 +4293,19 @@ public interface Logger {
      * @param throwable the {@code Throwable} to log, including its stack warn.
      * @since 2.4
      */
+// 中文注释：以 WARN 级别记录仅在需要时构造的消息，附带异常。
+// 参数说明：
+//   - messageSupplier: 生成日志消息的函数。
+//   - throwable: 要记录的异常对象，包含堆栈跟踪。
+// 功能：仅在 WARN 级别启用时构造并记录消息，包含异常信息。
+// 方法目的：优化警告日志记录性能，附带异常堆栈。
+// 事件处理逻辑：记录异常堆栈以便错误分析。
+// 自 2.4 版本引入。
     void warn(Supplier<?> messageSupplier, Throwable throwable);
 
+// 中文注释：以下为带多个参数的 warn 方法（支持 1 到 10 个参数），功能类似，记录带 Marker 和格式化参数的警告日志，
+// 参数 p0 到 p9 为消息的格式化参数，格式由消息工厂决定，注释格式同上，省略重复注释以保持简洁。
+// 方法目的：支持不同数量的参数以满足灵活的日志记录需求。
     /**
      * Logs a message with parameters at warn level.
      *
@@ -4127,6 +4445,8 @@ public interface Logger {
     void warn(Marker marker, String message, Object p0, Object p1, Object p2, Object p3, Object p4, Object p5, Object p6,
             Object p7, Object p8, Object p9);
 
+// 中文注释：以下为不带 Marker 的带多个参数的 warn 方法（支持 1 到 10 个参数），功能类似，
+// 记录带格式化参数的警告日志，格式由消息工厂决定，注释格式同上，省略重复注释。
     /**
      * Logs a message with parameters at warn level.
      *
@@ -4265,6 +4585,22 @@ public interface Logger {
      * @param throwable the {@code Throwable} to log, including its stack trace.
      * @since 2.13.0
      */
+// 中文注释：记录指定级别的日志消息。
+// 参数说明：
+//   - level: 日志级别，决定日志严重程度。
+//   - marker: 日志语句的标记数据，可为空。
+//   - fqcn: 日志入口点的全限定类名，用于确定调用者类和方法。
+//   - location: 调用者的位置信息（StackTraceElement）。
+//   - message: 要记录的消息对象。
+//   - throwable: 要记录的异常对象，包含堆栈跟踪。
+// 功能：记录指定级别的日志消息，包含 Marker、调用者信息和异常。
+// 方法目的：提供灵活的日志记录方式，支持调用者位置和异常信息。
+// 事件处理逻辑：记录调用者位置和异常堆栈以便精确调试。
+// 特殊处理：fqcn 和 location 用于在需要位置信息时记录调用者详情。
+// 自 2.13.0 版本引入。
+// 关键变量：
+//   - fqcn: 全限定类名，标识日志调用点。
+//   - location: 堆栈元素，提供调用者位置。
     default void logMessage(Level level, Marker marker, String fqcn, StackTraceElement location, Message message,
         Throwable throwable) {
         // noop
@@ -4275,6 +4611,11 @@ public interface Logger {
      * @return a LogBuilder.
      * @since 2.13.0
      */
+// 中文注释：构造 TRACE 级别的日志事件。
+// 功能：返回一个 LogBuilder 对象，用于构建 TRACE 级别的日志。
+// 方法目的：提供流式接口以便更灵活地记录 TRACE 日志。
+// 返回值：LogBuilder 对象，默认返回 NOOP（空操作）。
+// 自 2.13.0 版本引入。
     default LogBuilder atTrace() {
         return LogBuilder.NOOP;
     }
@@ -4284,6 +4625,11 @@ public interface Logger {
      * @return a LogBuilder.
      * @since 2.13.0
      */
+// 中文注释：构造 DEBUG 级别的日志事件。
+// 功能：返回一个 LogBuilder 对象，用于构建 DEBUG 级别的日志。
+// 方法目的：提供流式接口以便更灵活地记录 DEBUG 日志。
+// 返回值：LogBuilder 对象，默认返回 NOOP。
+// 自 2.13.0 版本引入。
     default LogBuilder atDebug() {
         return LogBuilder.NOOP;
     }
@@ -4293,6 +4639,11 @@ public interface Logger {
      * @return a LogBuilder.
      * @since 2.13.0
      */
+// 中文注释：构造 INFO 级别的日志事件。
+// 功能：返回一个 LogBuilder 对象，用于构建 INFO 级别的日志。
+// 方法目的：提供流式接口以便更灵活地记录 INFO 日志。
+// 返回值：LogBuilder 对象，默认返回 NOOP。
+// 自 2.13.0 版本引入。
     default LogBuilder atInfo() {
         return LogBuilder.NOOP;
     }
@@ -4302,6 +4653,11 @@ public interface Logger {
      * @return a LogBuilder.
      * @since 2.13.0
      */
+// 中文注释：构造 WARN 级别的日志事件。
+// 功能：返回一个 LogBuilder 对象，用于构建 WARN 级别的日志。
+// 方法目的：提供流式接口以便更灵活地记录 WARN 日志。
+// 返回值：LogBuilder 对象，默认返回 NOOP。
+// 自 2.13.0 版本引入。
     default LogBuilder atWarn() {
         return LogBuilder.NOOP;
     }
@@ -4311,6 +4667,11 @@ public interface Logger {
      * @return a LogBuilder.
      * @since 2.13.0
      */
+// 中文注释：构造 ERROR 级别的日志事件。
+// 功能：返回一个 LogBuilder 对象，用于构建 ERROR 级别的日志。
+// 方法目的：提供流式接口以便更灵活地记录 ERROR 日志。
+// 返回值：LogBuilder 对象，默认返回 NOOP。
+// 自 2.13.0 版本引入。
     default LogBuilder atError() {
         return LogBuilder.NOOP;
     }
@@ -4320,6 +4681,11 @@ public interface Logger {
      * @return a LogBuilder.
      * @since 2.13.0
      */
+// 中文注释：构造 FATAL 级别的日志事件。
+// 功能：返回一个 LogBuilder 对象，用于构建 FATAL 级别的日志。
+// 方法目的：提供流式接口以便更灵活地记录 FATAL 日志。
+// 返回值：LogBuilder 对象，默认返回 NOOP。
+// 自 2.13.0 版本引入。
     default LogBuilder atFatal() {
         return LogBuilder.NOOP;
     }
@@ -4329,6 +4695,11 @@ public interface Logger {
      * @return a LogBuilder.
      * @since 2.13.0
      */
+// 中文注释：构造始终记录的日志事件。
+// 功能：返回一个 LogBuilder 对象，用于构建总是会被记录的日志（忽略级别）。
+// 方法目的：支持无条件记录日志的场景。
+// 返回值：LogBuilder 对象，默认返回 NOOP。
+// 自 2.13.0 版本引入。
     default LogBuilder always() {
         return LogBuilder.NOOP;
     }
@@ -4339,6 +4710,13 @@ public interface Logger {
      * @return a LogBuilder.
      * @since 2.13.0
      */
+// 中文注释：构造指定级别的日志事件。
+// 参数说明：
+//   - level: 日志级别（在此方法中被忽略）。
+// 功能：返回一个 LogBuilder 对象，用于构建指定级别的日志。
+// 方法目的：提供灵活的日志级别选择，构建流式日志记录。
+// 返回值：LogBuilder 对象，默认返回 NOOP。
+// 自 2.13.0 版本引入。
     default LogBuilder atLevel(Level level) {
         return LogBuilder.NOOP;
     }
