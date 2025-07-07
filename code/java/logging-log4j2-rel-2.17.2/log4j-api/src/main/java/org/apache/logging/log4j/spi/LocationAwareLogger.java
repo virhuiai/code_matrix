@@ -22,8 +22,27 @@ import org.apache.logging.log4j.message.Message;
 
 /**
  * Logger that accepts the location of the caller.
+ * 接受调用者位置信息的日志记录器接口。
  */
 public interface LocationAwareLogger {
+    /**
+     * Logs a message with the location of the caller.
+     * 使用调用者位置信息记录一条消息。
+     *
+     * @param level The logging Level.
+     * 日志级别。
+     * @param marker The Marker for the message.
+     * 消息的标记。
+     * @param fqcn The fully qualified class name of the caller. This is used to identify the caller correctly
+     * when filtering stack trace elements.
+     * 调用者的完全限定类名。这用于在过滤堆栈跟踪元素时正确识别调用者。
+     * @param location The StackTraceElement of the caller.
+     * 调用者的堆栈跟踪元素。
+     * @param message The message to log.
+     * 要记录的消息。
+     * @param throwable The Throwable associated with the message, if any.
+     * 与消息关联的异常，如果没有则为null。
+     */
     void logMessage(final Level level, final Marker marker, final String fqcn, final StackTraceElement location,
         final Message message, final Throwable throwable);
 }
