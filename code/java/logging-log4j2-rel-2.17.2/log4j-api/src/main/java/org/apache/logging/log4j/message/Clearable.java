@@ -18,8 +18,10 @@ package org.apache.logging.log4j.message;
 
 /**
  * {@link Clearable} objects may be reset to a reusable state.
+ * Clearable 对象可以重置为可重用状态。
  *
  * This type should be combined into {@link ReusableMessage} as a default method for 3.0.
+ * 该类型在 3.0 版本中应作为默认方法合并到 {@link ReusableMessage} 中。
  *
  * @since 2.11.1
  */
@@ -27,6 +29,7 @@ interface Clearable {
 
     /**
      * Resets the object to a clean state.
+     * 将对象重置为干净状态。
      */
     void clear();
 

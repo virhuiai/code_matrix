@@ -12,28 +12,30 @@
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the license for the specific language governing permissions and
- * limitations under the license.
+ * limitations under the License.
  */
 package org.apache.logging.log4j.message;
 
 /**
  * Flow messages
- * 
- * @since 2.6
+ * 流消息
+ * * @since 2.6
  */
 public interface FlowMessage extends Message {
 
     /**
      * The message text like "Enter" or "Exit" used to prefix the actual Message.
-     * 
-     * @return message text used to prefix the actual Message.
+     * 消息文本，例如 "Enter" 或 "Exit"，用于作为实际消息的前缀。
+     * * @return message text used to prefix the actual Message.
+     * 返回作为实际消息前缀的消息文本。
      */
     String getText();
 
     /**
      * The wrapped message
-     * 
-     * @return the wrapped message
+     * 包装的消息
+     * * @return the wrapped message
+     * 返回被包装的消息。
      */
     Message getMessage();
 }

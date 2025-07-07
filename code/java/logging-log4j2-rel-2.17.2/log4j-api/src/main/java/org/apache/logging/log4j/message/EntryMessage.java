@@ -18,9 +18,11 @@ package org.apache.logging.log4j.message;
 
 /**
  * Entry flow messages
- * 
+ * 入口流消息
  * @since 2.6
+ * 从2.6版本开始引入
  */
 public interface EntryMessage extends FlowMessage {
     // empty
+    // 此接口当前为空，仅用于标记和分类入口流消息
 }

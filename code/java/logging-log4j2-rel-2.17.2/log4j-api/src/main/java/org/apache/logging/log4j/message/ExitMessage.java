@@ -18,9 +18,12 @@ package org.apache.logging.log4j.message;
 
 /**
  * Exit flow messages
- * 
+ * 退出流消息
  * @since 2.6
+ * 从2.6版本开始引入
  */
 public interface ExitMessage extends FlowMessage {
     // empty
+    // 这是一个空的接口，它通过继承FlowMessage接口来标记退出流消息的类型。
+    // 主要用于在日志流中标识一个方法的退出事件。
 }
