@@ -32,15 +32,20 @@ import org.apache.logging.log4j.util.ReadOnlyStringMap;
 
 /**
  * An abstract log event implementation with default values for all methods. The setters are no-ops.
+ * 这是一个抽象的日志事件实现，为所有方法提供了默认值。所有的setter方法都是空操作（no-ops），意味着它们不执行任何实际逻辑。
  */
 public abstract class AbstractLogEvent implements LogEvent {
 
     private static final long serialVersionUID = 1L;
+    // 序列化版本UID，用于对象序列化和反序列化时的兼容性检查。
 
     private volatile MutableInstant instant;
+    // 日志事件的瞬时时间戳，使用volatile关键字确保多线程环境下的可见性。
 
     /**
      * Subclasses should implement this method to provide an immutable version.
+     * 子类应该实现此方法以提供一个不可变的日志事件实例。
+     * @return 返回当前LogEvent的不可变版本。默认实现返回自身。
      */
     @Override
     public LogEvent toImmutable() {
@@ -54,6 +59,8 @@ public abstract class AbstractLogEvent implements LogEvent {
 
     /**
      * Returns {@link Collections#emptyMap()}.
+     * 返回一个空的不可修改的Map。
+     * @return 返回一个空的Map，表示没有上下文数据。
      */
     @Override
     public Map<String, String> getContextMap() {
@@ -127,13 +134,17 @@ public abstract class AbstractLogEvent implements LogEvent {
 
     @Override
     public Instant getInstant() {
+        // 返回日志事件的Instant时间戳。
         return getMutableInstant();
     }
 
     protected final MutableInstant getMutableInstant() {
+        // 获取或初始化可变的Instant时间戳。
         if (instant == null) {
+            // 如果instant为null，则创建一个新的MutableInstant实例。
             instant = new MutableInstant();
         }
+        // 返回当前的MutableInstant实例。
         return instant;
     }
 
@@ -150,11 +161,13 @@ public abstract class AbstractLogEvent implements LogEvent {
     @Override
     public void setEndOfBatch(final boolean endOfBatch) {
         // do nothing
+        // 这是一个空操作，子类如果需要处理批处理结束逻辑，应覆盖此方法。
     }
 
     @Override
     public void setIncludeLocation(final boolean locationRequired) {
         // do nothing
+        // 这是一个空操作，子类如果需要处理是否包含位置信息，应覆盖此方法。
     }
 
     @Override

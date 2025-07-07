@@ -19,21 +19,28 @@ package org.apache.logging.log4j.core;
 
 /**
  * Default implementation using the Core LoggerContext.
+ * 核心日志上下文的默认实现。
  */
 public class DefaultLoggerContextAccessor implements LoggerContextAccessor {
 
     /**
      * Singleton instance.
+     * 单例实例。
      */
     public static DefaultLoggerContextAccessor INSTANCE = new DefaultLoggerContextAccessor();
 
     /*
      * Returns the current LoggerContext.
+     * 返回当前的LoggerContext实例。
      *
      * @see org.apache.logging.log4j.core.LoggerContextAccessor#getLoggerContext()
      */
     @Override
     public LoggerContext getLoggerContext() {
+        // This method returns the current LoggerContext.
+        // 该方法返回当前的LoggerContext实例。
+        // The LoggerContext.getContext() static method is used to retrieve the LoggerContext.
+        // 通过调用LoggerContext的静态方法getContext()来获取LoggerContext实例。
         return LoggerContext.getContext();
     }
 

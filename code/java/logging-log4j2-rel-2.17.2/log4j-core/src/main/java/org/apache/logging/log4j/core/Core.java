@@ -17,8 +17,13 @@
 
 package org.apache.logging.log4j.core;
 
+// 核心包，包含 Log4j 2 的核心接口和类。
+// 这个包提供了 Log4j 2 日志框架的基础功能。
+
 public class Core {
+    // Core 类主要用于定义 Log4j 2 核心模块的常量。
 
     public static final String CATEGORY_NAME = "Core";
-
+    // CATEGORY_NAME 是一个公共静态最终字符串常量，表示核心模块的类别名称。
+    // 它定义了 Log4j 2 内部用于标识核心组件的名称。
 }

@@ -20,13 +20,16 @@ import java.nio.charset.Charset;
 
 /**
  * Instantiates the @{link Layout} type for String-based layouts.
+ * 为基于字符串的布局实例化 {@link Layout} 类型。
  */
 public interface StringLayout extends Layout<String> {
 
     /**
      * Gets the Charset this layout uses to encode Strings into bytes.
+     * 获取此布局用于将字符串编码为字节的字符集。
      *
      * @return the Charset this layout uses to encode Strings into bytes.
+     * @return 此布局用于将字符串编码为字节的字符集。
      */
     Charset getCharset();
 
