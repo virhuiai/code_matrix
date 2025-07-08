@@ -18,13 +18,21 @@ package org.apache.logging.log4j.core.tools;
 
 /**
  * Wrapper around {@link Generate.ExtendedLogger}.
+ * 这个类是 {@link Generate.ExtendedLogger} 的包装器。
+ * 它的主要目的是提供一个简单的入口点来调用 {@code Generate.ExtendedLogger} 的功能。
  */
 public class ExtendedLoggerGenerator {
     /**
      * Delegates to {@link Generate.ExtendedLogger#main(String[])}
+     * 将命令行参数委托给 {@link Generate.ExtendedLogger#main(String[])} 方法。
+     * 这是程序的入口点。
      * @param args the command line arguments to pass on
+     * 需要传递给 {@code Generate.ExtendedLogger.main} 方法的命令行参数。
+     * 这些参数通常用于控制日志生成器的行为。
      */
     public static void main(final String[] args) {
+        // 调用 Generate.ExtendedLogger 类的 main 方法，并将所有命令行参数传递给它。
+        // 实际的日志扩展功能由 Generate.ExtendedLogger 实现。
         Generate.ExtendedLogger.main(args);
     }
 }
