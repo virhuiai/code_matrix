@@ -18,15 +18,20 @@ package org.apache.logging.log4j.core.util;
 
 /**
  * Implementation of the {@code Clock} interface that returns the system time.
+ * 实现 Clock 接口，返回系统时间的类。
  */
 public final class SystemClock implements Clock {
 
     /**
      * Returns the system time.
+     * 返回系统时间。
      * @return the result of calling {@code System.currentTimeMillis()}
+     * @return 调用 System.currentTimeMillis() 方法返回的当前时间（毫秒）。
      */
     @Override
     public long currentTimeMillis() {
+        // Calls the native method to get the current time in milliseconds.
+        // 调用本地方法获取当前时间的毫秒值。
         return System.currentTimeMillis();
     }
 

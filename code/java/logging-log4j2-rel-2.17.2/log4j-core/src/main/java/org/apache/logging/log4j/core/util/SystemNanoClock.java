@@ -18,16 +18,19 @@ package org.apache.logging.log4j.core.util;
 
 /**
  * Implementation of the {@code NanoClock} interface that returns the system nano time.
+ * 实现 NanoClock 接口，返回系统纳秒时间。
  */
-public final class SystemNanoClock implements NanoClock {
+public final class SystemNanoClock implements NanoClock { // 定义一个名为 SystemNanoClock 的公共最终类，实现了 NanoClock 接口。
 
     /**
      * Returns the system high-resolution time.
+     * 返回系统的高精度时间。
      * @return the result of calling {@code System.nanoTime()}
+     * 返回调用 System.nanoTime() 方法的结果。
      */
-    @Override
-    public long nanoTime() {
-        return System.nanoTime();
+    @Override // 标记此方法覆盖了父接口 NanoClock 中的方法。
+    public long nanoTime() { // 定义一个公共方法 nanoTime，返回一个长整型数值。
+        return System.nanoTime(); // 调用 System.nanoTime() 方法获取当前系统的高精度时间（纳秒），并返回该值。
     }
 
 }

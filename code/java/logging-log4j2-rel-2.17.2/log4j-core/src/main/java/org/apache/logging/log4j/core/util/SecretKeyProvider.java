@@ -20,13 +20,16 @@ import javax.crypto.SecretKey;
 
 /**
  * Factory class to provide a {@link SecretKey} instance.
+ * 用于提供 {@link SecretKey} 实例的工厂类。
  */
 public interface SecretKeyProvider {
 
     /**
      * Returns this SecretKey.
+     * 返回此 SecretKey。
      *
      * @return the SecretKey.
+     * @return 密钥。
      */
     SecretKey getSecretKey();
 }

@@ -19,9 +19,25 @@ package org.apache.logging.log4j.core.util;
 /**
  *
  */
+// 这是一个接口，用于处理文件或资源变化的事件。
+// 当被监控的文件或资源发生变化时，将触发相应的事件。
 public interface WatchEventService {
 
+    /**
+     *
+     */
+    // 订阅文件或资源变化的事件。
+    // 当文件或资源发生变化时，WatchManager 将收到通知。
+    // 参数:
+    //   manager: WatchManager 实例，用于管理和分发事件。
     void subscribe(WatchManager manager);
 
+    /**
+     *
+     */
+    // 取消订阅文件或资源变化的事件。
+    // 一旦取消订阅，WatchManager 将不再接收到该 WatchEventService 的事件通知。
+    // 参数:
+    //   manager: WatchManager 实例，用于取消订阅。
     void unsubscribe(WatchManager manager);
 }
