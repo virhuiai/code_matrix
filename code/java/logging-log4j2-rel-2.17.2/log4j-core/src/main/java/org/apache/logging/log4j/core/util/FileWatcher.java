@@ -20,17 +20,22 @@ import java.io.File;
 
 /**
  * Watches for changes in a {@link File} and performs an action when the file is modified.
+ * 监视文件变化，并在文件被修改时执行相应操作。
  *
  * @see WatchManager
+ * @see WatchManager 文件监视管理器的参考。
  */
 public interface FileWatcher {
 
     /**
      * Called when a {@link WatchManager} detects that the given {@link File} changed.
+     * 当 {@link WatchManager} 检测到给定 {@link File} 发生变化时调用此方法。
      *
      * @param file
      *            the file that changed.
+     * 发生变化的文件。
      * @see WatchManager
+     * @see WatchManager 文件监视管理器的参考。
      */
     void fileModified(File file);
 }

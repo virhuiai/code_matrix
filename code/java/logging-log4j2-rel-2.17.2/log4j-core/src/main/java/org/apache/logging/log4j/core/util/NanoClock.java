@@ -19,12 +19,15 @@ package org.apache.logging.log4j.core.util;
 
 /**
  * Provides the high-resolution time stamp used in log events.
+ * 提供用于日志事件的高分辨率时间戳。
  */
 public interface NanoClock {
     /**
      * Returns the current value of the running Java Virtual Machine's high-resolution time source, in nanoseconds.
+     * 返回当前运行的 Java 虚拟机的高分辨率时间源的当前值，单位为纳秒。
      *
      * @return the current value of the running Java Virtual Machine's high-resolution time source, in nanoseconds
+     * @return 当前运行的 Java 虚拟机的高分辨率时间源的当前值，单位为纳秒
      */
     long nanoTime();
 }

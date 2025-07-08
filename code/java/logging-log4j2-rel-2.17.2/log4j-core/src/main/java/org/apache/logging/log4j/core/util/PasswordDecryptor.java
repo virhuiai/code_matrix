@@ -18,8 +18,18 @@ package org.apache.logging.log4j.core.util;
 
 /**
  * Decrypt passwords.
+ * 解密密码。
  */
 public interface PasswordDecryptor {
 
+    /**
+     * Decrypts the given password.
+     * 解密给定的密码。
+     *
+     * @param password The password to decrypt.
+     * 需要解密的密码。
+     * @return The decrypted password.
+     * 解密后的密码。
+     */
     String decryptPassword(String password);
 }

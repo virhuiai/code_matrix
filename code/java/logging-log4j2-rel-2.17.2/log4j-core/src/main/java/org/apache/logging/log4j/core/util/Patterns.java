@@ -18,6 +18,7 @@ package org.apache.logging.log4j.core.util;
 
 /**
  * Pattern strings used throughout Log4j.
+ * Log4j中使用的模式字符串。
  *
  * @see java.util.regex.Pattern
  */
@@ -25,24 +26,32 @@ public final class Patterns {
 
     /**
      * A pattern string for comma separated lists with optional whitespace.
+     * 用于逗号分隔列表的模式字符串，允许可选的空白字符。
      */
     public static final String COMMA_SEPARATOR = toWhitespaceSeparator(",");
 
     /**
      * The whitespace pattern string.
+     * 空白字符的模式字符串。
      */
     public static final String WHITESPACE = "\\s*";
 
     private Patterns() {
+        // 私有构造函数，防止实例化该工具类。
     }
 
     /**
      * Creates a pattern string for {@code separator} surrounded by whitespace.
+     * 为被空白字符包围的分隔符创建模式字符串。
      *
      * @param separator The separator.
+     * 分隔符。
      * @return a pattern for {@code separator} surrounded by whitespace.
+     * 返回被空白字符包围的分隔符模式。
      */
     public static String toWhitespaceSeparator(final String separator) {
+        // 将给定的分隔符用空白字符模式包裹起来，形成一个新的模式字符串。
+        // 例如，如果separator是",", 结果将是"\\s*,\\s*"。
         return WHITESPACE + separator + WHITESPACE;
     }
 }

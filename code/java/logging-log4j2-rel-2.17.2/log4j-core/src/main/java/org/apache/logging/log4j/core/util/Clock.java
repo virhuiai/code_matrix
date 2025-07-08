@@ -18,12 +18,14 @@ package org.apache.logging.log4j.core.util;
 
 /**
  * Provides the time stamp used in log events.
+ * 为日志事件提供时间戳。
  */
 public interface Clock {
     /**
      * Returns the time in milliseconds since the epoch.
-     *
+     * 返回自 Epoch（1970年1月1日00:00:00 GMT）以来的毫秒数。
      * @return the time in milliseconds since the epoch
+     * @return 自 Epoch 以来的毫秒数
      */
     long currentTimeMillis();
 }

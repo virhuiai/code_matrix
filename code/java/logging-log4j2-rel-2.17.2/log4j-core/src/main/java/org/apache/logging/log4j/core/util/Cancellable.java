@@ -18,13 +18,18 @@ package org.apache.logging.log4j.core.util;
 
 /**
  * Interface to cancel a Runnable callback.
+ * 用于取消 Runnable 回调的接口。
  *
  * @since 2.1
+ * @since 2.1 版本开始引入。
  */
 public interface Cancellable extends Runnable {
 
     /**
      * Cancels the execution of this Runnable callback. This method has no effect if this has already executed.
+     * 取消此 Runnable 回调的执行。如果此回调已执行，则此方法无效。
+     * 方法目的说明：此方法旨在提供一种机制，允许在 Runnable 完成其任务之前停止其执行。
+     * 特殊处理的注意事项：如果 Runnable 已经执行完毕，调用此方法将不会产生任何效果。
      */
     void cancel();
 }
