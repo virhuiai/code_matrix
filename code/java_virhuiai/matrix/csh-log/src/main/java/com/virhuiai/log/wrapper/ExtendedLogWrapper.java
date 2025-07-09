@@ -1,5 +1,6 @@
-package com.virhuiai.log;
+package com.virhuiai.log.wrapper;
 
+import com.virhuiai.log.StackTraceUtil;
 import org.apache.commons.logging.Log;
 
 /**

@@ -1,5 +1,7 @@
 package com.virhuiai.log;
 
+import com.virhuiai.log.wrapper.DynamicProxyLogWrapper;
+import com.virhuiai.log.wrapper.ExtendedLogWrapper;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
