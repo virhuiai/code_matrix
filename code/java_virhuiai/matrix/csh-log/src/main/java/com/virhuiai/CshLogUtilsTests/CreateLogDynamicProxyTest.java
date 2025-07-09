@@ -1,6 +1,6 @@
 package com.virhuiai.CshLogUtilsTests;
 
-import com.virhuiai.log.CshLogUtils;
+import com.virhuiai.log.logdpp.LogFactory;
 import org.apache.commons.logging.Log;
 
 public class CreateLogDynamicProxyTest {
@@ -9,12 +9,12 @@ public class CreateLogDynamicProxyTest {
         public static void out(){
 //            CshLogUtils.testLog();
 
-            Log log = CshLogUtils.createLogDynamicProxy();
+            Log log = LogFactory.createLogDynamicProxy();
             log.info("测试日志输出");
             log.info("测试日志输出14行");
             log.debug("测试日志输出15行");
 
-            Log log1 = CshLogUtils.createLogDynamicProxy(CreateLogDynamicProxyTest.class);
+            Log log1 = LogFactory.createLogDynamicProxy(CreateLogDynamicProxyTest.class);
             log1.info("测试日志输出");
 
 //            String classNameFull0 = Thread.currentThread().getStackTrace()[0].getClassName();

@@ -1,6 +1,6 @@
 package com.virhuiai.CshLogUtilsTests;
 
-import com.virhuiai.log.extended.LogFactory;
+import com.virhuiai.log.logext.LogFactory;
 import org.apache.commons.logging.Log;
 
 public class CreateLogExtendedTest2 {

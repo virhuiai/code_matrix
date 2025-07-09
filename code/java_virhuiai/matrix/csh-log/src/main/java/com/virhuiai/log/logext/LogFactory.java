@@ -1,12 +1,12 @@
-package com.virhuiai.log.extended;
+package com.virhuiai.log.logext;
 
-import com.virhuiai.log.CshLogUtils;
+import com.virhuiai.log.LogFactoryI;
 import com.virhuiai.log.StackTraceUtil;
 import com.virhuiai.log.wrapper.ExtendedLogWrapper;
 import org.apache.commons.logging.Log;
 
 // LogFactory 类是一个日志工厂，用于获取 Log 实例。
-public class LogFactory {
+public class LogFactory implements LogFactoryI {
     /**
      * 在方法开始处添加了栈深度检查，防止可能的数组越界异常。
      */
@@ -15,7 +15,7 @@ public class LogFactory {
     /**
      * 类名常量，用于性能优化
      */
-    private static final String CLASS_NAME = CshLogUtils.class.getName();
+    private static final String CLASS_NAME = LogFactory.class.getName();
 
     private LogFactory() {
         // 私有构造函数，防止实例化
@@ -86,10 +86,10 @@ public class LogFactory {
      */
     private static Log createLogExtended() {
         String rsCallerClassName = StackTraceUtil.getCallerClassName(MIN_STACK_DEPTH
-                , CLASS_NAME, com.virhuiai.log.extended.LogFactory.class.getName());
+                , CLASS_NAME, com.virhuiai.log.logext.LogFactory.class.getName());
         if(StackTraceUtil.UNKNOWN_CLASS.equals(rsCallerClassName)){
             // 返回未经代理包装的原始日志对象
-            return CshLogUtils.getDefaultLogWithWarning("无法确定调用者");
+            return LogFactoryI.getDefaultLogWithWarning("无法确定调用者");
         }
 
         try {
@@ -98,7 +98,11 @@ public class LogFactory {
             return createLogExtended(callerClass);
         } catch (ClassNotFoundException e) {
             // 返回未经代理包装的原始日志对象
-            return CshLogUtils.getDefaultLogWithWarning(String.format("无法加载类: %s", rsCallerClassName), e);
+            return LogFactoryI.getDefaultLogWithWarning(String.format("无法加载类: %s", rsCallerClassName), e);
         }
     }
+
+    ////////
+
+
 }

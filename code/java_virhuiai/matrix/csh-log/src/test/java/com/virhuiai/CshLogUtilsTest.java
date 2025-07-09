@@ -1,7 +1,6 @@
 package com.virhuiai;
 
-import com.virhuiai.log.CshLogUtils;
-import com.virhuiai.log.extended.LogFactory;
+import com.virhuiai.log.logext.LogFactory;
 import org.apache.commons.logging.Log;
 import org.junit.Before;
 import org.junit.Test;
@@ -46,7 +45,7 @@ public class CshLogUtilsTest {
 
     @Test
     public void testCreateDynamicProxyLog() {
-        Log log = CshLogUtils.createLogDynamicProxy();
+        Log log = com.virhuiai.log.logdpp.LogFactory.getLog();
         assertNotNull("创建的动态代理日志对象不应为null", log);
     }
 
