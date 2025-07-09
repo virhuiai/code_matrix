@@ -97,12 +97,12 @@ public final class CshLogUtils {
      * @return 返回扩展Log对象
      */
     public static Log createLogExtended() {
-        String rsCallerClassName = StackTraceUtil.getCallerClassName(MIN_STACK_DEPTH, CLASS_NAME);
+        String rsCallerClassName = StackTraceUtil.getCallerClassName(MIN_STACK_DEPTH
+                , CLASS_NAME, com.virhuiai.log.extended.LogFactory.class.getName());
         if(StackTraceUtil.UNKNOWN_CLASS.equals(rsCallerClassName)){
             // 返回未经代理包装的原始日志对象
             return getDefaultLogWithWarning("无法确定调用者");
         }
-
 
         try {
             // 尝试加载类并获取其日志对象
