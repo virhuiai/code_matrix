@@ -1,12 +1,10 @@
-package com.virhuiai.CshLogUtils;
+package com.virhuiai.log;
 
 /**
  * 调用栈信息工具类
  */
 public final class StackTraceUtil {
     public static final String UNKNOWN_CLASS = "UnknownClass";
-
-
 
     private StackTraceUtil() {
         // 私有构造函数，防止实例化

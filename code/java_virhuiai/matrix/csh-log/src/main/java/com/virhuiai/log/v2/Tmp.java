@@ -1,6 +1,5 @@
-package com.virhuiai.CshLogUtils.v2;
+package com.virhuiai.log.v2;
 
-import com.virhuiai.CshLogUtils.v2.LogHelper;
 import org.apache.commons.logging.Log;
 
 public class Tmp {

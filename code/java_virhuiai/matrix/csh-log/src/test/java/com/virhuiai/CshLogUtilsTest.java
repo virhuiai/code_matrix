@@ -1,6 +1,6 @@
 package com.virhuiai;
 
-import com.virhuiai.CshLogUtils.CshLogUtils;
+import com.virhuiai.log.CshLogUtils;
 import org.apache.commons.logging.Log;
 import org.junit.Before;
 import org.junit.Test;

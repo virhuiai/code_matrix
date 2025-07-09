@@ -1,4 +1,4 @@
-package com.virhuiai.CshLogUtils.v2;
+package com.virhuiai.log.v2;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 

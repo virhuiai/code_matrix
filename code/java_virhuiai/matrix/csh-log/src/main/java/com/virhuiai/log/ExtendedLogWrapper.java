@@ -1,4 +1,4 @@
-package com.virhuiai.CshLogUtils;
+package com.virhuiai.log;
 
 import org.apache.commons.logging.Log;
 

@@ -1,4 +1,4 @@
-package com.virhuiai.CshLogUtils.v2;
+package com.virhuiai.log.v2;
 
 // Log4j2核心包导入
 import org.apache.logging.log4j.Level;
