@@ -1,4 +1,4 @@
-package com.virhuiai.Cli;
+package com.virhuiai.cli;
 
 import com.virhuiai.log.logext.LogFactory;
 import org.apache.commons.logging.Log;
@@ -10,7 +10,6 @@ import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
-import org.apache.commons.logging.Log;
 
 /**
  * 使用枚举方式实现的单例模式来管理命令行选项解析。

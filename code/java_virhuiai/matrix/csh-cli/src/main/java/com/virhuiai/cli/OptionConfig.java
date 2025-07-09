@@ -1,4 +1,4 @@
-package com.virhuiai.Cli;
+package com.virhuiai.cli;
 
 import java.util.Arrays;
 import java.util.Collections;

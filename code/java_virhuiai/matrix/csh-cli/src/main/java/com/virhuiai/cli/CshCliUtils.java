@@ -1,13 +1,11 @@
-package com.virhuiai.Cli;
+package com.virhuiai.cli;
 
 import com.virhuiai.log.logext.LogFactory;
 import org.apache.commons.logging.Log;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
-import org.apache.commons.logging.Log;
 
-import java.util.List;
 import java.util.function.Consumer;
 
 /**
