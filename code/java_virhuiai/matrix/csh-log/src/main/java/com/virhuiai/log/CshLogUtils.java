@@ -42,7 +42,7 @@ public final class CshLogUtils {
      * @param warningMessage 需要记录的警告信息
      * @return 未经代理包装的原始日志对象
      */
-    private static Log getDefaultLogWithWarning(String warningMessage) {
+    public static Log getDefaultLogWithWarning(String warningMessage) {
         Log defaultLog = LogFactory.getLog(CshLogUtils.class);
         defaultLog.warn(warningMessage);
         return defaultLog;
@@ -54,65 +54,12 @@ public final class CshLogUtils {
      * @param e
      * @return
      */
-    private static Log getDefaultLogWithWarning(String warningMessage,Exception e) {
+    public static Log getDefaultLogWithWarning(String warningMessage,Exception e) {
         Log defaultLog = LogFactory.getLog(CshLogUtils.class);
         defaultLog.warn(warningMessage, e);
         return defaultLog;
     }
 
-    /**
-     * 获取指定类的日志对象
-     *
-     * @param clazz 需要获取日志对象的类
-     * @return 返回与指定类关联的 Log 对象
-     * @throws NullPointerException 如果传入的类对象为null
-     */
-    public static Log createLogExtended(Class<?> clazz) {
-        if (null == clazz) {
-            throw new NullPointerException("传入的类对象不能为null");
-        }
-        Log log = LogFactory.getLog(clazz);
-        return new ExtendedLogWrapper(log);
-    }
-
-
-    /**
-     * 创建Log对象
-     */
-    private static Log createLogExtended(String name) {
-        Log log = LogFactory.getLog(name);
-        return new ExtendedLogWrapper(log);
-    }
-
-    /**
-     * 获取调用者类的扩展日志对象
-     * 通过分析调用栈自动获取调用者类，并返回对应的扩展Log对象
-     *
-     * 工作流程:
-     * 1. 获取调用者类名
-     * 2. 如果无法获取调用者，返回默认日志对象
-     * 3. 尝试加载调用者类并创建扩展日志对象
-     * 4. 如果类加载失败，返回默认日志对象
-     *
-     * @return 返回扩展Log对象
-     */
-    public static Log createLogExtended() {
-        String rsCallerClassName = StackTraceUtil.getCallerClassName(MIN_STACK_DEPTH
-                , CLASS_NAME, com.virhuiai.log.extended.LogFactory.class.getName());
-        if(StackTraceUtil.UNKNOWN_CLASS.equals(rsCallerClassName)){
-            // 返回未经代理包装的原始日志对象
-            return getDefaultLogWithWarning("无法确定调用者");
-        }
-
-        try {
-            // 尝试加载类并获取其日志对象
-            Class<?> callerClass = Class.forName(rsCallerClassName);
-            return createLogExtended(callerClass);
-        } catch (ClassNotFoundException e) {
-            // 返回未经代理包装的原始日志对象
-            return getDefaultLogWithWarning(String.format("无法加载类: %s", rsCallerClassName), e);
-        }
-    }
 
     /**
      * 使用动态代理包装指定类的日志对象
