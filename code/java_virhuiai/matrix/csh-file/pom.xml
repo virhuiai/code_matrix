@@ -11,17 +11,14 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <artifactId>csh-log</artifactId>
+    <artifactId>csh-file</artifactId>
     <version>1.0-SNAPSHOT</version>
 
     <dependencies>
-        <!--     Apache Commons Logging API-->
-        <!--  Apache Commons Logging 是一个通用的日志接口库，它抽象了具体的日志实现库，如 Log4j、SLF4J 或 Java Util Logging (JUL)。Commons Logging 本身不提供日志记录的实现，而是通过桥接到这些具体的日志库来实际记录日志。  -->
-        <!-- 这里添加了 log4j-jcl 依赖，它是 Log4j 2 提供的 Commons Logging 适配器。   -->
         <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-jcl</artifactId>
-            <version>2.17.2</version>
+            <groupId>com.virhuiai</groupId>
+            <artifactId>csh-log</artifactId>
+            <version>1.0-SNAPSHOT</version>
         </dependency>
     </dependencies>
 
