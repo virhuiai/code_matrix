@@ -1,4 +1,4 @@
-package com.virhuiai.log.logext;
+package com.virhuiai.log.logspl;
 
 import com.virhuiai.log.LogFactoryI;
 import com.virhuiai.log.StackTraceUtil;
@@ -23,7 +23,7 @@ public class LogFactory implements LogFactoryI {
 
     public static Log getLog(){
         // 该方法用于获取一个通用的 Log 实例。
-        return createLogExtended();
+        return createLogSimple();
         // 调用 CshLogUtils 工具类的 createLogExtended 方法创建并返回一个扩展的 Log 实例。
     }
 
@@ -32,7 +32,7 @@ public class LogFactory implements LogFactoryI {
     public static Log getLog(Class<?> clazz){
         // 参数 clazz：需要为其创建 Log 实例的类。
         // 返回值：一个绑定到指定类的 Log 实例。
-        return createLogExtended(clazz);
+        return createLogSimple(clazz);
         // 调用 CshLogUtils 工具类的 createLogExtended 方法，并传入指定的 Class 对象，
         // 以创建并返回一个与该类相关的扩展 Log 实例。
     }
@@ -40,7 +40,7 @@ public class LogFactory implements LogFactoryI {
     public static Log getLog(String clsNm){
         // 参数 clazz：需要为其创建 Log 实例的类。
         // 返回值：一个绑定到指定类的 Log 实例。
-        return createLogExtended(clsNm);
+        return createLogSimple(clsNm);
         // 调用 CshLogUtils 工具类的 createLogExtended 方法，并传入指定的 Class 对象，
         // 以创建并返回一个与该类相关的扩展 Log 实例。
     }
@@ -55,7 +55,7 @@ public class LogFactory implements LogFactoryI {
      * @return 返回与指定类关联的 Log 对象
      * @throws NullPointerException 如果传入的类对象为null
      */
-    private static Log createLogExtended(Class<?> clazz) {
+    private static Log createLogSimple(Class<?> clazz) {
         if (null == clazz) {
             throw new NullPointerException("传入的类对象不能为null");
         }
@@ -67,7 +67,7 @@ public class LogFactory implements LogFactoryI {
     /**
      * 创建Log对象
      */
-    private static Log createLogExtended(String name) {
+    private static Log createLogSimple(String name) {
         Log log = org.apache.commons.logging.LogFactory.getLog(name);
         return new ExtendedLogWrapper(log);
     }
@@ -84,25 +84,43 @@ public class LogFactory implements LogFactoryI {
      *
      * @return 返回扩展Log对象
      */
-    private static Log createLogExtended() {
+    private static Log createLogSimple() {
         String rsCallerClassName = StackTraceUtil.getCallerClassName(MIN_STACK_DEPTH
-                , CLASS_NAME, com.virhuiai.log.logext.LogFactory.class.getName());
+                , CLASS_NAME, LogFactory.class.getName());
         if(StackTraceUtil.UNKNOWN_CLASS.equals(rsCallerClassName)){
             // 返回未经代理包装的原始日志对象
             return com.virhuiai.log.logspl.LogFactory.getDefaultLogWithWarning("无法确定调用者");
         }
 
-        try {
-            // 尝试加载类并获取其日志对象
-            Class<?> callerClass = Class.forName(rsCallerClassName);
-            return createLogExtended(callerClass);
-        } catch (ClassNotFoundException e) {
-            // 返回未经代理包装的原始日志对象
-            return com.virhuiai.log.logspl.LogFactory.getDefaultLogWithWarning(String.format("无法加载类: %s", rsCallerClassName), e);
-        }
+        return org.apache.commons.logging.LogFactory.getLog(rsCallerClassName);
     }
 
     ////////
+/////
+
+    /**
+     * 获取默认的日志对象并记录警告信息
+     *
+     * @param warningMessage 需要记录的警告信息
+     * @return 未经代理包装的原始日志对象
+     */
+    public static Log getDefaultLogWithWarning(String warningMessage) {
+        Log defaultLog = getLog(LogFactoryI.class);
+        defaultLog.warn(warningMessage);
+        return defaultLog;
+    }
+
+    /**
+     * 获取默认的日志对象并记录警告信息
+     * @param warningMessage
+     * @param e
+     * @return
+     */
+    public  static Log getDefaultLogWithWarning(String warningMessage, Exception e) {
+        Log defaultLog = getLog(LogFactoryI.class);
+        defaultLog.warn(warningMessage, e);
+        return defaultLog;
+    }
 
 
 }

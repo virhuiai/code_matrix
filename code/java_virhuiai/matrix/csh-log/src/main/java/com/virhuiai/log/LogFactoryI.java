@@ -46,46 +46,4 @@ public interface LogFactoryI {
         // 调用重载方法，传入空字符串获取默认日志记录器
         return getLogger("");
     }
-
-    /////
-
-    /**
-     * 获取默认的日志对象并记录警告信息
-     *
-     * @param warningMessage 需要记录的警告信息
-     * @return 未经代理包装的原始日志对象
-     */
-    static Log getDefaultLogWithWarning(String warningMessage) {
-        Log defaultLog = LogFactory.getLog(LogFactoryI.class);
-        defaultLog.warn(warningMessage);
-        return defaultLog;
-    }
-
-    /**
-     * 获取默认的日志对象并记录警告信息
-     * @param warningMessage
-     * @param e
-     * @return
-     */
-    static Log getDefaultLogWithWarning(String warningMessage, Exception e) {
-        Log defaultLog = LogFactory.getLog(LogFactoryI.class);
-        defaultLog.warn(warningMessage, e);
-        return defaultLog;
-    }
-
-
-
-    /**
-     * 创建简单的Log对象，不进行任何包装
-     *
-     * @param name 日志对象的名称标识
-     * @return 原始的Log对象
-     * @throws IllegalArgumentException 如果name为null或空字符串
-     */
-    static Log createLogSimple(String name) {
-        if (name == null || name.trim().isEmpty()) {
-            throw new IllegalArgumentException("日志名称不能为null或空");
-        }
-        return org.apache.commons.logging.LogFactory.getLog(name);
-    }
 }

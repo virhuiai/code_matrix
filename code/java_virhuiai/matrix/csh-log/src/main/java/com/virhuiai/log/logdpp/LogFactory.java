@@ -83,7 +83,7 @@ public class LogFactory implements LogFactoryI {
      */
     private static Log createLogDynamicProxy(String name) {
         // 复用createLogSimple方法获取原始日志对象
-        Log log = LogFactoryI.createLogSimple(name);
+        Log log = org.apache.commons.logging.LogFactory.getLog(name);
         // 使用动态代理对日志对象进行包装增强
         return DynamicProxyLogWrapper.wrap(log);
     }
@@ -107,7 +107,7 @@ public class LogFactory implements LogFactoryI {
         // 如果无法获取有效的调用者类名
         if (StackTraceUtil.UNKNOWN_CLASS.equals(rsCallerClassName)) {
             // 返回未经代理包装的原始日志对象
-            return LogFactoryI.getDefaultLogWithWarning("无法确定调用者");
+            return com.virhuiai.log.logspl.LogFactory.getDefaultLogWithWarning("无法确定调用者");
         }
 //        System.out.println("className....:" + rsCallerClassName);
         try {
@@ -116,7 +116,7 @@ public class LogFactory implements LogFactoryI {
             return createLogDynamicProxy(callerClass);
         } catch (ClassNotFoundException e) {
             // 返回未经代理包装的原始日志对象
-            return LogFactoryI.getDefaultLogWithWarning(String.format("无法加载类: %s", rsCallerClassName), e);
+            return com.virhuiai.log.logspl.LogFactory.getDefaultLogWithWarning(String.format("无法加载类: %s", rsCallerClassName), e);
         }
     }
 
