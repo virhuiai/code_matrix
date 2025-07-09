@@ -1,4 +1,4 @@
-package com.virhuiai.File.obj;
+package com.virhuiai.file.obj;
 
 /**
  * 文件分块参数类

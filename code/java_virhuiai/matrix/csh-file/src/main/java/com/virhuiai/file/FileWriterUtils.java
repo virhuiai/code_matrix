@@ -1,6 +1,7 @@
-package com.virhuiai.File;
+package com.virhuiai.file;
 
-import com.virhuiai.CshLogUtils.CshLogUtils;
+import com.virhuiai.log.logext.LogFactory;
+import org.apache.commons.logging.Log;
 import org.apache.commons.logging.Log;
 
 import java.io.FileOutputStream;
@@ -16,7 +17,7 @@ import java.nio.file.Paths;
  * 文件写入相关
  */
 public class FileWriterUtils {
-    private static final Log LOGGER = CshLogUtils.createLogExtended(FileWriterUtils.class);
+    private static final Log LOGGER = LogFactory.getLog(FileWriterUtils.class);
 
 
     /**

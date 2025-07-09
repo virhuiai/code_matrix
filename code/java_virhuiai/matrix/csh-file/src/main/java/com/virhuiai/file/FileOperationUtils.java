@@ -1,6 +1,7 @@
-package com.virhuiai.File;
+package com.virhuiai.file;
 
-import com.virhuiai.CshLogUtils.CshLogUtils;
+import com.virhuiai.log.logext.LogFactory;
+import org.apache.commons.logging.Log;
 import org.apache.commons.logging.Log;
 
 import java.io.IOException;
@@ -14,7 +15,7 @@ import java.nio.file.StandardCopyOption;
  */
 public class FileOperationUtils {
 
-    private static final Log LOGGER = CshLogUtils.createLogExtended(FileOperationUtils.class);
+    private static final Log LOGGER = LogFactory.getLog(FileOperationUtils.class);
 
 
     /**

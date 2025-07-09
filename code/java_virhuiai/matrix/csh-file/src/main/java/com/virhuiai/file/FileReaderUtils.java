@@ -1,7 +1,8 @@
-package com.virhuiai.File;
+package com.virhuiai.file;
 
-import com.virhuiai.CshLogUtils.CshLogUtils;
-import com.virhuiai.File.obj.FileChunkParams;
+import com.virhuiai.log.logext.LogFactory;
+import org.apache.commons.logging.Log;
+import com.virhuiai.file.obj.FileChunkParams;
 import org.apache.commons.logging.Log;
 
 import java.io.BufferedReader;
@@ -18,7 +19,7 @@ import java.util.function.Consumer;
  */
 public class FileReaderUtils {
 
-    private static final Log LOGGER = CshLogUtils.createLogExtended(FileReaderUtils.class);
+    private static final Log LOGGER = LogFactory.getLog(FileReaderUtils.class);
 
     // 定义文件大小限制常量
     private static final long SMALL_FILE_SIZE_LIMIT = 10 * 1024 * 1024; // 10MB

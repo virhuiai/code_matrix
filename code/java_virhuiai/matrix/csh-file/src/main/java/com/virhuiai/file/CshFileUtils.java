@@ -1,11 +1,12 @@
 // 定义包名，指明该类所在的包路径
-package com.virhuiai.File;
+package com.virhuiai.file;
 
 // 导入所需的类
 
-import com.virhuiai.CshLogUtils.CshLogUtils;
-import com.virhuiai.File.obj.FileInformation;
-import com.virhuiai.File.obj.SizeUnit;
+import com.virhuiai.log.logext.LogFactory;
+import org.apache.commons.logging.Log;
+import com.virhuiai.file.obj.FileInformation;
+import com.virhuiai.file.obj.SizeUnit;
 import org.apache.commons.logging.Log;
 
 import java.io.IOException;
@@ -19,7 +20,7 @@ public class CshFileUtils {
 
     // 创建日志对象，用于记录操作日志
     // 使用CshLogUtils工具类创建日志实例，传入当前类作为参数
-    private static final Log LOGGER = CshLogUtils.createLogExtended(CshFileUtils.class);
+    private static final Log LOGGER = LogFactory.getLog(CshFileUtils.class);
 
 
 

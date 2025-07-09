@@ -1,4 +1,4 @@
-package com.virhuiai.File.obj;
+package com.virhuiai.file.obj;
 
 // 定义文件大小单位的枚举
 public enum SizeUnit {
