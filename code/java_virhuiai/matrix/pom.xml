@@ -19,6 +19,7 @@
     <modules>
         <module>csh-log</module>
         <module>csh-file</module>
+        <module>csh-cli</module>
     </modules>
 
     <name>matrix</name>
