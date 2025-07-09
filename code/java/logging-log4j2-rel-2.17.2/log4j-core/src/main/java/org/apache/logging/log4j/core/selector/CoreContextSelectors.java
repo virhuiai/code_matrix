@@ -20,12 +20,24 @@ import org.apache.logging.log4j.core.async.AsyncLoggerContextSelector;
 import org.apache.logging.log4j.core.async.BasicAsyncLoggerContextSelector;
 
 public class CoreContextSelectors {
+    // This class is not intended to be instantiated.
+    // 这是一个不应被实例化的类。
 
+    // The classes that are considered to be core ContextSelectors.
+    // 被认为是核心上下文选择器的类。
     public static final Class<?>[] CLASSES = new Class<?>[] {
             ClassLoaderContextSelector.class,
+            // Uses the ClassLoader to select the LoggerContext.
+            // 使用类加载器来选择 LoggerContext。
             BasicContextSelector.class,
+            // A basic ContextSelector.
+            // 一个基本的上下文选择器。
             AsyncLoggerContextSelector.class,
+            // An asynchronous ContextSelector.
+            // 一个异步的上下文选择器。
             BasicAsyncLoggerContextSelector.class
+            // A basic asynchronous ContextSelector.
+            // 一个基本的异步上下文选择器。
     };
 
 }

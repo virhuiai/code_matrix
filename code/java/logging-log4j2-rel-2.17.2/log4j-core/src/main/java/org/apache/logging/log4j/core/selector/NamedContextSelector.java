@@ -22,22 +22,31 @@ import org.apache.logging.log4j.core.LoggerContext;
 
 /**
  * ContextSelectors that have a name.
+ * 具有名称的上下文选择器。
  */
 public interface NamedContextSelector extends ContextSelector {
 
     /**
      * Locate the LoggerContext with the specified name.
+     * 根据指定的名称定位LoggerContext。
      * @param name The LoggerContext name.
+     * LoggerContext的名称。
      * @param externalContext The external context to associate with the LoggerContext.
+     * 与LoggerContext关联的外部上下文。
      * @param configLocation The location of the configuration.
+     * 配置文件的位置。
      * @return A LoggerContext.
+     * 返回一个LoggerContext实例。
      */
     LoggerContext locateContext(String name, Object externalContext, URI configLocation);
 
     /**
      * Locate the LoggerContext with the specified name using the default configuration.
+     * 使用默认配置定位具有指定名称的LoggerContext。
      * @param name The LoggerContext name.
+     * LoggerContext的名称。
      * @return A LoggerContext.
+     * 返回一个LoggerContext实例。
      */
     LoggerContext removeContext(String name);
 }
