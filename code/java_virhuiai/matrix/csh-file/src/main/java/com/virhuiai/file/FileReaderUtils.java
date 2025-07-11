@@ -3,7 +3,6 @@ package com.virhuiai.file;
 import com.virhuiai.log.logext.LogFactory;
 import org.apache.commons.logging.Log;
 import com.virhuiai.file.obj.FileChunkParams;
-import org.apache.commons.logging.Log;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -39,7 +38,7 @@ public class FileReaderUtils {
      */
     public static String readContentAsStr(String filePath) throws IOException {
         // 首先检查文件是否存在，不存在会抛出异常
-        CshFileUtils.checkFileOrEx(filePath);
+        FileCheckUtils.checkFileOrEx(filePath);
 
         // 获取文件大小
         long fileSize = Files.size(Paths.get(filePath));
@@ -76,7 +75,7 @@ public class FileReaderUtils {
         }
 
         // 检查文件是否存在
-        CshFileUtils.checkFileOrEx(filePath);
+        FileCheckUtils.checkFileOrEx(filePath);
 
         // 获取文件大小
         Path path = Paths.get(filePath);
@@ -112,7 +111,7 @@ public class FileReaderUtils {
      */
     public static void readLargeFileAsString(String filePath, Consumer<String> consumer) throws IOException {
         // 检查文件是否存在
-        CshFileUtils.checkFileOrEx(filePath);
+        FileCheckUtils.checkFileOrEx(filePath);
 
         // 获取文件大小
         Path path = Paths.get(filePath);

@@ -115,66 +115,70 @@ public final class FileUtils {
         return url != null && (url.getProtocol().equals(PROTOCOL_FILE) || url.getProtocol().equals(JBOSS_FILE));
     }
 
-    /**
-     * Retrieves the file extension from the given File.
-     * 从给定的文件中获取文件扩展名。
-     * @param file the File object
-     * 文件对象
-     * @return the file extension (e.g., "txt", "log"), or null if no extension is found
-     * 文件扩展名（例如，“txt”，“log”），如果没有找到扩展名则返回null
-     */
-    public static String getFileExtension(final File file) {
-        final String fileName = file.getName(); // 获取文件名
-        // 检查文件名中是否存在“.”，且“.”不在文件名的开头
-        if (fileName.lastIndexOf(".") != -1 && fileName.lastIndexOf(".") != 0) {
-            return fileName.substring(fileName.lastIndexOf(".") + 1); // 返回“.”后面的子字符串作为扩展名
-        }
-        return null; // 如果没有扩展名则返回null
-    }
+//    /**
+//     * Retrieves the file extension from the given File.
+//     * 从给定的文件中获取文件扩展名。
+//     * @param file the File object
+//     * 文件对象
+//     * @return the file extension (e.g., "txt", "log"), or null if no extension is found
+//     * 文件扩展名（例如，“txt”，“log”），如果没有找到扩展名则返回null
+//     */
+//    public static String getFileExtension(final File file) {
+//        final String fileName = file.getName(); // 获取文件名
+//        // 检查文件名中是否存在“.”，且“.”不在文件名的开头
+//        if (fileName.lastIndexOf(".") != -1 && fileName.lastIndexOf(".") != 0) {
+//            return fileName.substring(fileName.lastIndexOf(".") + 1); // 返回“.”后面的子字符串作为扩展名
+//        }
+//        return null; // 如果没有扩展名则返回null
+//    }
+//
+//    /**
+//     * org/apache/logging/log4j/core/util/FileUtils.java
+//     * org.apache.logging.log4j.core.util.FileUtils#mkdir(java.io.File, boolean)
+//     * Asserts that the given directory exists and creates it if necessary.
+//     * 断言给定目录存在，如果不存在则创建它。
+//     *
+//     * @param dir the directory that shall exist
+//     * 期望存在的目录
+//     * @param createDirectoryIfNotExisting specifies if the directory shall be created if it does not exist.
+//     * 指定如果目录不存在是否应该创建它。
+//     * @throws java.io.IOException thrown if the directory could not be created.
+//     * 如果无法创建目录，则抛出此异常。
+//     */
+//    public static void mkdir(final File dir, final boolean createDirectoryIfNotExisting) throws IOException {
+//        // commons io FileUtils.forceMkdir would be useful here, we just want to omit this dependency
+//        // 这里可以使用 commons io 的 FileUtils.forceMkdir，但我们希望避免引入此依赖
+//        if (!dir.exists()) { // 如果目录不存在
+//            if (!createDirectoryIfNotExisting) { // 如果不允许创建目录
+//                throw new IOException("The directory " + dir.getAbsolutePath() + " does not exist."); // 抛出目录不存在异常
+//            }
+//            if (!dir.mkdirs()) { // 尝试创建目录（包括所有不存在的父目录）
+//                throw new IOException("Could not create directory " + dir.getAbsolutePath()); // 抛出无法创建目录异常
+//            }
+//        }
+//        if (!dir.isDirectory()) { // 如果路径存在但不是一个目录
+//            throw new IOException("File " + dir + " exists and is not a directory. Unable to create directory."); // 抛出路径不是目录异常
+//        }
+//    }
 
-    /**
-     * Asserts that the given directory exists and creates it if necessary.
-     * 断言给定目录存在，如果不存在则创建它。
-     *
-     * @param dir the directory that shall exist
-     * 期望存在的目录
-     * @param createDirectoryIfNotExisting specifies if the directory shall be created if it does not exist.
-     * 指定如果目录不存在是否应该创建它。
-     * @throws java.io.IOException thrown if the directory could not be created.
-     * 如果无法创建目录，则抛出此异常。
-     */
-    public static void mkdir(final File dir, final boolean createDirectoryIfNotExisting) throws IOException {
-        // commons io FileUtils.forceMkdir would be useful here, we just want to omit this dependency
-        // 这里可以使用 commons io 的 FileUtils.forceMkdir，但我们希望避免引入此依赖
-        if (!dir.exists()) { // 如果目录不存在
-            if (!createDirectoryIfNotExisting) { // 如果不允许创建目录
-                throw new IOException("The directory " + dir.getAbsolutePath() + " does not exist."); // 抛出目录不存在异常
-            }
-            if (!dir.mkdirs()) { // 尝试创建目录（包括所有不存在的父目录）
-                throw new IOException("Could not create directory " + dir.getAbsolutePath()); // 抛出无法创建目录异常
-            }
-        }
-        if (!dir.isDirectory()) { // 如果路径存在但不是一个目录
-            throw new IOException("File " + dir + " exists and is not a directory. Unable to create directory."); // 抛出路径不是目录异常
-        }
-    }
-
-    /**
-     * Creates the parent directories for the given File.
-     * 为给定文件创建父目录。
-     *
-     * @param file
-     * 要为其创建父目录的文件
-     * @throws IOException
-     * 如果创建父目录时发生IO错误
-     */
-    public static void makeParentDirs(final File file) throws IOException {
-        // 获取文件的规范路径的父目录
-        final File parent = Objects.requireNonNull(file, "file").getCanonicalFile().getParentFile();
-        if (parent != null) { // 如果父目录存在
-            mkdir(parent, true); // 递归创建父目录
-        }
-    }
+//    /**
+//     * org/apache/logging/log4j/core/util/FileUtils.java
+//     * org.apache.logging.log4j.core.util.FileUtils#makeParentDirs(java.io.File)
+//     * Creates the parent directories for the given File.
+//     * 为给定文件创建父目录。
+//     *
+//     * @param file
+//     * 要为其创建父目录的文件
+//     * @throws IOException
+//     * 如果创建父目录时发生IO错误
+//     */
+//    public static void makeParentDirs(final File file) throws IOException {
+//        // 获取文件的规范路径的父目录
+//        final File parent = Objects.requireNonNull(file, "file").getCanonicalFile().getParentFile();
+//        if (parent != null) { // 如果父目录存在
+//            mkdir(parent, true); // 递归创建父目录
+//        }
+//    }
 
     /**
      * Define file POSIX attribute view on a path/file.
