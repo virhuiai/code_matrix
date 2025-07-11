@@ -1,13 +1,12 @@
 package com.virhuiai.web_lite.example;
 
 import com.sun.net.httpserver.HttpServer;
+import com.virhuiai.cli.CliUtils;
 import com.virhuiai.log.logext.LogFactory;
 import com.virhuiai.web_lite.Opt;
 import org.apache.commons.logging.Log;
 import com.virhuiai.web_lite.CreateContextUtils;
 import com.virhuiai.web_lite.ServerUtils;
-import com.virhuiai.web_lite.helper.ConfigWeb;
-import com.virhuiai.web_lite.helper.OptionUtilsWeb;
 
 /**
  * Hello world!
@@ -16,17 +15,16 @@ import com.virhuiai.web_lite.helper.OptionUtilsWeb;
 public class StaticWebServerApp
 {
     private static final Log LOGGER = LogFactory.getLog(StaticWebServerApp.class);
+    private static final String YES_1 = "1";
     public static void main( String[] args ) throws Exception {
-//        Opt.ROOT_PATH_LAST.
-        if(1==1){
-            return;
-        }
+
 
         // 解析命令行参数
-        OptionUtilsWeb.s1InitAndS2AddOptions(args);
-        // 创建并加载配置
-        ConfigWeb config = new ConfigWeb();
-        config.loadFromCommandLine();
+        CliUtils.s1InitArgs(args);
+        // 配置所有选项
+        for (Opt value : Opt.values()) {
+            CliUtils.s2AddOption(options -> options.addOption(value.getOption()));
+        }
 
         // 初始化服务器
         HttpServer staticServer = ServerUtils.initServer();
@@ -77,21 +75,21 @@ public class StaticWebServerApp
 
 
         // 命令行参数: --root_path_last=/Volumes/RamDisk/a
-        String ROOT_PATH_LAST = config.getConfigValue(ConfigWeb.Keys.ROOT_PATH_LAST);
+        String ROOT_PATH_LAST = CliUtils.s3GetOptionValue(Opt.ROOT_PATH_LAST.getOptionName());
         if(null != ROOT_PATH_LAST){
             LOGGER.info("ROOT_PATH_LAST:" + ROOT_PATH_LAST);
             // 创建 root 路径的上下文
             CreateContextUtils.createContextRootLast_Path(staticServer, ROOT_PATH_LAST);
         }else{
             // 命令行参数: --root_path_last_resource=1
-            String ROOT_PATH_LAST_RESOURCE = config.getConfigValue(ConfigWeb.Keys.ROOT_PATH_LAST_RESOURCE);
-            if("1".equals(ROOT_PATH_LAST_RESOURCE)){
+            String ROOT_PATH_LAST_RESOURCE = CliUtils.s3GetOptionValue(Opt.ROOT_PATH_LAST_RESOURCE.getOptionName());
+            if(YES_1.equals(ROOT_PATH_LAST_RESOURCE)){
                 // 创建 root 路径的上下文
                 CreateContextUtils.createContextRootLast_Resource(staticServer);
             }
         }
 
-//
+        //
         // 启动服务器
         staticServer.start();
 
