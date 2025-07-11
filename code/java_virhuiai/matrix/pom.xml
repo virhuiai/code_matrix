@@ -21,7 +21,7 @@
         <module>csh-file</module>
         <module>csh-cli</module>
         <module>csh-md5</module>
-        <module>csh-data-codec</module>
+        <module>csh-codec</module>
     </modules>
 
     <name>matrix</name>
