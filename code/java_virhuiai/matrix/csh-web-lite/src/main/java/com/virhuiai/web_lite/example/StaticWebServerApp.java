@@ -2,6 +2,7 @@ package com.virhuiai.web_lite.example;
 
 import com.sun.net.httpserver.HttpServer;
 import com.virhuiai.log.logext.LogFactory;
+import com.virhuiai.web_lite.Opt;
 import org.apache.commons.logging.Log;
 import com.virhuiai.web_lite.CreateContextUtils;
 import com.virhuiai.web_lite.ServerUtils;
@@ -16,6 +17,11 @@ public class StaticWebServerApp
 {
     private static final Log LOGGER = LogFactory.getLog(StaticWebServerApp.class);
     public static void main( String[] args ) throws Exception {
+//        Opt.ROOT_PATH_LAST.
+        if(1==1){
+            return;
+        }
+
         // 解析命令行参数
         OptionUtilsWeb.s1InitAndS2AddOptions(args);
         // 创建并加载配置
