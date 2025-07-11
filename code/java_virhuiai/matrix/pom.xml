@@ -20,6 +20,7 @@
         <module>csh-log</module>
         <module>csh-file</module>
         <module>csh-cli</module>
+        <module>csh-md5</module>
     </modules>
 
     <name>matrix</name>

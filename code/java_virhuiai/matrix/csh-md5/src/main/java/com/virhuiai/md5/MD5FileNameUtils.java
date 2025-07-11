@@ -1,4 +1,4 @@
-package com.virhuiai.Md5;
+package com.virhuiai.md5;
 
 import java.util.ArrayList;
 import java.util.HashSet;

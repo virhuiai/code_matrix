@@ -1,4 +1,4 @@
-package com.virhuiai.Md5;
+package com.virhuiai.md5;
 
 import java.io.File;
 import java.io.FileInputStream;
