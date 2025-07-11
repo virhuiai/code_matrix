@@ -1,4 +1,4 @@
-package com.virhuiai.EncoderDecoder;
+package com.virhuiai.data_codec;
 
 
 import java.nio.charset.StandardCharsets;
