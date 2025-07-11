@@ -94,6 +94,6 @@ public class StaticWebServerApp
         staticServer.start();
 
         // 打印信息
-        LOGGER.error("成功启动:\nhttp://localhost:" + portFrontend_);
+        LOGGER.info("成功启动:\nhttp://localhost:" + portFrontend_ + "/index.html");
     }
 }

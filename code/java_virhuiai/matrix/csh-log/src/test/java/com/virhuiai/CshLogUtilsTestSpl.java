@@ -63,6 +63,7 @@ public class CshLogUtilsTestSpl {
     @Test
     public void testLogLevels() {
         assertNotNull("日志对象不应为null", log);
+        // 缺少 log4j-core 会导致 Log4j2 回退到 SimpleLogger，其默认日志级别可能不启用 INFO。
         assertTrue("应支持INFO级别", log.isInfoEnabled());
         assertTrue("应支持WARN级别", log.isWarnEnabled());
         assertTrue("应支持ERROR级别", log.isErrorEnabled());
