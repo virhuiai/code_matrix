@@ -12,12 +12,12 @@ import java.util.function.Consumer;
  * 命令行选项工具类：已声明为 final，并添加私有构造函数，防止类被继承或实例化。
  * 提供了添加选项、解析命令行参数、获取选项值等功能
  */
-public final class CshCliUtils {
+public final class CliUtils {
     private static final Log LOGGER = LogFactory.getLog();
 //    private static final Log LOGGER = LogFactory.getLog(CshCliUtils.class);
 
     // 私有构造函数，防止实例化
-    private CshCliUtils() {
+    private CliUtils() {
         throw new AssertionError("工具类不应被实例化");
     }
 

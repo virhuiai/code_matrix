@@ -6,12 +6,12 @@ import org.apache.commons.cli.Option;
 
 import java.util.List;
 
-public class CshCliOptManager {
+public class OptManager {
     private static final Log LOGGER = LogFactory.getLog();
 //    private static final Log LOGGER = CshLogUtils.createLogExtended(CshCliOptManager.class);
 
     // 私有构造函数，防止实例化
-    public CshCliOptManager() {
+    public OptManager() {
         throw new AssertionError("工具类不应被实例化");
     }
 
@@ -24,7 +24,7 @@ public class CshCliOptManager {
      * @param argName 参数名
      */
     public static void addOptionWithArg(String opt, String longOpt, String description, String argName) {
-        CshCliUtils.s2AddOption(options -> {
+        CliUtils.s2AddOption(options -> {
             try {
                 Option.Builder builder;
 
@@ -60,7 +60,7 @@ public class CshCliOptManager {
      * @param description 选项描述
      */
     public static void addOptionWithoutArg(String opt, String longOpt, String description) {
-        CshCliUtils.s2AddOption(options -> {
+        CliUtils.s2AddOption(options -> {
             try {
                 Option.Builder builder;
 
@@ -92,7 +92,7 @@ public class CshCliOptManager {
      * @return 如果包含该选项则返回 true，否则返回 false
      */
     public static boolean hasOption(String opt) {
-        CshCliUtils.ensureParsed();
+        CliUtils.ensureParsed();
         return OptionsSingleton.INSTANCE.getCmd().hasOption(opt);
     }
 
@@ -104,7 +104,7 @@ public class CshCliOptManager {
      * @return 选项的所有值组成的数组
      */
     public static String[] getOptionValues(String opt) {
-        CshCliUtils.ensureParsed();
+        CliUtils.ensureParsed();
         return OptionsSingleton.INSTANCE.getCmd().getOptionValues(opt);
     }
 
@@ -115,7 +115,7 @@ public class CshCliOptManager {
      * @return 未被识别的参数列表
      */
     public static List<String> getUnrecognizedOptions() {
-        CshCliUtils.ensureParsed();
+        CliUtils.ensureParsed();
         return OptionsSingleton.INSTANCE.getCmd().getArgList();
     }
 
@@ -125,7 +125,7 @@ public class CshCliOptManager {
      * @throws IllegalArgumentException 如果缺少任何必需的选项
      */
     public static void validateRequiredOptions(String... requiredOptions) {
-        CshCliUtils.ensureParsed();
+        CliUtils.ensureParsed();
         for (String option : requiredOptions) {
             if (!hasOption(option)) {
                 LOGGER.error("缺少必需的选项: " + option);

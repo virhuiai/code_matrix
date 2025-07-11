@@ -1,6 +1,6 @@
 package com.virhuiai.cli.test;
 
-import com.virhuiai.cli.CshCliUtils;
+import com.virhuiai.cli.CliUtils;
 import com.virhuiai.log.logext.LogFactory;
 import org.apache.commons.logging.Log;
 
@@ -20,12 +20,11 @@ public class CshCliUtilsTry {
         LOGGER.info("开始执行主方法");
 
         try {
-            CshCliUtils.s1InitializeArgs(args);
-            CshCliUtils.s1InitializeArgs(args);
+            CliUtils.s1InitializeArgs(args);
             LOGGER.debug("调试信息：命令行参数 " + String.join(", ", args));
 
             // 添加模式选项
-            CshCliUtils.s2AddOption(options -> options.addOption(Option.builder("m")
+            CliUtils.s2AddOption(options -> options.addOption(Option.builder("m")
                     .longOpt("mode")
                     .desc("模式 (server或client)")
                     .hasArg()
@@ -35,14 +34,14 @@ public class CshCliUtilsTry {
             // 添加帮助选项
             //CshClioptionUtils.addOption(options -> options.addOption("h", "help", false, "显示帮助信息"));
 
-            String mode = CshCliUtils.s3GetOptionValue("mode", "default");
+            String mode = CliUtils.s3GetOptionValue("mode", "default");
             LOGGER.info("选择的模式: " + mode);
 
-            String testOption = CshCliUtils.s3GetOptionValue("abc", "默认值");
+            String testOption = CliUtils.s3GetOptionValue("abc", "默认值");
             LOGGER.info("测试选项值: " + testOption);
         } catch (IllegalStateException e) {
             LOGGER.error("初始化或获取选项值失败", e);
-            CshCliUtils.printHelp();
+            CliUtils.printHelp();
         }
 
         LOGGER.info("主方法执行完毕");
