@@ -1,5 +1,7 @@
-package com.virhuiai.cli;
+package com.virhuiai.cli.old;
 
+import com.virhuiai.cli.CliUtils;
+import com.virhuiai.cli.OptHolder;
 import com.virhuiai.log.logext.LogFactory;
 import org.apache.commons.logging.Log;
 import org.apache.commons.cli.Option;
@@ -93,7 +95,7 @@ public class OptManager {
      */
     public static boolean hasOption(String opt) {
         CliUtils.ensureParsed();
-        return OptionsSingleton.INSTANCE.getCmd().hasOption(opt);
+        return OptHolder.INSTANCE.getCmd().hasOption(opt);
     }
 
 
@@ -105,7 +107,7 @@ public class OptManager {
      */
     public static String[] getOptionValues(String opt) {
         CliUtils.ensureParsed();
-        return OptionsSingleton.INSTANCE.getCmd().getOptionValues(opt);
+        return OptHolder.INSTANCE.getCmd().getOptionValues(opt);
     }
 
 
@@ -116,7 +118,7 @@ public class OptManager {
      */
     public static List<String> getUnrecognizedOptions() {
         CliUtils.ensureParsed();
-        return OptionsSingleton.INSTANCE.getCmd().getArgList();
+        return OptHolder.INSTANCE.getCmd().getArgList();
     }
 
     /**

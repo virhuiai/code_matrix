@@ -15,7 +15,7 @@ import org.apache.commons.cli.ParseException;
  * 使用枚举方式实现的单例模式来管理命令行选项解析。
  * 枚举单例模式保证了线程安全和懒加载。
  */
-public enum OptionsSingleton {
+public enum OptHolder {
     INSTANCE;
 
     //    private static final Log LOGGER = CshLogUtils.createLogExtended(OptionsSingleton.class); // 日志记录器
@@ -34,7 +34,7 @@ public enum OptionsSingleton {
     /**
      * 私有构造函数，用于初始化选项
      */
-    OptionsSingleton() {
+    OptHolder() {
         // 在这里添加命令行选项
         // 例如:
         options.addOption("h", "help", false, "显示帮助信息");

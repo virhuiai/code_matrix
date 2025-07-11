@@ -1,4 +1,4 @@
-package com.virhuiai.cli.test;
+package com.virhuiai.cli.example;
 
 import com.virhuiai.cli.CliUtils;
 import com.virhuiai.log.logext.LogFactory;
@@ -20,7 +20,7 @@ public class CshCliUtilsTry {
         LOGGER.info("开始执行主方法");
 
         try {
-            CliUtils.s1InitializeArgs(args);
+            CliUtils.s1InitArgs(args);
             LOGGER.debug("调试信息：命令行参数 " + String.join(", ", args));
 
             // 添加模式选项

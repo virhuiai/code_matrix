@@ -1,10 +1,10 @@
 package com.virhuiai.cli;
 
 import com.virhuiai.log.logext.LogFactory;
-import org.apache.commons.logging.Log;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
+import org.apache.commons.logging.Log;
 
 import java.util.function.Consumer;
 
@@ -21,7 +21,6 @@ public final class CliUtils {
         throw new AssertionError("工具类不应被实例化");
     }
 
-    private static String[] args; // 存储命令行参数
 
 
     /**
@@ -30,14 +29,8 @@ public final class CliUtils {
      * @param commandLineArgs 命令行参数数组
      * @throws IllegalStateException 如果方法被多次调用
      */
-    public static synchronized void s1InitializeArgs(String[] commandLineArgs) {
-        // 使用 args != null 替代 argsInitialized 来判断是否已初始化，减少了一个状态变量，简化了代码。
-        if (null != args) {
-            LOGGER.warn("命令行参数已经初始化，不需要重复调用");
-            return;
-        }
-        args = commandLineArgs.clone(); // 复制数组以防止外部修改;
-        LOGGER.info("命令行参数已成功初始化");
+    public static synchronized void s1InitArgs(String[] commandLineArgs) {
+        ArgsHolder.INSTANCE.initArgs(commandLineArgs);
     }
 
     /**
@@ -47,7 +40,7 @@ public final class CliUtils {
      */
     public static void s2AddOption(Consumer<Options> optionAdder) {
         // 获取单例中的 Options 对象
-        Options options = OptionsSingleton.INSTANCE.getOptions();
+        Options options = OptHolder.INSTANCE.getOptions();
         // 调用传入的函数来添加选项
         optionAdder.accept(options);
     }
@@ -61,7 +54,7 @@ public final class CliUtils {
      */
     public static String s3GetOptionValue(String opt, String defaultValue) {
         ensureParsed();
-        return OptionsSingleton.INSTANCE.getCmd().getOptionValue(opt, defaultValue);
+        return OptHolder.INSTANCE.getCmd().getOptionValue(opt, defaultValue);
     }
 
     /**
@@ -72,7 +65,7 @@ public final class CliUtils {
      */
     public static String s3GetOptionValue(String opt) {
         ensureParsed();
-        return OptionsSingleton.INSTANCE.getCmd().getOptionValue(opt);
+        return OptHolder.INSTANCE.getCmd().getOptionValue(opt);
     }
 
 
@@ -84,10 +77,10 @@ public final class CliUtils {
      * @throws IllegalStateException 如果命令行参数尚未初始化
      */
     public static CommandLine parseCmd() throws ParseException {
-        if (!argsInitialized) {
+        if (!ArgsHolder.INSTANCE.argsInitialized()) {
             throw new IllegalStateException("命令行参数尚未初始化，请先调用 initializeArgs 方法");
         }
-        CommandLine cmd = OptionsSingleton.INSTANCE.parseCmd(args);
+        CommandLine cmd = OptHolder.INSTANCE.parseCmd(ArgsHolder.INSTANCE.getArgs());
         if (cmd.hasOption("help")) {
             printHelp();
         }
@@ -98,9 +91,9 @@ public final class CliUtils {
      * 确保命令行参数已被解析
      */
     public static void ensureParsed() {
-        if (!OptionsSingleton.INSTANCE.isParsed()) {
+        if (!OptHolder.INSTANCE.isParsed()) {
             try {
-                if (!argsInitialized) {
+                if (!ArgsHolder.INSTANCE.argsInitialized()) {
                     throw new IllegalStateException("命令行参数尚未初始化，请先调用 initializeArgs 方法");
                 }
                 parseCmd();
@@ -117,7 +110,7 @@ public final class CliUtils {
      * 打印帮助信息并退出程序
      */
     public static void printHelp() {
-        OptionsSingleton.INSTANCE.printHelp(" "); // 可以 替换 "My程序" 为实际的程序名
+        OptHolder.INSTANCE.printHelp(" "); // 可以 替换 "My程序" 为实际的程序名
         System.exit(0); // 正常退出
     }
 

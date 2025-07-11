@@ -10,14 +10,14 @@ import java.util.Set;
  *
  * 利用了 OptionConfig 的结构，使得代码更加统一和易于管理。
  */
-public class OptionConfig {
+public class OptConfig {
     private final String optionName;
 
     private final Runnable addOptionMethod;
     private final Set<String> validValues;
 
-    public OptionConfig(String optionName,
-                        Runnable addOptionMethod, String... validValues) {
+    public OptConfig(String optionName,
+                     Runnable addOptionMethod, String... validValues) {
         this.optionName = optionName;
 
         this.addOptionMethod = addOptionMethod;
