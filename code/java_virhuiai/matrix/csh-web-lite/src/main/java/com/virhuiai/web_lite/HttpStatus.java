@@ -1,4 +1,4 @@
-package com.virhuiai.StaticWebServer;
+package com.virhuiai.web_lite;
 
 // java.net.HttpURLConnection.HTTP_OK 和 sun.net.httpserver.Code
 public enum HttpStatus {

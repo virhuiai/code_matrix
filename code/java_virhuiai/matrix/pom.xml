@@ -22,7 +22,8 @@
         <module>csh-cli</module>
         <module>csh-md5</module>
         <module>csh-codec</module>
-        <module>string</module>
+        <module>csh-string</module>
+        <module>csh-web-lite</module>
     </modules>
 
     <name>matrix</name>

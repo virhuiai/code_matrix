@@ -1,8 +1,6 @@
-package com.virhuiai.StaticWebServer.helper;
+package com.virhuiai.web_lite.helper;
 
-import com.virhuiai.Cli.CshCliUtils;
-import com.virhuiai.CshLogUtils.CshLogUtils;
-import org.apache.commons.logging.Log;
+import com.virhuiai.cli.CliUtils;
 
 import java.util.HashMap;
 public class ConfigWeb extends HashMap<String, String> {
@@ -36,17 +34,17 @@ public class ConfigWeb extends HashMap<String, String> {
      * 处理根目录配置
      */
     private void processRootPathLastConfig() {
-        String ROOT_PATH_LAST = CshCliUtils.s3GetOptionValue(ConfigWeb.Keys.ROOT_PATH_LAST,
-                ConfigWeb.Defaults.ROOT_PATH_LAST);
+        String ROOT_PATH_LAST = CliUtils.s3GetOptionValue(Keys.ROOT_PATH_LAST,
+                Defaults.ROOT_PATH_LAST);
 
-        put(ConfigWeb.Keys.ROOT_PATH_LAST, ROOT_PATH_LAST);
+        put(Keys.ROOT_PATH_LAST, ROOT_PATH_LAST);
     }
 
     private void processRootPathLastResourceConfig() {
-        String ROOT_PATH_LAST = CshCliUtils.s3GetOptionValue(Keys.ROOT_PATH_LAST_RESOURCE,
-                ConfigWeb.Defaults.ROOT_PATH_LAST_RESOURCE);
+        String ROOT_PATH_LAST = CliUtils.s3GetOptionValue(Keys.ROOT_PATH_LAST_RESOURCE,
+                Defaults.ROOT_PATH_LAST_RESOURCE);
 
-        put(ConfigWeb.Keys.ROOT_PATH_LAST_RESOURCE, ROOT_PATH_LAST);
+        put(Keys.ROOT_PATH_LAST_RESOURCE, ROOT_PATH_LAST);
     }
 
     /**

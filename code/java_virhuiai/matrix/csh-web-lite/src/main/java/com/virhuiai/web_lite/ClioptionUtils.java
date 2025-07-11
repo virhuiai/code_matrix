@@ -1,12 +1,11 @@
-package com.virhuiai.StaticWebServer;
+package com.virhuiai.web_lite;
 
 
-import com.virhuiai.CshLogUtils.CshLogUtils;
-import org.apache.commons.cli.Option;
+import com.virhuiai.log.logext.LogFactory;
 import org.apache.commons.logging.Log;
 
 public class ClioptionUtils {
-    private static Log LOGGER = CshLogUtils.createLogExtended(ClioptionUtils.class);
+    private static final Log LOGGER = LogFactory.getLog(ClioptionUtils.class);
 
 
 //    public static  String getOptionValue(String opt, String defaultValue) throws Exception {

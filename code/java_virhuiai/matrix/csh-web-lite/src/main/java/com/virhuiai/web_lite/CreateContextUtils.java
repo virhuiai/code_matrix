@@ -1,8 +1,8 @@
-package com.virhuiai.StaticWebServer;
+package com.virhuiai.web_lite;
 
 import com.sun.net.httpserver.HttpServer;
 
-import com.virhuiai.CshLogUtils.CshLogUtils;
+import com.virhuiai.log.logext.LogFactory;
 import org.apache.commons.logging.Log;
 
 import java.io.IOException;
@@ -11,7 +11,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 public class CreateContextUtils {
-    private static Log LOGGER = CshLogUtils.createLogExtended(CreateContextUtils.class);
+    private static final Log LOGGER = LogFactory.getLog(CreateContextUtils.class);
 
     /**
      * 参数 --root_path_last=/Volumes/RamDisk/a

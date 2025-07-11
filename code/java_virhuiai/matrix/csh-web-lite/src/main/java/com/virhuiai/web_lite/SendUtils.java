@@ -1,8 +1,8 @@
-package com.virhuiai.StaticWebServer;
+package com.virhuiai.web_lite;
 
 import com.sun.net.httpserver.HttpExchange;
 
-import com.virhuiai.CshLogUtils.CshLogUtils;
+import com.virhuiai.log.logext.LogFactory;
 import org.apache.commons.logging.Log;
 
 import java.io.IOException;
@@ -12,7 +12,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 public class SendUtils {
-    private static Log LOGGER = CshLogUtils.createLogExtended(SendUtils.class);
+    private static final Log LOGGER = LogFactory.getLog(SendUtils.class);
 
     /**
      * 发送一个带有自定义状态码和响应消息的HTTP响应。

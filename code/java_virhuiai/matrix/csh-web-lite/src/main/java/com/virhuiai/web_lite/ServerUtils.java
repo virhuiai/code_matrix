@@ -1,9 +1,8 @@
-package com.virhuiai.StaticWebServer;
+package com.virhuiai.web_lite;
 
 import com.sun.net.httpserver.HttpServer;
 
 import java.io.ByteArrayOutputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetSocketAddress;

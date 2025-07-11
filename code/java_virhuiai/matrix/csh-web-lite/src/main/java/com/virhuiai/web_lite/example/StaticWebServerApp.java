@@ -1,12 +1,12 @@
-package com.virhuiai;
+package com.virhuiai.web_lite.example;
 
 import com.sun.net.httpserver.HttpServer;
-import com.virhuiai.CshLogUtils.CshLogUtils;
-import com.virhuiai.StaticWebServer.CreateContextUtils;
-import com.virhuiai.StaticWebServer.ServerUtils;
-import com.virhuiai.StaticWebServer.helper.ConfigWeb;
-import com.virhuiai.StaticWebServer.helper.OptionUtilsWeb;
+import com.virhuiai.log.logext.LogFactory;
 import org.apache.commons.logging.Log;
+import com.virhuiai.web_lite.CreateContextUtils;
+import com.virhuiai.web_lite.ServerUtils;
+import com.virhuiai.web_lite.helper.ConfigWeb;
+import com.virhuiai.web_lite.helper.OptionUtilsWeb;
 
 /**
  * Hello world!
@@ -14,10 +14,10 @@ import org.apache.commons.logging.Log;
  */
 public class StaticWebServerApp
 {
-    private static Log LOGGER = CshLogUtils.createLogExtended(StaticWebServerApp.class);
+    private static final Log LOGGER = LogFactory.getLog(StaticWebServerApp.class);
     public static void main( String[] args ) throws Exception {
         // 解析命令行参数
-        OptionUtilsWeb.setupCommandOptions(args);
+        OptionUtilsWeb.s1InitAndS2AddOptions(args);
         // 创建并加载配置
         ConfigWeb config = new ConfigWeb();
         config.loadFromCommandLine();

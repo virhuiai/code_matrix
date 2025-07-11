@@ -1,8 +1,8 @@
-package com.virhuiai.StaticWebServer;
+package com.virhuiai.web_lite;
 
 import com.sun.net.httpserver.HttpExchange;
 
-import com.virhuiai.CshLogUtils.CshLogUtils;
+import com.virhuiai.log.logext.LogFactory;
 import org.apache.commons.logging.Log;
 
 import java.io.IOException;
@@ -14,7 +14,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class CacheUtils {
-    private static Log LOGGER = CshLogUtils.createLogExtended(CacheUtils.class);
+    private static final Log LOGGER = LogFactory.getLog(CacheUtils.class);
 
     private static final AtomicInteger cacheIdCounter = new AtomicInteger();
 

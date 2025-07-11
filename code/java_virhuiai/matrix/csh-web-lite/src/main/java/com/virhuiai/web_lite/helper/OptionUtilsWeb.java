@@ -1,12 +1,13 @@
-package com.virhuiai.StaticWebServer.helper;
+package com.virhuiai.web_lite.helper;
 
-import com.virhuiai.Cli.CshCliUtils;
-import com.virhuiai.CshLogUtils.CshLogUtils;
+
+import com.virhuiai.cli.CliUtils;
+import com.virhuiai.log.logext.LogFactory;
 import org.apache.commons.cli.Option;
 import org.apache.commons.logging.Log;
 
 public class OptionUtilsWeb {
-    private static final Log LOGGER = CshLogUtils.createLogExtended(OptionUtilsWeb.class);
+    private static final Log LOGGER = LogFactory.getLog(OptionUtilsWeb.class);
 
     private OptionUtilsWeb() {
         throw new AssertionError("工具类禁止实例化");
@@ -16,7 +17,7 @@ public class OptionUtilsWeb {
      * 配置 root_path_last 选项
      */
     private static void setupRootPathLastOptions() {
-        CshCliUtils.s2AddOption(options -> options.addOption(Option.builder()
+        CliUtils.s2AddOption(options -> options.addOption(Option.builder()
                 .longOpt(ConfigWeb.Keys.ROOT_PATH_LAST)
                 .desc("根目录使用root_path_last")
                 .hasArg()
@@ -25,7 +26,7 @@ public class OptionUtilsWeb {
     }
 
     private static void setupRootPathLastResourceOptions() {
-        CshCliUtils.s2AddOption(options -> options.addOption(Option.builder()
+        CliUtils.s2AddOption(options -> options.addOption(Option.builder()
                 .longOpt(ConfigWeb.Keys.ROOT_PATH_LAST_RESOURCE)
                 .desc("根目录使用jar包的resource")
                 .hasArg()
@@ -33,7 +34,7 @@ public class OptionUtilsWeb {
                 .build()));
     }
 
-//     CshCliUtils.s2AddOption(options -> options.addOption(Option.builder()
+//     CliUtils.s2AddOption(options -> options.addOption(Option.builder()
 //            .longOpt("root_resource")
 //                .desc("根目录使用resource")
 //                .hasArg()
@@ -44,8 +45,8 @@ public class OptionUtilsWeb {
      * 设置命令行选项
      * OptionUtilsWeb.setupCommandOptions
      */
-    public static void setupCommandOptions(String[] args) {
-        CshCliUtils.s1InitializeArgs(args);
+    public static void s1InitAndS2AddOptions(String[] args) {
+        CliUtils.s1InitArgs(args);
         LOGGER.debug("接收到的命令行参数: " + String.join(", ", args));
         // 配置所有选项
         setupRootPathLastOptions();
