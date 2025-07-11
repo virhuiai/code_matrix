@@ -22,7 +22,6 @@ public final class CliUtils {
     }
 
     private static String[] args; // 存储命令行参数
-    private static boolean argsInitialized = false; // 标记args是否已初始化
 
 
     /**
@@ -32,12 +31,12 @@ public final class CliUtils {
      * @throws IllegalStateException 如果方法被多次调用
      */
     public static synchronized void s1InitializeArgs(String[] commandLineArgs) {
-        if (argsInitialized) {
-            LOGGER.warn("命令行参数已经初始化，不能重复调用此方法");
+        // 使用 args != null 替代 argsInitialized 来判断是否已初始化，减少了一个状态变量，简化了代码。
+        if (null != args) {
+            LOGGER.warn("命令行参数已经初始化，不需要重复调用");
             return;
         }
-        args = commandLineArgs;
-        argsInitialized = true;
+        args = commandLineArgs.clone(); // 复制数组以防止外部修改;
         LOGGER.info("命令行参数已成功初始化");
     }
 
