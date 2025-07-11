@@ -1,4 +1,4 @@
-package com.virhuiai.CshLogUtilsTests;
+package com.virhuiai.log.example;
 
 
 import com.virhuiai.log.logext.LogFactory;
