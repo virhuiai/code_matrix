@@ -17,6 +17,13 @@ import org.apache.commons.cli.Option;
  * @since 1.0
  */
 public enum Opt {
+
+    BIND_PATH("web-lite.bind_path", Option.builder()
+            .desc("指定目录，多个选项，按逗号分割，每个项以冒号分隔，左边是url路径，右边是映射到的文件路径")
+            .hasArg()
+            .argName("指定的目录")
+            ),
+
     /**
      * 根目录使用指定目录路径的选项。
      * <p>
