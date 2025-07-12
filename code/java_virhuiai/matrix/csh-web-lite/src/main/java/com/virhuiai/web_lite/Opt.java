@@ -18,6 +18,12 @@ import org.apache.commons.cli.Option;
  */
 public enum Opt {
 
+    BIND_TRY_PATH("web-lite.bind_try_path", Option.builder()
+            .desc("指定try_it目录，多个选项，按逗号分割，每个项以冒号分隔，左边是url路径，右边是映射到的文件路径")
+            .hasArg()
+            .argName("指定的try_it目录")
+    ),
+
     BIND_PATH("web-lite.bind_path", Option.builder()
             .desc("指定目录，多个选项，按逗号分割，每个项以冒号分隔，左边是url路径，右边是映射到的文件路径")
             .hasArg()

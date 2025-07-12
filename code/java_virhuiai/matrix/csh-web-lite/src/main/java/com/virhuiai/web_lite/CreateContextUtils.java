@@ -115,23 +115,23 @@ public class CreateContextUtils {
         });
     }
 
-//    public static void createContextTry(HttpServer server, String try_path) {
-//        LOGGER.info("【调用】CreateContextUtils.createContextTry");
-//        server.createContext("/" + try_path, exchange -> {
-//            try {
-//                if ("POST".equalsIgnoreCase(exchange.getRequestMethod())) {
-//                    CacheUtils.handleCacheHtmlPost__ReturnUrlJson(exchange,try_path);
-////                    CacheUtils.handleCacheHtmlPost__ReturnUrl(exchange,try_path);
-//                } else if ("GET".equalsIgnoreCase(exchange.getRequestMethod())) {
-//                    CacheUtils.handleCacheHtmlGet(exchange);
-//                } else {
-//                    SendUtils.sendMethodNotAllowed(exchange);
-//                }
-//            } catch (IOException e) {
-//                SendUtils.sendInternalError(exchange, e.getMessage());
-//            }
-//        });
-//    }
+    public static void createContextTry(HttpServer server, String try_path) {
+        LOGGER.info("【调用】CreateContextUtils.createContextTry");
+        server.createContext("/" + try_path, exchange -> {
+            try {
+                if ("POST".equalsIgnoreCase(exchange.getRequestMethod())) {
+                    CacheUtils.handleCacheHtmlPost__ReturnUrlJson(exchange,try_path);
+//                    CacheUtils.handleCacheHtmlPost__ReturnUrl(exchange,try_path);
+                } else if ("GET".equalsIgnoreCase(exchange.getRequestMethod())) {
+                    CacheUtils.handleCacheHtmlGet(exchange);
+                } else {
+                    SendUtils.sendMethodNotAllowed(exchange);
+                }
+            } catch (IOException e) {
+                SendUtils.sendInternalError(exchange, e.getMessage());
+            }
+        });
+    }
 
 //
 

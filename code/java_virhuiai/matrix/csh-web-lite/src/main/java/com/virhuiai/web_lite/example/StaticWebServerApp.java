@@ -30,18 +30,34 @@ public class StaticWebServerApp
         HttpServer staticServer = ServerUtils.initServer();
         // 获取服务器端口
         int portFrontend_ = ServerUtils.getPort(staticServer);
-//
-//        // 如果存在 try 选项
-//        if (ClioptionUtils.getOptionValue__try()) {
-//            // 获取 try 选项对应的路径
-//            String try_path = ClioptionUtils.getOptionValue__try_path();
-//            // 如果路径不为空
-//            if (null!= try_path) {
-//                // 创建 try 上下文
-//                CreateContextUtils.createContextTry(staticServer, try_path);
-//            }
-//        }
-//
+
+        // --web-lite.bind_try_path
+        String bind_try_path = CliUtils.s3GetOptionValue(Opt.BIND_TRY_PATH.getOptionName());
+        // 如果 bind 路径不为空
+        if (null != bind_try_path) {
+            // 按逗号分割
+            String[] bindArrOne = bind_try_path.split(",");
+            // 遍历分割后的每个项
+            for (String bindItem : bindArrOne) {
+                // 按冒号分割
+                String[] bindArrTwo = bindItem.split(":");
+                // 如果分割后长度为 2
+//                if (2 == bindArrTwo.length) {
+//                    // 创建 bind 上下文
+//                    CreateContextUtils.createContextTry(staticServer, bindArrTwo[0], bindArrTwo[1]);
+//                } else {
+//                    // 记录错误日志，提示长度不符合要求
+//                    LOGGER.error("bind_path.长度不符合要求:" + bindArrTwo.length + ",bindItem:" + bindItem);
+//                }
+                String try_path = bindArrTwo[0];
+                if (null != try_path) {
+                    // 创建 try 上下文
+                    CreateContextUtils.createContextTry(staticServer, try_path);
+                }
+            }
+        }
+
+
         // 获取 bind 选项对应的值 web-lite.bind_path
         String bind_path = CliUtils.s3GetOptionValue(Opt.BIND_PATH.getOptionName());
         // 如果 bind 路径不为空
