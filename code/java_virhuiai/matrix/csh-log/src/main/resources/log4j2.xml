@@ -1,19 +1,62 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Log4j2 配置文件，用于配置日志记录行为。
+    该配置文件定义了日志的输出目标（Appender）、日志级别和特定包的日志行为。
+    配置文件使用 XML 格式，遵循 Log4j2 的配置规范。
+-->
 <Configuration status="WARN">
+    <!--
+        Appenders 元素定义日志的输出目标。
+        每个 Appender 指定了日志的输出方式，例如控制台或文件。
+    -->
     <Appenders>
+        <!--
+            Console Appender：将日志输出到控制台（标准输出）。
+            - name: Appender 的名称，唯一标识为 "Console"。
+            - target: 输出目标，SYSTEM_OUT 表示标准输出（可改为 SYSTEM_ERR）。
+        -->
         <Console name="Console" target="SYSTEM_OUT">
+            <!--
+                PatternLayout：定义日志输出的格式。
+                - pattern: 日志格式，包含时间（HH:mm:ss.SSS）、线程名（%t）、日志级别（%-5level）、
+                          日志器名称（%logger{36}，最多 36 个字符）和日志消息（%msg%n）。
+            -->
             <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
         </Console>
+        <!--
+            File Appender：将日志输出到指定文件。
+            - name: Appender 的名称，唯一标识为 "File"。
+            - fileName: 日志文件路径，输出到 "logs/app.log"。
+        -->
         <File name="File" fileName="logs/app.log">
+            <!--
+                PatternLayout：定义文件日志的输出格式，与 Console Appender 相同。
+                - pattern: 日志格式，包含时间、线程名、日志级别、日志器名称和日志消息。
+            -->
             <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
         </File>
     </Appenders>
+    <!--
+        Loggers 元素定义日志器及其级别和输出目标。
+        包括根日志器（Root）和特定包或类的日志器。
+    -->
     <Loggers>
+        <!--
+            Root 日志器：默认日志器，应用于未指定具体日志器的类。
+            - level: 日志级别，设置为 "debug"，表示记录 DEBUG 及以上级别（DEBUG、INFO、WARN、ERROR 等）。
+            - AppenderRef: 引用 Console 和 File 两个 Appender，将日志输出到控制台和文件。
+        -->
         <Root level="debug">
             <AppenderRef ref="Console"/>
             <AppenderRef ref="File"/>
         </Root>
-        <!-- 设置特定包或类的Logger级别 -->
+        <!--
+            特定包的日志器：针对 com.virhuiai.log 包的日志配置。
+            - name: 日志器名称，匹配 com.virhuiai.log 包及其子包。
+            - level: 日志级别，设置为 "info"，表示记录 INFO 及以上级别（INFO、WARN、ERROR 等）。
+            - additivity: 设置为 false，防止日志向上传播到 Root 日志器，避免重复输出。
+            - AppenderRef: 引用 Console 和 File 两个 Appender，将日志输出到控制台和文件。
+        -->
         <Logger name="com.virhuiai.log" level="info" additivity="false">
             <AppenderRef ref="Console"/>
             <AppenderRef ref="File"/>
