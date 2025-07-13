@@ -54,14 +54,14 @@ public class BrowserApp extends JFrame {
         // 创建CEF应用构建器
         CefAppBuilderV builder = new CefAppBuilderV();
 
-        String passAllArgsToCef = CliUtils.s3GetOptionValue("passAllArgsToCef");
+        String passAllArgsToCef = CliUtils.s3GetOptionValue(Opt.PASS_ALL_ARGS_TO_CEF.getOptionName());
         if("1".equalsIgnoreCase(passAllArgsToCef)){
             // Pass all args to cef
             LOGGER.info("将全部参数传递给CEF");
             builder.getJcefArgs().addAll(Arrays.asList(args));
         }
 
-        String proxyServer = CliUtils.s3GetOptionValue("proxyServer");
+        String proxyServer = CliUtils.s3GetOptionValue(Opt.PROXY_SERVER.getOptionName());
         if(null != proxyServer && !proxyServer.isEmpty()){
 //            builder.getJcefArgs().add("--proxy-server=http://127.0.0.1:49408");// 按代理来
             LOGGER.info("使用代理:" + proxyServer);
@@ -69,7 +69,7 @@ public class BrowserApp extends JFrame {
             builder.getJcefArgs().add("--ignore-certificate-errors");// 禁用证书验证
         }
 
-        String remoteDebuggingPort = CliUtils.s3GetOptionValue("remoteDebuggingPort");
+        String remoteDebuggingPort = CliUtils.s3GetOptionValue(Opt.REMOTE_DEBUGGING_PORT.getOptionName());
         if(null != remoteDebuggingPort && !remoteDebuggingPort.isEmpty()){
             // 添加正则表达式检查，确保输入是纯数字
             if (remoteDebuggingPort.matches("^\\d+$")) {
@@ -158,9 +158,13 @@ public class BrowserApp extends JFrame {
      * passAllArgsToCef:
      * remoteDebuggingPort:启用Chrome远程调试并指定端口
      *
+     * 可用
+     * --jcef.install_dir=/Volumes/THAWSPACE/CshProject/JCEF109 --jcef.default_url=baidu.com
+     *
      * --jcefInstallDir=/Volumes/THAWSPACE/CshProject/JCEF109 --remoteDebuggingPort=9222
      *
-     * --jcefInstallDir=/Volumes/THAWSPACE/CshProject/JCEF109 --defaultUrl=baidu.com --proxyServer=http://127.0.0.1:65201 --passAllArgsToCef=1 --remoteDebuggingPort=9222
+     *
+     * --proxyServer=http://127.0.0.1:65201 --passAllArgsToCef=1 --remoteDebuggingPort=9222
      * 主方法
      */
     public static void main(String[] args) throws UnsupportedPlatformException, CefInitializationException, IOException, InterruptedException {
@@ -173,23 +177,6 @@ public class BrowserApp extends JFrame {
 
 
 
-
-        // 添加是否传递全部参数到CEF的选项
-        CliUtils.s2AddOption(options -> options.addOption(Option.builder()
-                .longOpt("passAllArgsToCef")
-                .desc("是否将全部参数传递给CEF")
-                .hasArg()
-                .argName("true/false")
-                .build()));
-                // 获取该选项值: CliUtils.s3GetOptionValue("passAllArgsToCef");
-
-        // 添加代理地址选项
-        CliUtils.s2AddOption(options -> options.addOption(Option.builder()
-                .longOpt("proxyServer")
-                .desc("设置浏览器代理服务器地址")
-                .hasArg()
-                .argName("代理地址")
-                .build()));
         // 获取该选项值: CliUtils.s3GetOptionValue("proxyServer");
 
         // 添加是否打开Chrome调试端口的选项
@@ -200,13 +187,7 @@ public class BrowserApp extends JFrame {
 //                .argName("0/1")
 //                .build()));
 
-//// 添加Chrome调试端口设置选项
-        CliUtils.s2AddOption(options -> options.addOption(Option.builder()
-                .longOpt("remoteDebuggingPort")
-                .desc("设置Chrome远程调试端口号")
-                .hasArg()
-                .argName("端口号")
-                .build()));
+
 
         new BrowserApp(args);
     }

@@ -14,6 +14,24 @@ public enum Opt {
             .desc("设置浏览器默认打开的URL")
             .hasArg()
             .argName("默认URL")
+    ),
+
+    PASS_ALL_ARGS_TO_CEF("jcef.pass_all_args_to_cef", Option.builder()
+            .desc("是否将全部参数传递给CEF,1为是")
+            .hasArg()
+            .argName("将全部参数传递给CEF")
+    )
+
+    ,PROXY_SERVER("jcef.proxy_server", Option.builder()
+            .desc("设置浏览器代理服务器地址")
+            .hasArg()
+            .argName("代理地址")
+    )
+
+    ,REMOTE_DEBUGGING_PORT("jcef.remote_debugging_port", Option.builder()
+            .desc("设置Chrome远程调试端口号")
+            .hasArg()
+            .argName("端口号")
     )
     ;
 
