@@ -2,7 +2,6 @@ package com.virhuiai.file;
 
 import com.virhuiai.log.logext.LogFactory;
 import org.apache.commons.logging.Log;
-import org.apache.commons.logging.Log;
 
 import java.io.File;
 import java.io.FileOutputStream;

@@ -1,8 +1,8 @@
 package com.virhuiai.file;
 
+import com.virhuiai.file.obj.FileChunkParams;
 import com.virhuiai.log.logext.LogFactory;
 import org.apache.commons.logging.Log;
-import com.virhuiai.file.obj.FileChunkParams;
 
 import java.io.BufferedReader;
 import java.io.IOException;

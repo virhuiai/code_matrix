@@ -1,15 +1,15 @@
 package com.virhuiai.file;
 
+import com.virhuiai.file.obj.FileInformation;
+import com.virhuiai.log.logext.LogFactory;
+import org.apache.commons.logging.Log;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.attribute.BasicFileAttributes;
-
-import com.virhuiai.file.obj.FileInformation;
-import com.virhuiai.log.logext.LogFactory;
-import org.apache.commons.logging.Log;
 public class FileInfoUtils {
 
     private static final Log LOGGER = LogFactory.getLog();

@@ -2,10 +2,8 @@ package com.virhuiai.cli.example;
 
 import com.virhuiai.cli.CliUtils;
 import com.virhuiai.log.logext.LogFactory;
-import org.apache.commons.logging.Log;
-
-
 import org.apache.commons.cli.Option;
+import org.apache.commons.logging.Log;
 
 public class CshCliUtilsTry {
 //    private static final Log LOGGER = CshLogUtils.createLogExtended(CshCliUtilsTry.class);
