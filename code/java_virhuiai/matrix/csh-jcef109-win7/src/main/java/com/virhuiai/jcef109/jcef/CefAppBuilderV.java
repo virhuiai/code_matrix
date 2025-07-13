@@ -1,7 +1,15 @@
 package com.virhuiai.jcef109.jcef;
 
 // 导入必要的依赖包
-import me.friwi.jcefmaven.*;
+
+import me.friwi.jcefmaven.CefAppBuilder;
+import me.friwi.jcefmaven.CefBuildInfo;
+import me.friwi.jcefmaven.CefInitializationException;
+import me.friwi.jcefmaven.EnumPlatform;
+import me.friwi.jcefmaven.EnumProgress;
+import me.friwi.jcefmaven.IProgressHandler;
+import me.friwi.jcefmaven.MavenCefAppHandlerAdapter;
+import me.friwi.jcefmaven.UnsupportedPlatformException;
 import me.friwi.jcefmaven.impl.progress.ConsoleProgressHandler;
 import me.friwi.jcefmaven.impl.step.extract.TarGzExtractor;
 import me.friwi.jcefmaven.impl.step.init.CefInitializer;
@@ -14,7 +22,13 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 

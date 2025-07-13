@@ -1,12 +1,13 @@
 package com.virhuiai.jcef109.v2;
 
+import org.cef.browser.CefBrowser;
+
+import javax.swing.JFrame;
 import java.awt.BorderLayout;
 import java.awt.Frame;
 import java.awt.Point;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
-import javax.swing.JFrame;
-import org.cef.browser.CefBrowser;
 
 /**
  * CEF浏览器开发者工具对话框

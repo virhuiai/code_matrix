@@ -1,7 +1,9 @@
 
 package com.virhuiai.jcef109.ui; // 包声明
 
-import javax.swing.*; // 导入Swing相关类
+import javax.swing.BorderFactory;
+import javax.swing.Icon;
+import javax.swing.JButton;
 
 /**
  *

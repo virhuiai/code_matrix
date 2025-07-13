@@ -4,8 +4,11 @@
 
 package com.virhuiai.jcef109.ui;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JComponent;
+import javax.swing.JPanel;
+import java.awt.Color;
 
 /**
  * 多个tab

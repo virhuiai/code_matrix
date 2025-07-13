@@ -3,7 +3,8 @@
 package com.virhuiai.jcef109.ui;
 
 // 导入 Swing 的图标组件
-import javax.swing.*;
+
+import javax.swing.ImageIcon;
 
 /**
  * 资源工具类

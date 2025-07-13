@@ -2,6 +2,7 @@
 package com.virhuiai.jcef109.ui;
 
 // 导入必要的包 Imports required packages
+
 import com.virhuiai.jcef109.BrowserApp;
 import org.cef.CefClient;
 import org.cef.browser.CefBrowser;
@@ -10,9 +11,30 @@ import org.cef.handler.CefFocusHandlerAdapter;
 import org.cef.handler.CefLoadHandlerAdapter;
 import org.cef.network.CefRequest;
 
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.*;
+import javax.swing.AbstractAction;
+import javax.swing.Action;
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JComponent;
+import javax.swing.JMenuItem;
+import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
+import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
+import java.awt.Component;
+import java.awt.Frame;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
+import java.awt.KeyboardFocusManager;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
+import java.awt.event.InputEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 /**
  *

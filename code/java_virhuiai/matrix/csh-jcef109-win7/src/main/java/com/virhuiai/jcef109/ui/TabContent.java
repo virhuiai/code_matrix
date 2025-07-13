@@ -1,7 +1,6 @@
 
 package com.virhuiai.jcef109.ui;
 
-import com.virhuiai.cli.CliUtils;
 import org.cef.CefApp;
 import org.cef.CefClient;
 import org.cef.browser.CefBrowser;
@@ -9,8 +8,11 @@ import org.cef.browser.CefFrame;
 import org.cef.browser.CefMessageRouter;
 import org.cef.handler.CefDisplayHandlerAdapter;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.BorderFactory;
+import javax.swing.JComponent;
+import javax.swing.JPanel;
+import javax.swing.JSplitPane;
+import java.awt.BorderLayout;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 

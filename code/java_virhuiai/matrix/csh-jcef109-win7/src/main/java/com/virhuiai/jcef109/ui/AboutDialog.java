@@ -1,13 +1,15 @@
 
 package com.virhuiai.jcef109.ui;
 
-import javax.swing.*;
+import javax.swing.BorderFactory;
+import javax.swing.JDialog;
+import javax.swing.JTextPane;
+import javax.swing.WindowConstants;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
+import java.awt.BorderLayout;
+import java.awt.Desktop;
+import java.awt.Frame;
 
 /**
  *

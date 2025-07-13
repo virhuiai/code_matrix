@@ -1,10 +1,13 @@
 package com.virhuiai.jcef109;
 
 import com.virhuiai.cli.CliUtils;
-import com.virhuiai.log.logext.LogFactory;
-import org.apache.commons.logging.Log;
 import com.virhuiai.jcef109.jcef.CefAppBuilderV;
-import com.virhuiai.jcef109.ui.*;
+import com.virhuiai.jcef109.ui.Resources;
+import com.virhuiai.jcef109.ui.Tab;
+import com.virhuiai.jcef109.ui.TabButton;
+import com.virhuiai.jcef109.ui.TabFactory;
+import com.virhuiai.jcef109.ui.TabbedPane;
+import com.virhuiai.log.logext.LogFactory;
 import me.friwi.jcefmaven.CefInitializationException;
 import me.friwi.jcefmaven.EnumPlatform;
 import me.friwi.jcefmaven.MavenCefAppHandlerAdapter;
@@ -13,8 +16,10 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.logging.Log;
 import org.cef.CefApp;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JFrame;
+import javax.swing.SwingUtilities;
+import javax.swing.WindowConstants;
+import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;

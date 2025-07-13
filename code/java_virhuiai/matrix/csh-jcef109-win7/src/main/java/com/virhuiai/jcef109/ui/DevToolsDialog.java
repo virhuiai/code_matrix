@@ -2,8 +2,10 @@ package com.virhuiai.jcef109.ui;
 
 import org.cef.browser.CefBrowser;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JDialog;
+import java.awt.BorderLayout;
+import java.awt.Frame;
+import java.awt.Point;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 

@@ -1,6 +1,5 @@
 package com.virhuiai.jcef109.v2;
 
-import java.awt.Frame;
 import org.cef.browser.CefBrowser;
 import org.cef.callback.CefAuthCallback;
 import org.cef.callback.CefCallback;
@@ -9,6 +8,8 @@ import org.cef.handler.CefRequestHandler;
 import org.cef.handler.CefRequestHandlerAdapter;
 import org.cef.handler.CefResourceHandler;
 import org.cef.network.CefRequest;
+
+import java.awt.Frame;
 
 /**
  * CEF请求处理器实现类
