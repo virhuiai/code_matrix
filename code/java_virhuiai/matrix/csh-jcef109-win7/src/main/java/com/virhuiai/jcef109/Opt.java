@@ -8,6 +8,12 @@ public enum Opt {
             .desc("设置JCEF安装目录")
             .hasArg()
             .argName("JCEF安装目录")
+    ),
+
+    DEFAULT_URL("jcef.default_url", Option.builder()
+            .desc("设置浏览器默认打开的URL")
+            .hasArg()
+            .argName("默认URL")
     )
     ;
 

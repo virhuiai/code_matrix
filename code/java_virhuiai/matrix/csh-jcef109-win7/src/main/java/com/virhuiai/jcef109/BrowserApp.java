@@ -172,15 +172,7 @@ public class BrowserApp extends JFrame {
         }
 
 
-        // CliUtils.s3GetOptionValue("jcefInstallDir");
 
-        // 添加默认URL选项
-        CliUtils.s2AddOption(options -> options.addOption(Option.builder()
-                .longOpt("defaultUrl")
-                .desc("设置浏览器默认打开的URL")
-                .hasArg()
-                .argName("默认URL")
-                .build()));
 
         // 添加是否传递全部参数到CEF的选项
         CliUtils.s2AddOption(options -> options.addOption(Option.builder()
@@ -226,7 +218,7 @@ public class BrowserApp extends JFrame {
         // 创建标签页面板
         tabbedPane = new TabbedPane();
 
-        String defaultUrl = CliUtils.s3GetOptionValue("defaultUrl");
+        String defaultUrl = CliUtils.s3GetOptionValue(Opt.DEFAULT_URL.getOptionName());
         if(null !=defaultUrl && !defaultUrl.isEmpty()){
             // 创建初始标签页并打开默认网页
             Tab tab = TabFactory.createTab(defaultUrl, cefApp);
