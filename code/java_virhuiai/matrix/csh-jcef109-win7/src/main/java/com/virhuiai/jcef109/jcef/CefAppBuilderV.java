@@ -387,7 +387,7 @@ public class CefAppBuilderV extends CefAppBuilder {
                         downloading = true;
                         File download = new File(installDir, "download.zip.temp");
                         PackageDownloaderV.downloadNatives(
-                                CefBuildInfo.fromClasspath(), EnumPlatform.getCurrentPlatform(),
+                                CefBuildInfo.fromClasspath(), platform,
                                 download, f -> {
                                     progressHandler.handleProgress(EnumProgress.DOWNLOADING, f);
                                 }, builder.mirrors);
