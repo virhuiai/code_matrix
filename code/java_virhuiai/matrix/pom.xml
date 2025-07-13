@@ -25,6 +25,7 @@
         <module>csh-string</module>
         <module>csh-web-lite</module>
         <module>csh-jcef109-win7</module>
+        <module>csh-platform</module>
     </modules>
 
     <name>matrix</name>
