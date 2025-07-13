@@ -7,6 +7,9 @@ import org.cef.CefApp;
 
 import java.io.InputStream;
 
+import com.virhuiai.log.logext.LogFactory;
+import org.apache.commons.logging.Log;
+
 /**
  * 用于从类路径中提取原生库的类
  * Class used to extract natives from classpath.
@@ -14,6 +17,7 @@ import java.io.InputStream;
  *
  */
 public class PackageClasspathStreamerV extends PackageClasspathStreamer {
+    private static final Log LOGGER = LogFactory.getLog();
 
     /**
      * 原生库文件在类路径中的位置模板
@@ -43,8 +47,12 @@ public class PackageClasspathStreamerV extends PackageClasspathStreamer {
         // 通过CefApp.class.getResourceAsStream获取类路径中对应文件的输入流
 
         //参数值是：        /jcef-natives-macosx-amd64-jcef-108adb8+cef-109.1.11+g6d4fdb2+chromium-109.0.5414.87.tar.gz
-        return CefApp.class.getResourceAsStream(LOCATION
+
+        String url = LOCATION
                 .replace("{platform}", platform.getIdentifier())
-                .replace("{tag}", info.getReleaseTag()));
+                .replace("{tag}", info.getReleaseTag());
+        LOGGER.info("url:" + url);
+
+        return CefApp.class.getResourceAsStream(url);
     }
 }

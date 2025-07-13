@@ -32,10 +32,15 @@ import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
+import com.virhuiai.log.logext.LogFactory;
+import org.apache.commons.logging.Log;
+
 /**
  * CefAppBuilder的扩展类,用于构建和管理CEF应用程序实例
  */
 public class CefAppBuilderV extends CefAppBuilder {
+    private static final Log LOGGER = LogFactory.getLog();
+
     // 默认的安装目录
     private static final File DEFAULT_INSTALL_DIR = new File("jcef-bundle");
     // 默认的进度处理器
@@ -345,16 +350,94 @@ public class CefAppBuilderV extends CefAppBuilder {
                 CefBuildInfo.fromClasspath(), platform, mirrors);
     }
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, UnsupportedPlatformException {
 // 创建CEF应用构建器
         CefAppBuilderV builder = new CefAppBuilderV();
         //设置华为镜像，加载比较快
         builder.setMirrors(Arrays.asList("http://mirrors.huaweicloud.com/repository/maven/me/friwi/jcef-natives-{platform}/{tag}/jcef-natives-{platform}-{tag}.jar"));
 
+        String baseDir = "/Volumes/RamDisk/jcef109/";
         for (EnumPlatform platform : EnumPlatform.values()) {
+
             String identifier = platform.getIdentifier();
-            String mirror =  "http://mirrors.huaweicloud.com/repository/maven/me/friwi/jcef-natives-{platform}/{tag}/jcef-natives-{platform}-{tag}.jar";
-            String url = builder.fetchInstallationUrl(platform);
+            File installDir = new File("/Volumes/RamDisk/jcef109/" + identifier);
+            boolean installOk = CefInstallationCheckerV.checkInstallation(installDir);
+            if (!installOk) {
+                String mirror =  "http://mirrors.huaweicloud.com/repository/maven/me/friwi/jcef-natives-{platform}/{tag}/jcef-natives-{platform}-{tag}.jar";
+                String url = builder.fetchInstallationUrl(platform);
+                IProgressHandler progressHandler = new ConsoleProgressHandler();
+                progressHandler.handleProgress(EnumProgress.LOCATING, EnumProgress.NO_ESTIMATION);
+                //执行安装
+                //清除安装目录
+                FileUtils.deleteDir(installDir);
+
+                if (!installDir.mkdirs()){
+                    LOGGER.error("因为无法建立文件夹，安装失败,identifier:" + identifier);
+                    throw new IOException("Could not create installation directory");
+                }
+
+                LOGGER.info("准备获取原生输入流,identifier:" + identifier);
+                //获取原生输入流
+                InputStream nativesIn = PackageClasspathStreamerV.streamNatives(
+                        CefBuildInfo.fromClasspath(), platform);
+                try {
+                    boolean downloading = false;
+                    if (nativesIn == null) {
+                        progressHandler.handleProgress(EnumProgress.DOWNLOADING, EnumProgress.NO_ESTIMATION);
+                        downloading = true;
+                        File download = new File(installDir, "download.zip.temp");
+                        PackageDownloaderV.downloadNatives(
+                                CefBuildInfo.fromClasspath(), EnumPlatform.getCurrentPlatform(),
+                                download, f -> {
+                                    progressHandler.handleProgress(EnumProgress.DOWNLOADING, f);
+                                }, builder.mirrors);
+                        nativesIn = new ZipInputStream(new FileInputStream(download));
+                        ZipEntry entry;
+                        boolean found = false;
+                        while ((entry = ((ZipInputStream) nativesIn).getNextEntry()) != null) {
+                            if (entry.getName().endsWith(".tar.gz")) {
+                                found = true;
+                                break;
+                            }
+                        }
+                        if (!found) {
+                            throw new IOException("Downloaded artifact did not contain a .tar.gz archive");
+                        }
+                    }
+                    //提取原生包
+                    progressHandler.handleProgress(EnumProgress.EXTRACTING, EnumProgress.NO_ESTIMATION);
+                    TarGzExtractor.extractTarGZ(installDir, nativesIn);
+//                if (downloading) {// 不再删除
+//                    if (!new File(this.installDir, "download.zip.temp").delete()) {
+//                        throw new IOException("Could not remove downloaded temp file");
+//                    }
+//                }
+
+                } finally {
+                    // 确保在上述任何操作失败时关闭nativesIn
+                    if (nativesIn != null) {
+                        nativesIn.close();
+                    }
+                }
+
+                //安装原生包
+                progressHandler.handleProgress(EnumProgress.INSTALL, EnumProgress.NO_ESTIMATION);
+                //在macOS上移除隔离
+                if (EnumPlatform.getCurrentPlatform().getOs().isMacOSX()) {
+                    UnquarantineUtil.unquarantine(installDir);
+                }
+                //锁定安装
+                if (!(new File(installDir, "install.lock").createNewFile())) {
+                    throw new IOException("Could not create install.lock to complete installation");
+                }
+                LOGGER.info("安装成功,identifier:" + identifier);
+            }else{
+                LOGGER.info("已经安装过,identifier:" + identifier);
+            }
+
+
+
+
 //            System.out.println(url);
 
 
@@ -376,4 +459,5 @@ public class CefAppBuilderV extends CefAppBuilder {
 
         }
     }
+
 }
