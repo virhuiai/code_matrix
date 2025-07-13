@@ -97,9 +97,9 @@ public class BrowserApp extends JFrame {
         //设置华为镜像，加载比较快
 //        builder.setMirrors(Arrays.asList("http://mirrors.huaweicloud.com/repository/maven/me/friwi/jcef-natives-{platform}/{tag}/jcef-natives-{platform}-{tag}.jar"));
 
-        // --jcefInstallDir=/Volumes/THAWSPACE/CshProject/JCEF109/
+        // --jcef.install_dir=/Volumes/THAWSPACE/CshProject/JCEF109/
         // 设置JCEF安装目录 jcefInstallDir
-        String jcefInstallDir = CliUtils.s3GetOptionValue("jcefInstallDir");
+        String jcefInstallDir = CliUtils.s3GetOptionValue(Opt.INSTALL_DIR.getOptionName());
         /**
          * 配置JCEF安装目录，并根据当前运行平台确定具体的bundle路径
          */
@@ -166,13 +166,12 @@ public class BrowserApp extends JFrame {
     public static void main(String[] args) throws UnsupportedPlatformException, CefInitializationException, IOException, InterruptedException {
         // 解析命令行参数
         CliUtils.s1InitArgs(args);
+        // 配置所有选项
+        for (Opt value : Opt.values()) {
+            CliUtils.s2AddOption(options -> options.addOption(value.getOption()));
+        }
 
-        CliUtils.s2AddOption(options -> options.addOption(Option.builder()
-                .longOpt("jcefInstallDir")
-                .desc("设置JCEF安装目录")
-                .hasArg()
-                .argName("JCEF安装目录")
-                .build()));
+
         // CliUtils.s3GetOptionValue("jcefInstallDir");
 
         // 添加默认URL选项
