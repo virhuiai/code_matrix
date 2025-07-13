@@ -58,7 +58,8 @@ public class BrowserApp extends JFrame {
         if("1".equalsIgnoreCase(passAllArgsToCef)){
             // Pass all args to cef
             LOGGER.info("将全部参数传递给CEF");
-            builder.getJcefArgs().addAll(Arrays.asList(args));
+            builder.addJcefArgs(args);
+//            builder.getJcefArgs().addAll(Arrays.asList(args));
         }
 
         String proxyServer = CliUtils.s3GetOptionValue(Opt.PROXY_SERVER.getOptionName());
@@ -95,7 +96,7 @@ public class BrowserApp extends JFrame {
         }
 
         //设置华为镜像，加载比较快
-//        builder.setMirrors(Arrays.asList("http://mirrors.huaweicloud.com/repository/maven/me/friwi/jcef-natives-{platform}/{tag}/jcef-natives-{platform}-{tag}.jar"));
+        builder.setMirrors(Arrays.asList("http://mirrors.huaweicloud.com/repository/maven/me/friwi/jcef-natives-{platform}/{tag}/jcef-natives-{platform}-{tag}.jar"));
 
         // --jcef.install_dir=/Volumes/THAWSPACE/CshProject/JCEF109/
         // 设置JCEF安装目录 jcefInstallDir
@@ -133,10 +134,7 @@ public class BrowserApp extends JFrame {
             }
         });
 
-        // 添加额外的JCEF参数
-        if (args.length > 0) {
-            builder.addJcefArgs(args);
-        }
+
 
         // 构建CEF应用
         cefApp = builder.build();
