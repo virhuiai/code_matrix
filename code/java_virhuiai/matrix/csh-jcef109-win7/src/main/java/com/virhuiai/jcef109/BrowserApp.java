@@ -113,10 +113,7 @@ public class BrowserApp extends JFrame {
         // 通过Paths工具类创建基础路径对象
         Path basePath = Paths.get(jcefInstallDir);
         // 根据当前操作系统平台动态拼接JCEF bundle目录
-        // 例如：在Mac OS X上，EnumPlatform.getCurrentPlatform().getIdentifier()返回"macosx-amd64"
-        // 最终会构建类似"jcef-bundle-macosx-amd64"的目录名
-//        Path jcefBundlePath = basePath.resolve("jcef-bundle-" + EnumPlatform.getCurrentPlatform().getIdentifier());
-        Path jcefBundlePath = basePath.resolve(EnumPlatform.getCurrentPlatform().getIdentifier());
+        Path jcefBundlePath = basePath.resolve(EnumPlatform.getCurrentPlatform().getIdentifier());//在Mac OS X上，EnumPlatform.getCurrentPlatform().getIdentifier()返回"macosx-amd64"
         // 记录JCEF配置信息，便于调试和问题排查
         LOGGER.info("JCEF安装父级目录【jcefInstallDir】：" + jcefInstallDir);
         LOGGER.info("JCEF安装实际目录【jcefBundlePath】: " +  jcefBundlePath);
