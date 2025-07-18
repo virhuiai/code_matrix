@@ -3,9 +3,8 @@ package com.virhuiai.compact7z;
 // 工具类导入
 
 import com.virhuiai.cli.CliUtils;
-import com.virhuiai.log.logext.LogFactory;
-import org.apache.commons.logging.Log;
-import com.virhuiai.md5.MD5FileNameUtils;
+import com.virhuiai.log.log.logext.LogFactory;
+import com.virhuiai.log.md5.MD5FileNameUtils;
 import org.apache.commons.logging.Log;
 
 import java.io.File;
@@ -56,7 +55,7 @@ public class App {
 
 
 
-        String inDir = config.getConfigValue(Config7z.Keys.INPUT_DIR, "");
+        String inDir = CliUtils.s3GetOptionValue(Opt.INPUT_DIR.getOptionName());
         if(null == inDir || inDir.isEmpty()){
 //            LOGGER.error("指定要压缩的源目录路径要填写");
             return;

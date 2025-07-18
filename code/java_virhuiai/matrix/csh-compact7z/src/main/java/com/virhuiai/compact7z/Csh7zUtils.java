@@ -1,13 +1,12 @@
 package com.virhuiai.compact7z;
 
-import com.virhuiai.log.logext.LogFactory;
+import com.virhuiai.log.log.logext.LogFactory;
 import org.apache.commons.logging.Log;
 import net.sf.sevenzipjbinding.IOutCreateArchive7z;
 import net.sf.sevenzipjbinding.SevenZip;
 import net.sf.sevenzipjbinding.impl.RandomAccessFileOutStream;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.TrueFileFilter;
-import org.apache.commons.logging.Log;
 
 import java.io.File;
 import java.io.RandomAccessFile;

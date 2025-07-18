@@ -3,10 +3,9 @@ package com.virhuiai.compact7z;
 import java.util.HashMap;
 
 import com.virhuiai.cli.CliUtils;
-import com.virhuiai.log.logext.LogFactory;
-import org.apache.commons.logging.Log;
-import com.virhuiai.md5.MD5FileNameUtils;
-import com.virhuiai.md5.RandomMD5Utils;
+import com.virhuiai.log.log.logext.LogFactory;
+import com.virhuiai.log.md5.MD5FileNameUtils;
+import com.virhuiai.log.md5.RandomMD5Utils;
 import org.apache.commons.logging.Log;
 
 /**
@@ -22,8 +21,6 @@ public class Config7z extends HashMap<String, String> {
     public static class Keys {
 
 
-        // 输入输出相关
-        public static final String INPUT_DIR = "INPUT_DIR";
 
         public static final String OUTPUT_FILE = "OUTPUT_FILE";
 
@@ -192,7 +189,7 @@ public class Config7z extends HashMap<String, String> {
      * 如果未指定输出路径，则根据输入路径生成
      */
     public void processOutputFile() {
-        String inputDir = get(Keys.INPUT_DIR);
+        String inputDir = CliUtils.s3GetOptionValue(Opt.INPUT_DIR.getOptionName());
         String randomOutName = get(Keys.RANDOM_OUT_NAME);
         String charA = get(Keys.RANDOM_CHAR_A);
         String charB = get(Keys.RANDOM_CHAR_B);
@@ -212,7 +209,7 @@ public class Config7z extends HashMap<String, String> {
      */
     private void logConfiguration() {
         LOGGER.info("=== 压缩配置信息 ===");
-        LOGGER.info("输入目录: " + get(Keys.INPUT_DIR));
+        LOGGER.info("输入目录: " + CliUtils.s3GetOptionValue(Opt.INPUT_DIR.getOptionName()));
         LOGGER.info("输出文件: " + get(Keys.OUTPUT_FILE));
         LOGGER.info("MD5值: " + get(Keys.RANDOM_MD5));
         LOGGER.info("RANDOM_OUT_NAME: " + get(Keys.RANDOM_OUT_NAME));
@@ -256,14 +253,10 @@ public class Config7z extends HashMap<String, String> {
      * 此方法负责解析命令行参数并设置相应的配置值
      */
     public void loadFromCommandLine() {
-        // 加载基本配置
-        // 设置输入目录，从命令行参数 -i 获取，这是一个必填项
-        put(Keys.INPUT_DIR, CliUtils.s3GetOptionValue("i", "设置的是必填，此调用方法传优化"));
 
 
 
-        // 设置是否启用额外功能，从命令行参数 -e 获取，如未指定则使用默认值
-        put(Keys.EXTRA_ENABLED, CliUtils.s3GetOptionValue("e", Defaults.DEFAULT_EXTRA_ENABLED));
+
 
         // 设置额外计数值，从命令行参数 extraCount 获取，如未指定则使用默认值
         put(Keys.EXTRA_COUNT, CliUtils.s3GetOptionValue("extraCount", Defaults.DEFAULT_EXTRA_COUNT));
