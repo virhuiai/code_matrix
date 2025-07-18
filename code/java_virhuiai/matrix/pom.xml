@@ -27,6 +27,7 @@
         <module>csh-jcef109-win7</module>
         <module>csh-platform</module>
         <module>csh-time</module>
+        <module>csh-compact7z</module>
     </modules>
 
     <name>matrix</name>
