@@ -1,9 +1,9 @@
 // 定义包名，指明该类所在的包路径
-package com.virhuiai.log.file;
+package com.virhuiai.file;
 
 // 导入所需的类
 
-import com.virhuiai.log.file.obj.SizeUnit;
+import com.virhuiai.file.obj.SizeUnit;
 import com.virhuiai.log.log.logext.LogFactory;
 import org.apache.commons.logging.Log;
 

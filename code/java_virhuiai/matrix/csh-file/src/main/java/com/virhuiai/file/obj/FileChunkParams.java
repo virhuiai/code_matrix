@@ -1,4 +1,4 @@
-package com.virhuiai.log.file.obj;
+package com.virhuiai.file.obj;
 
 /**
  * 文件分块参数类

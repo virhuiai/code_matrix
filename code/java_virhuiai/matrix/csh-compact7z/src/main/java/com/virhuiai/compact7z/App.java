@@ -3,8 +3,10 @@ package com.virhuiai.compact7z;
 // 工具类导入
 
 import com.virhuiai.cli.CliUtils;
+import com.virhuiai.file.PathUtils;
 import com.virhuiai.log.log.logext.LogFactory;
 import com.virhuiai.log.md5.MD5FileNameUtils;
+import com.virhuiai.log.md5.RandomMD5Utils;
 import org.apache.commons.logging.Log;
 
 import java.io.File;
@@ -31,28 +33,23 @@ public class App {
 
     // 使用示例
     public static void main(String[] args) {
-        // 初始化命令行工具并设置参数选项
-        OptionUtils7z.setupCommandOptions(args);;
+        // 解析命令行参数
+        CliUtils.s1InitArgs(args);
+        // 配置所有选项
+        for (Opt value : Opt.values()) {
+            CliUtils.s2AddOption(options -> options.addOption(value.getOption()));
+        }
 
-        // 创建并加载配置
-        Config7z config = new Config7z();
-        //从命令行加载配置参数
-        config.loadFromCommandLine();
-
-        String mode = CliUtils.s3GetOptionValue("mode", null);
+        String mode = CliUtils.s3GetOptionValue(Opt.MODE.getOptionName());
         if(null == mode){
             LOGGER.info("未指定模式！");
         }
         if("genMd5".equalsIgnoreCase(mode)){
-             String inputStr =  CliUtils.s3GetOptionValue("inputStr", "");
+            String inputStr =  CliUtils.s3GetOptionValue(Opt.INPUT_STR.getOptionName());
             String extracted = MD5FileNameUtils.extractMD5(inputStr);
             LOGGER.info("extracted:" + extracted);
             return;
         }
-
-
-
-
 
 
         String inDir = CliUtils.s3GetOptionValue(Opt.INPUT_DIR.getOptionName());
@@ -61,49 +58,82 @@ public class App {
             return;
         }
 
-        String output = config.getConfigValue(Config7z.Keys.OUTPUT_FILE, "");
+        String outputPath = CliUtils.s3GetOptionValue(Opt.OUTPUT_FILE_PATH.getOptionName());
+
+        String randomMD5 = RandomMD5Utils.getRandomMD5Simple();
+        String randomOutName = randomMD5;
+        String extraEnabled = CliUtils.s3GetOptionValue(Opt.EXTRA_ENABLED.getOptionName());
+        String extraCount = CliUtils.s3GetOptionValue(Opt.EXTRA_COUNT.getOptionName());
+        if ("1".equals(extraEnabled)) {
+            try {
+                int extraCountNum = Integer.parseInt(extraCount);
+                if (extraCountNum > 0) {
+                    randomOutName = MD5FileNameUtils.insertRandomChars(randomMD5, extraCountNum);
+                    String extracted = MD5FileNameUtils.extractMD5(randomOutName);
+
+                    if (!extracted.equals(randomMD5)) {
+                        LOGGER.warn("额外字符验证失败，使用原始MD5");
+                        randomOutName = randomMD5;
+                    }
+                }
+            } catch (NumberFormatException e) {
+                LOGGER.error("额外字符数量格式无效", e);
+            }
+        }
+
         // 第一步：使用FileUtils7z工具类的wrapStr方法处理密码
         // 该方法可能是对原始密码进行包装或加密处理
         // 从配置中获取以下参数：
         //   - PASSWORD_VALUE: 原始密码值（如果未配置则使用空字符串）
         //   - RANDOM_CHAR_B: 可能用于 混淆的随机字符B（如果未配置则使用空字符串）
         //   - RANDOM_CHAR_A: 可能用于 混淆的随机字符A（如果未配置则使用空字符串）
+        final String  RANDOM_CHAR_B = FileUtils7z.getRandomChars(randomOutName);
+        final String RANDOM_CHAR_A = FileUtils7z.getRandomChars(randomOutName);
         String password = FileUtils7z.wrapStr(
-                config.getConfigValue(Config7z.Keys.PASSWORD_VALUE, ""),
-                config.getConfigValue(Config7z.Keys.RANDOM_CHAR_B, ""),
-                config.getConfigValue(Config7z.Keys.RANDOM_CHAR_A, "")
+                CliUtils.s3GetOptionValue(Opt.PASSWORD_VALUE.getOptionName(),""),
+                RANDOM_CHAR_B,
+                RANDOM_CHAR_A
         );
         // 第二步：为处理后的密码添加前缀和后缀
         // 从配置中获取密码前缀和后缀，如果未配置则使用空字符串
         // 最终密码格式为：前缀 + 处理后的密码 + 后缀
-        password = config.getConfigValue(Config7z.Keys.PASSWORD_PREFIX, "")
+        password = CliUtils.s3GetOptionValue(Opt.PASSWORD_PREFIX.getOptionName())
                 +  password
-                + config.getConfigValue(Config7z.Keys.PASSWORD_SUFFIX, "");
+                + CliUtils.s3GetOptionValue(Opt.PASSWORD_SUFFIX.getOptionName());
 
-        String showPassword = config.getConfigValue("showPassword", "0");
+        String showPassword = CliUtils.s3GetOptionValue(Opt.PASSWORD_SHOW.getOptionName());
         if("1".equalsIgnoreCase(showPassword)){
-            LOGGER.info("PASSWORD_VALUE: " + config.getConfigValue(Config7z.Keys.PASSWORD_VALUE, ""));
-            LOGGER.info("RANDOM_CHAR_B: " + config.getConfigValue(Config7z.Keys.RANDOM_CHAR_B, ""));
-            LOGGER.info("RANDOM_CHAR_A: " + config.getConfigValue(Config7z.Keys.RANDOM_CHAR_A, ""));
-            LOGGER.info("PASSWORD_PREFIX: " + config.getConfigValue(Config7z.Keys.PASSWORD_PREFIX, ""));
-            LOGGER.info("PASSWORD_SUFFIX: " + config.getConfigValue(Config7z.Keys.PASSWORD_SUFFIX, ""));
+            LOGGER.info("PASSWORD_VALUE: " + CliUtils.s3GetOptionValue(Opt.PASSWORD_VALUE.getOptionName()));
+            LOGGER.info("RANDOM_CHAR_B: " + RANDOM_CHAR_B);
+            LOGGER.info("RANDOM_CHAR_A: " + RANDOM_CHAR_A);
+            LOGGER.info("PASSWORD_PREFIX: " + CliUtils.s3GetOptionValue(Opt.PASSWORD_PREFIX.getOptionName()));
+            LOGGER.info("PASSWORD_SUFFIX: " + CliUtils.s3GetOptionValue(Opt.PASSWORD_SUFFIX.getOptionName()));
             LOGGER.info("password: " + password);
         }
 
+        // validateCompressionLevel  验证压缩等级值
+        int level = Integer.parseInt(CliUtils.s3GetOptionValue(Opt.COMPRESSION_LEVEL.getOptionName()));
+        if (level < 0 || level > 9) {
+            LOGGER.warn("压缩等级0 1 3 5 7 9，默认值:0");
+            level = 0;
+            LOGGER.warn("1压缩等级已自动调整为0");
+        }
+        if (!Level7z.isValidLevel(level)) {
+            level = 0;
+            LOGGER.warn("2压缩等级已自动调整为0");
+        }
 
-        Integer compressionLevel = config.getIntConfigValue(Config7z.Keys.COMPRESSION_LEVEL, 0);
 
-        LOGGER.info("输出文件: " + output);
 
 
         try {
             File inputDir = new File(inDir); // 要压缩的目录
-            File outputFile = new File(output); // 输出的7z文件
+            File outputFile = new File(PathUtils.combinePath(outputPath , randomOutName)); // 输出的7z文件
 
 
             Csh7zUtils.compress(inputDir, outputFile
                     , password
-                    , compressionLevel);
+                    , level);
 
             LOGGER.info("压缩完成！");
 

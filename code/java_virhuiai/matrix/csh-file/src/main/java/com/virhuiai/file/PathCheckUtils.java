@@ -1,4 +1,4 @@
-package com.virhuiai.log.file;
+package com.virhuiai.file;
 
 import java.nio.file.Files;
 import java.nio.file.Path;

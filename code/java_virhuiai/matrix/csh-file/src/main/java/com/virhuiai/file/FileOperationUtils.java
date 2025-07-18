@@ -1,4 +1,4 @@
-package com.virhuiai.log.file;
+package com.virhuiai.file;
 
 import com.virhuiai.log.log.logext.LogFactory;
 import org.apache.commons.logging.Log;

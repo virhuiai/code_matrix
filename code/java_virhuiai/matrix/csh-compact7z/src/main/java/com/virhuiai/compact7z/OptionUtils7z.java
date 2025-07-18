@@ -94,38 +94,8 @@ public class OptionUtils7z {
      * 配置额外字符相关选项
      */
     private static void setupExtraCharacterOptions() {
-        // 是否插入额外字符选项
-        CliUtils.s2AddOption(options -> options.addOption(Option.builder("e")
-                .longOpt("extra")
-                .desc("是否在文件名中插入额外字符 (0:否, 1:是)")
-                .hasArg()
-                .argName("是否启用")
-                .type(Number.class) // 指定参数类型为数字
-                .build()));
-
-        // 额外字符数量选项
-        CliUtils.s2AddOption(options -> options.addOption(Option.builder()
-                .longOpt("extraCount")
-                .desc("指定要插入的额外字符数量")
-                .hasArg()
-                .argName("字符数量")
-                .type(Number.class)
-                .build()));
-    }
 
 
-    /**
-     * 配置模式选项
-     */
-    private static void setupModeOption() {
-        CliUtils.s2AddOption(options -> options.addOption(Option.builder("m")
-                .longOpt("mode")
-                .desc("指定操作模式：genMd5=去除非MD5字符，compress=压缩文件")
-                .hasArg()
-                .argName("操作模式")
-//                .required(true)
-                .build()));
-        // ，extract=解压文件
     }
 
 
@@ -162,8 +132,7 @@ public class OptionUtils7z {
     public static void setupCommandOptions(String[] args) {
         CliUtils.s1InitArgs(args);
         LOGGER.debug("接收到的命令行参数: " + String.join(", ", args));
-        // 配置模式选项
-        setupModeOption();
+
         // 配置输入字符串选项
         setupInputStringOption();
 
@@ -183,7 +152,6 @@ public class OptionUtils7z {
         setupOutputOption();
         // 配置压缩等级选项
         setupCompressionLevelOption();
-        // 配置额外字符选项
-        setupExtraCharacterOptions();
+
     }
 }

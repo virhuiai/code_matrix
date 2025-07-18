@@ -3,22 +3,58 @@ package com.virhuiai.compact7z;
 import org.apache.commons.cli.Option;
 
 public enum Opt {
+
+    MODE("compact7z.mode", Option.builder()
+            .desc("指定操作模式：genMd5=去除非MD5字符，compress=压缩文件")
+            .hasArg()
+            .argName("操作模式")),
+    INPUT_STR("compact7z.input_str", Option.builder()
+            .desc("要去除非MD5字符的字符串")
+            .hasArg()
+            .argName("输入字符串")),
+    COMPRESSION_LEVEL("compact7z.compression_level", Option.builder()
+            .desc("压缩等级")
+            .hasArg()
+            .argName("压缩等级")),
+
+    PASSWORD_VALUE("compact7z.password_value", Option.builder()
+            .desc("用户指定的密码")
+            .hasArg()
+            .argName("密码")),
+    PASSWORD_PREFIX("compact7z.password_prefix", Option.builder()
+            .desc("密码前缀")
+            .hasArg()
+            .argName("密码前缀")),
+    PASSWORD_SUFFIX("compact7z.password_suffix", Option.builder()
+            .desc("密码后缀")
+            .hasArg()
+            .argName("密码后缀")),
+    PASSWORD_SHOW("compact7z.password_show", Option.builder()
+            .desc("密码显示")
+            .hasArg()
+            .argName("密码显示")),
+
+
+
     INPUT_DIR("compact7z.input_dir", Option.builder()
             .desc("设置输入目录，这是一个必填项")
             .hasArg()
             .argName("输入目录")),
-    OUTPUT_FILE("compact7z.output_file", Option.builder()
-            .desc("设置输出文件路径，这是一个必填项")
+    OUTPUT_FILE_PATH("compact7z.output_file_path", Option.builder()
+            .desc("设置输出文件路径")
             .hasArg()
             .argName("输出文件路径")),
     EXTRA_ENABLED("compact7z.extra_enabled", Option.builder()
-            .desc("设置是否启用额外功能")
+            .desc("是否在文件名中插入额外字符 (0:否, 1:是)")
             .hasArg()
-            .argName("额外功能")),
+            .argName("是否启用额外字符")
+            .type(Number.class) // 指定参数类型为数字
+    ),
     EXTRA_COUNT("compact7z.extra_count", Option.builder()//DEFAULT_EXTRA_COUNT = "32";
             .desc("设置额外计数值")
             .hasArg()
-            .argName("额外计数值"))
+            .argName("额外字符数量")),
+
     ;//use-root_path_last_resource
 
 

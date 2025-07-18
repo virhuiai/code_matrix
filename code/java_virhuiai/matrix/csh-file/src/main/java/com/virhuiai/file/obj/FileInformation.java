@@ -1,4 +1,4 @@
-package com.virhuiai.log.file.obj;
+package com.virhuiai.file.obj;
 
 import java.nio.file.Path;
 import java.nio.file.attribute.FileTime;

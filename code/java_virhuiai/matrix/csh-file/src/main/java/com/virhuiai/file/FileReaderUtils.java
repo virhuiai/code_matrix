@@ -1,6 +1,6 @@
-package com.virhuiai.log.file;
+package com.virhuiai.file;
 
-import com.virhuiai.log.file.obj.FileChunkParams;
+import com.virhuiai.file.obj.FileChunkParams;
 import com.virhuiai.log.log.logext.LogFactory;
 import org.apache.commons.logging.Log;
 
