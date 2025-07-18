@@ -32,6 +32,13 @@ public class App {
 
 
     // 使用示例
+
+    /**
+     * --compact7z.mode=compress --compact7z.input_dir=/Volumes/RamDisk/log --compact7z.output_file_path=/Volumes/RamDisk --compact7z.extra_enabled=1 --compact7z.extra_count=5 --compact7z.password_value=123456 --compact7z.password_prefix=pre --compact7z.password_suffix=after --compact7z.password_show=1 --compact7z.compression_level=3
+     * --compact7z.mode=compress=genMd5 --compact7z.input_str=123
+     *
+     * @param args
+     */
     public static void main(String[] args) {
         // 解析命令行参数
         CliUtils.s1InitArgs(args);
