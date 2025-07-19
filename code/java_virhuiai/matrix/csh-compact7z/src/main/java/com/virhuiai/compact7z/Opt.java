@@ -5,7 +5,12 @@ import org.apache.commons.cli.Option;
 public enum Opt {
 
     MODE("compact7z.mode", Option.builder()
-            .desc("指定操作模式：genMd5=去除非MD5字符，compress=压缩文件")
+            .desc("指定操作模式：" +
+                    "genMd5=去除非MD5字符" +
+                    "，compress=压缩文件" +
+                    ",quering_items_in_archive=列出文档"
+            )
+
             .hasArg()
             .argName("操作模式")),
     INPUT_STR("compact7z.input_str", Option.builder()
@@ -38,6 +43,10 @@ public enum Opt {
 
     INPUT_DIR("compact7z.input_dir", Option.builder()
             .desc("设置输入目录，这是一个必填项")
+            .hasArg()
+            .argName("输入目录")),
+    INPUT_7z("compact7z.input_7z", Option.builder()
+            .desc("设置输入的7z文件")
             .hasArg()
             .argName("输入目录")),
     OUTPUT_FILE_PATH("compact7z.output_file_path", Option.builder()
