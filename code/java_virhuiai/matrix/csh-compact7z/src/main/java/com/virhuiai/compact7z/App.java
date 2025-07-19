@@ -59,7 +59,8 @@ public class App {
             return;
         }
         if("quering_items_in_archive".equalsIgnoreCase(mode)){
-            Csh7zUtils.queringItemsInArchive();
+//            Csh7zUtils.queringItemsInArchive();
+            Csh7zUtils.queringItemsInArchiveStand();
         }
 
 

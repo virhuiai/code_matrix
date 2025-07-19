@@ -3,6 +3,7 @@ package com.virhuiai.compact7z;
 import com.virhuiai.cli.CliUtils;
 import com.virhuiai.log.log.logext.LogFactory;
 import net.sf.sevenzipjbinding.IInArchive;
+import net.sf.sevenzipjbinding.PropID;
 import net.sf.sevenzipjbinding.SevenZipException;
 import net.sf.sevenzipjbinding.impl.RandomAccessFileInStream;
 import net.sf.sevenzipjbinding.simple.ISimpleInArchive;
@@ -106,6 +107,8 @@ public class Csh7zUtils {
         }
     }
 
+    // https://sevenzipjbind.sourceforge.net/extraction_snippets.html
+    // Simple interface
     public static void queringItemsInArchive() {
         String input_7z =  CliUtils.s3GetOptionValue(Opt.INPUT_7z.getOptionName());
         String password = CliUtils.s3GetOptionValue(Opt.PASSWORD_VALUE.getOptionName(), "");
@@ -148,4 +151,48 @@ public class Csh7zUtils {
             }
         }
     }
+
+    public static void queringItemsInArchiveStand() {
+        String input_7z =  CliUtils.s3GetOptionValue(Opt.INPUT_7z.getOptionName());
+        String password = CliUtils.s3GetOptionValue(Opt.PASSWORD_VALUE.getOptionName(), "");
+
+        RandomAccessFile randomAccessFile = null;
+        IInArchive inArchive = null;
+        try {
+            randomAccessFile = new RandomAccessFile(input_7z, "r");
+            inArchive = SevenZip.openInArchive(null, // autodetect archive type
+                    new RandomAccessFileInStream(randomAccessFile));
+
+            System.out.println("   Size   | Compr.Sz. | Filename");
+            System.out.println("----------+-----------+---------");
+            int itemCount = inArchive.getNumberOfItems();
+            for (int i = 0; i < itemCount; i++) {
+                System.out.println(String.format("%9s | %9s | %s", //
+                        inArchive.getProperty(i, PropID.SIZE),
+                        inArchive.getProperty(i, PropID.PACKED_SIZE),
+                        inArchive.getProperty(i, PropID.PATH)));
+            }
+        } catch (Exception e) {
+            System.err.println("Error occurs: " + e);
+        } finally {
+            if (inArchive != null) {
+                try {
+                    inArchive.close();
+                } catch (SevenZipException e) {
+                    System.err.println("Error closing archive: " + e);
+                }
+            }
+            if (randomAccessFile != null) {
+                try {
+                    randomAccessFile.close();
+                } catch (IOException e) {
+                    System.err.println("Error closing file: " + e);
+                }
+            }
+        }
+    }
+
+
+
+
 }
