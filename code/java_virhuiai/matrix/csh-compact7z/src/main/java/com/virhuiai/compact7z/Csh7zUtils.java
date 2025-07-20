@@ -2,12 +2,14 @@ package com.virhuiai.compact7z;
 
 import com.virhuiai.cli.CliUtils;
 import com.virhuiai.log.log.logext.LogFactory;
+import net.sf.sevenzipjbinding.ArchiveFormat;
 import net.sf.sevenzipjbinding.ExtractOperationResult;
 import net.sf.sevenzipjbinding.IInArchive;
 import net.sf.sevenzipjbinding.ISequentialOutStream;
 import net.sf.sevenzipjbinding.PropID;
 import net.sf.sevenzipjbinding.SevenZipException;
 import net.sf.sevenzipjbinding.impl.RandomAccessFileInStream;
+import net.sf.sevenzipjbinding.impl.VolumedArchiveInStream;
 import net.sf.sevenzipjbinding.simple.ISimpleInArchive;
 import net.sf.sevenzipjbinding.simple.ISimpleInArchiveItem;
 import org.apache.commons.logging.Log;
@@ -292,6 +294,47 @@ public class Csh7zUtils {
             if (randomAccessFile != null) {
                 try {
                     randomAccessFile.close();
+                } catch (IOException e) {
+                    System.err.println("Error closing file: " + e);
+                }
+            }
+        }
+    }
+
+    public static void openMultipartArchive7z(){
+        String input_7z = CliUtils.s3GetOptionValue(Opt.INPUT_7z.getOptionName());
+        String password = CliUtils.s3GetOptionValue(Opt.PASSWORD_VALUE.getOptionName(), "");
+        ArchiveOpenVolumeCallback archiveOpenVolumeCallback = null;
+        IInArchive inArchive = null;
+        try {
+
+            archiveOpenVolumeCallback = new ArchiveOpenVolumeCallback();
+            inArchive = SevenZip.openInArchive(ArchiveFormat.SEVEN_ZIP,
+                    new VolumedArchiveInStream(input_7z,
+                            archiveOpenVolumeCallback));
+
+            System.out.println("   Size   | Compr.Sz. | Filename");
+            System.out.println("----------+-----------+---------");
+            int itemCount = inArchive.getNumberOfItems();
+            for (int i = 0; i < itemCount; i++) {
+                System.out.println(String.format("%9s | %9s | %s", //
+                        inArchive.getProperty(i, PropID.SIZE),
+                        inArchive.getProperty(i, PropID.PACKED_SIZE),
+                        inArchive.getProperty(i, PropID.PATH)));
+            }
+        } catch (Exception e) {
+            System.err.println("Error occurs: " + e);
+        } finally {
+            if (inArchive != null) {
+                try {
+                    inArchive.close();
+                } catch (SevenZipException e) {
+                    System.err.println("Error closing archive: " + e);
+                }
+            }
+            if (archiveOpenVolumeCallback != null) {
+                try {
+                    archiveOpenVolumeCallback.close();
                 } catch (IOException e) {
                     System.err.println("Error closing file: " + e);
                 }
