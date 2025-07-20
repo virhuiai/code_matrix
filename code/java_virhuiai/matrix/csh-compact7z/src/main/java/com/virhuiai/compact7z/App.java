@@ -65,7 +65,8 @@ public class App {
             return;
         }
         if("extract_items_simple".equalsIgnoreCase(mode)){
-            Csh7zUtils.extractItemsSimple();
+//            Csh7zUtils.extractItemsSimple();
+            Csh7zUtils.extractItemsStand();
             return;
         }
 

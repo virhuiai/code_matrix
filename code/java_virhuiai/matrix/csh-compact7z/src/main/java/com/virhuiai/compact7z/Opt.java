@@ -9,7 +9,8 @@ public enum Opt {
                     "genMd5=去除非MD5字符" +
                     "，compress=压缩文件" +
                     ",quering_items_in_archive=列出文档" +
-                    ",extract_items_simple=解压"
+                    ",extract_items_simple=解压"+
+                    ",extract_items_stand=解压"
             )
 
             .hasArg()

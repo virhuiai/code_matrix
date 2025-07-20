@@ -80,6 +80,7 @@ public class Csh7zUtils {
 
             // 启用文件头加密，提供额外安全性
             outArchive.setHeaderEncryption(true);
+            // todo 还是会被列出来
 
             // 设置多线程压缩，使用可用的CPU核心数
             int processorCount = Runtime.getRuntime().availableProcessors();
@@ -236,6 +237,48 @@ public class Csh7zUtils {
                     }
                 }
             }
+        } catch (Exception e) {
+            System.err.println("Error occurs: " + e);
+        } finally {
+            if (inArchive != null) {
+                try {
+                    inArchive.close();
+                } catch (SevenZipException e) {
+                    System.err.println("Error closing archive: " + e);
+                }
+            }
+            if (randomAccessFile != null) {
+                try {
+                    randomAccessFile.close();
+                } catch (IOException e) {
+                    System.err.println("Error closing file: " + e);
+                }
+            }
+        }
+    }
+
+    //Extraction error
+    //Extracting archive using standard interface and call back method as a filter
+    public static void extractItemsStand() {
+        String input_7z = CliUtils.s3GetOptionValue(Opt.INPUT_7z.getOptionName());
+        String password = CliUtils.s3GetOptionValue(Opt.PASSWORD_VALUE.getOptionName(), "");
+
+        RandomAccessFile randomAccessFile = null;
+        IInArchive inArchive = null;
+        try {
+            randomAccessFile = new RandomAccessFile(input_7z, "r");
+            inArchive = SevenZip.openInArchive(null, // autodetect archive type
+                    new RandomAccessFileInStream(randomAccessFile));
+
+            System.out.println("   Hash   |    Size    | Filename");
+            System.out.println("----------+------------+---------");
+
+            int[] in = new int[inArchive.getNumberOfItems()];
+            for (int i = 0; i < in.length; i++) {
+                in[i] = i;
+            }
+            inArchive.extract(in, false, // Non-test mode
+                    new ExtractItemsStandardCallback(inArchive));
         } catch (Exception e) {
             System.err.println("Error occurs: " + e);
         } finally {
