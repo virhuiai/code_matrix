@@ -11,7 +11,7 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.HashMap;
 import java.util.Map;
-public class ArchiveOpenVolumeCallback  implements IArchiveOpenVolumeCallback {
+public class ArchiveOpenVolumeCallback7z implements IArchiveOpenVolumeCallback {
     /**
      * Cache for opened file streams
      */
