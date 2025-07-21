@@ -148,7 +148,7 @@ public class App {
 
         try {
             File inputDir = new File(inDir); // 要压缩的目录
-            File outputFile = new File(PathUtils.combinePath(outputPath , randomOutName)); // 输出的7z文件
+            File outputFile = new File(PathUtils.combinePath(outputPath , randomOutName) + ".7z"); // 输出的7z文件
 
 
             Csh7zUtils.compress(inputDir, outputFile

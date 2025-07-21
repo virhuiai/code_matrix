@@ -6,6 +6,7 @@ import net.sf.sevenzipjbinding.ArchiveFormat;
 import net.sf.sevenzipjbinding.ExtractOperationResult;
 import net.sf.sevenzipjbinding.IInArchive;
 import net.sf.sevenzipjbinding.IInStream;
+import net.sf.sevenzipjbinding.IOutFeatureSetEncryptHeader;
 import net.sf.sevenzipjbinding.ISequentialOutStream;
 import net.sf.sevenzipjbinding.PropID;
 import net.sf.sevenzipjbinding.SevenZipException;
@@ -76,11 +77,18 @@ public class Csh7zUtils {
                 // 创建随机访问文件用于写入压缩数据
                 RandomAccessFile raf = new RandomAccessFile(outputFile, "rw");
                 // 创建7z压缩档案
-                IOutCreateArchive7z outArchive = SevenZip.openOutArchive7z();) {
+                IOutCreateArchive7z outArchive = SevenZip.openOutArchive7z()) {
 
             // 设置压缩级别
             outArchive.setLevel(compressionLevel);
 
+            // Check and enable header encryption
+            if (outArchive instanceof IOutFeatureSetEncryptHeader) {
+                ((IOutFeatureSetEncryptHeader) outArchive).setHeaderEncryption(true);
+                System.out.println("Header encryption enabled.支持Header encryption");
+            } else {
+                System.err.println("Warning: Header encryption is not supported by this archive format.");
+            }
             // 启用文件头加密，提供额外安全性
             outArchive.setHeaderEncryption(true);
             // todo 还是会被列出来
