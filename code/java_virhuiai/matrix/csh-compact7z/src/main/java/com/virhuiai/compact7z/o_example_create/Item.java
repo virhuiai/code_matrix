@@ -1,4 +1,4 @@
-package com.virhuiai.compact7z;
+package com.virhuiai.compact7z.o_example_create;
 
 public class Item {
     private String path;

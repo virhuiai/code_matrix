@@ -1,8 +1,11 @@
-package com.virhuiai.compact7z;
+package com.virhuiai.compact7z.o_example_create;
 
 import java.io.File;
 import java.util.Random;
 
+/**
+ * Some archive formats like GZip only support compression of a single file, while other archive formats allow multiple files and folders to be compressed. In order to demonstrate how those archives can be created, some test file and folder structure is required. The following snippets use a static structure defined by the CompressArchiveStructure class:
+ */
 public class CompressArchiveStructure {
     public static Item[] create() {
 
