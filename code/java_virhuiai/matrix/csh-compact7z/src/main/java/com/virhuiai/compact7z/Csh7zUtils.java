@@ -170,13 +170,14 @@ public class Csh7zUtils {
     public static void queringItemsInArchiveStand() {
         String input_7z =  CliUtils.s3GetOptionValue(Opt.INPUT_7z.getOptionName());
         String password = CliUtils.s3GetOptionValue(Opt.PASSWORD_VALUE.getOptionName(), "");
+        password = "123";//todo
 
         RandomAccessFile randomAccessFile = null;
         IInArchive inArchive = null;
         try {
             randomAccessFile = new RandomAccessFile(input_7z, "r");
             inArchive = SevenZip.openInArchive(null, // autodetect archive type
-                    new RandomAccessFileInStream(randomAccessFile));
+                    new RandomAccessFileInStream(randomAccessFile),password);
 
             System.out.println("   Size   | Compr.Sz. | Filename");
             System.out.println("----------+-----------+---------");
