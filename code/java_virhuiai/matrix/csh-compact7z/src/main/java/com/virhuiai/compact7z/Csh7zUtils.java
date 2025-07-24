@@ -62,7 +62,7 @@ public class Csh7zUtils {
      *                   - 7z库相关错误
      */
     public static void compress(File inputDir, File outputFile, String password, int compressionLevel) throws Exception {
-// 参数校验
+       // 参数校验
         if (inputDir == null || !inputDir.exists()) {
             throw new IllegalArgumentException("输入目录不能为空且必须存在");
         }

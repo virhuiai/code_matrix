@@ -151,7 +151,10 @@ public class App {
             File outputFile = new File(PathUtils.combinePath(outputPath , randomOutName) + ".7z"); // 输出的7z文件
 
 
-            Csh7zUtils.compress(inputDir, outputFile
+//            Csh7zUtils.compress(inputDir, outputFile
+//                    , password
+//                    , level);
+            Compress7z.Utils.compress7z(inputDir, outputFile
                     , password
                     , level);
 
