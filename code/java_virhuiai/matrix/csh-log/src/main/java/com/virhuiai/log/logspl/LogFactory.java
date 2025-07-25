@@ -1,8 +1,8 @@
-package com.virhuiai.log.log.logspl;
+package com.virhuiai.log.logspl;
 
-import com.virhuiai.log.log.LogFactoryI;
-import com.virhuiai.log.log.StackTraceUtil;
-import com.virhuiai.log.log.wrapper.ExtendedLogWrapper;
+import com.virhuiai.log.LogFactoryI;
+import com.virhuiai.log.StackTraceUtil;
+import com.virhuiai.log.wrapper.ExtendedLogWrapper;
 import org.apache.commons.logging.Log;
 
 // LogFactory 类是一个日志工厂，用于获取 Log 实例。

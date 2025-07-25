@@ -1,7 +1,7 @@
 package com.virhuiai.log.jcef109.jcef;
 
 
-import com.virhuiai.log.log.logext.LogFactory;
+import com.virhuiai.log.logext.LogFactory;
 import me.friwi.jcefmaven.CefBuildInfo;
 import me.friwi.jcefmaven.EnumPlatform;
 import me.friwi.jcefmaven.UnsupportedPlatformException;

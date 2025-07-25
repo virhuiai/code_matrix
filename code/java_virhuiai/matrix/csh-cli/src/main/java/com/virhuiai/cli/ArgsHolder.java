@@ -1,5 +1,5 @@
 package com.virhuiai.cli;
-import com.virhuiai.log.log.logext.LogFactory;
+import com.virhuiai.log.logext.LogFactory;
 import org.apache.commons.logging.Log;
 
 import java.util.Arrays;

@@ -7,7 +7,7 @@ import com.virhuiai.log.jcef109.ui.Tab;
 import com.virhuiai.log.jcef109.ui.TabButton;
 import com.virhuiai.log.jcef109.ui.TabFactory;
 import com.virhuiai.log.jcef109.ui.TabbedPane;
-import com.virhuiai.log.log.logext.LogFactory;
+import com.virhuiai.log.logext.LogFactory;
 import me.friwi.jcefmaven.CefInitializationException;
 import me.friwi.jcefmaven.EnumPlatform;
 import me.friwi.jcefmaven.MavenCefAppHandlerAdapter;

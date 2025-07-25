@@ -1,7 +1,7 @@
 package com.virhuiai.log.web_lite;
 
 import com.sun.net.httpserver.HttpExchange;
-import com.virhuiai.log.log.logext.LogFactory;
+import com.virhuiai.log.logext.LogFactory;
 import org.apache.commons.logging.Log;
 
 import java.io.IOException;

@@ -13,11 +13,13 @@ import net.sf.sevenzipjbinding.impl.RandomAccessFileOutStream;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+
+import com.virhuiai.log.logext.LogFactory;
+import org.apache.commons.logging.Log;
 
 interface ICompress7z extends IListFiles{
     // 内部类MyCreateCallback的主要功能：提供压缩档案项目的元信息及加密密码
@@ -133,12 +135,15 @@ interface ICompress7z extends IListFiles{
     }
 
     default void compress7z(File inputDir, File outputFile, String password, int compressionLevel){
+        Log LOGGER = LogFactory.getLog();
+
         // 参数校验
         // 功能：检查输入参数的有效性，确保输入目录、输出文件和密码不为空且符合要求
         // 执行流程：依次检查 inputDir、outputFile 和 password 是否为空或无效，若不满足条件则抛出异常
         if (null == inputDir || !inputDir.exists()) {
             // 检查输入目录是否为空或不存在
             // 注意事项：inputDir 必须为非空且实际存在的目录
+            LOGGER.error("输入目录不能为空且必须存在:" + inputDir.getAbsolutePath());
             throw new IllegalArgumentException("输入目录不能为空且必须存在");
         }
         // 检查输入目录是否具有读取权限
@@ -164,22 +169,22 @@ interface ICompress7z extends IListFiles{
             // 注意事项：password 必须为非空且不能是空字符串
             throw new IllegalArgumentException("加密密码不能为空");
         }
-        
+
         // 关键变量：标记压缩操作是否成功
         boolean success = false;
-        // 关键变量：随机访问文件对象
-        RandomAccessFile raf = null;
-        // 关键变量：7z档案创建对象
-        IOutCreateArchive7z outArchive = null;
-        // 中文注释：定义压缩操作的状态变量和资源对象
-        try {
-            // 初始化随机访问文件
-            raf = new RandomAccessFile(outputFile, "rw");
-            // 中文注释：以读写模式打开指定的输出档案文件
 
+        // 使用 try-with-resources 结构，自动管理 RandomAccessFile 和 IOutCreateArchive7z 的资源关闭
+        // 中文注释：定义压缩操作的状态变量和资源对象
+        try(// 初始化随机访问文件
+            // 关键变量：随机访问文件对象
+            RandomAccessFile raf = new RandomAccessFile(outputFile, "rw");// 中文注释：以读写模式打开指定的输出档案文件
+            // 关键变量：7z档案创建对象
             // Open out-archive object
             // 打开档案创建对象
-            outArchive = SevenZip.openOutArchive7z();
+            IOutCreateArchive7z outArchive = SevenZip.openOutArchive7z();
+        ) {
+
+
             // 中文注释：初始化7z档案创建对象
 
             // 设置压缩级别
@@ -218,29 +223,10 @@ interface ICompress7z extends IListFiles{
             System.err.println("Error occurs: " + e);
             // 中文注释：捕获其他异常并打印错误信息
         } finally {
-            // 清理资源
-            if (outArchive != null) {
-                try {
-                    outArchive.close();
-                    // 中文注释：关闭档案对象
-                } catch (IOException e) {
-                    System.err.println("Error closing archive: " + e);
-                    // 中文注释：捕获关闭档案时的IO异常
-                    success = false;
-                    // 中文注释：设置失败标志
-                }
-            }
-            if (raf != null) {
-                try {
-                    raf.close();
-                    // 中文注释：关闭随机访问文件
-                } catch (IOException e) {
-                    System.err.println("Error closing file: " + e);
-                    // 中文注释：捕获关闭文件时的IO异常
-                    success = false;
-                    // 中文注释：设置失败标志
-                }
-            }
+            // 中文注释：清理资源（try-with-resources 已自动处理）
+            // 注意事项：由于使用 try-with-resources，raf 和 outArchive 会自动关闭，无需手动清理
+            // 执行流程：finally 块确保在异常或正常完成时执行清理逻辑
+            // 特殊处理：仅保留 finally 块以确保代码结构完整，无需额外关闭操作
         }
         // 输出压缩结果
         if (success) {

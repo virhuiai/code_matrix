@@ -1,6 +1,6 @@
 package com.virhuiai.log;
 
-import com.virhuiai.log.log.logdpp.LogFactory;
+import com.virhuiai.log.logdpp.LogFactory;
 import org.apache.commons.logging.Log;
 import org.junit.Before;
 import org.junit.Test;
@@ -21,7 +21,7 @@ public class CshLogUtilsTestSpl {
 
     @Before
     public void setUp() {
-        log = com.virhuiai.log.log.logspl.LogFactory.getLog(CshLogUtilsTestSpl.class);
+        log = com.virhuiai.log.logspl.LogFactory.getLog(CshLogUtilsTestSpl.class);
     }
 
 //    @Test
@@ -36,13 +36,13 @@ public class CshLogUtilsTestSpl {
 
     @Test
     public void testCreateLogWithValidClass() {
-        Log log = com.virhuiai.log.log.logspl.LogFactory.getLog(String.class);
+        Log log = com.virhuiai.log.logspl.LogFactory.getLog(String.class);
         assertNotNull("使用有效类创建的日志对象不应为null", log);
     }
 
     @Test(expected = NullPointerException.class)
     public void testCreateLogWithNullClass() {
-        com.virhuiai.log.log.logspl.LogFactory.getLog((Class<?>) null);
+        com.virhuiai.log.logspl.LogFactory.getLog((Class<?>) null);
     }
 
     @Test
@@ -73,7 +73,7 @@ public class CshLogUtilsTestSpl {
 
     @Test
     public void testGetDefaultLog() {
-        Log log = com.virhuiai.log.log.logspl.LogFactory.getLog();
+        Log log = com.virhuiai.log.logspl.LogFactory.getLog();
         assertNotNull("默认日志对象不应为null", log);
     }
 

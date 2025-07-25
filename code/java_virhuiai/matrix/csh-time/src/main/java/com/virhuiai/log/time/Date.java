@@ -1,6 +1,6 @@
 package com.virhuiai.log.time;
 
-import com.virhuiai.log.log.logext.LogFactory;
+import com.virhuiai.log.logext.LogFactory;
 import org.apache.commons.logging.Log;
 
 public enum Date implements DateUtils{

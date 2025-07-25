@@ -1,4 +1,4 @@
-package com.virhuiai.log.log;
+package com.virhuiai.log;
 
 /**
  * 通用运行时异常类，用于封装带有错误码的运行时异常。

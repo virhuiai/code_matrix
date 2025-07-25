@@ -1,8 +1,8 @@
-package com.virhuiai.log.log.logext;
+package com.virhuiai.log.logext;
 
-import com.virhuiai.log.log.LogFactoryI;
-import com.virhuiai.log.log.StackTraceUtil;
-import com.virhuiai.log.log.wrapper.ExtendedLogWrapper;
+import com.virhuiai.log.LogFactoryI;
+import com.virhuiai.log.StackTraceUtil;
+import com.virhuiai.log.wrapper.ExtendedLogWrapper;
 import org.apache.commons.logging.Log;
 
 // LogFactory 类是一个日志工厂，用于获取 Log 实例。
@@ -89,7 +89,7 @@ public class LogFactory implements LogFactoryI {
                 , CLASS_NAME, LogFactory.class.getName());
         if(StackTraceUtil.UNKNOWN_CLASS.equals(rsCallerClassName)){
             // 返回未经代理包装的原始日志对象
-            return com.virhuiai.log.log.logspl.LogFactory.getDefaultLogWithWarning("无法确定调用者");
+            return com.virhuiai.log.logspl.LogFactory.getDefaultLogWithWarning("无法确定调用者");
         }
 
         try {
@@ -98,7 +98,7 @@ public class LogFactory implements LogFactoryI {
             return createLogExtended(callerClass);
         } catch (ClassNotFoundException e) {
             // 返回未经代理包装的原始日志对象
-            return com.virhuiai.log.log.logspl.LogFactory.getDefaultLogWithWarning(String.format("无法加载类: %s", rsCallerClassName), e);
+            return com.virhuiai.log.logspl.LogFactory.getDefaultLogWithWarning(String.format("无法加载类: %s", rsCallerClassName), e);
         }
     }
 

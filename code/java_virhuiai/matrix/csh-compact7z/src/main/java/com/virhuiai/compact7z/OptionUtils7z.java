@@ -1,7 +1,7 @@
 package com.virhuiai.compact7z;
 
 import com.virhuiai.cli.CliUtils;
-import com.virhuiai.log.log.logext.LogFactory;
+import com.virhuiai.log.logext.LogFactory;
 import org.apache.commons.logging.Log;
 import org.apache.commons.cli.Option;
 

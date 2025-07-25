@@ -1,6 +1,6 @@
-package com.virhuiai.log.log.wrapper;
+package com.virhuiai.log.wrapper;
 
-import com.virhuiai.log.log.StackTraceUtil;
+import com.virhuiai.log.StackTraceUtil;
 import org.apache.commons.logging.Log;
 
 import java.lang.reflect.InvocationHandler;

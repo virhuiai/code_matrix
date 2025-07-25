@@ -2,7 +2,7 @@ package com.virhuiai.log.web_lite.example;
 
 import com.sun.net.httpserver.HttpServer;
 import com.virhuiai.cli.CliUtils;
-import com.virhuiai.log.log.logext.LogFactory;
+import com.virhuiai.log.logext.LogFactory;
 import com.virhuiai.log.web_lite.CreateContextUtils;
 import com.virhuiai.log.web_lite.Opt;
 import com.virhuiai.log.web_lite.ServerUtils;

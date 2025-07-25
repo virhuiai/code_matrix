@@ -4,7 +4,7 @@ package com.virhuiai.file;
 // 导入所需的类
 
 import com.virhuiai.file.obj.SizeUnit;
-import com.virhuiai.log.log.logext.LogFactory;
+import com.virhuiai.log.logext.LogFactory;
 import org.apache.commons.logging.Log;
 
 import java.io.IOException;

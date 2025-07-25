@@ -1,6 +1,6 @@
-package com.virhuiai.log.log.example;
+package com.virhuiai.log.example;
 
-import com.virhuiai.log.log.logdpp.LogFactory;
+import com.virhuiai.log.logdpp.LogFactory;
 import org.apache.commons.logging.Log;
 
 public class CreateLogDynamicProxyTest {

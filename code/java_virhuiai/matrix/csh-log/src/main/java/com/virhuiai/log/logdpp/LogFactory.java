@@ -1,8 +1,8 @@
-package com.virhuiai.log.log.logdpp;
+package com.virhuiai.log.logdpp;
 
-import com.virhuiai.log.log.LogFactoryI;
-import com.virhuiai.log.log.StackTraceUtil;
-import com.virhuiai.log.log.wrapper.DynamicProxyLogWrapper;
+import com.virhuiai.log.LogFactoryI;
+import com.virhuiai.log.StackTraceUtil;
+import com.virhuiai.log.wrapper.DynamicProxyLogWrapper;
 import org.apache.commons.logging.Log;
 
 // LogFactory 类是一个日志工厂，用于获取 Log 实例。
@@ -107,7 +107,7 @@ public class LogFactory implements LogFactoryI {
         // 如果无法获取有效的调用者类名
         if (StackTraceUtil.UNKNOWN_CLASS.equals(rsCallerClassName)) {
             // 返回未经代理包装的原始日志对象
-            return com.virhuiai.log.log.logspl.LogFactory.getDefaultLogWithWarning("无法确定调用者");
+            return com.virhuiai.log.logspl.LogFactory.getDefaultLogWithWarning("无法确定调用者");
         }
 //        System.out.println("className....:" + rsCallerClassName);
         try {
@@ -116,7 +116,7 @@ public class LogFactory implements LogFactoryI {
             return createLogDynamicProxy(callerClass);
         } catch (ClassNotFoundException e) {
             // 返回未经代理包装的原始日志对象
-            return com.virhuiai.log.log.logspl.LogFactory.getDefaultLogWithWarning(String.format("无法加载类: %s", rsCallerClassName), e);
+            return com.virhuiai.log.logspl.LogFactory.getDefaultLogWithWarning(String.format("无法加载类: %s", rsCallerClassName), e);
         }
     }
 

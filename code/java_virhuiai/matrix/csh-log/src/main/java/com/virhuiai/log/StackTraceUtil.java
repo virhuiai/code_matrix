@@ -1,4 +1,4 @@
-package com.virhuiai.log.log;
+package com.virhuiai.log;
 
 /**
  * 调用栈信息工具类

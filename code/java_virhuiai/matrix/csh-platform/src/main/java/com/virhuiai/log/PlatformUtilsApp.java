@@ -1,6 +1,6 @@
 package com.virhuiai.log;
 
-import com.virhuiai.log.log.logext.LogFactory;
+import com.virhuiai.log.logext.LogFactory;
 import org.apache.commons.logging.Log;
 import com.virhuiai.log.platform.EnumPlatform;
 import com.virhuiai.log.platform.UnsupportedPlatformException;
