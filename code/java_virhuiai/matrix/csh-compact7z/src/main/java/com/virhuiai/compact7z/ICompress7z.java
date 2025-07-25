@@ -1,7 +1,5 @@
 package com.virhuiai.compact7z;
 
-import com.virhuiai.compact7z.o_example_create.CompressArchiveStructure;
-import com.virhuiai.compact7z.o_example_create.CompressWithPassword;
 import net.sf.sevenzipjbinding.ICryptoGetTextPassword;
 import net.sf.sevenzipjbinding.IOutCreateArchive7z;
 import net.sf.sevenzipjbinding.IOutCreateCallback;
@@ -12,20 +10,14 @@ import net.sf.sevenzipjbinding.SevenZipException;
 import net.sf.sevenzipjbinding.impl.OutItemFactory;
 import net.sf.sevenzipjbinding.impl.RandomAccessFileInStream;
 import net.sf.sevenzipjbinding.impl.RandomAccessFileOutStream;
-import net.sf.sevenzipjbinding.util.ByteArrayStream;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.filefilter.IOFileFilter;
-import org.apache.commons.io.filefilter.TrueFileFilter;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 
 interface ICompress7z extends IListFiles{
     // 内部类MyCreateCallback的主要功能：提供压缩档案项目的元信息及加密密码
@@ -40,26 +32,8 @@ interface ICompress7z extends IListFiles{
 
         public MyCreateCallback(Collection<File> files, HashMap<String,String> paramMap) {
             this.password = paramMap.get("password");
-            this.baseDir = new File(paramMap.get("baseDir"));// todo 变为绝对路径
-//            this.outputFile = new File(paramMap.get("outputFile"));// todo 变为绝对路径
-
-
-//            // 递归获取目录下所有文件和子目录
-////        Collection<File> files = FileUtils.listFilesAndDirs(
-////                new File("/Volumes/RamDisk"),
-////                MAC_SPECIFIC_FILE_FILTER, // 使用自定义文件过滤器
-////                MAC_SPECIFIC_FILE_FILTER  // 使用自定义目录过滤器
-////        );
-//
-//            Collection<File> files = FileUtils.listFiles(
-//                    new File("/Volumes/RamDisk"),
-//                    MAC_SPECIFIC_FILE_FILTER, // 使用自定义文件过滤器
-//                    MAC_SPECIFIC_FILE_FILTER  // 使用自定义目录过滤器
-//            );
+            this.baseDir = new File(paramMap.get("baseDir"));
             this.fileList = new ArrayList<>(files);
-//            this.fileList.remove(baseDir); // 从列表中移除根目录本身 //todo 放在一开始的filter
-            //todo 删除最终输出文件
-
         }
 
         // 方法功能：处理每次压缩操作的结果
@@ -157,19 +131,40 @@ interface ICompress7z extends IListFiles{
             // 中文注释：返回存储在类变量中的密码，用于档案加密
         }
     }
+
     default void compress7z(File inputDir, File outputFile, String password, int compressionLevel){
         // 参数校验
-        if (inputDir == null || !inputDir.exists()) {
+        // 功能：检查输入参数的有效性，确保输入目录、输出文件和密码不为空且符合要求
+        // 执行流程：依次检查 inputDir、outputFile 和 password 是否为空或无效，若不满足条件则抛出异常
+        if (null == inputDir || !inputDir.exists()) {
+            // 检查输入目录是否为空或不存在
+            // 注意事项：inputDir 必须为非空且实际存在的目录
             throw new IllegalArgumentException("输入目录不能为空且必须存在");
         }
-        if (outputFile == null) {
+        // 检查输入目录是否具有读取权限
+        if (!inputDir.canRead()) {
+            // 注意事项：输入目录必须具有读取权限以访问其内容
+            throw new IllegalArgumentException("输入目录不可读");
+        }
+
+        if (null == outputFile) {
+            // 检查输出文件是否为空
+            // 注意事项：outputFile 必须为非空
             throw new IllegalArgumentException("输出文件不能为空");
         }
-        if (password == null || password.trim().isEmpty()) {
-            throw new IllegalArgumentException("加密密码不能为空");
+        // 检查输出文件所在目录是否可写
+        if(!outputFile.getParentFile().exists() || !outputFile.getParentFile().canWrite()){
+            // 注意事项：输出文件的父目录必须存在且具有写入权限
+            // 执行流程：检查父目录是否存在，若存在则检查是否可写
+            throw new IllegalArgumentException("输出文件所在目录不存在或不可写");
         }
 
-
+        if (null == password || password.trim().isEmpty()) {
+            // 检查密码是否为空或仅包含空白字符
+            // 注意事项：password 必须为非空且不能是空字符串
+            throw new IllegalArgumentException("加密密码不能为空");
+        }
+        
         // 关键变量：标记压缩操作是否成功
         boolean success = false;
         // 关键变量：随机访问文件对象
@@ -205,12 +200,6 @@ interface ICompress7z extends IListFiles{
                     files.size(), new MyCreateCallback(files,new HashMap<String,String>() {{
                         putIfAbsent("password", password);
                         putIfAbsent("baseDir", inputDir.getAbsolutePath());
-//                        this.password = paramMap.get("password");
-//                        this.baseDir = new File(paramMap.get("baseDir"));// todo 变为绝对路径
-//                        this.outputFile = new File(paramMap.get("outputFile"));// todo
-//                        put("key1", "value1");
-//                        put("key2", "value2");
-//                        put("key3", "value3");
                     }}));
             // 中文注释：调用创建档案方法，传入输出流、项目数量和回调对象
 
