@@ -143,30 +143,34 @@ interface ICompress7z extends IListFiles{
         if (null == inputDir || !inputDir.exists()) {
             // 检查输入目录是否为空或不存在
             // 注意事项：inputDir 必须为非空且实际存在的目录
-            LOGGER.error("输入目录不能为空且必须存在:" + inputDir.getAbsolutePath());
+            LOGGER.error("输入目录不能为空且必须存在:" + inputDir);
             throw new IllegalArgumentException("输入目录不能为空且必须存在");
         }
         // 检查输入目录是否具有读取权限
         if (!inputDir.canRead()) {
             // 注意事项：输入目录必须具有读取权限以访问其内容
+            LOGGER.error("输入目录不可读:" + inputDir);
             throw new IllegalArgumentException("输入目录不可读");
         }
 
         if (null == outputFile) {
             // 检查输出文件是否为空
             // 注意事项：outputFile 必须为非空
+            LOGGER.error("输出文件不能为空");
             throw new IllegalArgumentException("输出文件不能为空");
         }
         // 检查输出文件所在目录是否可写
         if(!outputFile.getParentFile().exists() || !outputFile.getParentFile().canWrite()){
             // 注意事项：输出文件的父目录必须存在且具有写入权限
             // 执行流程：检查父目录是否存在，若存在则检查是否可写
+            LOGGER.error("输出文件所在目录不存在或不可写:" + outputFile.getParentFile());
             throw new IllegalArgumentException("输出文件所在目录不存在或不可写");
         }
 
         if (null == password || password.trim().isEmpty()) {
             // 检查密码是否为空或仅包含空白字符
             // 注意事项：password 必须为非空且不能是空字符串
+            LOGGER.error("加密密码不能为空");
             throw new IllegalArgumentException("加密密码不能为空");
         }
 
@@ -183,10 +187,7 @@ interface ICompress7z extends IListFiles{
             // 打开档案创建对象
             IOutCreateArchive7z outArchive = SevenZip.openOutArchive7z();
         ) {
-
-
             // 中文注释：初始化7z档案创建对象
-
             // 设置压缩级别
             outArchive.setLevel(compressionLevel);
 
@@ -213,15 +214,10 @@ interface ICompress7z extends IListFiles{
             // 中文注释：如果没有异常，设置成功标志
         } catch (SevenZipException e) {
             // 处理SevenZip异常
-            System.err.println("7z-Error occurs:");
-            // 中文注释：捕获SevenZip相关异常并打印错误信息
-            // Get more information using extended method
-            e.printStackTraceExtended();
-            // 中文注释：打印详细的SevenZip异常堆栈信息
+            LOGGER.error("SevenZip异常了",e);
         } catch (Exception e) {
             // 处理其他异常
-            System.err.println("Error occurs: " + e);
-            // 中文注释：捕获其他异常并打印错误信息
+            LOGGER.error("其他异常了",e);
         } finally {
             // 中文注释：清理资源（try-with-resources 已自动处理）
             // 注意事项：由于使用 try-with-resources，raf 和 outArchive 会自动关闭，无需手动清理
@@ -230,8 +226,8 @@ interface ICompress7z extends IListFiles{
         }
         // 输出压缩结果
         if (success) {
-            System.out.println("Compression operation succeeded");
-            // 中文注释：如果成功，打印压缩成功的消息
+            // 如果成功，打印压缩成功的消息
+            LOGGER.error("压缩成功");
         }
     }
 }

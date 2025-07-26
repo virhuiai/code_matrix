@@ -11,7 +11,7 @@ package com.virhuiai.log;
  * @author [Your Name]
  * @since 1.0
  */
-class CommonRuntimeException extends RuntimeException {
+public class CommonRuntimeException extends RuntimeException {
 
     /**
      * 错误码，用于标识具体的错误类型。

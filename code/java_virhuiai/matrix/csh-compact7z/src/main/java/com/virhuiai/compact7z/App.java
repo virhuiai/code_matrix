@@ -4,6 +4,7 @@ package com.virhuiai.compact7z;
 
 import com.virhuiai.cli.CliUtils;
 import com.virhuiai.file.PathUtils;
+import com.virhuiai.log.CommonRuntimeException;
 import com.virhuiai.log.logext.LogFactory;
 import com.virhuiai.log.md5.MD5FileNameUtils;
 import com.virhuiai.log.md5.RandomMD5Utils;
@@ -27,10 +28,35 @@ public class App {
      * 日志记录器
      * 用于记录程序运行过程中的各种信息
      */
-//    private static final Log LOGGER = LogFactory.getLog(App.class);
     private static final Log LOGGER = LogFactory.getLog(App.class);
 
+    /**
+     * 解析参数并返回模式
+     * @param args
+     * @return
+     */
+    public static String parseAndGetMode(String[] args) {
+        // 解析命令行参数
+        // 解析传入的命令行参数数组，初始化相关配置
+        CliUtils.s1InitArgs(args);
+        // 配置所有选项
+        // 遍历所有选项枚举，添加每个选项到配置中
+        for (Opt value : Opt.values()) {
+            CliUtils.s2AddOption(options -> options.addOption(value.getOption()));
+        }
 
+        // 获取模式选项的值
+        String mode = CliUtils.s3GetOptionValue(Opt.MODE.getOptionName());
+        // 检查模式是否为空
+        if (null == mode || mode.isEmpty()) {
+            // 记录日志，提示未指定模式
+            LOGGER.info("未指定模式！");
+            // 抛出运行时异常，提示未指定模式
+            throw new CommonRuntimeException("compact7z.App", "未指定模式");
+        }
+        // 返回解析得到的模式值
+        return mode;
+    }
     // 使用示例
 
     /**
@@ -42,38 +68,27 @@ public class App {
      * @param args
      */
     public static void main(String[] args) {
-        // 解析命令行参数
-        CliUtils.s1InitArgs(args);
-        // 配置所有选项
-        for (Opt value : Opt.values()) {
-            CliUtils.s2AddOption(options -> options.addOption(value.getOption()));
-        }
-
-        String mode = CliUtils.s3GetOptionValue(Opt.MODE.getOptionName());
-        if(null == mode){
-            LOGGER.info("未指定模式！");
-        }
-        if("genMd5".equalsIgnoreCase(mode)){
-            String inputStr =  CliUtils.s3GetOptionValue(Opt.INPUT_STR.getOptionName());
+        String mode = parseAndGetMode(args);//解析参数并返回模式
+        if ("genMd5".equalsIgnoreCase(mode)) {
+            String inputStr = CliUtils.s3GetOptionValue(Opt.INPUT_STR.getOptionName());
             String extracted = MD5FileNameUtils.extractMD5(inputStr);
             LOGGER.info("extracted:" + extracted);
             return;
         }
-        if("quering_items_in_archive".equalsIgnoreCase(mode)){
+        if ("quering_items_in_archive".equalsIgnoreCase(mode)) {
 //            Csh7zUtils.queringItemsInArchive();
             Csh7zUtils.queringItemsInArchiveStand();
             return;
         }
-        if("extract_items_simple".equalsIgnoreCase(mode)){
+        if ("extract_items_simple".equalsIgnoreCase(mode)) {
 //            Csh7zUtils.extractItemsSimple();
             Csh7zUtils.extractItemsStand();
             return;
         }
 
 
-
         String inDir = CliUtils.s3GetOptionValue(Opt.INPUT_DIR.getOptionName());
-        if(null == inDir || inDir.isEmpty()){
+        if (null == inDir || inDir.isEmpty()) {
 //            LOGGER.error("指定要压缩的源目录路径要填写");
             return;
         }
@@ -107,10 +122,10 @@ public class App {
         //   - PASSWORD_VALUE: 原始密码值（如果未配置则使用空字符串）
         //   - RANDOM_CHAR_B: 可能用于 混淆的随机字符B（如果未配置则使用空字符串）
         //   - RANDOM_CHAR_A: 可能用于 混淆的随机字符A（如果未配置则使用空字符串）
-        final String  RANDOM_CHAR_B = FileUtils7z.getRandomChars(randomOutName);
+        final String RANDOM_CHAR_B = FileUtils7z.getRandomChars(randomOutName);
         final String RANDOM_CHAR_A = FileUtils7z.getRandomChars(randomOutName);
         String password = FileUtils7z.wrapStr(
-                CliUtils.s3GetOptionValue(Opt.PASSWORD_VALUE.getOptionName(),""),
+                CliUtils.s3GetOptionValue(Opt.PASSWORD_VALUE.getOptionName(), ""),
                 RANDOM_CHAR_B,
                 RANDOM_CHAR_A
         );
@@ -118,11 +133,11 @@ public class App {
         // 从配置中获取密码前缀和后缀，如果未配置则使用空字符串
         // 最终密码格式为：前缀 + 处理后的密码 + 后缀
         password = CliUtils.s3GetOptionValue(Opt.PASSWORD_PREFIX.getOptionName())
-                +  password
+                + password
                 + CliUtils.s3GetOptionValue(Opt.PASSWORD_SUFFIX.getOptionName());
 
         String showPassword = CliUtils.s3GetOptionValue(Opt.PASSWORD_SHOW.getOptionName());
-        if("1".equalsIgnoreCase(showPassword)){
+        if ("1".equalsIgnoreCase(showPassword)) {
             LOGGER.info("PASSWORD_VALUE: " + CliUtils.s3GetOptionValue(Opt.PASSWORD_VALUE.getOptionName()));
             LOGGER.info("RANDOM_CHAR_B: " + RANDOM_CHAR_B);
             LOGGER.info("RANDOM_CHAR_A: " + RANDOM_CHAR_A);
@@ -144,11 +159,9 @@ public class App {
         }
 
 
-
-
         try {
             File inputDir = new File(inDir); // 要压缩的目录
-            File outputFile = new File(PathUtils.combinePath(outputPath , randomOutName) + ".7z"); // 输出的7z文件
+            File outputFile = new File(PathUtils.combinePath(outputPath, randomOutName) + ".7z"); // 输出的7z文件
 
 
 //            Csh7zUtils.compress(inputDir, outputFile
@@ -161,7 +174,7 @@ public class App {
             LOGGER.info("压缩完成！");
 
         } catch (Exception e) {
-            LOGGER.error("压缩失败：" + e.getMessage(),e);
+            LOGGER.error("压缩失败：" + e.getMessage(), e);
         }
     }
 }
