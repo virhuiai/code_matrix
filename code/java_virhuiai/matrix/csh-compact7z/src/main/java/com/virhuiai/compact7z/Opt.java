@@ -51,6 +51,11 @@ public enum Opt {
             .desc("设置输入的7z文件")
             .hasArg()
             .argName("输入目录")),
+
+    INPUT_FILE("compact7z.input_file", Option.builder()
+            .desc("设置输入的文件")
+            .hasArg()
+            .argName("输入文件")),
     OUTPUT_FILE_PATH("compact7z.output_file_path", Option.builder()
             .desc("设置输出文件路径")
             .hasArg()

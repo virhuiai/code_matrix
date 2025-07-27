@@ -1,14 +1,18 @@
 package com.virhuiai.log.md5;
 
+import com.virhuiai.log.logext.LogFactory;
+import org.apache.commons.logging.Log;
+
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 public class MD5Utils {
+    private static final Log LOGGER = LogFactory.getLog(MD5Utils.class);
 
     /**
      * MD5Utils.getMD5
@@ -66,12 +70,12 @@ public class MD5Utils {
      * @param file 输入文件
      * @return MD5字符串(32位小写)
      */
-    public static String getMD5(File file) throws IOException {
+    public static String getMD5(File file) {
         if (file == null || !file.exists()) {
             return null;
         }
 
-        try (InputStream is = new FileInputStream(file)) {
+        try (InputStream is = Files.newInputStream(file.toPath())) {
             MessageDigest md = MessageDigest.getInstance("MD5");
             byte[] buffer = new byte[8192];
             int length;
@@ -80,7 +84,11 @@ public class MD5Utils {
             }
             return bytesToHex(md.digest());
         } catch (NoSuchAlgorithmException e) {
+            LOGGER.error("MD5算法不可用");
             throw new RuntimeException("MD5算法不可用", e);
+        } catch (IOException e) {
+            LOGGER.error("生成MD5失败",e);
+            throw new RuntimeException("生成MD5失败", e);
         }
     }
 

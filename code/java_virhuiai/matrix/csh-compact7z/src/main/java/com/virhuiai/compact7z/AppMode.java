@@ -6,6 +6,7 @@ import com.virhuiai.log.md5.MD5FileNameUtils;
 import com.virhuiai.log.md5.MD5Utils;
 import org.apache.commons.logging.Log;
 
+import java.io.File;
 import java.util.HashMap;
 
 public enum AppMode {
@@ -15,13 +16,24 @@ public enum AppMode {
      * --compact7z.mode=input_str.gen_md5, --compact7z.input_str=123
      * md5:202cb962ac59075b964b07152d234b70
      */
-    GEN_MD5("input_str.gen_md5") {
+    STR_GEN_MD5("input_str.gen_md5") {
         @Override
         void execute() {//--compact7z.mode=input_str.extract_md5 --compact7z.input_str=123
             // 获取输入字符串参数
             String inputStr = CliUtils.s3GetOptionValue(Opt.INPUT_STR.getOptionName());
             // 提取 MD5 值
             String md5 = MD5Utils.getMD5(inputStr);
+            LOGGER.info("md5:" + md5);
+        }
+    },
+    // --compact7z.mode=input_file.gen_md5 --compact7z.input_file=/Volumes/RamDisk/4b9a4a887e3b49ea2fc25e52b52fd823vTDqA.7z
+    FILE_GEN_MD5("input_file.gen_md5") {
+        @Override
+        void execute() {//--compact7z.mode=input_file.gen_md5 --compact7z.input_file=/Volumes/RamDisk/4b9a4a887e3b49ea2fc25e52b52fd823vTDqA.7z
+            // 获取输入字符串参数
+            String inputFile = CliUtils.s3GetOptionValue(Opt.INPUT_FILE.getOptionName());
+            // 提取 MD5 值
+            String md5 = MD5Utils.getMD5(new File(inputFile));
             LOGGER.info("md5:" + md5);
         }
     },
