@@ -53,6 +53,28 @@ public enum AppMode {
         }
     },
 
+    EXTRACT_ITEMS_SIMPLE_WITHPASS("input_file.extract_items_simple_withpass") {
+        @Override
+        void execute() {
+            //--compact7z.mode=input_file.extract_items_simple_withpass \
+            // --compact7z.input_file=/Volumes/RamDisk/4b9a4a887e3b49ea2fc25e52b52fd823vTDqA.7z \
+            // --compact7z.password_value=pre123456after
+            // --compact7z.output_file_path=/Volumes/RamDisk/abcd
+            // 获取输入字符串参数
+            String inputFile = CliUtils.s3GetOptionValue(Opt.INPUT_FILE.getOptionName());
+            String outputDir = CliUtils.s3GetOptionValue(Opt.OUTPUT_FILE_PATH.getOptionName());
+            String pass = CliUtils.s3GetOptionValue(Opt.PASSWORD_VALUE.getOptionName());
+            new IExtractItemsSimpleWithPass() {}
+                    .extractWithPass(new HashMap<String, String>() {{
+                        putIfAbsent("inputFile", inputFile);
+                        putIfAbsent("outputDir", outputDir);
+                        putIfAbsent("pass", pass);
+            }});
+        }
+    },
+
+
+
     QUERYING_ITEMS("quering_items_in_archive") {
         @Override
         void execute() {

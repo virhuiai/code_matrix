@@ -79,13 +79,6 @@ public class App {
         }
 
 
-
-//        if ("genMd5".equalsIgnoreCase(mode)) {
-//            String inputStr = CliUtils.s3GetOptionValue(Opt.INPUT_STR.getOptionName());
-//            String extracted = MD5FileNameUtils.extractMD5(inputStr);
-//            LOGGER.info("extracted:" + extracted);
-//            return;
-//        }
         if ("quering_items_in_archive".equalsIgnoreCase(mode)) {
 //            Csh7zUtils.queringItemsInArchive();
             Csh7zUtils.queringItemsInArchiveStand();

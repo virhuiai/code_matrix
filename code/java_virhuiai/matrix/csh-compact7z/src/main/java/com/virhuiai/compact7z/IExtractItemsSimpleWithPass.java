@@ -1,58 +1,64 @@
-package com.virhuiai.compact7z.o_example_extraction;
+package com.virhuiai.compact7z;
 
-import java.io.IOException;
-import java.io.RandomAccessFile;
-import java.util.Arrays;
-import java.util.Scanner;
-
+import com.virhuiai.log.CommonRuntimeException;
 import com.virhuiai.log.logext.LogFactory;
-import net.sf.sevenzipjbinding.ExtractOperationResult;
-import net.sf.sevenzipjbinding.IInArchive;
-import net.sf.sevenzipjbinding.ISequentialOutStream;
-import net.sf.sevenzipjbinding.SevenZip;
-import net.sf.sevenzipjbinding.SevenZipException;
+import net.sf.sevenzipjbinding.*;
 import net.sf.sevenzipjbinding.impl.RandomAccessFileInStream;
 import net.sf.sevenzipjbinding.simple.ISimpleInArchive;
 import net.sf.sevenzipjbinding.simple.ISimpleInArchiveItem;
 import org.apache.commons.logging.Log;
 
-/**
- * Extracting of a single file
- * This section will show how to access the compressed data of the archive items. The following examples will calculate a simple checksum of each archive item.
- *
- * Simple interface
- * This example shows how to get content of the items of the archive using simple interface. In order to consume extracted content the simple checksum will be calculated.
- */
-// 类功能说明：ExtractItemsSimple 类用于解压压缩文件并计算每个文件项的简单校验和
-// 目的：展示如何使用 SevenZipJBinding 库的简单接口访问压缩文件内容并计算校验和
-public class ExtractItemsSimple {
-    private static final Log LOGGER = LogFactory.getLog();
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.RandomAccessFile;
+import java.util.Arrays;
+import java.util.HashMap;
 
-    public static void main(String[] args) {
-        // 方法功能说明：程序入口，处理命令行参数并执行解压及校验和计算
-        // 参数说明：args 为命令行传入的参数，预期为压缩文件的路径
-//        if (args.length == 0) {
-//            System.out.println("Usage: java ExtractItemsSimple <archive-name>");
-//            // 中文注释：检查是否提供了压缩文件路径参数，若无则打印使用说明并退出程序
-//            return;
-//        }
+public interface IExtractItemsSimpleWithPass {
+
+    static final Log LOGGER = LogFactory.getLog();
+
+    // "/Volumes/RamDisk/4b9a4a887e3b49ea2fc25e52b52fd823vTDqA.7z"
+    default void extractWithPass(HashMap<String, String> params){
+        if (params == null) {
+            LOGGER.error("参数为null");
+            throw new CommonRuntimeException("compact7z.IExtractItemsSimpleWithPass", "参数为null");
+        }
+
+        String inputFile = params.get("inputFile");
+        if(null == inputFile || inputFile.isEmpty()){
+            LOGGER.error("参数 inputFile 为null");
+            throw new CommonRuntimeException("compact7z.IExtractItemsSimpleWithPass", "参数 inputFile 为null");
+        }
+
+        String pass = params.get("pass");
+        if(null == pass || pass.isEmpty()){
+            LOGGER.error("参数 pass 为null");
+            throw new CommonRuntimeException("compact7z.IExtractItemsSimpleWithPass", "参数 pass 为null");
+        }
+
+        String outputDir = params.get("outputDir");
+        if(null == outputDir || outputDir.isEmpty()){
+            LOGGER.error("参数 outputFile 为null");
+            throw new CommonRuntimeException("compact7z.IExtractItemsSimpleWithPass", "参数 outputFile 为null");
+        }
 
 
-
-
-
-//        Scanner scanner = new Scanner(System.in);
-//        String password = null;
-        try(RandomAccessFile  randomAccessFile = new RandomAccessFile("/Volumes/RamDisk/4b9a4a887e3b49ea2fc25e52b52fd823vTDqA.7z", "r");
+        try(RandomAccessFile randomAccessFile = new RandomAccessFile(inputFile, "r");
 
             // 中文注释：创建 RandomAccessFile 对象以只读模式打开指定的压缩文件
 
             // 变量说明：randomAccessFile 用于以随机访问方式读取压缩文件
             // 变量说明：inArchive 表示 SevenZip 库的压缩文件对象，用于操作压缩文件
             IInArchive inArchive = SevenZip.openInArchive(null, // autodetect archive type
-                    new RandomAccessFileInStream(randomAccessFile));
+                    new RandomAccessFileInStream(randomAccessFile), pass);
         ) {
-
+            // 确保输出目录存在
+            File outputDirFile = new File(outputDir);
+            if (!outputDirFile.exists()) {
+                outputDirFile.mkdirs(); // 创建目录（包括父目录）
+            }
 
             // 中文注释：通过 SevenZip 库打开压缩文件，自动检测压缩格式，使用 RandomAccessFileInStream 提供文件输入流
 
@@ -70,6 +76,13 @@ public class ExtractItemsSimple {
                 final int[] hash = new int[] { 0 };
                 // 变量说明：hash 数组用于存储文件内容的校验和，初始化为 0
                 if (!item.isFolder()) {
+                    // 构造输出文件路径
+                    File outputFile = new File(outputDir, item.getPath());
+                    File parentDir = outputFile.getParentFile();
+                    if (parentDir != null && !parentDir.exists()) {
+                        parentDir.mkdirs(); // 创建文件的父目录
+                    }
+
                     // 中文注释：检查文件项是否为文件夹，仅处理非文件夹项
                     ExtractOperationResult result;
                     // 变量说明：result 用于存储解压操作的结果状态
@@ -86,6 +99,15 @@ public class ExtractItemsSimple {
                             hash[0] ^= Arrays.hashCode(data); // Consume data
                             // 中文注释：使用 Arrays.hashCode 计算数据的校验和并与当前 hash 值进行异或运算
                             sizeArray[0] += data.length;
+
+                            // 将数据写入到指定文件
+                            try (FileOutputStream fos = new FileOutputStream(outputFile, true)) {
+                                fos.write(data);
+                            } catch (IOException e) {
+                                LOGGER.error("写入文件失败:" + outputFile.getAbsoluteFile());
+                                throw new CommonRuntimeException("compact7z.IExtractItemsSimpleWithPass", "写入文件失败: " + outputFile.getAbsoluteFile());
+                            }
+
                             // 中文注释：累加数据长度，记录文件总大小
                             return data.length; // Return amount of consumed data
                             // 中文注释：返回已处理的数据长度，通知 SevenZip 库处理完成
