@@ -3,11 +3,28 @@ package com.virhuiai.compact7z;
 import com.virhuiai.cli.CliUtils;
 import com.virhuiai.log.logext.LogFactory;
 import com.virhuiai.log.md5.MD5FileNameUtils;
+import com.virhuiai.log.md5.MD5Utils;
 import org.apache.commons.logging.Log;
 
 import java.util.HashMap;
 
 public enum AppMode {
+
+
+    /**
+     * --compact7z.mode=input_str.gen_md5, --compact7z.input_str=123
+     * md5:202cb962ac59075b964b07152d234b70
+     */
+    GEN_MD5("input_str.gen_md5") {
+        @Override
+        void execute() {//--compact7z.mode=input_str.extract_md5 --compact7z.input_str=123
+            // 获取输入字符串参数
+            String inputStr = CliUtils.s3GetOptionValue(Opt.INPUT_STR.getOptionName());
+            // 提取 MD5 值
+            String md5 = MD5Utils.getMD5(inputStr);
+            LOGGER.info("md5:" + md5);
+        }
+    },
 
     EXTRACT_MD5("input_str.extract_md5") {
         @Override

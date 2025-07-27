@@ -11,6 +11,7 @@ import java.security.NoSuchAlgorithmException;
 public class MD5Utils {
 
     /**
+     * MD5Utils.getMD5
      * 生成字符串的MD5值
      * @param input 输入字符串
      * @return MD5字符串(32位小写)
