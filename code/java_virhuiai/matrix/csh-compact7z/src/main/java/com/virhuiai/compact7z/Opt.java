@@ -6,7 +6,7 @@ public enum Opt {
 
     MODE("compact7z.mode", Option.builder()
             .desc("指定操作模式：" +
-                    "genMd5=去除非MD5字符" +
+                    "input_str.extract_md5=去除非MD5字符" +
                     "，compress=压缩文件" +
                     ",quering_items_in_archive=列出文档" +
                     ",extract_items_simple=解压"+

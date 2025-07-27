@@ -63,18 +63,27 @@ public class App {
      * --compact7z.mode=compress --compact7z.input_dir=/Volumes/RamDisk/abc --compact7z.output_file_path=/Volumes/RamDisk --compact7z.extra_enabled=1 --compact7z.extra_count=5 --compact7z.password_value=123456 --compact7z.password_prefix=pre --compact7z.password_suffix=after --compact7z.password_show=1 --compact7z.compression_level=3
      * --compact7z.mode=quering_items_in_archive --compact7z.input_7z=/Volumes/RamDisk/out.7z --compact7z.password_value=pre[062eejW56a8f7fd8dcz4@5b5902b]123456[09b55855j]after
      * --compact7z.mode=extract_items_simple --compact7z.input_7z=/Volumes/RamDisk/fc88d885b2269af7f05eebdW045655e5Zzj@1.7z --compact7z.password_value=pre[062eejW56a8f7fd8dcz4@5b5902b]123456[09b55855j]after
-     * --compact7z.mode=compress=genMd5 --compact7z.input_str=123
+     * --compact7z.mode=input_str.extract_md5 --compact7z.input_str=123
      *
      * @param args
      */
     public static void main(String[] args) {
         String mode = parseAndGetMode(args);//解析参数并返回模式
-        if ("genMd5".equalsIgnoreCase(mode)) {
-            String inputStr = CliUtils.s3GetOptionValue(Opt.INPUT_STR.getOptionName());
-            String extracted = MD5FileNameUtils.extractMD5(inputStr);
-            LOGGER.info("extracted:" + extracted);
+        AppMode action = AppMode.fromString(mode);
+        if(null != action){
+            // 执行对应的模式逻辑
+            action.execute();
             return;
         }
+
+
+
+//        if ("genMd5".equalsIgnoreCase(mode)) {
+//            String inputStr = CliUtils.s3GetOptionValue(Opt.INPUT_STR.getOptionName());
+//            String extracted = MD5FileNameUtils.extractMD5(inputStr);
+//            LOGGER.info("extracted:" + extracted);
+//            return;
+//        }
         if ("quering_items_in_archive".equalsIgnoreCase(mode)) {
 //            Csh7zUtils.queringItemsInArchive();
             Csh7zUtils.queringItemsInArchiveStand();
