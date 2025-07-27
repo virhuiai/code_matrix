@@ -5,6 +5,8 @@ import com.virhuiai.log.logext.LogFactory;
 import com.virhuiai.log.md5.MD5FileNameUtils;
 import org.apache.commons.logging.Log;
 
+import java.util.HashMap;
+
 public enum AppMode {
 
     EXTRACT_MD5("input_str.extract_md5") {
@@ -13,7 +15,10 @@ public enum AppMode {
             // 获取输入字符串参数
             String inputStr = CliUtils.s3GetOptionValue(Opt.INPUT_STR.getOptionName());
             // 提取 MD5 值
-            String extracted = MD5FileNameUtils.extractMD5(inputStr);
+            String extracted = MD5FileNameUtils.extractMD5(inputStr,new HashMap<String,String>(){{
+//                put("needCheckMd5", "yes");
+                put("needCheckMd5", "no");
+            }});
             // 记录提取结果
             LOGGER.info("extracted:" + extracted);
         }

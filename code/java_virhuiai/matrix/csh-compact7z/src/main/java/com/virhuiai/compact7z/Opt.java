@@ -16,7 +16,7 @@ public enum Opt {
             .hasArg()
             .argName("操作模式")),
     INPUT_STR("compact7z.input_str", Option.builder()
-            .desc("要去除非MD5字符的字符串")
+            .desc("输入字符串")
             .hasArg()
             .argName("输入字符串")),
     COMPRESSION_LEVEL("compact7z.compression_level", Option.builder()

@@ -1,10 +1,6 @@
 package com.virhuiai.log.md5;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Random;
-import java.util.Set;
+import java.util.*;
 
 /**
  * 在文件名中混入额外的可识别字符，同时保证能够准确地提取出原始MD5值。
@@ -87,8 +83,36 @@ public class MD5FileNameUtils {
      * @return 原始MD5字符串
      */
     public static String extractMD5(String mixed) {
+        return extractMD5(mixed, new HashMap<String, String>(){
+            {
+                putIfAbsent("needCheckMd5", "0");
+            }
+        });
+    }
+
+    /**
+     * 从混合字符串中提取原始MD5值
+     * @param mixed
+     * @param params
+     * @return
+     */
+    public static String extractMD5(String mixed, HashMap<String, String> params) {
         if (mixed == null) {
             return null;
+        }
+
+        boolean needCheckMd5 = false;
+        if(null != params){
+            if(new HashSet<String>(){
+                {
+                    add("needCheckMd5");
+                    add("yes");
+                    add("true");
+                    add("1");
+                }
+            }.contains(params.get("needCheckMd5"))){
+                needCheckMd5 = true;
+            }
         }
 
         // 创建MD5字符集的HashSet，用于快速查找
@@ -107,7 +131,11 @@ public class MD5FileNameUtils {
 
         // 验证提取结果
         String result = sb.toString();
-        return isMD5String(result) ? result : null;
+        if(needCheckMd5){
+            return isMD5String(result) ? result : null;
+        }else {
+            return result;
+        }
     }
 
     /**
