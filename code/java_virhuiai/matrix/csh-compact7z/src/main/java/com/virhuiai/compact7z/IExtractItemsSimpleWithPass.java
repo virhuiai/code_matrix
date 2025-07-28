@@ -101,12 +101,12 @@ public interface IExtractItemsSimpleWithPass {
                             sizeArray[0] += data.length;
 
                             // 将数据写入到指定文件
-                            try (FileOutputStream fos = new FileOutputStream(outputFile, true)) {
-                                fos.write(data);
-                            } catch (IOException e) {
-                                LOGGER.error("写入文件失败:" + outputFile.getAbsoluteFile());
-                                throw new CommonRuntimeException("compact7z.IExtractItemsSimpleWithPass", "写入文件失败: " + outputFile.getAbsoluteFile());
-                            }
+//                            try (FileOutputStream fos = new FileOutputStream(outputFile, true)) {
+//                                fos.write(data);
+//                            } catch (IOException e) {
+//                                LOGGER.error("写入文件失败:" + outputFile.getAbsoluteFile());
+//                                throw new CommonRuntimeException("compact7z.IExtractItemsSimpleWithPass", "写入文件失败: " + outputFile.getAbsoluteFile());
+//                            }
 
                             // 中文注释：累加数据长度，记录文件总大小
                             return data.length; // Return amount of consumed data

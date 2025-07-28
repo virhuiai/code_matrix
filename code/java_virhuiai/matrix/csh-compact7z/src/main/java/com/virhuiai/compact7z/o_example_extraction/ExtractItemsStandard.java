@@ -1,5 +1,7 @@
 package com.virhuiai.compact7z.o_example_extraction;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.ArrayList;
@@ -19,11 +21,13 @@ import net.sf.sevenzipjbinding.impl.RandomAccessFileInStream;
 // 使用标准接口和预先准备的解压项列表来解压压缩文件
 /**
  * Extracting archive using standard interface and prepared list of items to extract
+ * zip可以
  */
 // 提供从压缩文件中解压指定项的功能，支持标准接口
 public class ExtractItemsStandard {
     // 自定义解压回调类，用于处理解压过程中的数据流和结果
     public static class MyExtractCallback implements IArchiveExtractCallback {
+        private final String outputDir;
         private int hash = 0;
         // 用于存储当前解压文件的哈希值
         private int size = 0;
@@ -34,9 +38,16 @@ public class ExtractItemsStandard {
         // 压缩文件对象，用于获取文件属性
 
         // 构造函数，初始化压缩文件对象
-        public MyExtractCallback(IInArchive inArchive) {
+        public MyExtractCallback(IInArchive inArchive, String outputDir) {
             this.inArchive = inArchive;
             // 将传入的压缩文件对象赋值给类成员变量
+
+            this.outputDir = outputDir;
+            // 确保输出目录存在
+            File outputDirFile = new File(outputDir);
+            if (!outputDirFile.exists()) {
+                outputDirFile.mkdirs(); // 创建目录（包括父目录）
+            }
         }
 
         // 获取解压数据流的方法
@@ -52,6 +63,14 @@ public class ExtractItemsStandard {
                 // 如果不是提取模式，返回空
                 return null;
             }
+
+            // 构造输出文件路径
+            File outputFile = new File(outputDir, String.valueOf(inArchive.getProperty(index, PropID.PATH)));
+            File parentDir = outputFile.getParentFile();
+            if (parentDir != null && !parentDir.exists()) {
+                parentDir.mkdirs(); // 创建文件的父目录
+            }
+
             return new ISequentialOutStream() {
                 // 创建匿名内部类实现数据流写入
 
@@ -63,6 +82,17 @@ public class ExtractItemsStandard {
                     hash ^= Arrays.hashCode(data);
                     // 更新哈希值，基于数据块的哈希值进行异或运算
                     size += data.length;
+
+                    // 将数据写入到指定文件
+                            try (FileOutputStream fos = new FileOutputStream(outputFile, true)) {
+                                fos.write(data);
+                            } catch (IOException e) {
+                                System.out.printf("写入文件失败:" + e);
+//                                LOGGER.error("写入文件失败:" + outputFile.getAbsoluteFile());
+//                                throw new CommonRuntimeException("compact7z.IExtractItemsSimpleWithPass", "写入文件失败: " + outputFile.getAbsoluteFile());
+                            }
+
+
                     // 累加当前数据块的长度
                     return data.length; // Return amount of proceed data
                     // 返回处理的数据长度
@@ -119,20 +149,20 @@ public class ExtractItemsStandard {
     public static void main(String[] args) {
         // 方法功能：程序入口，处理命令行参数并执行解压操作
         // 参数 args：命令行参数，包含压缩文件路径
-        if (args.length == 0) {
-            // 如果没有提供命令行参数
-            System.out.println("Usage: java ExtractItemsStandard <arch-name>");
-            // 输出使用说明
-            return;
-            // 退出程序
-        }
+//        if (args.length == 0) {
+//            // 如果没有提供命令行参数
+//            System.out.println("Usage: java ExtractItemsStandard <arch-name>");
+//            // 输出使用说明
+//            return;
+//            // 退出程序
+//        }
         RandomAccessFile randomAccessFile = null;
         // 随机访问文件对象，用于读取压缩文件
         IInArchive inArchive = null;
         // 压缩文件对象，用于操作压缩内容
         try {
             // 尝试打开并处理压缩文件
-            randomAccessFile = new RandomAccessFile(args[0], "r");
+            randomAccessFile = new RandomAccessFile("/Volumes/RamDisk/abc.zip", "r");
             // 打开指定的压缩文件为只读模式
             inArchive = SevenZip.openInArchive(null, // autodetect archive type
                     new RandomAccessFileInStream(randomAccessFile));
@@ -166,7 +196,7 @@ public class ExtractItemsStandard {
                 // 将列表中的索引转换为数组
             }
             inArchive.extract(items, false, // Non-test mode
-                    new MyExtractCallback(inArchive));
+                    new MyExtractCallback(inArchive, "/Volumes/RamDisk/abcOut"));
             // 执行解压操作，使用自定义回调处理解压过程
         } catch (Exception e) {
             // 捕获所有异常
