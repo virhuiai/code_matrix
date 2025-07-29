@@ -53,13 +53,15 @@ public class CharsetConverter {
 //            bytes = input.getBytes();
 //        } catch (java.io.UnsupportedEncodingException e) {
         } catch (Exception e) {
-            throw new UnsupportedCharsetException("无法将输入转换为字节: " + e.getMessage());
+            return input;
+//            throw new UnsupportedCharsetException("无法将输入转换为字节: " + e.getMessage());
         }
 
         // 检测字节的原始编码
         String detectedEncoding = detectEncoding(bytes);
         if (detectedEncoding == null) {
-            throw new UnsupportedCharsetException("无法检测输入字符串的编码");
+            return input;
+//            throw new UnsupportedCharsetException("无法检测输入字符串的编码");
         }
         if("null" != detectedEncoding){
             Charset originalCharset = Charset.forName(detectedEncoding);

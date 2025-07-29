@@ -155,8 +155,13 @@ public class ExtractItemsStandard {
                 // 输出解压错误信息
             } else {
                 // 如果解压成功
+                String succPath = (String) inArchive.getProperty(index, PropID.PATH);
+                succPath = CharsetConverter.convertToOriginal(succPath);
+//                System.out.println("解压成功:" + succPath);
+//                System.out.println("解压成功:" + CharsetConverter.convertToOriginal(succPath));
+
                 System.out.println(String.format("%9X | %10s | %s", hash, size,
-                                inArchive.getProperty(index, PropID.PATH))
+                                succPath)
 //                        CharsetConverter.convertToOriginal((String) inArchive.getProperty(index, PropID.PATH)))
                         );
                 // 打印文件的哈希值、大小和路径
