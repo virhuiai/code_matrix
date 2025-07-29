@@ -17,6 +17,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.HashMap;
 
@@ -64,6 +66,8 @@ public interface IExtractItemsSimple extends IConvertStringToOriginal{
             if (!outputDirFile.exists()) {
                 outputDirFile.mkdirs(); // 创建目录（包括父目录）
             }
+            // 创建 Path 对象
+            Path basePath = Paths.get(outputDir);
 
             // 中文注释：通过 SevenZip 库打开压缩文件，自动检测压缩格式，使用 RandomAccessFileInStream 提供文件输入流
 
@@ -82,10 +86,15 @@ public interface IExtractItemsSimple extends IConvertStringToOriginal{
                 // 变量说明：hash 数组用于存储文件内容的校验和，初始化为 0
                 if (!item.isFolder()) {
                     String succPath = item.getPath();
-                    succPath = CharsetConverter.convertToOriginal(succPath);
+                    succPath = convertStringToOriginal(succPath);
+
+                    // 使用 resolve 拼接路径
+                    Path fullPath = basePath.resolve(succPath);
+//                    fullPath.toAbsolutePath()
 
                     // 构造输出文件路径
-                    File outputFile = new File(outputDir, succPath);
+//                    File outputFile = new File(outputDir, succPath);
+                    File outputFile = new File(String.valueOf(fullPath.toAbsolutePath()));
                     File parentDir = outputFile.getParentFile();
                     if (parentDir != null && !parentDir.exists()) {
                         parentDir.mkdirs(); // 创建文件的父目录
