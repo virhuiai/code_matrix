@@ -1,13 +1,13 @@
 package com.virhuiai.compact7z.o_example_extraction;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.RandomAccessFile;
+import java.io.*;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import com.virhuiai.log.codec.CharsetConverter;
 import net.sf.sevenzipjbinding.ExtractAskMode;
 import net.sf.sevenzipjbinding.ExtractOperationResult;
 import net.sf.sevenzipjbinding.IArchiveExtractCallback;
@@ -64,8 +64,44 @@ public class ExtractItemsStandard {
                 return null;
             }
 
+//            String.valueOf(inArchive.getProperty(index, PropID.PATH));
+            // 获取路径并处理编码
+            String rawPath = String.valueOf(inArchive.getProperty(index, PropID.PATH));
+            String path;
+            try {
+                path = CharsetConverter.convertToOriginal(rawPath);
+//                rawPath.getBytes();
+//                String detectedEncoding = CharsetConverter.detectEncoding(rawPath.getBytes("ISO-8859-1"));// null
+//                if("null" != detectedEncoding){
+//                    Charset originalCharset = Charset.forName(detectedEncoding);
+//                    path = new String(rawPath.getBytes("ISO-8859-1"), originalCharset);
+//                }else{
+//                    path  = rawPath;
+//                }
+
+
+
+                // 假设 ZIP 文件使用 GBK 编码，重新解码
+//                path = CharsetConverter.convertToUtf8(rawPath);
+            } catch (Exception e) {
+//                throw new SevenZipException("路径解码失败: " + rawPath, e);
+                path = rawPath;
+            }
+
+//            try{
+//                System.out.println("rawPath:" + rawPath);
+//                System.out.println("path:" + path);
+//                String detectedEncoding = CharsetConverter.detectEncoding(rawPath.getBytes());// null
+//                System.out.println("encodeing:" + detectedEncoding);
+//                Charset originalCharset = Charset.forName(detectedEncoding);
+//                String decodedString = new String(rawPath.getBytes(), originalCharset);
+//                System.out.printf("decodedString:" + decodedString);
+//            }catch (Exception e){
+//                System.out.printf("ssss");
+//            }
+
             // 构造输出文件路径
-            File outputFile = new File(outputDir, String.valueOf(inArchive.getProperty(index, PropID.PATH)));
+            File outputFile = new File(outputDir, path);
             File parentDir = outputFile.getParentFile();
             if (parentDir != null && !parentDir.exists()) {
                 parentDir.mkdirs(); // 创建文件的父目录
@@ -120,7 +156,9 @@ public class ExtractItemsStandard {
             } else {
                 // 如果解压成功
                 System.out.println(String.format("%9X | %10s | %s", hash, size,
-                        inArchive.getProperty(index, PropID.PATH)));
+                                inArchive.getProperty(index, PropID.PATH))
+//                        CharsetConverter.convertToOriginal((String) inArchive.getProperty(index, PropID.PATH)))
+                        );
                 // 打印文件的哈希值、大小和路径
                 hash = 0;
                 // 重置哈希值
