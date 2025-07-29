@@ -1,8 +1,13 @@
 package com.virhuiai.compact7z;
 
 import com.virhuiai.log.CommonRuntimeException;
+import com.virhuiai.log.codec.CharsetConverter;
 import com.virhuiai.log.logext.LogFactory;
-import net.sf.sevenzipjbinding.*;
+import net.sf.sevenzipjbinding.ExtractOperationResult;
+import net.sf.sevenzipjbinding.IInArchive;
+import net.sf.sevenzipjbinding.ISequentialOutStream;
+import net.sf.sevenzipjbinding.SevenZip;
+import net.sf.sevenzipjbinding.SevenZipException;
 import net.sf.sevenzipjbinding.impl.RandomAccessFileInStream;
 import net.sf.sevenzipjbinding.simple.ISimpleInArchive;
 import net.sf.sevenzipjbinding.simple.ISimpleInArchiveItem;
@@ -15,7 +20,7 @@ import java.io.RandomAccessFile;
 import java.util.Arrays;
 import java.util.HashMap;
 
-public interface IExtractItemsSimple {
+public interface IExtractItemsSimple extends IConvertStringToOriginal{
 
     static final Log LOGGER = LogFactory.getLog();
 
@@ -76,8 +81,11 @@ public interface IExtractItemsSimple {
                 final int[] hash = new int[] { 0 };
                 // 变量说明：hash 数组用于存储文件内容的校验和，初始化为 0
                 if (!item.isFolder()) {
+                    String succPath = item.getPath();
+                    succPath = CharsetConverter.convertToOriginal(succPath);
+
                     // 构造输出文件路径
-                    File outputFile = new File(outputDir, item.getPath());
+                    File outputFile = new File(outputDir, succPath);
                     File parentDir = outputFile.getParentFile();
                     if (parentDir != null && !parentDir.exists()) {
                         parentDir.mkdirs(); // 创建文件的父目录
@@ -118,7 +126,7 @@ public interface IExtractItemsSimple {
                     if (result == ExtractOperationResult.OK) {
                         // 中文注释：检查解压操作是否成功
                         System.out.println(String.format("%9X | %10s | %s",
-                                hash[0], sizeArray[0], item.getPath()));
+                                hash[0], sizeArray[0], succPath));
                         // 中文注释：如果解压成功，打印文件校验和、大小和路径
                         // 格式说明：%9X 表示校验和以十六进制输出，%10s 表示文件大小，%s 表示文件路径
                     } else {
