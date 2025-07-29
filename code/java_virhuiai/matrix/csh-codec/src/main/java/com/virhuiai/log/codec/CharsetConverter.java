@@ -32,7 +32,7 @@ public class CharsetConverter {
      */
     public static byte[] convertToOriginal(byte[] bytes) throws UnsupportedCharsetException {
         String detectedEncoding = detectEncoding(bytes);
-        if("null" != detectedEncoding){
+        if(null != detectedEncoding){
             Charset originalCharset = Charset.forName(detectedEncoding);
             String decodedString = new String(bytes, originalCharset);
             return decodedString.getBytes(originalCharset);
@@ -62,13 +62,9 @@ public class CharsetConverter {
         if (detectedEncoding == null) {
             return input;
 //            throw new UnsupportedCharsetException("无法检测输入字符串的编码");
-        }
-        if("null" != detectedEncoding){
+        }else{
             Charset originalCharset = Charset.forName(detectedEncoding);
             return new String(bytes, originalCharset);
-        }else{
-            System.out.printf("hi");
-            return input;
         }
     }
 
