@@ -164,6 +164,64 @@ public class CharsetConverter {
         }
     }
 
+    /**
+     * Converts a byte array to a hexadecimal string.
+     *
+     * @param bytes The byte array to convert.
+     * @return A string representing the hexadecimal values of the bytes.
+     */
+    // 英文注释：将字节数组转换为十六进制字符串
+    // 英文注释：@param bytes 要转换的字节数组
+    // 英文注释：@return 表示字节十六进制值的字符串
+    // 中文注释：方法功能：将输入的字节数组转换为对应的十六进制字符串表示
+    // 中文注释：参数：
+    // 中文注释：  - bytes：输入的字节数组，包含需要转换的二进制数据
+    // 中文注释：返回值：字符串，表示字节数组的十六进制值（每个字节转换为两位大写十六进制字符）
+    // 中文注释：关键变量：
+    // 中文注释：  - hexString：StringBuilder 对象，用于构建十六进制字符串
+    // 中文注释：  - hex：临时字符串，存储单个字节的十六进制表示
+    // 中文注释：执行流程：
+    // 中文注释：  1. 创建 StringBuilder 对象用于高效构建字符串
+    // 中文注释：  2. 遍历字节数组，将每个字节转换为两位十六进制字符
+    // 中文注释：  3. 如果转换结果为单字符，补前导零
+    // 中文注释：  4. 将大写的十六进制字符追加到 StringBuilder
+    // 中文注释：  5. 返回最终的十六进制字符串
+    // 中文注释：特殊处理逻辑：
+    // 中文注释：  - 使用 0xFF & b 确保字节值无符号化，防止负字节导致错误
+    // 中文注释：  - 当十六进制值为单字符时，补前导零以保证每字节两位表示
+    // 中文注释：注意事项：
+    // 中文注释：  - 返回的十六进制字符串使用大写字母（如 "A" 而非 "a"）
+    // 中文注释：  - 方法适用于调试或日志记录字节数据
+    public static String bytesToHex(byte[] bytes) {
+        StringBuilder hexString = new StringBuilder();
+        // 创建 StringBuilder 对象，用于构建十六进制字符串
+        // 中文注释：hexString 用于高效拼接字节的十六进制表示，避免字符串连接的性能开销
+        for (byte b : bytes) {
+            // 遍历字节数组，处理每个字节
+            // 中文注释：b 表示当前处理的字节
+            // Convert each byte to a two-digit hexadecimal value
+            // 英文注释：将每个字节转换为两位十六进制值
+            // 中文注释：将字节转换为十六进制字符串表示
+            String hex = Integer.toHexString(0xFF & b);
+            // 将字节转换为十六进制字符串
+            // 中文注释：0xFF & b 将字节无符号化，转换为 0-255 的整数，再转换为十六进制
+            // 中文注释：hex 存储单个字节的十六进制表示（可能为 1 位或 2 位）
+            if (hex.length() == 1) {
+                // 检查十六进制字符串是否为单字符
+                // 中文注释：如果 hex 长度为 1（例如 "F"），需要补前导零
+                hexString.append('0'); // Pad with leading zero if necessary
+                // 补前导零
+                // 中文注释：添加 '0' 字符，确保每个字节的十六进制表示为两位
+            }
+            hexString.append(hex.toUpperCase());
+            // 将大写的十六进制字符串追加到 StringBuilder
+            // 中文注释：将 hex 转换为大写并追加到 hexString，确保输出格式统一（如 "FF" 而非 "ff"）
+        }
+        return hexString.toString();
+        // 返回最终的十六进制字符串
+        // 中文注释：将 StringBuilder 转换为字符串并返回，表示整个字节数组的十六进制值
+    }
+
     private static void printBytes(byte[] bytes) {
         // 方法声明：打印字节数组的十六进制表示
         // 中文注释：方法功能：将字节数组以十六进制格式打印，便于调试
