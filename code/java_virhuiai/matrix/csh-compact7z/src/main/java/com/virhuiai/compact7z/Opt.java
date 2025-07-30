@@ -6,12 +6,13 @@ public enum Opt {
 
     MODE("compact7z.mode", Option.builder()
             .desc("指定操作模式：" +
-                    "input_str.extract_md5=去除非MD5字符" +
-                    "，compress=压缩文件" +
-                    ",input_file.extract_items_simple_withpass=解压" +
-                    ",quering_items_in_archive=列出文档" +
-                    ",extract_items_simple=解压"+
-                    ",extract_items_stand=解压"
+                    "input_str.extract_md5=去除非MD5字符\n" +
+                    "，compress=压缩文件\n" +
+                    ",input_file.extract_items_simple=解压\n" +
+                    "    --compact7z.mode=input_file.extract_items_simple --compact7z.input_file=/Volumes/RamDisk/abc.zip --compact7z.output_file_path=/Volumes/RamDisk/abcd \n" +
+                    ",quering_items_in_archive=列出文档\n" +
+                    ",extract_items_simple=解压\n"+
+                    ",extract_items_stand=解压\n"
             )
 
             .hasArg()
