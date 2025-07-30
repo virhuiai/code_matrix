@@ -1,6 +1,6 @@
 package com.virhuiai.compact7z.o_example_extraction;
 
-import com.virhuiai.log.codec.CharsetConverter;
+import com.virhuiai.codec.CharsetConverter;
 import net.sf.sevenzipjbinding.*;
 import net.sf.sevenzipjbinding.impl.RandomAccessFileInStream;
 

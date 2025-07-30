@@ -76,7 +76,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>com.virhuiai.log.jcef109.BrowserApp</mainClass>
+                            <mainClass>com.virhuiai.jcef109.BrowserApp</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>

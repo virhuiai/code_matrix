@@ -1,7 +1,6 @@
 package com.virhuiai.compact7z;
 
 import com.virhuiai.log.CommonRuntimeException;
-import com.virhuiai.log.codec.CharsetConverter;
 import com.virhuiai.log.logext.LogFactory;
 import net.sf.sevenzipjbinding.ExtractOperationResult;
 import net.sf.sevenzipjbinding.IInArchive;

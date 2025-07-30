@@ -2,8 +2,8 @@ package com.virhuiai.compact7z;
 
 import com.virhuiai.cli.CliUtils;
 import com.virhuiai.log.logext.LogFactory;
-import com.virhuiai.log.md5.MD5FileNameUtils;
-import com.virhuiai.log.md5.MD5Utils;
+import com.virhuiai.md5.MD5FileNameUtils;
+import com.virhuiai.md5.MD5Utils;
 import org.apache.commons.logging.Log;
 
 import java.io.File;

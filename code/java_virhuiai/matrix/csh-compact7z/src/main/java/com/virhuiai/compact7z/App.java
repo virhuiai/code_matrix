@@ -6,8 +6,8 @@ import com.virhuiai.cli.CliUtils;
 import com.virhuiai.file.PathUtils;
 import com.virhuiai.log.CommonRuntimeException;
 import com.virhuiai.log.logext.LogFactory;
-import com.virhuiai.log.md5.MD5FileNameUtils;
-import com.virhuiai.log.md5.RandomMD5Utils;
+import com.virhuiai.md5.MD5FileNameUtils;
+import com.virhuiai.md5.RandomMD5Utils;
 import org.apache.commons.logging.Log;
 
 import java.io.File;

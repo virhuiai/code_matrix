@@ -1,6 +1,6 @@
 package com.virhuiai.compact7z;
 
-import com.virhuiai.log.codec.CharsetConverter;
+import com.virhuiai.codec.CharsetConverter;
 // 导入 CharsetConverter 类，用于处理字符编码转换
 // 中文注释：CharsetConverter 提供静态方法来检测和转换字符串或字节数组的编码
 
