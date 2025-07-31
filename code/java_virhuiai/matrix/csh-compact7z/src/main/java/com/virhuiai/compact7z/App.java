@@ -84,11 +84,6 @@ public class App {
             Csh7zUtils.queringItemsInArchiveStand();
             return;
         }
-        if ("extract_items_simple".equalsIgnoreCase(mode)) {
-//            Csh7zUtils.extractItemsSimple();
-            Csh7zUtils.extractItemsStand();
-            return;
-        }
 
 
         String inDir = CliUtils.s3GetOptionValue(Opt.INPUT_DIR.getOptionName());

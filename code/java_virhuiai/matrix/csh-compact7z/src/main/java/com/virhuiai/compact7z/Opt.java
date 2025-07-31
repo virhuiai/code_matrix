@@ -9,10 +9,10 @@ public enum Opt {
                     "input_str.extract_md5=去除非MD5字符\n" +
                     "，compress=压缩文件\n" +
                     ",input_file.extract_items_simple=解压\n" +
-                    "    --compact7z.mode=input_file.extract_items_simple --compact7z.input_file=/Volumes/RamDisk/abc.zip --compact7z.output_file_path=/Volumes/RamDisk/abcd \n" +
-                    ",quering_items_in_archive=列出文档\n" +
-                    ",extract_items_simple=解压\n"+
-                    ",extract_items_stand=解压\n"
+                    ",input_file.extract_items_standard=解压\n" +
+                    ",quering_items_in_archive=列出文档\n"
+
+
             )
 
             .hasArg()

@@ -71,6 +71,24 @@ public enum AppMode {
     },
 
 
+    EXTRACT_ITEMS_STANDARD("input_file.extract_items_standard") {
+        @Override
+        void execute() {
+            // --compact7z.mode=input_file.extract_items_simple --compact7z.input_file=/Volumes/RamDisk/abc.zip --compact7z.output_file_path=/Volumes/RamDisk/abcd
+            // 获取输入字符串参数
+            String inputFile = CliUtils.s3GetOptionValue(Opt.INPUT_FILE.getOptionName());
+            String outputDir = CliUtils.s3GetOptionValue(Opt.OUTPUT_FILE_PATH.getOptionName());
+            String pass = CliUtils.s3GetOptionValue(Opt.PASSWORD_VALUE.getOptionName());
+            new IExtractItemsStandard() {}
+                    .extractWithPass(new HashMap<String, String>() {{
+                        putIfAbsent("inputFile", inputFile);
+                        putIfAbsent("outputDir", outputDir);
+                        putIfAbsent("pass", pass);
+                    }});
+        }
+    },
+
+
 
     QUERYING_ITEMS("quering_items_in_archive") {
         @Override
@@ -78,14 +96,8 @@ public enum AppMode {
             // 查询压缩包中的项目（标准方式）
             Csh7zUtils.queringItemsInArchiveStand();
         }
-    },
-    EXTRACT_ITEMS("extract_items_simple") {
-        @Override
-        void execute() {
-            // 提取压缩包中的项目（标准方式）
-            Csh7zUtils.extractItemsStand();
-        }
-    };
+    }
+    ;
 
     /**
      * 日志记录器
