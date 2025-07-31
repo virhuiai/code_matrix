@@ -90,19 +90,27 @@ public interface Validation {
      * @return 如果字符串是有效的整数表示，返回 true；否则返回 false
      */
     default boolean isInteger(String str) {
+        // 调用工具类方法去除字符串前后空白字符
         String str2 = Str.Utils.trimText(str);
+        // 获取处理后字符串的长度
         int len = str2.length();
+        // 获取字符串第一个字符
         char c = str2.charAt(0);
+        // 如果第一个字符是正负号，则从第二个字符开始检查，否则从第一个字符开始检查
         int i = (c == '-' || c == '+') ? 1 : 0;
+        // 如果索引超出字符串长度，说明只有正负号没有数字，返回 false
         if (i >= len) {
             return false;
         }
+        // 循环检查剩余字符是否都是数字
         while (Character.isDigit(str2.charAt(i))) {
             i++;
-            if (i >= len) {
+            // 如果遍历完所有字符都为数字，返回 true
+            if (i >= len) {//todo  等于不可以吧？
                 return true;
             }
         }
+        // 存在非数字字符，返回 false
         return false;
     }
 
@@ -110,17 +118,23 @@ public interface Validation {
      * 判断字符串是否只包含数字字符。
      * 
      * @param str 要判断的字符串，可以为 null
-     * @return 如果字符串为 null、长度为 0 或包含非数字字符，返回 false；否则返回 true
+     * @return
+     * 如果字符串为 null、长度为 0 或包含非数字字符，返回 false；
+     * 否则返回 true
      */
     default boolean isNumeric(String str) {
+        // 如果字符串为 null 或长度为 0，直接返回 false
         if (str == null || str.length() == 0) {
             return false;
         }
+        // 遍历字符串中的每个字符
         for (int i = 0; i < str.length(); i++) {
+            // 如果存在非数字字符，返回 false
             if (!Character.isDigit(str.charAt(i))) {
                 return false;
             }
         }
+        // 所有字符都是数字，返回 true
         return true;
     }
 
@@ -131,20 +145,24 @@ public interface Validation {
      * @return 如果字符串为 null、长度为 0 或包含非字母字符，返回 false；否则返回 true
      */
     default boolean isAlpha(String str) {
+        // 如果字符串为 null 或长度为 0，直接返回 false
         if (str == null || str.length() == 0) {
             return false;
         }
+        // 遍历字符串中的每个字符
         for (int i = 0; i < str.length(); i++) {
+            // 如果存在非字母字符，返回 false
             if (!Character.isLetter(str.charAt(i))) {
                 return false;
             }
         }
+        // 所有字符都是字母，返回 true
         return true;
     }
 
     /**
      * 判断字符串是否只包含字母和数字字符。
-     * 
+     *
      * @param str 要判断的字符串，可以为 null
      * @return 如果字符串为 null、长度为 0 或包含非字母和数字的字符，返回 false；否则返回 true
      */
@@ -164,17 +182,23 @@ public interface Validation {
      * 判断字符串是否全部由小写字母组成。
      * 
      * @param str 要判断的字符串，可以为 null
-     * @return 如果字符串为 null、长度为 0 或包含非小写字母的字符，返回 false；否则返回 true
+     * @return
+     * 如果字符串为 null、长度为 0 或包含非小写字母的字符，返回 false；
+     * 否则返回 true
      */
     default boolean isLowerCase(String str) {
+        // 如果字符串为 null 或长度为 0，直接返回 false
         if (str == null || str.length() == 0) {
             return false;
         }
+        // 遍历字符串中的每个字符
         for (int i = 0; i < str.length(); i++) {
+            // 如果存在非小写字母字符，返回 false
             if (!Character.isLowerCase(str.charAt(i))) {
                 return false;
             }
         }
+        // 所有字符都是小写字母，返回 true
         return true;
     }
 
@@ -185,14 +209,18 @@ public interface Validation {
      * @return 如果字符串为 null、长度为 0 或包含非大写字母的字符，返回 false；否则返回 true
      */
     default boolean isUpperCase(String str) {
+        // 如果字符串为 null 或长度为 0，直接返回 false
         if (str == null || str.length() == 0) {
             return false;
         }
+        // 遍历字符串中的每个字符
         for (int i = 0; i < str.length(); i++) {
+            // 如果存在非大写字母字符，返回 false
             if (!Character.isUpperCase(str.charAt(i))) {
                 return false;
             }
         }
+        // 所有字符都是大写字母，返回 true
         return true;
     }
 
