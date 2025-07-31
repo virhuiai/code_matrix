@@ -1,5 +1,7 @@
 package com.virhuiai.codec;
 
+import com.virhuiai.log.logext.LogFactory;
+import org.apache.commons.logging.Log;
 import org.mozilla.universalchardet.UniversalDetector;
 // 导入 UniversalDetector 类，用于检测字节数组的字符编码
 import java.nio.charset.Charset;
@@ -10,6 +12,8 @@ import java.nio.charset.UnsupportedCharsetException;
 // 导入 UnsupportedCharsetException 类，用于处理不支持的字符编码异常
 
 public class CharsetConverter {
+    private static final Log LOGGER = LogFactory.getLog(CharsetConverter.class);
+
     // 类声明：定义 CharsetConverter 类，用于字符编码检测和转换
     // 中文注释：该类提供工具方法，用于检测字节数组的编码并将字符串或字节数组转换为目标编码，主要用于解决字符编码问题（如中文乱码）
 
@@ -48,11 +52,16 @@ public class CharsetConverter {
         detector.reset();
         // 重置检测器状态，以便下次使用
         // 中文注释：重置 detector 的内部状态，确保后续检测不受当前数据影响
+
+        if(null != encoding){
+            LOGGER.info("encoding:" + encoding);//todo
+        }
+
         return encoding;
     }
 
     // 定义备选编码列表，用于在编码检测失败时尝试
-    private static final String[] FALLBACK_ENCODINGS = {"UTF-8", "GBK", "GB2312"};
+    private static final String[] FALLBACK_ENCODINGS = {"GB2312", "UTF-8", "GBK"};
 
     /**
      * 尝试使用指定编码将字节数组转换为字符串
@@ -63,7 +72,10 @@ public class CharsetConverter {
      */
     private static String tryDecodeWithEncoding(byte[] bytes, String encoding) {
         try {
-            return new String(bytes, encoding);
+            LOGGER.info("tryDecodeWithEncoding:encoding:" + encoding + ",try");//todo
+            String rs = new String(bytes, encoding);
+            LOGGER.info("tryDecodeWithEncoding:encoding:" + encoding + ",ok,path:" + rs);//todo
+            return rs;
         } catch (Exception e) {
             return null;
         }
