@@ -29,11 +29,11 @@ public interface Validation {
      * 判断字符串是否包含有效文本。
      * 有效文本指非 null、长度不为 0 且包含非空白字符的字符串。
      * 
-     * @param str 要判断的字符串，可以为 null
-     * @return 如果字符串为 null、长度为 0 或全部由空白字符组成，返回 false；
+     * @param str 要判断的字符序列，可以为 null
+     * @return 如果字符序列为 null、长度为 0 或全部由空白字符组成，返回 false；
      *         否则返回 true
      */
-    default boolean hasText(String str) {
+    default boolean hasText(CharSequence str) {
         int strLen;
         if (str != null && (strLen = str.length()) != 0) {
             for (int i = 0; i < strLen; i++) {
@@ -106,7 +106,7 @@ public interface Validation {
         while (Character.isDigit(str2.charAt(i))) {
             i++;
             // 如果遍历完所有字符都为数字，返回 true
-            if (i >= len) {//todo  等于不可以吧？
+            if (i >= len) {
                 return true;
             }
         }
@@ -115,58 +115,49 @@ public interface Validation {
     }
 
     /**
-     * 判断字符串是否只包含数字字符。
+     * 判断字符序列是否只包含数字字符。
      * 
-     * @param str 要判断的字符串，可以为 null
-     * @return
-     * 如果字符串为 null、长度为 0 或包含非数字字符，返回 false；
-     * 否则返回 true
+     * @param str 要判断的字符序列，可以为 null
+     * @return 如果字符序列为 null、长度为 0 或包含非数字字符，返回 false；
+     *         否则返回 true
      */
-    default boolean isNumeric(String str) {
-        // 如果字符串为 null 或长度为 0，直接返回 false
+    default boolean isNumeric(CharSequence str) {
         if (str == null || str.length() == 0) {
             return false;
         }
-        // 遍历字符串中的每个字符
         for (int i = 0; i < str.length(); i++) {
-            // 如果存在非数字字符，返回 false
             if (!Character.isDigit(str.charAt(i))) {
                 return false;
             }
         }
-        // 所有字符都是数字，返回 true
         return true;
     }
 
     /**
-     * 判断字符串是否只包含字母字符。
+     * 判断字符序列是否只包含字母字符。
      * 
-     * @param str 要判断的字符串，可以为 null
-     * @return 如果字符串为 null、长度为 0 或包含非字母字符，返回 false；否则返回 true
+     * @param str 要判断的字符序列，可以为 null
+     * @return 如果字符序列为 null、长度为 0 或包含非字母字符，返回 false；否则返回 true
      */
-    default boolean isAlpha(String str) {
-        // 如果字符串为 null 或长度为 0，直接返回 false
+    default boolean isAlpha(CharSequence str) {
         if (str == null || str.length() == 0) {
             return false;
         }
-        // 遍历字符串中的每个字符
         for (int i = 0; i < str.length(); i++) {
-            // 如果存在非字母字符，返回 false
             if (!Character.isLetter(str.charAt(i))) {
                 return false;
             }
         }
-        // 所有字符都是字母，返回 true
         return true;
     }
 
     /**
-     * 判断字符串是否只包含字母和数字字符。
+     * 判断字符序列是否只包含字母和数字字符。
      *
-     * @param str 要判断的字符串，可以为 null
-     * @return 如果字符串为 null、长度为 0 或包含非字母和数字的字符，返回 false；否则返回 true
+     * @param str 要判断的字符序列，可以为 null
+     * @return 如果字符序列为 null、长度为 0 或包含非字母和数字的字符，返回 false；否则返回 true
      */
-    default boolean isAlphanumeric(String str) {
+    default boolean isAlphanumeric(CharSequence str) {
         if (str == null || str.length() == 0) {
             return false;
         }
@@ -179,93 +170,116 @@ public interface Validation {
     }
 
     /**
-     * 判断字符串是否全部由小写字母组成。
+     * 判断字符序列是否全部由小写字母组成。
      * 
-     * @param str 要判断的字符串，可以为 null
-     * @return
-     * 如果字符串为 null、长度为 0 或包含非小写字母的字符，返回 false；
-     * 否则返回 true
+     * @param str 要判断的字符序列，可以为 null
+     * @return 如果字符序列为 null、长度为 0 或包含非小写字母的字符，返回 false；
+     *         否则返回 true
      */
-    default boolean isLowerCase(String str) {
-        // 如果字符串为 null 或长度为 0，直接返回 false
+    default boolean isLowerCase(CharSequence str) {
         if (str == null || str.length() == 0) {
             return false;
         }
-        // 遍历字符串中的每个字符
         for (int i = 0; i < str.length(); i++) {
-            // 如果存在非小写字母字符，返回 false
             if (!Character.isLowerCase(str.charAt(i))) {
                 return false;
             }
         }
-        // 所有字符都是小写字母，返回 true
         return true;
     }
 
     /**
-     * 判断字符串是否全部由大写字母组成。
+     * 判断字符序列是否全部由大写字母组成。
      * 
-     * @param str 要判断的字符串，可以为 null
-     * @return 如果字符串为 null、长度为 0 或包含非大写字母的字符，返回 false；否则返回 true
+     * @param str 要判断的字符序列，可以为 null
+     * @return 如果字符序列为 null、长度为 0 或包含非大写字母的字符，返回 false；否则返回 true
      */
-    default boolean isUpperCase(String str) {
-        // 如果字符串为 null 或长度为 0，直接返回 false
+    default boolean isUpperCase(CharSequence str) {
         if (str == null || str.length() == 0) {
             return false;
         }
-        // 遍历字符串中的每个字符
         for (int i = 0; i < str.length(); i++) {
-            // 如果存在非大写字母字符，返回 false
             if (!Character.isUpperCase(str.charAt(i))) {
                 return false;
             }
         }
-        // 所有字符都是大写字母，返回 true
         return true;
     }
 
     /**
-     * 判断字符串是否以指定的前缀开头。
+     * 判断字符序列是否以指定的前缀开头。
      * 
-     * @param str 要判断的字符串，可以为 null
-     * @param prefix 要匹配的前缀字符串，可以为 null
-     * @return
-     * 如果任一参数为 null 或字符串不以指定前缀开头，返回 false；
-     * 否则返回 true
+     * @param str 要判断的字符序列，可以为 null
+     * @param prefix 要匹配的前缀字符序列，可以为 null
+     * @return 如果任一参数为 null 或字符序列不以指定前缀开头，返回 false；
+     *         否则返回 true
      */
-    default boolean startsWith(String str, String prefix) {
+    default boolean startsWith(CharSequence str, CharSequence prefix) {
         if (str == null || prefix == null) {
             return false;
         }
-        return str.startsWith(prefix);
+        for (int i = 0; i < prefix.length(); i++) {
+            if (i >= str.length() || str.charAt(i) != prefix.charAt(i)) {
+                return false;
+            }
+        }
+        // return str.startsWith(prefix);// String 参数时
+        return true;
     }
 
     /**
-     * 判断字符串是否以指定的后缀结尾。
+     * 判断字符序列是否以指定的后缀结尾。
      * 
-     * @param str 要判断的字符串，可以为 null
-     * @param suffix 要匹配的后缀字符串，可以为 null
-     * @return 如果任一参数为 null 或字符串不以指定后缀结尾，返回 false；否则返回 true
+     * @param str 要判断的字符序列，可以为 null
+     * @param suffix 要匹配的后缀字符序列，可以为 null
+     * @return 如果任一参数为 null 或字符序列不以指定后缀结尾，返回 false；
+     *         否则返回 true
      */
-    default boolean endsWith(String str, String suffix) {
+    default boolean endsWith(CharSequence str, CharSequence suffix) {
         if (str == null || suffix == null) {
             return false;
         }
-        return str.endsWith(suffix);
+        int strLen = str.length();
+        int suffixLen = suffix.length();
+        if (suffixLen > strLen) {
+            return false;
+        }
+        for (int i = 0; i < suffixLen; i++) {
+            if (str.charAt(strLen - suffixLen + i) != suffix.charAt(i)) {
+                return false;
+            }
+        }
+        return true;
+        // return str.endsWith(suffix); //参数为String时
     }
 
     /**
-     * 判断字符串是否包含指定的子串。
+     * 判断字符序列是否包含指定的子字符序列。
      * 
-     * @param str 要判断的字符串，可以为 null
-     * @param searchStr 要查找的子串，可以为 null
-     * @return 如果任一参数为 null 或字符串不包含指定子串，返回 false；否则返回 true
+     * @param str 要判断的字符序列，可以为 null
+     * @param searchStr 要查找的子字符序列，可以为 null
+     * @return 如果任一参数为 null 或字符序列不包含指定子字符序列，返回 false；
+     *         否则返回 true
      */
-    default boolean contains(String str, String searchStr) {
+    default boolean contains(CharSequence str, CharSequence searchStr) {
         if (str == null || searchStr == null) {
             return false;
         }
-        return str.contains(searchStr);
+        int strLen = str.length();
+        int searchLen = searchStr.length();
+        for (int i = 0; i <= strLen - searchLen; i++) {
+            int j;
+            for (j = 0; j < searchLen; j++) {
+                if (str.charAt(i + j) != searchStr.charAt(j)) {
+                    break;
+                }
+            }
+            if (j == searchLen) {
+                return true;
+            }
+        }
+        return false;
+        // return str.contains(searchStr); // 参数为String时
     }
 
     /**
