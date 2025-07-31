@@ -17,6 +17,7 @@ import net.sf.sevenzipjbinding.simple.ISimpleInArchiveItem;
 import org.apache.commons.logging.Log;
 
 /**
+ * done
  * Extracting of a single file
  * This section will show how to access the compressed data of the archive items. The following examples will calculate a simple checksum of each archive item.
  *
