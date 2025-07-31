@@ -49,17 +49,48 @@ public class CharsetConverter {
         // 重置检测器状态，以便下次使用
         // 中文注释：重置 detector 的内部状态，确保后续检测不受当前数据影响
         return encoding;
-        // 返回检测到的编码名称
-        // 中文注释：返回编码名称或 null，供调用者处理
     }
 
+    // 定义备选编码列表，用于在编码检测失败时尝试
+    private static final String[] FALLBACK_ENCODINGS = {"UTF-8", "GBK", "GB2312"};
 
-    // 中文注释：特殊处理：如果编码检测失败，返回原始字节数组，未进行转换
+    /**
+     * 尝试使用指定编码将字节数组转换为字符串
+     * 
+     * @param bytes 待转换的字节数组
+     * @param encoding 尝试使用的编码
+     * @return 转换后的字符串，如果转换失败则返回 null
+     */
+    private static String tryDecodeWithEncoding(byte[] bytes, String encoding) {
+        try {
+            return new String(bytes, encoding);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    /**
+     * 尝试将字节数组转换为原始编码的字符串
+     * 
+     * @param bytes 待转换的字节数组
+     * @return 转换后的字符串，如果所有尝试都失败则返回 null
+     */
+    private static String tryFallbackEncodings(byte[] bytes) {
+        for (String encoding : FALLBACK_ENCODINGS) {
+            String result = tryDecodeWithEncoding(bytes, encoding);
+            if (result != null) {
+                return result;
+            }
+        }
+        return null;
+    }
+
+    // 中文注释：特殊处理：如果编码检测失败，尝试使用备选编码进行转换
     public static byte[] convertToOriginal(byte[] bytes) throws UnsupportedCharsetException {
         String detectedEncoding = detectEncoding(bytes);
         // 调用 detectEncoding 方法检测字节数组的编码
         // 中文注释：detectedEncoding 存储检测到的编码名称，可能为 null
-        if(null != detectedEncoding){
+        if (null != detectedEncoding) {
             // 检查是否成功检测到编码
             // 中文注释：如果检测到有效编码，继续进行转换
             Charset originalCharset = Charset.forName(detectedEncoding);
@@ -71,9 +102,15 @@ public class CharsetConverter {
             return decodedString.getBytes(originalCharset);
             // 将字符串转换回原始编码的字节数组
             // 中文注释：返回原始编码的字节数组（而非 UTF-8，与方法名和注释不符）
-        }else{
+        } else {
+            // 编码检测失败，尝试备选编码
+            String decodedString = tryFallbackEncodings(bytes);
+            if (decodedString != null) {
+                // 找到合适的编码，使用 UTF-8 编码返回字节数组
+                return decodedString.getBytes(StandardCharsets.UTF_8);
+            }
             return bytes;
-            // 如果编码检测失败，返回原始字节数组
+            // 如果所有尝试都失败，返回原始字节数组
             // 中文注释：回退逻辑，确保在无法检测编码时不抛出异常
         }
 
@@ -125,16 +162,22 @@ public class CharsetConverter {
         // 检测字节的原始编码
         // 中文注释：调用 detectEncoding 方法检测 bytes 的编码
         String detectedEncoding = detectEncoding(bytes);
+
         // 获取检测到的编码名称
         // 中文注释：detectedEncoding 存储字节数组的推测编码，可能为 null
         if (detectedEncoding == null) {
+            // 编码检测失败，尝试备选编码
+            String decodedString = tryFallbackEncodings(bytes);
+            if (decodedString != null) {
+                return decodedString;
+            }
             return input;
-            // 如果编码检测失败，返回原始输入字符串
+            // 如果所有尝试都失败，返回原始输入字符串
             // 中文注释：回退逻辑：无法检测编码时，返回原始输入以避免异常
 //            throw new UnsupportedCharsetException("无法检测输入字符串的编码");
             // 注释掉的代码：抛出异常
             // 中文注释：此行被注释，选择返回原始输入以提高鲁棒性
-        }else{
+        } else {
             Charset originalCharset = Charset.forName(detectedEncoding);
             // 根据检测到的编码创建 Charset 对象
             // 中文注释：originalCharset 用于将字节数组解码为正确的字符串
