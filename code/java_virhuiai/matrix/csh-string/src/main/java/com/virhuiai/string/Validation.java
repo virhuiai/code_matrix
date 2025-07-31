@@ -122,7 +122,7 @@ public interface Validation {
      *         否则返回 true
      */
     default boolean isNumeric(CharSequence str) {
-        if (str == null || str.length() == 0) {
+        if (isEmpty(str)) {
             return false;
         }
         for (int i = 0; i < str.length(); i++) {
@@ -140,7 +140,7 @@ public interface Validation {
      * @return 如果字符序列为 null、长度为 0 或包含非字母字符，返回 false；否则返回 true
      */
     default boolean isAlpha(CharSequence str) {
-        if (str == null || str.length() == 0) {
+        if (isEmpty(str)) {
             return false;
         }
         for (int i = 0; i < str.length(); i++) {
@@ -158,7 +158,7 @@ public interface Validation {
      * @return 如果字符序列为 null、长度为 0 或包含非字母和数字的字符，返回 false；否则返回 true
      */
     default boolean isAlphanumeric(CharSequence str) {
-        if (str == null || str.length() == 0) {
+        if (isEmpty(str)) {
             return false;
         }
         for (int i = 0; i < str.length(); i++) {
@@ -177,7 +177,7 @@ public interface Validation {
      *         否则返回 true
      */
     default boolean isLowerCase(CharSequence str) {
-        if (str == null || str.length() == 0) {
+        if (isEmpty(str)) {
             return false;
         }
         for (int i = 0; i < str.length(); i++) {
@@ -195,7 +195,7 @@ public interface Validation {
      * @return 如果字符序列为 null、长度为 0 或包含非大写字母的字符，返回 false；否则返回 true
      */
     default boolean isUpperCase(CharSequence str) {
-        if (str == null || str.length() == 0) {
+        if (isEmpty(str)) {
             return false;
         }
         for (int i = 0; i < str.length(); i++) {
