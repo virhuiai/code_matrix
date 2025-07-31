@@ -34,7 +34,25 @@ public enum Str
         Length, Url
 {
     Utils;
+
     private Str() {
         // 私有化构造函数
     }
+
+    // 显式重写 endsWith 方法，这里使用 Validation 接口的实现
+    @Override
+    public boolean endsWith(CharSequence str, CharSequence suffix) {
+        return Validation.super.endsWith(str, suffix);
+    }
+
+    @Override
+    public boolean startsWith(CharSequence str, CharSequence suffix) {
+        return Validation.super.endsWith(str, suffix);
+    }
+
+    @Override
+    public boolean contains(CharSequence str, CharSequence searchStr) {
+        return Validation.super.contains(str, searchStr);
+    }
+
 }
