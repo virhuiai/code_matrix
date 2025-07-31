@@ -46,8 +46,8 @@ public enum Str
     }
 
     @Override
-    public boolean startsWith(CharSequence str, CharSequence suffix) {
-        return Validation.super.endsWith(str, suffix);
+    public boolean startsWith(CharSequence str, CharSequence prefix) {
+        return Validation.super.startsWith(str, prefix);
     }
 
     @Override
