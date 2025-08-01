@@ -6,13 +6,14 @@ public enum Opt {
 
     MODE("compact7z.mode", Option.builder()
             .desc("指定操作模式：" +
+                    "compress=压缩文件\n" +
+
+                    "input_file.extract_items_simple=解压\n" +
+                    "input_file.extract_items_standard=解压\n" +
+                    "input_file.gen_md5=生成MD5字符\n" +
                     "input_str.extract_md5=去除非MD5字符\n" +
-                    "，compress=压缩文件\n" +
-                    ",input_file.extract_items_simple=解压\n" +
-                    ",input_file.extract_items_standard=解压\n" +
+
                     ",quering_items_in_archive=列出文档\n"
-
-
             )
 
             .hasArg()
