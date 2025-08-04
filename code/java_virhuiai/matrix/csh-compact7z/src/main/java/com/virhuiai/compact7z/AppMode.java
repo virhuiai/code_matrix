@@ -59,6 +59,7 @@ public enum AppMode {
         @Override
         void execute() {
             // --compact7z.mode=input_file.extract_items_simple --compact7z.input_file=/Volumes/RamDisk/abc.zip --compact7z.output_file_path=/Volumes/RamDisk/abcd
+            // --compact7z.mode=input_file.extract_items_simple --compact7z.input_file=/Volumes/RamDisk/FSViewer77nopass.7z  --compact7z.output_file_path=/Volumes/RamDisk/abcd
             // 获取输入字符串参数
             String inputFile = CliUtils.s3GetOptionValue(Opt.INPUT_FILE.getOptionName());
             String outputDir = CliUtils.s3GetOptionValue(Opt.OUTPUT_FILE_PATH.getOptionName());
