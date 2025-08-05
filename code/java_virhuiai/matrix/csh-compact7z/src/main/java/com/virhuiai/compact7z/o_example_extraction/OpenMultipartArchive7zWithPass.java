@@ -1,16 +1,15 @@
 package com.virhuiai.compact7z.o_example_extraction;
 
-import java.io.*;
-import java.util.*;
-
 import com.virhuiai.codec.CharsetConverter;
-import com.virhuiai.compact7z.IExtractItemsStandard;
 import com.virhuiai.log.CommonRuntimeException;
 import com.virhuiai.log.logext.LogFactory;
 import net.sf.sevenzipjbinding.*;
 import net.sf.sevenzipjbinding.impl.RandomAccessFileInStream;
 import net.sf.sevenzipjbinding.impl.VolumedArchiveInStream;
 import org.apache.commons.logging.Log;
+
+import java.io.*;
+import java.util.*;
 
 /**
  * It's important to provide corrent names in IArchiveOpenVolumeCallback.getProperty() method and to VolumedArchiveInStream class. Also you will probably need to parse filenames passed to IArchiveOpenVolumeCallback.getStream(String filename) in order to get a number of the required volume.
@@ -19,7 +18,7 @@ import org.apache.commons.logging.Log;
  * Here is an example of how to open a multi-part archive directly from the file system. In this example all the volumes are named correctly, so it's no need to parse requred volume name to extract the index. The volumes already exists under the passed names und can be directly opened.
  * 这是一个直接从文件系统打开多分卷压缩文件的示例。在此示例中，所有卷都已正确命名，因此无需解析所需的卷名来提取索引。这些卷已经存在于传递的名称下，可以直接打开。
  */
-public class OpenMultipartArchive7z {
+public class OpenMultipartArchive7zWithPass {
 
     static final Log LOGGER = LogFactory.getLog();
 
@@ -267,7 +266,7 @@ public class OpenMultipartArchive7z {
     /**
      * 自定义解压回调类，用于处理解压过程中的数据流和结果
      */
-    static class MyExtractCallback implements IArchiveExtractCallback {
+    static class MyExtractCallback implements IArchiveExtractCallback, ICryptoGetTextPassword {
         private final String outputDir;
         private int hash = 0;
         private int size = 0;
@@ -346,6 +345,12 @@ public class OpenMultipartArchive7z {
 
         @Override
         public void setTotal(long total) throws SevenZipException {
+        }
+
+        @Override
+        public String cryptoGetTextPassword() throws SevenZipException {
+            return "123456";//todo
+//            return null;
         }
     }
 }
