@@ -137,46 +137,7 @@ public class Csh7zUtils {
 
 
 
-    public static void openMultipartArchive7z(){
-        String input_7z = CliUtils.s3GetOptionValue(Opt.INPUT_7z.getOptionName());
-        String password = CliUtils.s3GetOptionValue(Opt.PASSWORD_VALUE.getOptionName(), "");
-        ArchiveOpenVolumeCallback7z archiveOpenVolumeCallback = null;
-        IInArchive inArchive = null;
-        try {
 
-            archiveOpenVolumeCallback = new ArchiveOpenVolumeCallback7z();
-            inArchive = SevenZip.openInArchive(ArchiveFormat.SEVEN_ZIP,
-                    new VolumedArchiveInStream(input_7z,
-                            archiveOpenVolumeCallback));
-
-            System.out.println("   Size   | Compr.Sz. | Filename");
-            System.out.println("----------+-----------+---------");
-            int itemCount = inArchive.getNumberOfItems();
-            for (int i = 0; i < itemCount; i++) {
-                System.out.println(String.format("%9s | %9s | %s", //
-                        inArchive.getProperty(i, PropID.SIZE),
-                        inArchive.getProperty(i, PropID.PACKED_SIZE),
-                        inArchive.getProperty(i, PropID.PATH)));
-            }
-        } catch (Exception e) {
-            System.err.println("Error occurs: " + e);
-        } finally {
-            if (inArchive != null) {
-                try {
-                    inArchive.close();
-                } catch (SevenZipException e) {
-                    System.err.println("Error closing archive: " + e);
-                }
-            }
-            if (archiveOpenVolumeCallback != null) {
-                try {
-                    archiveOpenVolumeCallback.close();
-                } catch (IOException e) {
-                    System.err.println("Error closing file: " + e);
-                }
-            }
-        }
-    }
 
     public static void openMultipartArchiveRar(){
         String input_7z = CliUtils.s3GetOptionValue(Opt.INPUT_7z.getOptionName());

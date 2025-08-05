@@ -1,11 +1,16 @@
 package com.virhuiai.compact7z.o_example_extraction;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import com.virhuiai.codec.CharsetConverter;
+import com.virhuiai.compact7z.IExtractItemsStandard;
 import net.sf.sevenzipjbinding.ArchiveFormat;
 import net.sf.sevenzipjbinding.IArchiveOpenVolumeCallback;
 import net.sf.sevenzipjbinding.IInArchive;
@@ -152,15 +157,16 @@ public class OpenMultipartArchive7z {
     }
 
     public static void main(String[] args) {
+        String outputDir = "/Volumes/RamDisk/test/";
         // 主方法，程序的入口。
-        if (args.length == 0) {
-            // 检查命令行参数的数量。
-            System.out.println(
-                    "Usage: java OpenMultipartArchive7z <first-volume>");
-            // 如果没有提供参数，则打印使用说明。
-            return;
-            // 退出程序。
-        }
+//        if (args.length == 0) {
+//            // 检查命令行参数的数量。
+//            System.out.println(
+//                    "Usage: java OpenMultipartArchive7z <first-volume>");
+//            // 如果没有提供参数，则打印使用说明。
+//            return;
+//            // 退出程序。
+//        }
         ArchiveOpenVolumeCallback archiveOpenVolumeCallback = null;
         // 声明一个ArchiveOpenVolumeCallback对象，并初始化为null。
         IInArchive inArchive = null;
@@ -170,7 +176,7 @@ public class OpenMultipartArchive7z {
             archiveOpenVolumeCallback = new ArchiveOpenVolumeCallback();
             // 创建ArchiveOpenVolumeCallback的实例。
             inArchive = SevenZip.openInArchive(ArchiveFormat.SEVEN_ZIP,
-                    new VolumedArchiveInStream(args[0],
+                    new VolumedArchiveInStream("/Volumes/RamDisk/csh_LookupEnv.7z.001",
                             archiveOpenVolumeCallback));
             // 使用SevenZip库打开一个7z格式的压缩文件。
             // 第一个参数ArchiveFormat.SEVEN_ZIP指定了压缩格式。
@@ -180,9 +186,44 @@ public class OpenMultipartArchive7z {
             // 打印表格头部，显示文件大小、压缩大小和文件名。
             System.out.println("----------+-----------+---------");
             // 打印分隔线。
-            int itemCount = inArchive.getNumberOfItems();
+//            int itemCount = inArchive.getNumberOfItems();
+
+            int count = inArchive.getNumberOfItems();
+            List<Integer> itemsToExtract = new ArrayList<>();
+            for (int i = 0; i < count; i++) {
+                if (!((Boolean) inArchive.getProperty(i, PropID.IS_FOLDER)).booleanValue()) {
+                    itemsToExtract.add(i);
+                }
+            }
+            int[] items = new int[itemsToExtract.size()];
+            int i = 0;
+            for (Integer integer : itemsToExtract) {
+                items[i++] = integer;
+            }
+
+            inArchive.extract(items, false, new IExtractItemsStandard.MyExtractCallback(inArchive, outputDir));
+
+/**
+ *
             // 获取压缩文件中包含的条目（文件或目录）数量。
             for (int i = 0; i < itemCount; i++) {
+
+
+                String rawPath = String.valueOf(inArchive.getProperty(i, PropID.PATH));
+                String path;
+                try {
+                    path = CharsetConverter.convertToOriginal(rawPath);
+                } catch (Exception e) {
+                    path = CharsetConverter.bytesToHex(rawPath.getBytes());
+                }
+                File outputFile = new File(outputDir, path);
+                File parentDir = outputFile.getParentFile();
+                if (parentDir != null && !parentDir.exists()) {
+                    parentDir.mkdirs();
+                }
+
+
+
                 // 遍历压缩文件中的每一个条目。
                 System.out.println(String.format("%9s | %9s | %s", //
                         inArchive.getProperty(i, PropID.SIZE),
@@ -193,6 +234,9 @@ public class OpenMultipartArchive7z {
                 // 获取当前条目在压缩文件中的路径/名称。
                 // 使用String.format格式化输出，确保对齐。
             }
+
+ */
+
         } catch (Exception e) {
             // 捕获可能发生的任何异常。
             System.err.println("Error occurs: " + e);

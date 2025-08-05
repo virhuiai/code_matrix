@@ -83,10 +83,10 @@ public enum AppMode {
             String outputDir = CliUtils.s3GetOptionValue(Opt.OUTPUT_FILE_PATH.getOptionName());
             String pass = CliUtils.s3GetOptionValue(Opt.PASSWORD_VALUE.getOptionName());
             new IExtractItemsStandard() {}
-                    .extractWithPass(new HashMap<String, String>() {{
+                    .extract(new HashMap<String, String>() {{
                         putIfAbsent("inputFile", inputFile);
                         putIfAbsent("outputDir", outputDir);
-                        putIfAbsent("pass", pass);
+//                        putIfAbsent("pass", pass);
                     }});
         }
     },

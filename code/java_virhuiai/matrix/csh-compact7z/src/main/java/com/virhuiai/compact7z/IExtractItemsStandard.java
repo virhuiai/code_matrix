@@ -26,7 +26,7 @@ public interface IExtractItemsStandard extends IConvertStringToOriginal {
      * 
      * @param params 包含解压参数的 HashMap，需包含 "inputFile" 和 "outputDir"
      */
-    default void extractWithPass(HashMap<String, String> params) {
+    default void extract(HashMap<String, String> params) {
         if (params == null) {
             LOGGER.error("参数为null");
             throw new CommonRuntimeException("compact7z.IExtractItemsStandard", "参数为null");
