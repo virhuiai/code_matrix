@@ -130,6 +130,75 @@ public class CharsetConverter {
         // 注释掉的代码：将字符串转换为 UTF-8 字节数组
         // 中文注释：此行是原始意图，旨在返回 UTF-8 编码的字节数组，但被注释掉
     }
+//
+//    public static String convertToOriginal(String input) throws UnsupportedCharsetException {
+//        // 英文注释：将输入字符串转换为 ISO-8859-1 字节（假设原始数据被错误解码为 ISO-8859-1）
+//        // 中文注释：方法功能：将可能因错误编码（如 ISO-8859-1）导致乱码的输入字符串转换为正确的字符串
+//        // 中文注释：参数：
+//        // 中文注释：  - input：输入字符串，可能包含乱码（例如由 GBK 字节按 ISO-8859-1 错误解码）
+//        // 中文注释：返回值：正确的字符串，基于检测到的原始编码解码
+//        // 中文注释：异常：抛出 UnsupportedCharsetException，如果编码转换失败
+//        // 中文注释：关键步骤：
+//        // 中文注释：  1. 将输入字符串按 ISO-8859-1 转换为字节，恢复原始字节数据
+//        // 中文注释：  2. 检测字节的原始编码
+//        // 中文注释：  3. 使用检测到的编码重新解码字节为字符串
+//        // 中文注释：  4. 如果检测失败或转换失败，返回原始输入字符串
+//        // 中文注释：注意事项：
+//        // 中文注释：  - 假设输入字符串是由 ISO-8859-1 错误解码的字节数据（如 SevenZipJBinding 的行为）
+//        // 中文注释：  - 方法名 convertToOriginal 与实际功能（修复乱码）不完全匹配，建议改为 convertToCorrectEncoding
+//        // 中文注释：特殊处理：编码检测失败或转换异常时返回原始输入，避免程序中断
+//        // 将输入字符串转换为 ISO-8859-1 字节（假设原始数据被错误解码为 ISO-8859-1）
+//        byte[] bytes;
+//        // 定义字节数组，用于存储输入字符串的字节表示
+//        // 中文注释：bytes 用于存储从输入字符串恢复的原始字节数据
+//        try {
+//            // ISO-8859-1 的单字节映射特性（每个字节直接对应一个 Unicode 字符）确保了从字符串到字节的转换是可逆的，不会丢失原始字节数据。
+//            // ISO-8859-1 是一种单字节编码，将每个字节（0x00–0xFF）直接映射到对应的 Unicode 字符（U+0000–U+00FF），不会丢失字节数据。这种“无损”映射使它成为许多库（包括 SevenZipJBinding）的默认回退编码，当无法确定实际编码时使用。
+//            // 中文注释：使用 ISO-8859-1 将输入字符串转换为字节，恢复原始字节序列
+//            // 中文注释：ISO-8859-1 的无损特性确保字节数据完整，适合处理乱码问题
+//            bytes = input.getBytes("ISO-8859-1");
+////            bytes = input.getBytes();
+//            // 注释掉的代码：使用默认编码（平台相关）获取字节
+//            // 中文注释：此行被注释，因为默认编码因平台而异，可能导致不一致的结果
+////        } catch (java.io.UnsupportedEncodingException e) {
+//        } catch (Exception e) {
+//            return input;
+//            // 如果转换失败，返回原始输入字符串
+//            // 中文注释：异常处理：捕获所有异常（而非仅 UnsupportedEncodingException），返回原始输入以确保程序继续运行
+//            // 中文注释：注意事项：捕获 Exception 过于宽泛，建议具体捕获 UnsupportedEncodingException
+////            throw new UnsupportedCharsetException("无法将输入转换为字节: " + e.getMessage());
+//            // 注释掉的代码：抛出异常
+//            // 中文注释：此行被注释，可能为了避免程序中断，改为返回原始输入
+//        }
+//
+//        // 检测字节的原始编码
+//        // 中文注释：调用 detectEncoding 方法检测 bytes 的编码
+//        String detectedEncoding = detectEncoding(bytes);
+//
+//        // 获取检测到的编码名称
+//        // 中文注释：detectedEncoding 存储字节数组的推测编码，可能为 null
+//        if (detectedEncoding == null) {
+//            // 编码检测失败，尝试备选编码
+//            String decodedString = tryFallbackEncodings(bytes);
+//            if (decodedString != null) {
+//                return decodedString;
+//            }
+//            return input;
+//            // 如果所有尝试都失败，返回原始输入字符串
+//            // 中文注释：回退逻辑：无法检测编码时，返回原始输入以避免异常
+////            throw new UnsupportedCharsetException("无法检测输入字符串的编码");
+//            // 注释掉的代码：抛出异常
+//            // 中文注释：此行被注释，选择返回原始输入以提高鲁棒性
+//        } else {
+//            Charset originalCharset = Charset.forName(detectedEncoding);
+//            // 根据检测到的编码创建 Charset 对象
+//            // 中文注释：originalCharset 用于将字节数组解码为正确的字符串
+//            return new String(bytes, originalCharset);
+//            // 使用检测到的编码将字节解码为字符串
+//            // 中文注释：将 bytes 按检测到的编码解码，返回正确的字符串（如中文文件名）
+//        }
+//    }
+
 
     public static String convertToOriginal(String input) throws UnsupportedCharsetException {
         // 英文注释：将输入字符串转换为 ISO-8859-1 字节（假设原始数据被错误解码为 ISO-8859-1）
@@ -173,30 +242,12 @@ public class CharsetConverter {
 
         // 检测字节的原始编码
         // 中文注释：调用 detectEncoding 方法检测 bytes 的编码
-        String detectedEncoding = detectEncoding(bytes);
+        String detectedEncoding = "GB13030";
 
-        // 获取检测到的编码名称
-        // 中文注释：detectedEncoding 存储字节数组的推测编码，可能为 null
-        if (detectedEncoding == null) {
-            // 编码检测失败，尝试备选编码
-            String decodedString = tryFallbackEncodings(bytes);
-            if (decodedString != null) {
-                return decodedString;
-            }
-            return input;
-            // 如果所有尝试都失败，返回原始输入字符串
-            // 中文注释：回退逻辑：无法检测编码时，返回原始输入以避免异常
-//            throw new UnsupportedCharsetException("无法检测输入字符串的编码");
-            // 注释掉的代码：抛出异常
-            // 中文注释：此行被注释，选择返回原始输入以提高鲁棒性
-        } else {
-            Charset originalCharset = Charset.forName(detectedEncoding);
-            // 根据检测到的编码创建 Charset 对象
-            // 中文注释：originalCharset 用于将字节数组解码为正确的字符串
-            return new String(bytes, originalCharset);
-            // 使用检测到的编码将字节解码为字符串
-            // 中文注释：将 bytes 按检测到的编码解码，返回正确的字符串（如中文文件名）
-        }
+        Charset originalCharset = Charset.forName(detectedEncoding);
+        // 根据检测到的编码创建 Charset 对象
+        // 中文注释：originalCharset 用于将字节数组解码为正确的字符串
+        return new String(bytes, originalCharset);
     }
 
     public static void main(String[] args) {
