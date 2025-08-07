@@ -242,7 +242,7 @@ public class CharsetConverter {
 
         // 检测字节的原始编码
         // 中文注释：调用 detectEncoding 方法检测 bytes 的编码
-        String detectedEncoding = "GB13030";
+        String detectedEncoding = "GB18030";
 
         Charset originalCharset = Charset.forName(detectedEncoding);
         // 根据检测到的编码创建 Charset 对象
