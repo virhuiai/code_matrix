@@ -52,36 +52,58 @@ struct __attribute__((__packed__)) exfat_vbr
 static_assert(sizeof(exfat_vbr) == 512, "exfat_vbr is not packed");
 
 // 打印VBR信息函数
+// 该函数详细输出exFAT卷引导记录的各个字段值，便于调试和分析
 void print_vbr(exfat_vbr& vbr) {
-  cout << "jump_boot[3]: 0x" << hex << (vbr.jump_boot[2] | (vbr.jump_boot[1] << 8) | (vbr.jump_boot[0] << 16)) << dec << endl 
-    << "file_system_name[8]: " << (char*)vbr.file_system_name << endl 
-    << "zero[53]: " << (int)vbr.zero[0] << endl 
-    << "partition_offset: " << vbr.partition_offset << endl 
-    << "volume_length: " << vbr.volume_length << endl 
-    << "fat_offset: " << vbr.fat_offset << endl 
-    << "fat_length: " << vbr.fat_length << endl 
-    << "cluster_heap_offset: " << vbr.cluster_heap_offset << endl 
-    << "cluster_count: " << vbr.cluster_count << endl 
-    << "root_dir_first: " << vbr.root_dir_first_cluster << endl 
-    << "volume_serial_number: " << vbr.volume_serial_number << endl 
-    << "file_system_revision: " << endl
-    << "  major: " << (int)vbr.file_system_revision.major << endl
-    << "  minor: " << (int)vbr.file_system_revision.minor << endl
-    << "volume_flags: " << endl
-    << "  active_fat: " << vbr.volume_flags.active_fat << endl
-    << "  volume_dirty: " << vbr.volume_flags.volume_dirty << endl
-    << "  media_failure: " << vbr.volume_flags.media_failure << endl
-    << "  zero: " << vbr.volume_flags.zero << endl
-    << "  reserved: " << vbr.volume_flags.reserved << endl
-    << "bytes_per_sector: 2^" << (int)vbr.bytes_per_sector << endl 
-    << "sector_per_cluster: 2^" << (int)vbr.sector_per_cluster << endl 
-    << "fats_count: " << (int)vbr.fats_count << endl 
-    << "drive_select: " << (int)vbr.drive_select << endl 
-    << "percent_in_use: " << (int)vbr.percent_in_use << endl 
-    << "reserved[7]: " << (int)vbr.reserved[0] << endl 
-    << "boot_code[390]: " << vbr.boot_code[0] << endl 
-    << "boot_signature: 0x" << hex << vbr.boot_signature << dec << endl
-    << endl;
+// 打印跳转指令（以十六进制形式）
+cout << "jump_boot[3]: 0x" << hex << (vbr.jump_boot[2] | (vbr.jump_boot[1] << 8) | (vbr.jump_boot[0] << 16)) << dec << endl 
+// 打印文件系统名称（通常为"EXFAT   "）
+<< "file_system_name[8]: " << (char*)vbr.file_system_name << endl 
+// 打印保留字段（应为0）
+<< "zero[53]: " << (int)vbr.zero[0] << endl 
+// 打印分区偏移量（扇区）
+<< "partition_offset: " << vbr.partition_offset << endl 
+// 打印卷长度（扇区）
+<< "volume_length: " << vbr.volume_length << endl 
+// 打印FAT表偏移量（扇区）
+<< "fat_offset: " << vbr.fat_offset << endl 
+// 打印FAT表长度（扇区）
+<< "fat_length: " << vbr.fat_length << endl 
+// 打印簇堆偏移量（扇区）
+<< "cluster_heap_offset: " << vbr.cluster_heap_offset << endl 
+// 打印簇数量
+<< "cluster_count: " << vbr.cluster_count << endl 
+// 打印根目录第一个簇
+<< "root_dir_first: " << vbr.root_dir_first_cluster << endl 
+// 打印卷序列号
+<< "volume_serial_number: " << vbr.volume_serial_number << endl 
+// 打印文件系统版本
+<< "file_system_revision: " << endl
+<< "  major: " << (int)vbr.file_system_revision.major << endl
+<< "  minor: " << (int)vbr.file_system_revision.minor << endl
+// 打印卷标志
+<< "volume_flags: " << endl
+<< "  active_fat: " << vbr.volume_flags.active_fat << endl  // 活动FAT表(0或1)
+<< "  volume_dirty: " << vbr.volume_flags.volume_dirty << endl  // 卷脏标记(0=干净,1=脏)
+<< "  media_failure: " << vbr.volume_flags.media_failure << endl  // 介质失败标记
+<< "  zero: " << vbr.volume_flags.zero << endl  // 保留位，必须为0
+<< "  reserved: " << vbr.volume_flags.reserved << endl  // 保留位
+// 打印每扇区字节数（2的幂次）
+<< "bytes_per_sector: 2^" << (int)vbr.bytes_per_sector << endl 
+// 打印每簇扇区数（2的幂次）
+<< "sector_per_cluster: 2^" << (int)vbr.sector_per_cluster << endl 
+// 打印FAT表数量
+<< "fats_count: " << (int)vbr.fats_count << endl 
+// 打印驱动器选择
+<< "drive_select: " << (int)vbr.drive_select << endl 
+// 打印已使用百分比
+<< "percent_in_use: " << (int)vbr.percent_in_use << endl 
+// 打印保留字段
+<< "reserved[7]: " << (int)vbr.reserved[0] << endl 
+// 打印引导代码的第一个字节
+<< "boot_code[390]: " << vbr.boot_code[0] << endl 
+// 打印引导签名（应为0xAA55）
+<< "boot_signature: 0x" << hex << vbr.boot_signature << dec << endl
+<< endl;
 }
 
 // 计算校验和的宏定义
