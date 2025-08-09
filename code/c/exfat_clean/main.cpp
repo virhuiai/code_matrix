@@ -1,51 +1,57 @@
 #include <iostream>
-#include <cstdint>
+// 引入必要的头文件
+#include <cstdint>   // 标准整数类型
 
-#include <unistd.h>
-#include <sys/mount.h>
-#include <sys/types.h>
-#include <fcntl.h>
+#include <unistd.h>   // 系统调用
+#include <sys/mount.h> // 挂载相关
+#include <sys/types.h> // 系统类型
+#include <fcntl.h>    // 文件控制
 using namespace std;
 
-// http://www.sans.org/reading-room/whitepapers/forensics/reverse-engineering-microsoft-exfat-file-system-33274
+// 参考: http://www.sans.org/reading-room/whitepapers/forensics/reverse-engineering-microsoft-exfat-file-system-33274
+
+// 定义exFAT卷引导记录(VBR)结构体
+// __attribute__((__packed__)) 确保结构体紧凑排列，不进行字节对齐
 struct __attribute__((__packed__)) exfat_vbr
 {
-  uint8_t jump_boot[3];
-  uint8_t file_system_name[8];
-  uint8_t zero[53];
-  uint64_t partition_offset;
-  uint64_t volume_length;
-  uint32_t fat_offset;
-  uint32_t fat_length;
-  uint32_t cluster_heap_offset;
-  uint32_t cluster_count;
-  uint32_t root_dir_first_cluster;
-  uint32_t volume_serial_number;
+  uint8_t jump_boot[3];              // 跳转指令
+  uint8_t file_system_name[8];       // 文件系统名称，通常为"EXFAT   "
+  uint8_t zero[53];                  // 保留字段，填充为0
+  uint64_t partition_offset;         // 分区偏移量（扇区）
+  uint64_t volume_length;            // 卷长度（扇区）
+  uint32_t fat_offset;               // FAT表偏移量（扇区）
+  uint32_t fat_length;               // FAT表长度（扇区）
+  uint32_t cluster_heap_offset;      // 簇堆偏移量（扇区）
+  uint32_t cluster_count;            // 簇数量
+  uint32_t root_dir_first_cluster;   // 根目录第一个簇
+  uint32_t volume_serial_number;     // 卷序列号
   struct
   {
-    uint8_t minor;
-    uint8_t major;
-  } file_system_revision;
+    uint8_t minor;                   // 次要版本号
+    uint8_t major;                   // 主要版本号
+  } file_system_revision;            // 文件系统版本
   struct
   {
-    uint16_t active_fat:1;
-    uint16_t volume_dirty:1;
-    uint16_t media_failure:1;
-    uint16_t zero:1;
-    uint16_t reserved:12;
-  } volume_flags;
-  uint8_t bytes_per_sector;
-  uint8_t sector_per_cluster;
-  uint8_t fats_count;
-  uint8_t drive_select;
-  uint8_t percent_in_use;
-  uint8_t reserved[7];
-  uint8_t boot_code[390];
-  uint16_t boot_signature;
+    uint16_t active_fat:1;           // 活动FAT表(0或1)
+    uint16_t volume_dirty:1;         // 卷脏标记(0=干净,1=脏)
+    uint16_t media_failure:1;        // 介质失败标记
+    uint16_t zero:1;                 // 保留位，必须为0
+    uint16_t reserved:12;            // 保留位
+  } volume_flags;                    // 卷标志
+  uint8_t bytes_per_sector;          // 每扇区字节数的指数值(2^n)
+  uint8_t sector_per_cluster;        // 每簇扇区数的指数值(2^n)
+  uint8_t fats_count;                // FAT表数量
+  uint8_t drive_select;              // 驱动器选择
+  uint8_t percent_in_use;            // 已使用百分比
+  uint8_t reserved[7];               // 保留字段
+  uint8_t boot_code[390];            // 引导代码
+  uint16_t boot_signature;           // 引导签名(0xAA55)
 };
 
+// 静态断言确保exfat_vbr结构体大小为512字节
 static_assert(sizeof(exfat_vbr) == 512, "exfat_vbr is not packed");
 
+// 打印VBR信息函数
 void print_vbr(exfat_vbr& vbr) {
   cout << "jump_boot[3]: 0x" << hex << (vbr.jump_boot[2] | (vbr.jump_boot[1] << 8) | (vbr.jump_boot[0] << 16)) << dec << endl 
     << "file_system_name[8]: " << (char*)vbr.file_system_name << endl 
@@ -78,26 +84,32 @@ void print_vbr(exfat_vbr& vbr) {
     << endl;
 }
 
+// 计算校验和的宏定义
 #define ADDSUM(sum, byte) ((sum << 31) | (sum >> 1)) + byte
+
+// 验证VBR校验和
 bool verify_vbr(exfat_vbr& vbr, int fd)
 {
-  size_t sector_size = 1 << vbr.bytes_per_sector;
-  uint8_t* sector_buffer = new uint8_t[sector_size];
+  size_t sector_size = 1 << vbr.bytes_per_sector; // 计算扇区大小
+  uint8_t* sector_buffer = new uint8_t[sector_size]; // 分配扇区缓冲区
 
-  uint32_t checksum = 0;
+  uint32_t checksum = 0; // 初始化校验和
+  // 读取前11个扇区计算校验和
   for (int sector = 0; sector < 11; sector++)
   {
     pread(fd, sector_buffer, sector_size, sector * sector_size);
     for (int i = 0; i < sector_size; i++)
     {
+      // 跳过vbr中的volume_flags和percent_in_use字段
       if (sector || (i != 0x6a && i != 0x6b && i != 0x70)) {
-        // skip volume_flags and percent_in_use in vbr*/
         checksum = ADDSUM(checksum, sector_buffer[i]);
       }
     }
   }
   
+  // 读取第12个扇区(校验和扇区)
   pread(fd, sector_buffer, sector_size, 11 * sector_size);
+  // 验证校验和
   for (int i = 0; i < sector_size / sizeof(uint32_t); i++)
   {
     if (((uint32_t*)sector_buffer)[i] != checksum)
@@ -109,26 +121,29 @@ bool verify_vbr(exfat_vbr& vbr, int fd)
   return true;
 }
 
+// 打印使用帮助信息
 void usage()
 {
   cerr << "USAGE: exfat_clean [-yvh] rdisk" << endl
     << endl
     << "OPTIONS: " << endl
-    << "  -y     Assume yes" << endl
-    << "  -v     Version" << endl
-    << "  -h     Help" << endl
-    << "  rdisk  Raw exfat disk" << endl
+    << "  -y     假设yes，不提示确认" << endl
+    << "  -v     显示版本信息" << endl
+    << "  -h     显示帮助信息" << endl
+    << "  rdisk  原始exfat磁盘设备" << endl
     << endl;
   cerr << "exfat_clean v1.0.0" << endl
-    << "SOURCE: https://github.com/zzh8829/exfat_clean" << endl
-    << "LICENSE: MIT 2017 Zihao Zhang" << endl;
+    << "源码: https://github.com/zzh8829/exfat_clean" << endl
+    << "许可证: MIT 2017 Zihao Zhang" << endl;
 }
 
+// 主函数
 int main(int argc, char* argv[])
 {
-  int ch;
-  int yes = 0;
+  int ch;         // 命令行选项
+  int yes = 0;    // 是否自动确认
 
+  // 解析命令行选项
   while ((ch = getopt(argc, argv, "yh")) != EOF)
   {
     switch (ch)
@@ -143,67 +158,79 @@ int main(int argc, char* argv[])
     }
   }
 
+  // 调整参数指针
   argc -= optind;
   argv += optind;
 
+  // 检查是否提供了磁盘设备参数
   if (argc != 1) {
-    cerr << "ERROR: rdisk missing!" << endl;
+    cerr << "错误: 缺少磁盘设备参数!" << endl;
     usage();
     return 1;
   }
 
+  // 打开磁盘设备
   int fd = open(argv[0], O_RDWR);
 
-  exfat_vbr vbr;
+  exfat_vbr vbr; // 定义VBR结构体变量
 
+  // 读取VBR
   if (pread(fd, &vbr, sizeof(vbr), 0) < 0) {
-    cerr << "vbr read failed" << endl;
+    cerr << "VBR读取失败" << endl;
     return 1;
   }
 
+  // 打印VBR信息
   print_vbr(vbr);
 
+  // 验证VBR校验和
   if(!verify_vbr(vbr, fd)) {
-    cerr << "checksum failed" << endl;
+    cerr << "校验和失败" << endl;
     return 1;
   } else {
-    cout << "checksum ok" << endl;
+    cout << "校验和正常" << endl;
   }
 
+  // 检查卷是否已经干净
   if(!vbr.volume_flags.volume_dirty) {
-    cout << "exfat is already clean" << endl;
+    cout << "exFAT卷已经干净" << endl;
     return 0;
   } else {
-    cout << "exfat is dirty" << endl;
+    cout << "exFAT卷处于脏状态" << endl;
   }
 
+  // 如果没有使用-y选项，提示用户确认
   if(!yes) {
     string ans;
-    cout << "are you sure about flipping dirty bit" << endl
-      << "NOT RESPONSIBLE FOR DATA LOSE!!! [y/n]" << endl;
+    cout << "确定要清除脏标记吗?" << endl
+      << "数据丢失概不负责!!! [y/n]" << endl;
     cin >> ans;
     if(ans != "y" && ans != "Y") {
-      cout << "nothing happened" << endl;
+      cout << "未执行任何操作" << endl;
       close(fd);
       return 0;
     }      
   }
 
-  cout << "flipping dirty bit" << endl;
+  // 清除脏标记
+  cout << "清除脏标记" << endl;
   vbr.volume_flags.volume_dirty = 0;
 
+  // 写回VBR
   if(pwrite(fd, &vbr, sizeof(vbr), 0) < 0) {
-    cerr << "write failed" << endl;
+    cerr << "写入失败" << endl;
     return 1;
   }
 
+  // 刷新缓冲区
   if(fsync(fd)) {
-    cerr << "fsync failed" << endl;
+    cerr << "同步失败" << endl;
     return 1;
   }
 
-  cout << "all good" << endl;
+  cout << "操作完成" << endl;
   
+  // 关闭文件描述符
   close(fd);
   return 0;
 }
