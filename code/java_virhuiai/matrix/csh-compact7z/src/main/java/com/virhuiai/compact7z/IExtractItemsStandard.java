@@ -1,13 +1,12 @@
 package com.virhuiai.compact7z;
 
+import com.virhuiai.cli.CliUtils;
 import com.virhuiai.codec.CharsetConverter;
 import net.sf.sevenzipjbinding.*;
 import net.sf.sevenzipjbinding.impl.RandomAccessFileInStream;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.RandomAccessFile;
+import java.io.*;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -23,7 +22,7 @@ public interface IExtractItemsStandard extends IConvertStringToOriginal {
 
     /**
      * 使用标准接口解压压缩文件
-     * 
+     *
      * @param params 包含解压参数的 HashMap，需包含 "inputFile" 和 "outputDir"
      */
     default void extract(HashMap<String, String> params) {
@@ -117,11 +116,29 @@ public interface IExtractItemsStandard extends IConvertStringToOriginal {
             }
 
             String rawPath = String.valueOf(inArchive.getProperty(index, PropID.PATH));
+            String encoding = CliUtils.s3GetOptionValue(Opt.ENCODING.getOptionName());
+            LOGGER.info("encoding: " + encoding);
+            Charset originalCharset = Charset.forName(encoding);
+            // 强制使用UTF-8编码处理路径，避免乱码
             String path;
             try {
-                path = CharsetConverter.convertToOriginal(rawPath);
-            } catch (Exception e) {
+                // 使用UTF-8编码处理路径
+                // 使用UTF-8编码处理路径
+                path = new String(rawPath.getBytes("ISO-8859-1"), originalCharset);
+                LOGGER.warn("编码转换成功: " + path);
+            } catch (UnsupportedEncodingException e) {
+                // 如果转换失败，使用原始路径
                 path = CharsetConverter.bytesToHex(rawPath.getBytes());
+                LOGGER.warn("编码转换失败，UnsupportedEncodingException，bytesToHex: " + path, e);
+//                try {
+//                    path = new String(rawPath.getBytes("ISO-8859-1"), "UTF-8");
+//                    LOGGER.info("编码转换，使用原始路径: " + path, e);
+//                } catch (UnsupportedEncodingException ex) {
+////                    path = rawPath;
+//                    path = CharsetConverter.bytesToHex(rawPath.getBytes());
+//                    LOGGER.warn("UnsupportedEncodingException,编码转换失败，bytesToHex: " + path, e);
+//                }
+
             }
 
             File outputFile = new File(outputDir, path);

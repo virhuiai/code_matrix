@@ -18,6 +18,11 @@ public enum Opt {
 
             .hasArg()
             .argName("操作模式")),
+    ENCODING("compact7z.encoding", Option.builder()
+            .desc("指定编码，如：GB18030"
+            )
+            .hasArg()
+            .argName("编码")),
     INPUT_STR("compact7z.input_str", Option.builder()
             .desc("输入字符串")
             .hasArg()
