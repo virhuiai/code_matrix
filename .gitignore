@@ -29,3 +29,6 @@ code/cpp/static_web_server/base_on__cpp-httplib/hello
 code/cpp/static_web_server/base_on__cpp-httplib/server
 code/cpp/static_web_server/base_on__cpp-httplib/hello.com.dbg
 code/cpp/static_web_server/base_on__cpp-httplib/server.com.dbg
+*.dbg
+server2
+webserver
