@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8" />
+    <title>Vue 3 Render Todo</title>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+</head>
+<body>
+<div id="app"></div>
+
+<script type="module">
+    const { createApp, h } = Vue;  // 关键：从 Vue 导入 h
+
+    const TodoApp = {
+        data() {
+            return {
+                title: '我的待办事项',
+                todos: ['学习 Vue 3', '使用 render 函数'],
+                newTodo: ''
+            };
+        },
+        methods: {
+            addTodo() {
+                if (this.newTodo.trim()) {
+                    this.todos.push(this.newTodo.trim());
+                    this.newTodo = '';
+                }
+            }
+        },
+        render() {
+            // 直接使用导入的 h
+            return h('div', { style: 'padding: 20px; font-family: Arial, sans-serif; max-width: 500px; margin: 0 auto;' }, [
+                h('h2', this.title),
+
+                // 标题输入框
+                h('input', {
+                    value: this.title,
+                    onInput: e => this.title = e.target.value,
+                    placeholder: '输入标题',
+                    style: 'width: 100%; padding: 8px; margin-bottom: 10px;'
+                }),
+
+                // 任务列表
+                h('ul', { style: 'list-style: none; padding: 0;' },
+                    this.todos.map((todo, index) =>
+                        h('li', {
+                            key: index,
+                            style: 'padding: 12px; background: #f9f9f9; margin: 8px 0; border-radius: 6px; display: flex; justify-content: space-between;'
+                        }, [
+                            h('span', todo),
+                            h('button', {
+                                onClick: () => this.todos.splice(index, 1),
+                                style: 'background: #dc3545; color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer;'
+                            }, '×')
+                        ])
+                    )
+                ),
+
+                // 添加区域
+                h('div', { style: 'margin-top: 20px; display: flex;' }, [
+                    h('input', {
+                        value: this.newTodo,
+                        onInput: e => this.newTodo = e.target.value,
+                        onKeyup: e => e.key === 'Enter' && this.addTodo(),
+                        placeholder: '添加新任务...',
+                        style: 'flex: 1; padding: 10px; border: 1px solid #ccc; border-radius: 4px;'
+                    }),
+                    h('button', {
+                        onClick: this.addTodo,
+                        style: 'padding: 10px 20px; margin-left: 10px; background: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer;'
+                    }, '添加')
+                ])
+            ]);
+        }
+    };
+
+    createApp(TodoApp).mount('#app');
+</script>
+</body>
+</html>

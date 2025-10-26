@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8" />
+    <title>Vue 3 Render Todo</title>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+</head>
+<body>
+<div id="app"></div>
+
+<script type="module">
+    const { createApp, h } = Vue;  // 关键：从 Vue 导入 h
+
+    const TodoApp = {
+        data() {
+            return {
+                title: '我的待办事项',
+                todos: ['学习 Vue 3', '使用 render 函数'],
+                newTodo: ''
+            };
+        },
+        methods: {
+            addTodo() {
+                if (this.newTodo.trim()) {
+                    this.todos.push(this.newTodo.trim());
+                    this.newTodo = '';
+                }
+            }
+        },
+        template: `
+    <div style="padding: 20px; font-family: Arial;">
+      <h2>{{ title }}</h2>
+      <input v-model="title" placeholder="输入标题" style="width:100%; padding:8px; margin-bottom:10px;">
+      <ul style="list-style:none; padding:0;">
+        <li v-for="(todo, i) in todos" :key="i" style="padding:12px; background:#f9f9f9; margin:8px 0; border-radius:6px;">
+          {{ todo }}
+          <button @click="todos.splice(i,1)" style="float:right; background:#dc3545; color:white; border:none; padding:4px 8px; border-radius:4px;">×</button>
+        </li>
+      </ul>
+      <div style="margin-top:20px; display:flex;">
+        <input v-model="newTodo" @keyup.enter="addTodo" placeholder="添加新任务..." style="flex:1; padding:10px; border:1px solid #ccc; border-radius:4px;">
+        <button @click="addTodo" style="padding:10px 20px; margin-left:10px; background:#28a745; color:white; border:none; border-radius:4px;">添加</button>
+      </div>
+    </div>
+  `
+    };
+
+    createApp(TodoApp).mount('#app');
+</script>
+</body>
+</html>
