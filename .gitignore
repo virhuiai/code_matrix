@@ -22,3 +22,6 @@ code/java_virhuiai/2_Csh_EncoderDecoder/target
 code/java_virhuiai/2_Csh_PlatformUtils/logs/app.log
 code/java_virhuiai/3_Csh_h2database/logs/app.log
 code/java_virhuiai/3_Csh_Office/logs/app.log
+jcef109.iso
+code/c/exfat_clean/exfat_clean
+*.elf
