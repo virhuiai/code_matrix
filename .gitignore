@@ -25,3 +25,7 @@ code/java_virhuiai/3_Csh_Office/logs/app.log
 jcef109.iso
 code/c/exfat_clean/exfat_clean
 *.elf
+code/cpp/static_web_server/base_on__cpp-httplib/hello
+code/cpp/static_web_server/base_on__cpp-httplib/server
+code/cpp/static_web_server/base_on__cpp-httplib/hello.com.dbg
+code/cpp/static_web_server/base_on__cpp-httplib/server.com.dbg
