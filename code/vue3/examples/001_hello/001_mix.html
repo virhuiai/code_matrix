@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vue 3 Composition API Demo</title>
+</head>
+<body>
+<div id="app"></div>
+
+<script type="module">
+    // 从本地 导入 Vue3
+    // import { createApp, ref, onMounted } from 'https://cdn.jsdelivr.net/npm/vue@3/dist/vue.esm-browser.js';
+    import { createApp, ref, onMounted } from 'http://127.0.0.1:8000/vue@3.5.22.js';
+    // 创建组件
+
+    // 创建并挂载应用
+    createApp({
+        setup() {
+            // 使用 ref 创建响应式数据
+            const message = ref('Hello World!');
+            const count = ref(0);
+
+            // 定义方法
+            const increment = () => {
+                count.value++;
+            };
+
+            const changeMessage = () => {
+                message.value = 'Vue 3 组合式 API 真好用！';
+            };
+
+            // 生命周期钩子
+            onMounted(() => {
+                console.log('组件已挂载');
+            });
+
+            // 返回需要在模板中使用的数据和方法
+            return {
+                message,
+                count,
+                increment,
+                changeMessage
+            };
+        },
+        template: `
+                <div style="padding: 20px; font-family: Arial, sans-serif;">
+                    <h1>{{ message }}</h1>
+                    <p>计数器: {{ count }}</p>
+                    <button @click="increment" style="margin-right: 10px;">增加</button>
+                    <button @click="changeMessage">改变消息</button>
+                </div>
+            `
+    }).mount('#app');
+</script>
+</body>
+</html>

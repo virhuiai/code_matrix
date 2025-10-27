@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vue 3 Composition API Demo</title>
+</head>
+<body>
+<div id="app"></div>
+
+<script type="module">
+    // 从本地 导入 Vue3
+    // import { createApp, ref, onMounted } from 'https://cdn.jsdelivr.net/npm/vue@3/dist/vue.esm-browser.js';
+    import { createApp, ref, onMounted, computed, watch } from 'http://127.0.0.1:8000/vue@3.5.22.js';
+    // 创建组件
+
+    // 创建并挂载应用
+    createApp({
+        /**
+         * setup() 是 组合式 API 的核心入口函数，它替代了 Vue 2 中的 data、methods、mounted 等选项，用于集中定义组件的响应式状态、计算属性、方法和生命周期逻辑。
+         * @returns {{message: *, count: *, increment: increment, changeMessage: changeMessage}}
+         */
+        setup() {
+            // 使用 ref 创建响应式数据
+            const message = ref('Hello World!');
+            const count = ref(0);
+
+            // 定义方法
+            const increment = () => {
+                // 修改 ref 值必须通过 .value
+                count.value++;
+                // 模板中可以直接写 {{ count }} 而不是 {{ count.value }}
+            };
+
+            // ---------- 3. 计算属性 computed ----------
+            // 当 count 变化时，doubleCount 自动重新计算
+            const doubleCount = computed(() => count.value * 2);
+
+            // 组合 message + count 的展示文字
+            const infoText = computed(() => `${message.value}（计数：${count.value}）`);
+
+            // ---------- 4. 侦听器 watch ----------
+            // 4.1 监听单个 ref（count）
+            watch(count, (newVal, oldVal) => {
+                console.log(`count 从 ${oldVal} 变为 ${newVal}`);
+            });
+
+            // 4.2 同时监听多个源（message + count），返回数组
+            watch([message, count], ([newMsg, newCnt], [oldMsg, oldCnt]) => {
+                console.log(`message: ${oldMsg} → ${newMsg}`);
+                console.log(`count   : ${oldCnt} → ${newCnt}`);
+            });
+
+            // 4.3 深度监听（如果监听的是 reactive 对象，这里演示一个对象）
+            const user = ref({ name: '张三', age: 18 });
+            watch(
+                () => user.value,               // getter 函数，返回要监听的对象
+                (newUser, oldUser) => {
+                    console.log('user 变化', newUser);
+                },
+                { deep: true }                  // 开启深度监听
+            );
+            const updateUser = () => {
+                user.value.age++;
+            };
+
+            const changeMessage = () => {
+                message.value = 'Vue 3 组合式 API 真好用！';
+            };
+
+            // 生命周期钩子
+            onMounted(() => {
+                console.log('组件已挂载');
+            });
+
+            // 返回需要在模板中使用的数据和方法
+            return {
+                message,
+                count,
+                doubleCount,
+                infoText,
+                increment,
+                changeMessage,
+                user,
+                updateUser
+            };
+        },
+        template: `
+<div style="max-width:600px;">
+        <h1>{{ message }}</h1>
+
+        <p class="info"><strong>计数器：</strong>{{ count }}</p>
+        <p class="info"><strong>双倍计数（computed）：</strong>{{ doubleCount }}</p>
+        <p class="info"><strong>组合信息（computed）：</strong>{{ infoText }}</p>
+
+        <button @click="increment">+1</button>
+        <button @click="changeMessage">改消息</button>
+
+        <hr style="margin:20px 0;">
+
+        <h3>深度监听示例（user）</h3>
+        <p>姓名：{{ user.name }}，年龄：{{ user.age }}</p>
+        <button @click="updateUser">年龄+1</button>
+      </div>
+            `
+    }).mount('#app');
+</script>
+</body>
+</html>
