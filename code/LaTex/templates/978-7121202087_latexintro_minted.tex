@@ -1,0 +1,141 @@
+%!TEX TS-program = xelatex
+%!TEX encoding = UTF-8 Unicode
+\PassOptionsToPackage{AutoFakeBold=true,AutoFakeSlant=true}{xeCJK}
+
+\documentclass[12pt,openany]{book}
+\usepackage[a4paper]{geometry}
+\usepackage{graphicx}
+\usepackage{amssymb,amsmath,amsthm}	
+\usepackage{booktabs}				
+\usepackage{hyperref}				
+\usepackage{titlesec, titletoc}
+
+\usepackage{xeCJK}
+
+
+
+% 设置主要字体：正文 (mainfont)、无衬线字体 (sansfont) 和等宽字体 (monofont)。
+\setCJKmainfont[Path=/Volumes/THAWSPACE/CshProject/code_matrix.git/code/LaTex/fontFiles/方正/]{FangZhengShuSong-GBK-1.ttf}
+\setCJKsansfont[Path=/Volumes/THAWSPACE/CshProject/code_matrix.git/code/LaTex/fontFiles/方正/]{FangZhengHeiTi-GBK-1.ttf}
+\setCJKmonofont[Path=/Volumes/THAWSPACE/CshProject/code_matrix.git/code/LaTex/fontFiles/方正/]{FangZhengFangSong-GBK-1.ttf}
+
+%xeCJK（推荐的新方式）
+\newCJKfontfamily\kai[Path=/Volumes/THAWSPACE/CshProject/code_matrix.git/code/LaTex/fontFiles/方正/]{FangZhengKaiTi-GBK-1.ttf}
+\newCJKfontfamily\fsong[Path=/Volumes/THAWSPACE/CshProject/code_matrix.git/code/LaTex/fontFiles/方正/]{FangZhengFangSong-GBK-1.ttf}
+\newCJKfontfamily\hei[Path=/Volumes/THAWSPACE/CshProject/code_matrix.git/code/LaTex/fontFiles/方正/]{FangZhengHeiTi-GBK-1.ttf}
+\newCJKfontfamily\ssong[Path=/Volumes/THAWSPACE/CshProject/code_matrix.git/code/LaTex/fontFiles/方正/]{FangZhengShuSong-GBK-1.ttf}
+\newCJKfontfamily\FZJiaGuWen[Path=/Volumes/THAWSPACE/CshProject/code_matrix.git/code/LaTex/fontFiles/方正/]{方正甲骨文.ttf}
+
+\setromanfont[Path=/Volumes/THAWSPACE/Soft.Ok/texlive/2024/texmf-dist/fonts/opentype/public/tex-gyre/
+, Extension=.otf, UprightFont=*-Regular,BoldFont=*-Bold, ItalicFont=*-Italic, BoldItalicFont=*-BoldItalic
+,Mapping=tex-text]{texgyrepagella}%TeX Gyre Pagella
+
+\setsansfont[Path=/Volumes/THAWSPACE/Soft.Ok/texlive/2024/texmf-dist/fonts/opentype/public/tex-gyre/
+, Extension=.otf, UprightFont=*-Regular,BoldFont=*-Bold, ItalicFont=*-Italic, BoldItalicFont=*-BoldItalic
+              ,Scale=MatchLowercase,Mapping=tex-text]{texgyrepagella}
+
+\setlength{\parindent}{0pt}  	
+\linespread{1.2} 				
+\setlength{\parskip}{15pt} 		
+
+\renewcommand\contentsname{目~录~}
+\renewcommand\listfigurename{图~列~表~}
+\renewcommand\listtablename{表~目~录~}
+
+%=========================制作拇指索引===================
+\usepackage{tikz,pgf}
+\usetikzlibrary{shapes,calc}
+\makeatletter
+\newcommand\thumb{%
+  \if@mainmatter
+  \begingroup
+  \catcode`\$=3
+  \tikzpicture[remember picture,overlay] % thumb index
+    \ifodd\value{page}
+      \node[fill=gray,text=black,anchor=north east,xshift=2mm,
+            yshift=-22mm-\arabic{chapter}*20mm,
+            shape=semicircle,shape border rotate=90,
+            minimum height=10mm,minimum width=5mm,
+            font=\normalfont\sffamily\bfseries\Huge]
+        at (current page.north east)
+        {\llap{\arabic{chapter}\hspace{1mm}}};
+    \else
+      \node[fill=gray,text=black,anchor=north west,xshift=-2mm,
+            yshift=-22mm-\arabic{chapter}*20mm,
+            shape=semicircle,shape border rotate=270,
+            minimum height=10mm,minimum width=5mm,
+            font=\normalfont\sffamily\bfseries\Huge]
+        at (current page.north west)
+        {\rlap{\hspace{1mm}\arabic{chapter}}};
+    \fi
+  \endtikzpicture
+  \endgroup
+  \fi}
+\makeatother
+
+\usepackage{fancyhdr}
+\fancypagestyle{plain}{%
+\fancyhf{} % clear all header and footer fields
+\fancyhead[r]{\thumb} % except the center
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}}
+%=========================制作拇指索引===================
+
+
+\titlecontents{chapter}
+[0em]
+{}
+{\large\CJKfamily{fzsong}{第 \thecontentslabel 章\quad}}
+{}{\hfill\contentspage}
+%
+\titlecontents{section}
+[4em]
+{}
+{\thecontentslabel\quad}
+{}{\titlerule*{.} \contentspage}
+
+
+\titleformat{\chapter}[display]
+	{\bfseries\Large}
+	{\titlerule[1pt]%
+     \filleft%
+    \parbox{1cm}{\vbox to 2.5cm{%
+    \vfill\hbox to 1cm{\hfill\Huge 第 \hfill}%
+    \vfill\hbox to 1cm{\hfill\Huge \thechapter\hfill}%
+    \vfill\hbox to 1cm{\hfill\Huge 章 \hfill}%
+    }}}
+	{1ex}
+	{\Huge
+	 \filright}
+	[{\titlerule[2pt]}]
+
+\title{\bf{书本名字}}
+\author{作者}
+\date{}
+
+\usepackage{minted}
+\begin{document}
+\maketitle
+
+\tableofcontents
+\chapter{认识\LaTeX{}}
+\LaTeX{} 是一种基于 \TeX{} 的文档排版系统。\TeX{} 只这么交错起伏的几个字母，便道出了“排版”
+二字的几分意味：精确、复杂、注重细节和品位。而\LaTeX{} 则为了减轻这种写作排版一肩挑的负
+担，把大片排版的格式细节隐藏在若干样式之后，以内容的逻辑结构统帅纷繁的格式，遂成为现在
+最流行的科技写作——尤其是数学写作的工具之一。
+\section{你有你说}
+\section{我爱我想}
+\chapter{初恋\LaTeX{}}
+\LaTeX{} 是一种基于 \TeX{} 的文档排版系统。\TeX{} 只这么交错起伏的几个字母，便道出了“排版”
+二字的几分意味：精确、复杂、注重细节和品位。而\LaTeX{} 则为了减轻这种写作排版一肩挑的负
+担，把大片排版的格式细节隐藏在若干样式之后，以内容的逻辑结构统帅纷繁的格式，遂成为现在
+最流行的科技写作——尤其是数学写作的工具之一。
+\section{这样才美}
+\section{我喜欢你}
+
+\begin{minted}{python}
+def hello_world():
+    print("Hello, world!")
+\end{minted}
+
+\end{document} 
