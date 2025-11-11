@@ -1,0 +1,365 @@
+%!TEX TS-program = xelatex
+%!TEX encoding = UTF-8 Unicode
+\PassOptionsToPackage{AutoFakeBold=true,AutoFakeSlant=true}{xeCJK}
+
+\documentclass[12pt,openany]{book}
+\usepackage[a4paper]{geometry}
+\usepackage{graphicx}
+\usepackage{amssymb,amsmath,amsthm}	
+\usepackage{booktabs}				
+\usepackage{hyperref}				
+\usepackage{titlesec, titletoc}
+
+\usepackage{xeCJK}
+
+
+
+% 设置主要字体：正文 (mainfont)、无衬线字体 (sansfont) 和等宽字体 (monofont)。
+\setCJKmainfont[Path=/Volumes/THAWSPACE/CshProject/code_matrix.git/code/LaTex/fontFiles/方正/]{FangZhengShuSong-GBK-1.ttf}
+\setCJKsansfont[Path=/Volumes/THAWSPACE/CshProject/code_matrix.git/code/LaTex/fontFiles/方正/]{FangZhengHeiTi-GBK-1.ttf}
+\setCJKmonofont[Path=/Volumes/THAWSPACE/CshProject/code_matrix.git/code/LaTex/fontFiles/方正/]{FangZhengFangSong-GBK-1.ttf}
+
+%xeCJK（推荐的新方式）
+\newCJKfontfamily\kai[Path=/Volumes/THAWSPACE/CshProject/code_matrix.git/code/LaTex/fontFiles/方正/]{FangZhengKaiTi-GBK-1.ttf}
+\newCJKfontfamily\fsong[Path=/Volumes/THAWSPACE/CshProject/code_matrix.git/code/LaTex/fontFiles/方正/]{FangZhengFangSong-GBK-1.ttf}
+\newCJKfontfamily\hei[Path=/Volumes/THAWSPACE/CshProject/code_matrix.git/code/LaTex/fontFiles/方正/]{FangZhengHeiTi-GBK-1.ttf}
+\newCJKfontfamily\ssong[Path=/Volumes/THAWSPACE/CshProject/code_matrix.git/code/LaTex/fontFiles/方正/]{FangZhengShuSong-GBK-1.ttf}
+\newCJKfontfamily\FZJiaGuWen[Path=/Volumes/THAWSPACE/CshProject/code_matrix.git/code/LaTex/fontFiles/方正/]{方正甲骨文.ttf}
+
+\setromanfont[Path=/Volumes/THAWSPACE/Soft.Ok/texlive/2024/texmf-dist/fonts/opentype/public/tex-gyre/
+, Extension=.otf, UprightFont=*-Regular,BoldFont=*-Bold, ItalicFont=*-Italic, BoldItalicFont=*-BoldItalic
+,Mapping=tex-text]{texgyrepagella}%TeX Gyre Pagella
+
+\setsansfont[Path=/Volumes/THAWSPACE/Soft.Ok/texlive/2024/texmf-dist/fonts/opentype/public/tex-gyre/
+, Extension=.otf, UprightFont=*-Regular,BoldFont=*-Bold, ItalicFont=*-Italic, BoldItalicFont=*-BoldItalic
+              ,Scale=MatchLowercase,Mapping=tex-text]{texgyrepagella}
+
+\setlength{\parindent}{0pt}  	
+\linespread{1.2} 				
+\setlength{\parskip}{15pt} 		
+
+\renewcommand\contentsname{目~录~}
+\renewcommand\listfigurename{图~列~表~}
+\renewcommand\listtablename{表~目~录~}
+
+%=========================制作拇指索引===================
+\usepackage{tikz,pgf}
+\usetikzlibrary{shapes,calc}
+\makeatletter
+\newcommand\thumb{%
+  \if@mainmatter
+  \begingroup
+  \catcode`\$=3
+  \tikzpicture[remember picture,overlay] % thumb index
+    \ifodd\value{page}
+      \node[fill=gray,text=black,anchor=north east,xshift=2mm,
+            yshift=-22mm-\arabic{chapter}*20mm,
+            shape=semicircle,shape border rotate=90,
+            minimum height=10mm,minimum width=5mm,
+            font=\normalfont\sffamily\bfseries\Huge]
+        at (current page.north east)
+        {\llap{\arabic{chapter}\hspace{1mm}}};
+    \else
+      \node[fill=gray,text=black,anchor=north west,xshift=-2mm,
+            yshift=-22mm-\arabic{chapter}*20mm,
+            shape=semicircle,shape border rotate=270,
+            minimum height=10mm,minimum width=5mm,
+            font=\normalfont\sffamily\bfseries\Huge]
+        at (current page.north west)
+        {\rlap{\hspace{1mm}\arabic{chapter}}};
+    \fi
+  \endtikzpicture
+  \endgroup
+  \fi}
+\makeatother
+
+\usepackage{fancyhdr}
+\fancypagestyle{plain}{%
+\fancyhf{} % clear all header and footer fields
+\fancyhead[r]{\thumb} % except the center
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}}
+%=========================制作拇指索引===================
+
+
+\titlecontents{chapter}
+[0em]
+{}
+{\large\CJKfamily{fzsong}{第 \thecontentslabel 章\quad}}
+{}{\hfill\contentspage}
+%
+\titlecontents{section}
+[4em]
+{}
+{\thecontentslabel\quad}
+{}{\titlerule*{.} \contentspage}
+
+
+\titleformat{\chapter}[display]
+	{\bfseries\Large}
+	{\titlerule[1pt]%
+     \filleft%
+    \parbox{1cm}{\vbox to 2.5cm{%
+    \vfill\hbox to 1cm{\hfill\Huge 第 \hfill}%
+    \vfill\hbox to 1cm{\hfill\Huge \thechapter\hfill}%
+    \vfill\hbox to 1cm{\hfill\Huge 章 \hfill}%
+    }}}
+	{1ex}
+	{\Huge
+	 \filright}
+	[{\titlerule[2pt]}]
+
+\title{\bf{podman使用笔记}}
+\author{virhuiai}
+\date{}
+
+% \usepackage{minted}
+\usepackage[newfloat]{minted}%（推荐方式） 除了加载 minted 核心功能外，还通过 newfloat 选项启用 newfloat 包的集成。
+% newfloat 包是 caption 包的配套包，专门用于定义新的浮动环境。
+% 启用后：
+%   listing 环境由 newfloat 包管理，支持更完善的浮动体控制。
+%   与 caption 包深度兼容（自动处理标题格式、编号、参考等）。
+%   支持 \listoflistings（代码列表）命令，生成所有代码块的目录。
+%   即使不加载 float 包，也能正常工作，且更现代化。
+\usepackage{caption}
+% 可选：美化标题
+\captionsetup[listing]{
+  name=代码,
+  labelsep=quad,
+  labelfont=bf
+}
+\setminted[shell]{
+  % linenos=true,
+  numbersep=8pt,
+  frame=lines,
+  framesep=2mm,
+  baselinestretch=1.2,
+  fontsize=\small,
+  bgcolor=gray!5,
+  breaklines=true,
+  escapeinside=||
+}
+
+\begin{document}
+\maketitle
+
+\tableofcontents
+
+\chapter{macOS 上Podman的安装配置}
+
+
+
+\section{前言}
+本文档记录了在 macOS 系统上使用 Homebrew 安装并配置 \textbf{Podman} 的完整流程，包括：
+\begin{itemize}
+  \item 配置文件持久化（符号链接）
+  \item Podman 虚拟机初始化与启动
+  \item 镜像源加速配置
+  \item 存储路径自定义
+  \item 常见问题与优化建议
+\end{itemize}
+
+适用于 macOS 15.6，Podman 版本 5.6.2。
+
+\section{环境准备：配置文件持久化}
+
+将用户配置文件迁移至外部存储（如移动硬盘），防止系统重装丢失。
+
+% \begin{listing}[htbp]
+\begin{minted}[]{shell}
+# 移动 .zshrc 到外部目录
+mv ~/.zshrc /Volumes/THAWSPACE/Soft.Ok/devEnv/
+
+# 创建符号链接
+ln -s /Volumes/THAWSPACE/Soft.Ok/devEnv/.zshrc ~/.zshrc
+
+# 创建容器配置目录
+mkdir -p /Volumes/THAWSPACE/Soft.Ok/devEnv/containers_config
+mkdir -p /Volumes/THAWSPACE/Soft.Ok/devEnv/containers_share
+
+# 链接容器配置目录
+ln -s /Volumes/THAWSPACE/Soft.Ok/devEnv/containers_config ~/.config/containers
+ln -s /Volumes/THAWSPACE/Soft.Ok/devEnv/containers_share ~/.local/share/containers
+\end{minted}
+% \caption{创建符号链接和容器配置目录}
+% \label{code:symlink}
+% \end{listing}
+
+
+\section{Podman 安装与初始化}
+
+\subsection{安装 Podman}
+% \begin{lstlisting}[caption={使用 Homebrew 安装 Podman}]
+使用 Homebrew 安装 Podman
+\begin{minted}[]{shell}
+brew install podman
+\end{minted}
+% \end{lstlisting}
+
+安装输出示例（Podman 5.6.2）：
+\begin{minted}[]{shell}
+==> Fetching podman
+==> Downloading https://ghcr.io/v2/homebrew/core/podman/...
+==> Pouring podman--5.6.2.sonoma.bottle.tar.gz
+==> Caveats
+In order to run containers locally, podman depends on a Linux kernel.
+One can be started manually using `podman machine` from this package.
+To start a podman VM automatically at login, also install the cask "podman-desktop".
+==> Summary
+🍺 /usr/local/Cellar/podman/5.6.2: 217 files, 79.8MB
+\end{minted}
+
+\subsection{初始化并启动虚拟机}
+
+% 推荐使用 \lstinline|podman machine init --now| 一键完成初始化与启动：
+% \begin{lstlisting}[caption={初始化并启动 Podman 虚拟机}]
+\begin{minted}[]{shell}
+podman machine init --now
+\end{minted}
+
+等价于：
+
+\begin{minted}[]{shell}
+podman machine init
+podman machine start
+\end{minted}
+
+
+启动成功后输出：
+\begin{minted}[]{shell}
+Machine "podman-machine-default" started successfully
+API forwarding listening on: /var/run/docker.sock
+Docker API clients default to this address. You do not need to set DOCKER_HOST.
+\end{minted}
+
+\section{测试运行容器}
+
+% \begin{lstlisting}[caption={运行 hello-world 测试容器}]
+\begin{minted}[]{shell}
+# 运行 hello-world 测试容器
+podman run --rm hello-world
+\end{minted}
+
+输出：
+\begin{minted}[]{shell}
+!... Hello Podman World ...!
+         .--"--.
+       / - - \
+      / (O) (O) \
+   ~~~| -=(,Y,)=- |
+    .---. /` \ |~~
+ ~/ o o \~~~~.----. ~~
+  | =(X)= |~ / (O (O) \
+   ~~~~~~~ ~| =(Y_)=- |
+  ~~~~ ~~~| U |~~
+Project: https://github.com/containers/podman
+Website: https://podman.io
+\end{minted}
+
+\section{镜像源加速}
+
+\begin{minted}[]{shell}
+podman pull docker.1ms.run/erlang:28.1.0.0-alpine
+\end{minted}
+
+% \subsection{方法一：在虚拟机内修改（推荐）}
+
+% 进入 Podman 虚拟机：
+% \begin{lstlisting}[caption={进入 Podman 虚拟机}]
+% podman machine ssh
+% \end{lstlisting}
+
+% 编辑镜像源配置文件：
+% \begin{lstlisting}
+% sudo vi /etc/containers/registries.conf.d/999-podman-machine.conf
+% \end{lstlisting}
+
+% 内容如下：
+% \begin{lstlisting}[language=toml, caption={999-podman-machine.conf}]
+% unqualified-search-registries = ["docker.io"]
+
+% [[registry]]
+% prefix = "docker.io"
+% location = "docker.1ms.run"
+
+% [[registry]]
+% prefix = "docker.io"
+% location = "hub.rat.dev"
+
+% [[registry]]
+% prefix = "docker.io"
+% location = "docker.xuanyuan.me"
+
+% [[registry]]
+% prefix = "docker.io"
+% location = "docker.1panel.live"
+% \end{lstlisting}
+
+% \subsection{方法二：宿主机配置（rootless 模式）}
+
+% 在 \lstinline|~/.config/containers/registries.conf| 中添加：
+
+% \begin{lstlisting}[language=toml]
+% unqualified-search-registries = ["docker.io"]
+
+% [[registry]]
+% prefix = "docker.io"
+% location = "docker.mirrors.ustc.edu.cn"
+% \end{lstlisting}
+
+% \section{自定义镜像存储路径}
+
+% 编辑 \lstinline|~/.config/containers/storage.conf|：
+
+% \begin{lstlisting}[language=toml, caption={storage.conf 关键配置}]
+% [storage]
+% graphroot = "/Volumes/THAWSPACE/Soft.Ok/devEnv/podman_containers"
+% runroot = "/run/containers/storage"
+
+% [storage.options]
+% # 可选：调整 overlay 驱动参数
+% \end{lstlisting}
+
+% > \textbf{注意}：\lstinline|graphroot| 为容器镜像和卷的存储根目录。
+
+% \section{进阶：Erlang 镜像拉取测试}
+
+% \begin{lstlisting}[caption={拉取 Erlang 镜像}]
+% podman pull docker.1ms.run/erlang:28.1.0.0-alpine
+% \end{lstlisting}
+
+% \section{常见问题与建议}
+
+% \begin{itemize}
+%   \item \textbf{权限问题}：若需绑定低端口（<1024），执行：
+%     \begin{lstlisting}
+%     podman machine set --rootful
+%     \end{lstlisting}
+%   \item \textbf{Docker 兼容性}：设置环境变量：
+%     \begin{lstlisting}
+%     export DOCKER_HOST='unix:///var/folders/.../podman-machine-default-api.sock'
+%     \end{lstlisting}
+%     或安装 \lstinline|podman-mac-helper|。
+%   \item \textbf{自动启动}：安装 \lstinline|podman-desktop| Cask 实现开机自启。
+% \end{itemize}
+
+% \section{参考资料}
+
+% \begin{itemize}
+%   \item 官方文档: \url{https://docs.podman.io}
+%   \item GitHub: \url{https://github.com/containers/podman}
+%   \item Podman Desktop: \url{https://podman-desktop.io}
+%   \item 镜像加速: \url{https://blog.csdn.net/adorechen/article/details/147652534}
+%   \item 存储配置: \url{https://github.com/containers/podman/blob/main/docs/tutorials/rootless_tutorial.md}
+% \end{itemize}
+
+
+
+
+\end{document} 
+
+\begin{minted}{shell}
+
+\end{minted}
+
+\end{document} 
