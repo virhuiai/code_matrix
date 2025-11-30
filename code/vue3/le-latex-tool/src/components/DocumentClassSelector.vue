@@ -105,21 +105,22 @@ onMounted(() => {
       <strong class="document-class__title">文档类选择</strong>
       <p class="document-class__description">选择适合的中文文档类</p>
       
-      <el-radio-group 
+      <!-- 将原来的 radio group 替换为 select -->
+      <el-select 
         v-model="selectedClass" 
-        class="document-class__radio-group"
+        class="document-class__select"
+        placeholder="请选择文档类"
       >
-        <div 
-          v-for="docClass in documentClasses" 
-          :key="docClass.className" 
-          class="document-class__item"
+        <el-option
+          v-for="docClass in documentClasses"
+          :key="docClass.className"
+          :label="docClass.label"
+          :value="docClass.className"
         >
-          <el-radio-button :label="docClass.className">
-            {{ docClass.label }}
-          </el-radio-button>
-          <p class="document-class__item-description">{{ docClass.description }}</p>
-        </div>
-      </el-radio-group>
+          <span class="document-class__option-label">{{ docClass.label }}</span>
+          <span class="document-class__option-description">{{ docClass.description }}</span>
+        </el-option>
+      </el-select>
       
       <div class="document-class__options">
         <strong class="document-class__options-title">文档类选项</strong>
@@ -134,7 +135,3 @@ onMounted(() => {
     </div>
   </el-card>
 </template>
-
-<style scoped>
-/* 所有样式已移至 src/style.css 文件中 */
-</style>
