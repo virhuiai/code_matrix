@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, defineEmits, defineProps, watch, onMounted } from 'vue'
-import { ElCard, ElInput, ElSelect, ElOption, ElRow, ElCol } from 'element-plus'
+import { ElCard, ElInput, ElSelect, ElOption, ElRow, ElCol, ElDialog, ElButton } from 'element-plus'
 
 const props = defineProps<{
   modelValue: {
@@ -16,6 +16,9 @@ const emit = defineEmits<{
   (e: 'update:modelValue', value: { fonts: Array<{ type: string; path: string; filename: string }> }): void
   (e: 'codeChange', value: string): void
 }>()
+
+// 控制弹窗显示
+const dialogVisible = ref(false)
 
 // 字体类型选项
 const fontTypes = [
@@ -86,47 +89,82 @@ onMounted(() => {
   }
   emit('codeChange', computedLatexCode.value)
 })
+
+// 打开弹窗
+const openDialog = () => {
+  dialogVisible.value = true
+}
+
+// 关闭弹窗
+const closeDialog = () => {
+  dialogVisible.value = false
+}
+
+defineExpose({
+  openDialog,
+  closeDialog
+})
 </script>
 
 <template>
-  <el-card shadow="hover">
-    <div>
-      <strong>字体设置</strong>
-      <p>设置中文字体路径</p>
+  <div>
+    <!-- 触发弹窗的按钮 -->
+    <el-button type="primary" @click="openDialog">字体设置</el-button>
+    
+    <!-- 弹窗 -->
+    <el-dialog
+      v-model="dialogVisible"
+      title="字体设置"
+      width="60%"
+      :before-close="closeDialog"
+    >
+      <el-card shadow="hover">
+        <div>
+          <strong>字体设置</strong>
+          <p>设置中文字体路径</p>
+          
+          <el-row :gutter="20" v-for="font in fontSettings" :key="font.type" style="margin-bottom: 15px;">
+            <el-col :span="6">
+              <el-select 
+                v-model="font.type" 
+                placeholder="选择字体类型" 
+                style="width: 100%"
+                disabled
+              >
+                <el-option
+                  v-for="item in fontTypes"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"
+                />
+              </el-select>
+            </el-col>
+            <el-col :span="12">
+              <el-input
+                v-model="font.path"
+                placeholder="请输入字体文件路径"
+                clearable
+                @input="updateFontSetting(font.type, 'path', $event)"
+              />
+            </el-col>
+            <el-col :span="6">
+              <el-input
+                v-model="font.filename"
+                placeholder="字体文件名"
+                clearable
+                @input="updateFontSetting(font.type, 'filename', $event)"
+              />
+            </el-col>
+          </el-row>
+        </div>
+      </el-card>
       
-      <el-row :gutter="20" v-for="font in fontSettings" :key="font.type" style="margin-bottom: 15px;">
-        <el-col :span="6">
-          <el-select 
-            v-model="font.type" 
-            placeholder="选择字体类型" 
-            style="width: 100%"
-            disabled
-          >
-            <el-option
-              v-for="item in fontTypes"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value"
-            />
-          </el-select>
-        </el-col>
-        <el-col :span="12">
-          <el-input
-            v-model="font.path"
-            placeholder="请输入字体文件路径"
-            clearable
-            @input="updateFontSetting(font.type, 'path', $event)"
-          />
-        </el-col>
-        <el-col :span="6">
-          <el-input
-            v-model="font.filename"
-            placeholder="字体文件名"
-            clearable
-            @input="updateFontSetting(font.type, 'filename', $event)"
-          />
-        </el-col>
-      </el-row>
-    </div>
-  </el-card>
+      <template #footer>
+        <span class="dialog-footer">
+          <el-button @click="closeDialog">取消</el-button>
+          <el-button type="primary" @click="closeDialog">确定</el-button>
+        </span>
+      </template>
+    </el-dialog>
+  </div>
 </template>
