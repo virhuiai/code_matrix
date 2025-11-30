@@ -30,6 +30,10 @@
   padding: 20px;
 }
 
+.app__left_tab{
+  height: calc(100vh - 120px); overflow-y: auto;
+}
+
 .app__main-content {
   height: 100%;
   border: 1px dashed #ccc;
