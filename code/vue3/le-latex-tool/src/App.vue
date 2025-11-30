@@ -20,6 +20,17 @@ const activeTab = ref('tab1')
         <el-tabs v-model="activeTab" type="border-card">
           <el-tab-pane label="选项" name="tab1">
             <div style="display: flex; flex-direction: column; gap: 10px;">
+
+              <el-card shadow="hover">
+                <div style="display: flex; flex-direction: column; gap: 5px;">
+                  <strong>PassOptionsToPackage</strong>
+                  
+<!-- \PassOptionsToPackage{AutoFakeBold=true,AutoFakeSlant=true}{xeCJK}
+\PassOptionsToPackage{no-math}{fontspec} -->
+
+                </div>
+              </el-card>
+
               <el-card shadow="hover">
                 <div style="display: flex; flex-direction: column; gap: 5px;">
                   <strong>文档设置</strong>
@@ -40,6 +51,51 @@ const activeTab = ref('tab1')
                   <p style="font-size: 0.9em; color: #666;">创建和自定义图表</p>
                 </div>
               </el-card>
+
+
+<!-- 0_导言区通用内容.tex
+
+\input{1_中文宏包.tex}
+\input{1_2字体.tex}
+\input{2_morewrites.tex} 
+\input{2_2_盒子设置.tex}
+\input{2_3_首行放大.tex} 
+\input{3_抄录设置.tex}
+\input{3_1行距和空格设置.tex}
+\input{3_2_版面设置16K.tex}
+\input{3_3版式.tex}
+\input{6_标题格式设置.tex}
+\input{8_目录格式设置.tex} 
+\input{10_链接_索引设置.tex}
+\input{11_列表_符号设置.tex}
+\input{12_对译环境.tex}
+\input{12_2_多栏.tex}
+\input{13_注释.tex}
+\input{14_插图_颜色设置.tex}
+\input{15_表格设置.tex}
+
+1_2字体.tex
+1_中文宏包.tex
+2_2_盒子设置.tex
+2_3_首行放大.tex
+2_morewrites.tex
+3_1行距和空格设置.tex
+3_2_版面设置16K.tex
+3_3版式.tex
+3_抄录设置_minted.tex
+3_抄录设置_tcb.tex
+3_抄录设置.tex
+6_标题格式设置.tex
+8_目录格式设置.tex
+10_链接_索引设置.tex
+11_列表_符号设置.tex
+12_2_多栏.tex
+12_对译环境.tex
+13_注释.tex
+14_插图_颜色设置.tex
+15_表格设置.tex
+16_marginPic.tex -->
+              
             </div>
           </el-tab-pane>
           <el-tab-pane label="常见模板" name="tab2"></el-tab-pane>
