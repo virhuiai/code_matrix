@@ -12,6 +12,7 @@ export {}
 declare module 'vue' {
   export interface GlobalComponents {
     BoxPackages: typeof import('./src/components/BoxPackages.vue')['default']
+    CodeListingPackage: typeof import('./src/components/CodeListingPackage.vue')['default']
     DocumentClassSelector: typeof import('./src/components/DocumentClassSelector.vue')['default']
     DocumentContent: typeof import('./src/components/DocumentContent.vue')['default']
     ElArea: typeof import('element-plus/es')['ElArea']

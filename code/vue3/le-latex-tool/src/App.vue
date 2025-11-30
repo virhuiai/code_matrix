@@ -9,6 +9,7 @@ import MoreWritesPackage from './components/MoreWritesPackage.vue'
 import BoxPackages from './components/BoxPackages.vue'
 import DocumentContent from './components/DocumentContent.vue'
 import LettrinePackage from './components/LettrinePackage.vue'
+import CodeListingPackage from './components/CodeListingPackage.vue'
 
 const activeTab = ref('tab1')
 
@@ -97,6 +98,33 @@ const lettrinePackage = ref({
   loversize: 0.1
 })
 
+// CodeListingPackage 的默认值
+const codeListingPackage = ref({
+  xcolor: {
+    enabled: true,
+    dvipsnames: true
+  },
+  cprotect: true,
+  spverbatim: true,
+  fancyvrb: true,
+  fancyvrbEx: true,
+  xparse: true,
+  minted: {
+    enabled: true,
+    newfloat: true,
+    cache: false
+  },
+  listings: true,
+  accsupp: true,
+  tcolorbox: {
+    enabled: true,
+    listings: true,
+    skins: true,
+    breakable: true,
+    xparse: true
+  }
+})
+
 // DocumentContent 的默认值
 const documentContent = ref({
   enabled: true
@@ -110,11 +138,12 @@ const englishFontSettingsCode = ref('')
 const moreWritesPackageCode = ref('')
 const boxPackagesCode = ref('')
 const lettrinePackageCode = ref('')
+const codeListingPackageCode = ref('')
 const documentContentCode = ref('')
 
 // 合并多个组件传来的代码
 const combinedLatexCode = computed(() => {
-  return [latexCodeFromChild.value, documentClassCode.value, fontSettingsCode.value, englishFontSettingsCode.value, moreWritesPackageCode.value, boxPackagesCode.value, lettrinePackageCode.value, documentContentCode.value]
+  return [latexCodeFromChild.value, documentClassCode.value, fontSettingsCode.value, englishFontSettingsCode.value, moreWritesPackageCode.value, boxPackagesCode.value, lettrinePackageCode.value, codeListingPackageCode.value, documentContentCode.value]
     .filter(code => code.trim() !== '')
     .join('\n')
 })
@@ -158,22 +187,28 @@ const combinedLatexCode = computed(() => {
                 @code-change="(code) => englishFontSettingsCode = code"
               />
 
-              <!-- 添加MoreWritesPackage组件 -->
+              <!-- 添加MoreWritesPackage组件 morewrites -->
               <MoreWritesPackage
                 v-model="moreWritesPackage"
                 @code-change="(code) => moreWritesPackageCode = code"
               />
 
-              <!-- 添加BoxPackages组件 -->
+              <!-- 添加BoxPackages组件 2_2_盒子设置 -->
               <BoxPackages
                 v-model="boxPackages"
                 @code-change="(code: string) => boxPackagesCode = code"
               />
 
-              <!-- 添加LettrinePackage组件 -->
+              <!-- 添加LettrinePackage组件 2_3_首行放大 -->
               <LettrinePackage
                 v-model="lettrinePackage"
                 @code-change="(code: string) => lettrinePackageCode = code"
+              />
+
+              <!-- 添加CodeListingPackage组件 -->
+              <CodeListingPackage
+                v-model="codeListingPackage"
+                @code-change="(code: string) => codeListingPackageCode = code"
               />
 
               <!-- 添加DocumentContent组件 -->
