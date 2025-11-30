@@ -12,6 +12,7 @@ import LettrinePackage from './components/LettrinePackage.vue'
 import CodeListingPackage from './components/CodeListingPackage.vue'
 import DocumentLayoutPackage from './components/DocumentLayoutPackage.vue'
 import GeometryPackage from './components/GeometryPackage.vue'
+import FancyhdrPackage from './components/FancyhdrPackage.vue'
 
 const activeTab = ref('tab1')
 
@@ -100,6 +101,11 @@ const lettrinePackage = ref({
   loversize: 0.1
 })
 
+// FancyhdrPackage 的默认值
+const fancyhdrPackage = ref({
+  enabled: true
+})
+
 // CodeListingPackage 的默认值
 const codeListingPackage = ref({
   xcolor: {
@@ -165,6 +171,7 @@ const englishFontSettingsCode = ref('')
 const moreWritesPackageCode = ref('')
 const boxPackagesCode = ref('')
 const lettrinePackageCode = ref('')
+const fancyhdrPackageCode = ref('')
 const codeListingPackageCode = ref('')
 const documentLayoutPackageCode = ref('')
 const geometryPackageCode = ref('')
@@ -180,6 +187,7 @@ const combinedLatexCode = computed(() => {
     moreWritesPackageCode.value,
     boxPackagesCode.value,
     lettrinePackageCode.value,
+    fancyhdrPackageCode.value,
     codeListingPackageCode.value,
     documentLayoutPackageCode.value,
   ]
@@ -250,36 +258,41 @@ const combinedLatexCode = computed(() => {
                 @code-change="(code: string) => lettrinePackageCode = code"
               />
 
+          
+
               <!-- 添加CodeListingPackage组件 3_抄录设置 -->
               <CodeListingPackage
                 v-model="codeListingPackage"
                 @code-change="(code) => codeListingPackageCode = code"
               />
 
-              <!-- 添加DocumentLayoutPackage组件 -->
+              <!-- 添加DocumentLayoutPackage组件 行距和空格设置-->
               <DocumentLayoutPackage
                 v-model="documentLayoutPackage"
                 @code-change="(code) => documentLayoutPackageCode = code"
               />
 
-              <!-- 添加GeometryPackage组件 -->
+              <!-- 添加GeometryPackage组件 版面设置16K -->
               <GeometryPackage
                 v-model="geometryPackage"
                 @code-change="(code: string) => geometryPackageCode = code"
               />
 
+              <!-- 添加FancyhdrPackage组件 版式设置 -->
+              <FancyhdrPackage
+                v-model="fancyhdrPackage"
+                @code-change="(code: string) => fancyhdrPackageCode = code"
+              />
+          
               <!-- 添加DocumentContent组件 -->
               <DocumentContent
                 v-model="documentContent"
                 @code-change="(code: string) => documentContentCode = code"
               />
 
-              <el-card shadow="hover" class="card card--hover">
-                <div class="card">
-                  <strong class="card__title">文档设置</strong>
-                  <p class="card__description">设置文档类型、页面大小等</p>
-                </div>
-              </el-card>
+               
+
+              
             </div>
           </el-tab-pane>
           <el-tab-pane label="常见模板" name="tab2"></el-tab-pane>
