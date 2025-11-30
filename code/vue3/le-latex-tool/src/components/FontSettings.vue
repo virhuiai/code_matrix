@@ -29,7 +29,7 @@ interface FontType {
 
 const fontTypes: FontType[] = [
   { value: 'main', label: '主字体', command: 'setCJKmainfont' },
-  { value: 'sans', label: '无衬线字体', command: 'setCJKsansfont' },
+  { value: 'sans', label: '无衬线字体', command: 'setCJKsansfont' }, 
   { value: 'mono', label: '等宽字体', command: 'setCJKmonofont' }
 ]
 
@@ -125,27 +125,21 @@ const getFontByType = (type: string) => {
 }
 
 // 更新特定字体类型的设置
-const updateFontSetting = (type: string, field: 'path' | 'filename', value: string) => {
+const updateFontSetting = (type: string, field: 'path' | 'filename' | 'label', value: string) => {
   const index = fontSettings.value.findIndex(font => font.type === type)
   if (index !== -1) {
-    fontSettings.value[index][field] = value
+    fontSettings.value[index][field as keyof typeof fontSettings.value[number]] = value
   } else {
     // 如果该类型不存在，则添加新项
-    fontSettings.value.push({ type, [field]: value, path: '', filename: '' } as any)
-    // 确保其他字段有默认值
-    if (field === 'path') {
-      const lastIndex = fontSettings.value.length - 1
-      fontSettings.value[lastIndex].filename = ''
-    } else if (field === 'filename') {
-      const lastIndex = fontSettings.value.length - 1
-      fontSettings.value[lastIndex].path = ''
-    }
+    fontSettings.value.push({ type, path: '', filename: '', label: '' } as any)
+    const lastIndex = fontSettings.value.length - 1
+    fontSettings.value[lastIndex][field as keyof typeof fontSettings.value[number]] = value
   }
   emit('update:modelValue', { fonts: [...fontSettings.value] })
 }
 
 // 处理字体选择变更
-const handleFontChange = (type: string, option: { path: string; filename: string }) => {
+const handleFontChange = (type: string, option: { path: string; filename: string; label: string }) => {
   updateFontSetting(type, 'path', option.path)
   updateFontSetting(type, 'filename', option.filename)
 }
@@ -193,6 +187,7 @@ onMounted(() => {
   } else {
     fontSettings.value = [...props.modelValue.fonts]
   }
+  
   emit('codeChange', computedLatexCode.value)
 })
 
@@ -232,7 +227,7 @@ defineExpose({
           <div v-for="fontType in fontTypes" :key="fontType.value" style="margin-bottom: 20px;">
             <h4>{{ fontType.label }}</h4>
             <el-row :gutter="20">
-              <el-col :span="18">
+              <el-col :span="24">
                 <el-select 
                   :model-value="getFontByType(fontType.value).filename"
                   @change="(val) => handleFontChange(fontType.value, val)"
@@ -247,11 +242,22 @@ defineExpose({
                   />
                 </el-select>
               </el-col>
-              <el-col :span="6">
+            </el-row>
+            
+            <!-- 显示路径和文件名，并允许编辑 -->
+            <el-row :gutter="20" style="margin-top: 10px;">
+              <el-col :span="12">
+                <el-input
+                  :model-value="getFontByType(fontType.value).path"
+                  placeholder="字体路径"
+                  @update:model-value="(val) => updateFontSetting(fontType.value, 'path', val)"
+                />
+              </el-col>
+              <el-col :span="12">
                 <el-input
                   :model-value="getFontByType(fontType.value).filename"
                   placeholder="字体文件名"
-                  readonly
+                  @update:model-value="(val) => updateFontSetting(fontType.value, 'filename', val)"
                 />
               </el-col>
             </el-row>
