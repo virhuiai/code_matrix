@@ -155,14 +155,14 @@ onMounted(() => {
 </script>
 
 <template>
-  <el-card shadow="hover">
-    <div style="display: flex; flex-direction: column; gap: 15px;">
-      <strong>PassOptionsToPackage</strong>
+  <el-card shadow="hover" class="package-options-card">
+    <div class="package-options">
+      <strong class="package-options__title">PassOptionsToPackage</strong>
       
       <!-- 使用 v-for 指令遍历所有宏包配置 -->
       <!-- :key 是 Vue 中用于标识列表项的唯一性的特殊属性 -->
-      <div v-for="pkg in packageConfigs" :key="pkg.packageName">
-        <strong>{{ pkg.title }}</strong>
+      <div v-for="pkg in packageConfigs" :key="pkg.packageName" class="package-options__group">
+        <strong class="package-options__group-title">{{ pkg.title }}</strong>
         <!-- 为每个宏包的选项创建复选框 -->
         <!-- v-model 是 Vue 中实现双向数据绑定的指令 -->
         <el-checkbox 
@@ -170,7 +170,7 @@ onMounted(() => {
           :key="item.key"
           v-model="optionValues[item.key]" 
           :label="item.label" 
-          style="display: block; margin-left: 20px;"
+          class="package-options__checkbox"
         />
       </div>
       
@@ -180,4 +180,5 @@ onMounted(() => {
 </template>
 
 <style scoped>
+/* 所有样式已移至 src/style.css 文件中 */
 </style>

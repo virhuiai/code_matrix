@@ -19,43 +19,43 @@ const latexCodeFromChild = ref('')
 </script>
 
 <template>
-  <el-container style="height: 100vh;">
+  <el-container class="app">
     <!-- 顶部标题区域 -->
-    <el-header style="background-color: #409eff; color: white; display: flex; align-items: center;">
-      <h1>LE LaTeX 工具</h1>
+    <el-header class="app__header">
+      <h1 class="app__header-title">LE LaTeX 工具</h1>
     </el-header>
     
     <!-- 下方主要内容区域 -->
-    <el-container> 
+    <el-container class="app__container"> 
       <!-- 左侧选项卡 -->
-      <el-aside width="250px" style="background-color: #f5f5f5; padding: 10px;">
-        <el-tabs v-model="activeTab" type="border-card">
+      <el-aside class="app__aside">
+        <el-tabs v-model="activeTab" type="border-card" class="tabs">
           <el-tab-pane label="选项" name="tab1">
-            <div style="display: flex; flex-direction: column; gap: 10px;">
+            <div class="app__tab-content">
               <!-- 使用新创建的组件 -->
               <PackageOptions 
                 v-model="packageOptions" 
                 @code-change="(code) => latexCodeFromChild = code"
               />
 
-              <el-card shadow="hover">
-                <div style="display: flex; flex-direction: column; gap: 5px;">
-                  <strong>文档设置</strong>
-                  <p style="font-size: 0.9em; color: #666;">设置文档类型、页面大小等</p>
+              <el-card shadow="hover" class="card card--hover">
+                <div class="card">
+                  <strong class="card__title">文档设置</strong>
+                  <p class="card__description">设置文档类型、页面大小等</p>
                 </div>
               </el-card>
               
-              <el-card shadow="hover">
-                <div style="display: flex; flex-direction: column; gap: 5px;">
-                  <strong>公式编辑</strong>
-                  <p style="font-size: 0.9em; color: #666;">插入和编辑数学公式</p>
+              <el-card shadow="hover" class="card card--hover">
+                <div class="card">
+                  <strong class="card__title">公式编辑</strong>
+                  <p class="card__description">插入和编辑数学公式</p>
                 </div>
               </el-card>
               
-              <el-card shadow="hover">
-                <div style="display: flex; flex-direction: column; gap: 5px;">
-                  <strong>图表生成</strong>
-                  <p style="font-size: 0.9em; color: #666;">创建和自定义图表</p>
+              <el-card shadow="hover" class="card card--hover">
+                <div class="card">
+                  <strong class="card__title">图表生成</strong>
+                  <p class="card__description">创建和自定义图表</p>
                 </div>
               </el-card>
               
@@ -68,22 +68,22 @@ const latexCodeFromChild = ref('')
       </el-aside>
       
       <!-- 中间主要内容显示区域 -->
-      <el-main style="background-color: #ffffff; padding: 20px;">
-        <div style="height: 100%; border: 1px dashed #ccc; display: flex; justify-content: center; align-items: center;">
+      <el-main class="app__main">
+        <div class="app__main-content">
           <!-- 显示从子组件传递过来的LaTeX代码 -->
           <el-input
             v-model="latexCodeFromChild"
             type="textarea"
             :rows="10"
             readonly
-            style="width: 100%; height: 100%; font-family: monospace;"
+            class="latex-output"
           />
         </div>
       </el-main>
       
       <!-- 右侧属性设置区域 -->
-      <el-aside width="250px" style="background-color: #f5f5f5; padding: 10px;">
-        <div style="padding: 20px;">
+      <el-aside class="app__property-panel">
+        <div class="app__property-panel-title">
           <h3>属性设置</h3>
           <div v-if="activeTab === 'tab1'">
             <p>选项一的属性设置</p>
@@ -102,23 +102,12 @@ const latexCodeFromChild = ref('')
     </el-container>
     
     <!-- 底部 -->
-    <el-footer style="background-color: #eee; height: 40px; display: flex; align-items: center; justify-content: center;">
+    <el-footer class="app__footer">
       <span>LE LaTeX 工具 ©2023</span>
     </el-footer>
   </el-container>
 </template>
 
 <style scoped>
-.el-header h1 {
-  margin: 0;
-  font-size: 1.5em;
-}
-
-.el-aside {
-  overflow-y: auto;
-}
-
-.el-tabs {
-  height: 100%;
-}
+/* 所有样式已移至 src/style.css 文件中 */
 </style>
