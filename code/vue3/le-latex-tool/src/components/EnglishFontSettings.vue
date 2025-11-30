@@ -22,7 +22,10 @@ const fontConfig = {
   defaultEnabled: true,
   
   // LaTeX 代码模板
-  latexTemplate: `% \\setmainfont{ } % 论文中西文部分默认使用的字体。
+  latexTemplate: `%
+\\cd /usr/local/texlive/2022/texmf-dist/fonts/opentype/public/cm-unicode/
+\\cd /Volumes/THAWSPACE/Soft.Ok/texlive/2024/texmf-dist/fonts/opentype/public/cm-unicode/
+\\setmainfont{ } % 论文中西文部分默认使用的字体。
 % %通常到 Word 2003 为止，这里的默认字体都会是 Times New Roman。Linux 下也有同名字体。
 \\setmainfont{cmun}[
   Extension       = .otf,
@@ -50,6 +53,10 @@ const fontConfig = {
   BoldFont       = *tb,
   BoldItalicFont = *tx,
 ]`
++ '\n' + `% 消除 \\t 命令的字体 warning
+\\AtBeginDocument{%}
+  \\renewcommand*\\t[1]{{\\edef\\restore@font{\\the\\font}\\usefont{OML}{cmm}{m}{it}\\accent"7F\\restore@font#1}}
+}`
 }
 
 // 计算属性：控制启用状态
@@ -92,7 +99,7 @@ defineExpose({
 <template>
   <div>
     <!-- 触发弹窗的按钮 -->
-    <el-button type="primary" @click="openDialog" style="width: 100%">英文字体设置</el-button>
+    <el-button type="primary" @click="openDialog" style="width: 100%;margin-top:10px;">英文字体设置</el-button>
     
     <!-- 弹窗 -->
     <el-dialog
@@ -106,7 +113,7 @@ defineExpose({
           <strong>英文字体设置</strong>
           <p>设置英文字体配置</p>
           
-          <el-checkbox v-model="isEnabled" label="启用英文字体设置" />
+          <el-checkbox v-model="isEnabled" label="启用cm-unicode" />
         </div>
       </el-card>
       

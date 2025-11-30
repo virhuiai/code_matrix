@@ -142,10 +142,7 @@ const computedLatexCode = computed(() => {
     const fontType = fontConfig.types.find(type => type.value === font.type)
     if (!fontType || !font.path || !font.filename) return ''
     return `\\${fontType.command}[Path=${font.path}]{${font.filename}}`
-  }).filter(code => code !== '').join('\n') + '\n' + `% 消除 \\t 命令的字体 warning
-\\AtBeginDocument{%}
-  \\renewcommand*\\t[1]{{\\edef\\restore@font{\\the\\font}\\usefont{OML}{cmm}{m}{it}\\accent"7F\\restore@font#1}}
-}`;
+  }).filter(code => code !== '').join('\n');
 
 
 
