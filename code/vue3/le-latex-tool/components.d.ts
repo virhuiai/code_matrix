@@ -15,6 +15,7 @@ declare module 'vue' {
     CodeListingPackage: typeof import('./src/components/CodeListingPackage.vue')['default']
     DocumentClassSelector: typeof import('./src/components/DocumentClassSelector.vue')['default']
     DocumentContent: typeof import('./src/components/DocumentContent.vue')['default']
+    DocumentLayoutPackage: typeof import('./src/components/DocumentLayoutPackage.vue')['default']
     ElArea: typeof import('element-plus/es')['ElArea']
     ElCheckbox: typeof import('element-plus/es')['ElCheckbox']
     ElOption: typeof import('element-plus/es')['ElOption']

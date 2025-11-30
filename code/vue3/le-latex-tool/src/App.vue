@@ -10,6 +10,7 @@ import BoxPackages from './components/BoxPackages.vue'
 import DocumentContent from './components/DocumentContent.vue'
 import LettrinePackage from './components/LettrinePackage.vue'
 import CodeListingPackage from './components/CodeListingPackage.vue'
+import DocumentLayoutPackage from './components/DocumentLayoutPackage.vue'
 
 const activeTab = ref('tab1')
 
@@ -125,6 +126,20 @@ const codeListingPackage = ref({
   }
 })
 
+// DocumentLayoutPackage 的默认值
+const documentLayoutPackage = ref({
+  parskip: {
+    enabled: true
+  },
+  linespread: {
+    enabled: true,
+    value: 1.245
+  },
+  xspace: {
+    enabled: true
+  }
+})
+
 // DocumentContent 的默认值
 const documentContent = ref({
   enabled: true
@@ -139,11 +154,12 @@ const moreWritesPackageCode = ref('')
 const boxPackagesCode = ref('')
 const lettrinePackageCode = ref('')
 const codeListingPackageCode = ref('')
+const documentLayoutPackageCode = ref('')
 const documentContentCode = ref('')
 
 // 合并多个组件传来的代码
 const combinedLatexCode = computed(() => {
-  return [latexCodeFromChild.value, documentClassCode.value, fontSettingsCode.value, englishFontSettingsCode.value, moreWritesPackageCode.value, boxPackagesCode.value, lettrinePackageCode.value, codeListingPackageCode.value, documentContentCode.value]
+  return [latexCodeFromChild.value, documentClassCode.value, fontSettingsCode.value, englishFontSettingsCode.value, moreWritesPackageCode.value, boxPackagesCode.value, lettrinePackageCode.value, codeListingPackageCode.value, documentLayoutPackageCode.value, documentContentCode.value]
     .filter(code => code.trim() !== '')
     .join('\n')
 })
@@ -205,10 +221,16 @@ const combinedLatexCode = computed(() => {
                 @code-change="(code: string) => lettrinePackageCode = code"
               />
 
-              <!-- 添加CodeListingPackage组件 -->
+              <!-- 添加CodeListingPackage组件 3_抄录设置 -->
               <CodeListingPackage
                 v-model="codeListingPackage"
                 @code-change="(code: string) => codeListingPackageCode = code"
+              />
+
+              <!-- 添加DocumentLayoutPackage组件 -->
+              <DocumentLayoutPackage
+                v-model="documentLayoutPackage"
+                @code-change="(code: string) => documentLayoutPackageCode = code"
               />
 
               <!-- 添加DocumentContent组件 -->
