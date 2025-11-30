@@ -43,7 +43,8 @@ Hello,world!
 Hello,world!
 你好，世界！
 }
-\\end{document}`
+\\end{document}
+xelatex -shell-escape a.tex`
 }
 
 // 计算属性：控制启用状态

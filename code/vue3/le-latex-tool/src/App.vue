@@ -187,6 +187,9 @@ const combinedLatexCode = computed(() => {
   // 添加 GeometryPackage 代码
   codes.push(geometryPackageCode.value)
 
+  codes.push(documentContentCode.value)
+  
+
   return codes.filter(code => code.trim() !== '').join('\n\n')
 })
 </script>
