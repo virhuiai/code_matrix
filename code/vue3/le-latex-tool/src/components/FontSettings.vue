@@ -24,8 +24,8 @@ const dialogVisible = ref(false)
 const fontConfig = {
   types: [
     { value: 'main', label: '主字体', command: 'setCJKmainfont' },
-    { value: 'sans', label: '无衬线字体', command: 'setCJKsansfont' },
-    { value: 'mono', label: '等宽字体', command: 'setCJKmonofont' }
+    { value: 'sans', label: '无衬线字体', command: 'setCJKsansfont' },//\sf
+    { value: 'mono', label: '等宽字体', command: 'setCJKmonofont' }// \tt
   ],
   
   options: {
@@ -142,7 +142,13 @@ const computedLatexCode = computed(() => {
     const fontType = fontConfig.types.find(type => type.value === font.type)
     if (!fontType || !font.path || !font.filename) return ''
     return `\\${fontType.command}[Path=${font.path}]{${font.filename}}`
-  }).filter(code => code !== '').join('\n')
+  }).filter(code => code !== '').join('\n') + '\n' + `% 消除 \\t 命令的字体 warning
+\\AtBeginDocument{%}
+  \\renewcommand*\\t[1]{{\\edef\\restore@font{\\the\\font}\\usefont{OML}{cmm}{m}{it}\\accent"7F\\restore@font#1}}
+}`;
+
+
+
 })
 
 watch(computedLatexCode, (newCode) => {
@@ -197,7 +203,7 @@ defineExpose({
 <template>
   <div>
     <!-- 触发弹窗的按钮 -->
-    <el-button type="primary" @click="openDialog">字体设置</el-button>
+    <el-button type="primary" @click="openDialog" style="width: 100%">中文字体设置</el-button>
     
     <!-- 弹窗 -->
     <el-dialog
@@ -208,7 +214,7 @@ defineExpose({
     >
       <el-card shadow="hover">
         <div>
-          <strong>字体设置</strong>
+          <strong>中文字体设置</strong>
           <p>设置中文字体路径</p>
           
           <div v-for="fontType in fontConfig.types" :key="fontType.value" style="margin-bottom: 20px;">
