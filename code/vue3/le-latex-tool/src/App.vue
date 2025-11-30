@@ -15,6 +15,7 @@ import GeometryPackage from './components/GeometryPackage.vue'
 import FancyhdrPackage from './components/FancyhdrPackage.vue'
 import TitleFormatPackage from './components/TitleFormatPackage.vue'
 import TableOfContentsPackage from './components/TableOfContentsPackage.vue'
+import HyperlinkIndexPackage from './components/HyperlinkIndexPackage.vue'
 
 const activeTab = ref('tab1')
 
@@ -118,6 +119,11 @@ const tableOfContentsPackage = ref({
   enabled: true
 })
 
+// HyperlinkIndexPackage 的默认值
+const hyperlinkIndexPackage = ref({
+  enabled: true
+})
+
 // CodeListingPackage 的默认值
 const codeListingPackage = ref({
   xcolor: {
@@ -186,6 +192,7 @@ const lettrinePackageCode = ref('')
 const fancyhdrPackageCode = ref('')
 const titleFormatPackageCode = ref('')
 const tableOfContentsPackageCode = ref('')
+const hyperlinkIndexPackageCode = ref('')
 const codeListingPackageCode = ref('')
 const documentLayoutPackageCode = ref('')
 const geometryPackageCode = ref('')
@@ -204,6 +211,7 @@ const combinedLatexCode = computed(() => {
     fancyhdrPackageCode.value,
     titleFormatPackageCode.value,
     tableOfContentsPackageCode.value,
+    hyperlinkIndexPackageCode.value,
     codeListingPackageCode.value,
     documentLayoutPackageCode.value,
   ]
@@ -306,13 +314,21 @@ const combinedLatexCode = computed(() => {
                 @code-change="(code: string) => titleFormatPackageCode = code"
               />
 
-              <!-- 添加TableOfContentsPackage组件 目录格式设置 -->
+              <!-- 添加TableOfContentsPackage组件 目录格式设置  8_目录格式设置.tex -->
               <TableOfContentsPackage
                 v-model="tableOfContentsPackage"
                 @code-change="(code: string) => tableOfContentsPackageCode = code"
               />
 
-              <!-- 8_目录格式设置.tex -->
+
+              <!-- 添加HyperlinkIndexPackage组件 链接_索引设置 -->
+              <HyperlinkIndexPackage
+                v-model="hyperlinkIndexPackage"
+                @code-change="(code: string) => hyperlinkIndexPackageCode = code"
+              />
+
+
+              <!-- todo  -->
 
 
               <!-- 添加DocumentContent组件 -->
