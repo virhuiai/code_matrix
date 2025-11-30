@@ -58,7 +58,7 @@ const combinedLatexCode = computed(() => {
       <el-aside class="app__aside">
         <el-tabs v-model="activeTab" type="border-card" class="tabs">
           <el-tab-pane label="选项" name="tab1">
-            <div class="app__tab-content">
+            <div class="app__tab-content" style="max-height: calc(100vh - 200px); overflow-y: auto;">
               <!-- 使用新创建的组件 -->
               <PackageOptions 
                 v-model="packageOptions" 
