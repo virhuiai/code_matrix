@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import { ref, computed, defineEmits, defineProps, watch, onMounted } from 'vue'
-import { ElCard, ElCheckbox, ElDialog, ElButton, ElInput } from 'element-plus'
+import { ElCard, ElCheckbox, ElDialog, ElButton } from 'element-plus'
 
 const props = defineProps<{
   modelValue: {
     enabled: boolean
   }
+  componentId?: number
 }>()
 
 const emit = defineEmits<{
@@ -54,6 +55,9 @@ watch(computedLatexCode, (newCode) => {
 // 组件挂载时触发代码变更事件
 onMounted(() => {
   emit('codeChange', computedLatexCode.value)
+  if (props.componentId !== undefined) {
+    console.log(`FancyhdrPackage component loaded successfully with ID: ${props.componentId}`)
+  }
 })
 
 // 打开弹窗

@@ -6,6 +6,7 @@ const props = defineProps<{
   modelValue: {
     enabled: boolean
   }
+  componentId?: number
 }>()
 
 const emit = defineEmits<{
@@ -96,6 +97,9 @@ watch(computedLatexCode, (newCode) => {
 // 组件挂载时触发代码变更事件
 onMounted(() => {
   emit('codeChange', computedLatexCode.value)
+  if (props.componentId !== undefined) {
+    console.log(`TablePackage component loaded successfully with ID: ${props.componentId}`)
+  }
 })
 
 // 打开弹窗

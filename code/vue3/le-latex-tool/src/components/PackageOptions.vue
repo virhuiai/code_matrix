@@ -8,6 +8,7 @@ import { ElCard, ElCheckbox } from 'element-plus'
 // modelValue 是一个对象，键为字符串，值为布尔值
 const props = defineProps<{
   modelValue: Record<string, boolean>
+  componentId?: number
 }>()
 /**
  Record<Keys, Type> 构造一个对象类型：
@@ -151,6 +152,9 @@ watch(computedLatexCode, (newCode) => {
 // 在组件初始化时也发送一次初始代码
 onMounted(() => {
   emit('codeChange', computedLatexCode.value)
+  if (props.componentId !== undefined) {
+    console.log(`PackageOptions component loaded successfully with ID: ${props.componentId}`)
+  }
 })
 </script>
 

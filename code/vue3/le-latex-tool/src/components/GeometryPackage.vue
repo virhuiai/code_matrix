@@ -5,25 +5,22 @@ import { ElCard, ElCheckbox, ElDialog, ElButton, ElFormItem, ElInput, ElDivider 
 const props = defineProps<{
   modelValue: {
     enabled: boolean
-    paperWidth?: string
-    paperHeight?: string
-    textWidth?: string
-    textHeight?: string
-    leftMargin?: string
-    topMargin?: string
+    papersize: string
+    textwidth: string
+    textlines: string
+    leftmargin: string
+    rightmargin: string
+    topmargin: string
+    bottommargin: string
+    headheight: string
+    headsep: string
+    footskip: string
   }
+  componentId?: number
 }>()
 
 const emit = defineEmits<{
-  (e: 'update:modelValue', value: { 
-    enabled: boolean
-    paperWidth?: string
-    paperHeight?: string
-    textWidth?: string
-    textHeight?: string
-    leftMargin?: string
-    topMargin?: string
-  }): void
+  (e: 'update:modelValue', value: any): void
   (e: 'codeChange', value: string): void
 }>()
 
@@ -33,13 +30,13 @@ const dialogVisible = ref(false)
 // geometry 配置数据
 const geometryConfig = ref({
   enabled: props.modelValue.enabled !== undefined ? props.modelValue.enabled : true,
-  paperWidth: props.modelValue.paperWidth || '185mm',
-  paperHeight: props.modelValue.paperHeight || '260mm',
-  textWidth: props.modelValue.textWidth || '148mm',
-  textHeight: props.modelValue.textHeight || '220mm',
-  leftMargin: props.modelValue.leftMargin || '21mm',
-  topMargin: props.modelValue.topMargin || '25.5mm'
-})
+  paperWidth: '185mm',
+  paperHeight: '260mm',
+  textWidth: '148mm',
+  textHeight: '220mm',
+  leftMargin: '21mm',
+  topMargin: '25.5mm'
+} as any)
 
 // LaTeX 代码模板
 const latexTemplates = {
@@ -51,8 +48,14 @@ const latexTemplates = {
     leftMargin: string
     topMargin: string
   }) => {
-    return `\\usepackage[paperwidth=${options.paperWidth}, paperheight=${options.paperHeight}, 
-text={${options.textWidth},${options.textHeight}}, left=${options.leftMargin}, top=${options.topMargin}]{geometry}`
+    return `%\\usepackage{geometry}
+%\\geometry{
+%  a4paper,
+%  total={${options.paperWidth},${options.paperHeight}},
+%  text={${options.textWidth},${options.textHeight}},
+%  left=${options.leftMargin},
+%  top=${options.topMargin}
+%}`
   }
 }
 
@@ -85,8 +88,10 @@ watch(computedLatexCode, (newCode) => {
 
 // 组件挂载时触发代码变更事件
 onMounted(() => {
-  emit('update:modelValue', { ...geometryConfig.value })
   emit('codeChange', computedLatexCode.value)
+  if (props.componentId !== undefined) {
+    console.log(`GeometryPackage component loaded successfully with ID: ${props.componentId}`)
+  }
 })
 
 // 打开弹窗

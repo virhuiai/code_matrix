@@ -7,6 +7,7 @@ const props = defineProps<{
     documentClass: string
     options: Record<string, boolean>
   }
+  componentId?: number
 }>()
 
 const emit = defineEmits<{
@@ -96,6 +97,9 @@ watch(computedLatexCode, (newCode) => {
 
 onMounted(() => {
   emit('codeChange', computedLatexCode.value)
+  if (props.componentId !== undefined) {
+    console.log(`DocumentClassSelector component loaded successfully with ID: ${props.componentId}`)
+  }
 })
 </script>
 

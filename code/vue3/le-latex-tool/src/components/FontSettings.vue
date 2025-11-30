@@ -10,6 +10,7 @@ const props = defineProps<{
       filename: string
     }>
   }
+  componentId?: number
 }>()
 
 const emit = defineEmits<{
@@ -179,6 +180,9 @@ onMounted(() => {
   })
   
   emit('codeChange', computedLatexCode.value)
+  if (props.componentId !== undefined) {
+    console.log(`FontSettings component loaded successfully with ID: ${props.componentId}`)
+  }
 })
 
 // 打开弹窗

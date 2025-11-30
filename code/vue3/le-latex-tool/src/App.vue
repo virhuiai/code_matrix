@@ -292,18 +292,21 @@ const combinedLatexCode = computed(() => {
               <!-- 使用新创建的组件 -->
               <PackageOptions 
                 v-model="packageOptions" 
+                :component-id="getNextComponentId()"
                 @code-change="(code) => latexCodeFromChild = code"
               />
 
               <!-- 修改DocumentClassSelector组件的使用 -->
               <DocumentClassSelector
                 v-model="documentClass"
+                :component-id="getNextComponentId()"
                 @code-change="(code) => documentClassCode = code"
               />
               
               <!-- 添加FontSettings组件 -->
               <FontSettings
                 v-model="fontSettings"
+                :component-id="getNextComponentId()"
                 @code-change="(code) => fontSettingsCode = code"
               />
 

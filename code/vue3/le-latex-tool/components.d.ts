@@ -19,6 +19,7 @@ declare module 'vue' {
     DocumentLayoutPackage: typeof import('./src/components/DocumentLayoutPackage.vue')['default']
     ElArea: typeof import('element-plus/es')['ElArea']
     ElCheckbox: typeof import('element-plus/es')['ElCheckbox']
+    ElForm: typeof import('element-plus/es')['ElForm']
     ElOption: typeof import('element-plus/es')['ElOption']
     ElSelect: typeof import('element-plus/es')['ElSelect']
     EnglishFontSettings: typeof import('./src/components/EnglishFontSettings.vue')['default']

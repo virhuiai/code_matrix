@@ -21,6 +21,7 @@ const props = defineProps<{
     framed: boolean
     changepage: boolean
   }
+  componentId?: number
 }>()
 
 const emit = defineEmits<{
@@ -161,8 +162,10 @@ watch(computedLatexCode, (newCode) => {
 
 // 组件挂载时触发代码变更事件
 onMounted(() => {
-  emit('update:modelValue', { ...packages.value })
   emit('codeChange', computedLatexCode.value)
+  if (props.componentId !== undefined) {
+    console.log(`BoxPackages component loaded successfully with ID: ${props.componentId}`)
+  }
 })
 
 // 打开弹窗

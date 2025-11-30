@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, defineEmits, defineProps, watch, onMounted } from 'vue'
-import { ElCard, ElCheckbox, ElDialog, ElButton, ElDivider, ElInputNumber, ElForm, ElFormItem } from 'element-plus'
+import { ElCard, ElCheckbox, ElDialog, ElButton, ElFormItem, ElInputNumber, ElDivider } from 'element-plus'
 
 const props = defineProps<{
   modelValue: {
@@ -15,6 +15,7 @@ const props = defineProps<{
       enabled: boolean
     }
   }
+  componentId?: number
 }>()
 
 const emit = defineEmits<{
@@ -92,8 +93,10 @@ watch(computedLatexCode, (newCode) => {
 
 // 组件挂载时触发代码变更事件
 onMounted(() => {
-  emit('update:modelValue', { ...packages.value })
   emit('codeChange', computedLatexCode.value)
+  if (props.componentId !== undefined) {
+    console.log(`DocumentLayoutPackage component loaded successfully with ID: ${props.componentId}`)
+  }
 })
 
 // 打开弹窗
