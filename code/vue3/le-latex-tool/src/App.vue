@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import { ElContainer, ElHeader, ElAside, ElMain, ElFooter, ElTabs, ElTabPane, ElCard, ElCheckbox } from 'element-plus'
+import { ElContainer, ElHeader, ElAside, ElMain, ElFooter, ElTabs, ElTabPane, ElCard, ElCheckbox, ElInput } from 'element-plus'
 
 const activeTab = ref('tab1')
 
@@ -10,7 +10,8 @@ const autoFakeSlant = ref(true)
 const noMath = ref(true)
 
 // 计算属性，用于拼接这三个选项值
-const computedOptions = computed(() => {
+// 修改变量名
+const computedLatexCode = computed(() => {
   const rs = [];
   const options_xeCJK = []
   if (autoFakeBold.value) options_xeCJK.push('AutoFakeBold=true')
@@ -24,10 +25,15 @@ const computedOptions = computed(() => {
   if (noMath.value) options_fontspec.push('no-math')
   if(options_fontspec.length > 0){
     const option_fontspec =  options_fontspec.join(',');
-    rs.push(`\PassOptionsToPackage{${option_fontspec}{fontspec}`)
+    rs.push(`\\PassOptionsToPackage{${option_fontspec}}{fontspec}`)
   }
 
-  return rs
+  return rs.join('\n')
+})
+
+// 用于在文本框中显示的计算属性
+const computedLatexCodeDisplay = computed(() => {
+  return computedLatexCode.value
 })
 </script>
 
@@ -90,8 +96,14 @@ const computedOptions = computed(() => {
       <!-- 中间主要内容显示区域 -->
       <el-main style="background-color: #ffffff; padding: 20px;">
         <div style="height: 100%; border: 1px dashed #ccc; display: flex; justify-content: center; align-items: center;">
-          <!-- todo  -->
-          <p>{{computedOptions.join('\n')}}</p>
+          <!-- 修改下面的内容为多行文本框 -->
+          <el-input
+            v-model="computedLatexCodeDisplay"
+            type="textarea"
+            :rows="10"
+            readonly
+            style="width: 100%; height: 100%; font-family: monospace;"
+          />
         </div>
       </el-main>
       
