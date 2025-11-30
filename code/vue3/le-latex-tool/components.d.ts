@@ -30,6 +30,7 @@ declare module 'vue' {
     ListSymbolPackage: typeof import('./src/components/ListSymbolPackage.vue')['default']
     MoreWritesPackage: typeof import('./src/components/MoreWritesPackage.vue')['default']
     PackageOptions: typeof import('./src/components/PackageOptions.vue')['default']
+    ParallelTextPackage: typeof import('./src/components/ParallelTextPackage.vue')['default']
     TableOfContentsPackage: typeof import('./src/components/TableOfContentsPackage.vue')['default']
     TitleFormatPackage: typeof import('./src/components/TitleFormatPackage.vue')['default']
   }

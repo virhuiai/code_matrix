@@ -17,6 +17,7 @@ import TitleFormatPackage from './components/TitleFormatPackage.vue'
 import TableOfContentsPackage from './components/TableOfContentsPackage.vue'
 import HyperlinkIndexPackage from './components/HyperlinkIndexPackage.vue'
 import ListSymbolPackage from './components/ListSymbolPackage.vue'
+import ParallelTextPackage from './components/ParallelTextPackage.vue'
 
 const activeTab = ref('tab1')
 
@@ -130,6 +131,11 @@ const listSymbolPackage = ref({
   enabled: true
 })
 
+// ParallelTextPackage 的默认值
+const parallelTextPackage = ref({
+  enabled: true
+})
+
 // CodeListingPackage 的默认值
 const codeListingPackage = ref({
   xcolor: {
@@ -200,6 +206,7 @@ const titleFormatPackageCode = ref('')
 const tableOfContentsPackageCode = ref('')
 const hyperlinkIndexPackageCode = ref('')
 const listSymbolPackageCode = ref('')
+const parallelTextPackageCode = ref('')
 const codeListingPackageCode = ref('')
 const documentLayoutPackageCode = ref('')
 const geometryPackageCode = ref('')
@@ -220,6 +227,7 @@ const combinedLatexCode = computed(() => {
     tableOfContentsPackageCode.value,
     hyperlinkIndexPackageCode.value,
     listSymbolPackageCode.value,
+    parallelTextPackageCode.value,
     codeListingPackageCode.value,
     documentLayoutPackageCode.value,
   ]
@@ -340,6 +348,13 @@ const combinedLatexCode = computed(() => {
               <ListSymbolPackage
                 v-model="listSymbolPackage"
                 @code-change="(code: string) => listSymbolPackageCode = code"
+              />
+
+
+              <!-- 添加ParallelTextPackage组件 对译环境 12_对译环境.tex -->
+              <ParallelTextPackage
+                v-model="parallelTextPackage"
+                @code-change="(code: string) => parallelTextPackageCode = code"
               />
 
 
