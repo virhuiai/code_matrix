@@ -29,6 +29,7 @@
     "ace-builds": "^1.4.12",
     "babel-eslint": "^10.1.0",
     "mvdir": "^1.0.21",
+    "quill": "^2.0.3",
     "rollup-plugin-external-globals": "^0.6.1",
     "rollup-plugin-visualizer": "^5.5.2",
     "sass": "^1.45.0",

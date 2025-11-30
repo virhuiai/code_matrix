@@ -45,27 +45,36 @@
 
 ### 安装依赖
 ```
-npm install --registry=https://registry.npmmirror.com
+pnpm install --registry=https://registry.npmmirror.com
+```
+
+```
+error when starting dev server:
+Error: Failed to resolve force included dependency: quill
+```
+
+```
+pnpm add quill -D
 ```
 
 ### 开发调试
 ```
-npm run serve
+pnpm run serve
 ```
 
 ### 生产打包
 ```
-npm run build
+pnpm run build
 ```
 
 ### 表单设计器 + 表单渲染器打包
 ```
-npm run lib
+pnpm run lib
 ```
 
 ### 表单渲染器打包
 ```
-npm run lib-render
+pnpm run lib-render
 ```
 
 ### 浏览器兼容性
@@ -79,7 +88,7 @@ npm run lib-render
 
 #### 1. 安装包
 ```bash
-npm i vform3-builds
+pnpm i vform3-builds
 ```
 或
 ```bash
