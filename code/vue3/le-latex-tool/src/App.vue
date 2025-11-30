@@ -7,6 +7,7 @@ import FontSettings from './components/FontSettings.vue'
 import EnglishFontSettings from './components/EnglishFontSettings.vue'
 import MoreWritesPackage from './components/MoreWritesPackage.vue'
 import BoxPackages from './components/BoxPackages.vue'
+import DocumentContent from './components/DocumentContent.vue'
 
 const activeTab = ref('tab1')
 
@@ -87,6 +88,11 @@ const boxPackages = ref({
   changepage: true
 })
 
+// DocumentContent 的默认值
+const documentContent = ref({
+  enabled: true
+})
+
 // 从子组件接收的LaTeX代码
 const latexCodeFromChild = ref('')
 const documentClassCode = ref('')
@@ -94,10 +100,12 @@ const fontSettingsCode = ref('')
 const englishFontSettingsCode = ref('')
 const moreWritesPackageCode = ref('')
 const boxPackagesCode = ref('')
+const documentContentCode = ref('')
 
 // 合并多个组件传来的代码
 const combinedLatexCode = computed(() => {
-  return [latexCodeFromChild.value, documentClassCode.value, fontSettingsCode.value, englishFontSettingsCode.value, moreWritesPackageCode.value, boxPackagesCode.value]
+  return [latexCodeFromChild.value, documentClassCode.value, fontSettingsCode.value, englishFontSettingsCode.value, moreWritesPackageCode.value, boxPackagesCode.value
+  , documentContentCode.value]
     .filter(code => code.trim() !== '')
     .join('\n')
 })
@@ -151,6 +159,12 @@ const combinedLatexCode = computed(() => {
               <BoxPackages
                 v-model="boxPackages"
                 @code-change="(code: string) => boxPackagesCode = code"
+              />
+
+              <!-- 添加DocumentContent组件 -->
+              <DocumentContent
+                v-model="documentContent"
+                @code-change="(code: string) => documentContentCode = code"
               />
 
               <el-card shadow="hover" class="card card--hover">

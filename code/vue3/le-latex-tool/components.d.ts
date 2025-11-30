@@ -13,7 +13,9 @@ declare module 'vue' {
   export interface GlobalComponents {
     BoxPackages: typeof import('./src/components/BoxPackages.vue')['default']
     DocumentClassSelector: typeof import('./src/components/DocumentClassSelector.vue')['default']
+    DocumentContent: typeof import('./src/components/DocumentContent.vue')['default']
     ElArea: typeof import('element-plus/es')['ElArea']
+    ElCheckbox: typeof import('element-plus/es')['ElCheckbox']
     ElOption: typeof import('element-plus/es')['ElOption']
     ElSelect: typeof import('element-plus/es')['ElSelect']
     EnglishFontSettings: typeof import('./src/components/EnglishFontSettings.vue')['default']
