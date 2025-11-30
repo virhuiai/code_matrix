@@ -19,6 +19,7 @@ import HyperlinkIndexPackage from './components/HyperlinkIndexPackage.vue'
 import ListSymbolPackage from './components/ListSymbolPackage.vue'
 import ParallelTextPackage from './components/ParallelTextPackage.vue'
 import CommentPackage from './components/CommentPackage.vue'
+import FigureColorPackage from './components/FigureColorPackage.vue'
 
 const activeTab = ref('tab1')
 
@@ -142,6 +143,11 @@ const commentPackage = ref({
   enabled: true
 })
 
+// FigureColorPackage 的默认值
+const figureColorPackage = ref({
+  enabled: true
+})
+
 // CodeListingPackage 的默认值
 const codeListingPackage = ref({
   xcolor: {
@@ -214,6 +220,7 @@ const hyperlinkIndexPackageCode = ref('')
 const listSymbolPackageCode = ref('')
 const parallelTextPackageCode = ref('')
 const commentPackageCode = ref('')
+const figureColorPackageCode = ref('')
 const codeListingPackageCode = ref('')
 const documentLayoutPackageCode = ref('')
 const geometryPackageCode = ref('')
@@ -236,6 +243,7 @@ const combinedLatexCode = computed(() => {
     listSymbolPackageCode.value,
     parallelTextPackageCode.value,
     commentPackageCode.value,
+    figureColorPackageCode.value,
     codeListingPackageCode.value,
     documentLayoutPackageCode.value,
   ]
@@ -370,6 +378,13 @@ const combinedLatexCode = computed(() => {
               <CommentPackage
                 v-model="commentPackage"
                 @code-change="(code: string) => commentPackageCode = code"
+              />
+
+
+              <!-- 添加FigureColorPackage组件 插图_颜色设置 14_插图_颜色设置.tex -->
+              <FigureColorPackage
+                v-model="figureColorPackage"
+                @code-change="(code: string) => figureColorPackageCode = code"
               />
 
 
