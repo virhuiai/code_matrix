@@ -1,14 +1,18 @@
 # 1. 创建项目
 
+初始化 Vite 项目：
+
 ```
-pnpm init vite
+npm init vite
 ```
 
-framework选择vue   
+按照提示进行以下选择：
 
-使用typescript
+- Project name: le-latex-tool
+- Framework: Vue
+- Variant: TypeScript
 
-Done. Now run:
+初始化完成后，进入项目目录并安装依赖：
 
 ```
 cd le-latex-tool
@@ -21,6 +25,8 @@ pnpm install
 ```
 pnpm run dev
 ```
+
+项目将在 http://localhost:5173 上运行。
 
 # 安装 Element Plus：
 
