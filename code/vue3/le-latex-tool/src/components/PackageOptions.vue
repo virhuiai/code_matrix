@@ -13,22 +13,33 @@ const emit = defineEmits<{
   (e: 'codeChange', value: string): void
 }>()
 
-// 选项数据
-const options = ref([
+// 选项数据和LaTeX代码生成合并
+const packageConfig = ref([
   { 
     packageName: 'xeCJK', 
     title: 'xeCJK 选项',
     items: [
       { key: 'autoFakeBold', label: 'AutoFakeBold' },
       { key: 'autoFakeSlant', label: 'AutoFakeSlant' }
-    ]
+    ],
+    generateCode: (values: Record<string, boolean>) => {
+      const options = []
+      if (values.autoFakeBold) options.push('AutoFakeBold=true')
+      if (values.autoFakeSlant) options.push('AutoFakeSlant=true')
+      return options.length > 0 ? `\\PassOptionsToPackage{${options.join(',')}}{xeCJK}` : null
+    }
   },
   { 
     packageName: 'fontspec', 
     title: 'fontspec 选项',
     items: [
       { key: 'noMath', label: 'no-math' }
-    ]
+    ],
+    generateCode: (values: Record<string, boolean>) => {
+      const options = []
+      if (values.noMath) options.push('no-math')
+      return options.length > 0 ? `\\PassOptionsToPackage{${options.join(',')}}{fontspec}` : null
+    }
   },
   { 
     packageName: 'xcolor', 
@@ -36,7 +47,13 @@ const options = ref([
     items: [
       { key: 'prologue', label: 'prologue' },
       { key: 'dvipsnames', label: 'dvipsnames' }
-    ]
+    ],
+    generateCode: (values: Record<string, boolean>) => {
+      const options = []
+      if (values.prologue) options.push('prologue')
+      if (values.dvipsnames) options.push('dvipsnames')
+      return options.length > 0 ? `\\PassOptionsToPackage{${options.join(',')}}{xcolor}` : null
+    }
   }
 ])
 
@@ -48,35 +65,11 @@ const optionValues = computed({
 
 // 计算生成的LaTeX代码
 const computedLatexCode = computed(() => {
-  const rs = []
+  const codes = packageConfig.value
+    .map(pkg => pkg.generateCode(optionValues.value))
+    .filter(code => code !== null)
   
-  // xeCJK 选项处理
-  const options_xeCJK = []
-  if (optionValues.value.autoFakeBold) options_xeCJK.push('AutoFakeBold=true')
-  if (optionValues.value.autoFakeSlant) options_xeCJK.push('AutoFakeSlant=true')
-  if (options_xeCJK.length > 0) {
-    const option_xeCJK = options_xeCJK.join(',')
-    rs.push(`\\PassOptionsToPackage{${option_xeCJK}}{xeCJK}`)
-  }
-
-  // fontspec 选项处理
-  const options_fontspec = []
-  if (optionValues.value.noMath) options_fontspec.push('no-math')
-  if (options_fontspec.length > 0) {
-    const option_fontspec = options_fontspec.join(',')
-    rs.push(`\\PassOptionsToPackage{${option_fontspec}}{fontspec}`)
-  }
-
-  // xcolor 选项处理
-  const options_xcolor = []
-  if (optionValues.value.prologue) options_xcolor.push('prologue')
-  if (optionValues.value.dvipsnames) options_xcolor.push('dvipsnames')
-  if (options_xcolor.length > 0) {
-    const option_xcolor = options_xcolor.join(',')
-    rs.push(`\\PassOptionsToPackage{${option_xcolor}}{xcolor}`)
-  }
-
-  return rs.join('\n')
+  return codes.join('\n')
 })
 
 // 监听代码变化并向父组件发送事件
@@ -95,7 +88,7 @@ onMounted(() => {
     <div style="display: flex; flex-direction: column; gap: 15px;">
       <strong>PassOptionsToPackage</strong>
       
-      <div v-for="pkg in options" :key="pkg.packageName">
+      <div v-for="pkg in packageConfig" :key="pkg.packageName">
         <strong>{{ pkg.title }}</strong>
         <el-checkbox 
           v-for="item in pkg.items" 
@@ -106,7 +99,7 @@ onMounted(() => {
         />
       </div>
       
-    
+     
     </div>
   </el-card>
 </template>
