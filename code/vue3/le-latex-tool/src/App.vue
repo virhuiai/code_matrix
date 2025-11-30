@@ -24,6 +24,13 @@ import TablePackage from './components/TablePackage.vue'
 
 const activeTab = ref('tab1')
 
+
+// 创建一个生成递增编号的函数
+let componentCounter = 0
+const getNextComponentId = () => {
+  return componentCounter++
+}
+
 // 定义选项的默认值
 const packageOptions = ref({
   autoFakeBold: true,
@@ -303,30 +310,35 @@ const combinedLatexCode = computed(() => {
               <!-- 添加EnglishFontSettings组件 -->
               <EnglishFontSettings
                 v-model="englishFontSettings"
+                :component-id="getNextComponentId()"
                 @code-change="(code) => englishFontSettingsCode = code"
               />
 
               <!-- 添加MoreWritesPackage组件 morewrites -->
               <MoreWritesPackage
                 v-model="moreWritesPackage"
+                :component-id="getNextComponentId()"
                 @code-change="(code) => moreWritesPackageCode = code"
               />
 
               <!-- 添加BoxPackages组件 2_2_盒子设置 -->
               <BoxPackages
                 v-model="boxPackages"
+                :component-id="getNextComponentId()"
                 @code-change="(code: string) => boxPackagesCode = code"
               />
 
               <!-- 添加LettrinePackage组件 2_3_首行放大 -->
               <LettrinePackage
                 v-model="lettrinePackage"
+                :component-id="getNextComponentId()"
                 @code-change="(code: string) => lettrinePackageCode = code"
               />
 
               <!-- 添加FancyhdrPackage组件 版式设置 -->
               <FancyhdrPackage
                 v-model="fancyhdrPackage"
+                :component-id="getNextComponentId()"
                 @code-change="(code: string) => fancyhdrPackageCode = code"
               />
 
@@ -334,18 +346,21 @@ const combinedLatexCode = computed(() => {
               <!-- 添加CodeListingPackage组件 3_抄录设置 -->
               <CodeListingPackage
                 v-model="codeListingPackage"
+                :component-id="getNextComponentId()"
                 @code-change="(code) => codeListingPackageCode = code"
               />
 
               <!-- 添加DocumentLayoutPackage组件 行距和空格设置-->
               <DocumentLayoutPackage
                 v-model="documentLayoutPackage"
+                :component-id="getNextComponentId()"
                 @code-change="(code) => documentLayoutPackageCode = code"
               />
 
               <!-- 添加GeometryPackage组件 版面设置16K -->
               <GeometryPackage
                 v-model="geometryPackage"
+                :component-id="getNextComponentId()"
                 @code-change="(code: string) => geometryPackageCode = code"
               />
 
@@ -353,12 +368,14 @@ const combinedLatexCode = computed(() => {
               <!-- 添加TitleFormatPackage组件 标题格式设置  \input{6_标题格式设置.tex}-->
               <TitleFormatPackage
                 v-model="titleFormatPackage"
+                :component-id="getNextComponentId()"
                 @code-change="(code: string) => titleFormatPackageCode = code"
               />
 
               <!-- 添加TableOfContentsPackage组件 目录格式设置  8_目录格式设置.tex -->
               <TableOfContentsPackage
                 v-model="tableOfContentsPackage"
+                :component-id="getNextComponentId()"
                 @code-change="(code: string) => tableOfContentsPackageCode = code"
               />
 
@@ -366,6 +383,7 @@ const combinedLatexCode = computed(() => {
               <!-- 添加HyperlinkIndexPackage组件 链接_索引设置 10_链接_索引设置.tex -->
               <HyperlinkIndexPackage
                 v-model="hyperlinkIndexPackage"
+                :component-id="getNextComponentId()"
                 @code-change="(code: string) => hyperlinkIndexPackageCode = code"
               />
 
@@ -373,6 +391,7 @@ const combinedLatexCode = computed(() => {
               <!-- 添加ListSymbolPackage组件 列表_符号设置 11_列表_符号设置.tex -->
               <ListSymbolPackage
                 v-model="listSymbolPackage"
+                :component-id="getNextComponentId()"
                 @code-change="(code: string) => listSymbolPackageCode = code"
               />
 
@@ -380,6 +399,7 @@ const combinedLatexCode = computed(() => {
               <!-- 添加ParallelTextPackage组件 对译环境 12_对译环境.tex -->
               <ParallelTextPackage
                 v-model="parallelTextPackage"
+                :component-id="getNextComponentId()"
                 @code-change="(code: string) => parallelTextPackageCode = code"
               />
 
@@ -387,6 +407,7 @@ const combinedLatexCode = computed(() => {
               <!-- 添加CommentPackage组件 注释 13_注释.tex -->
               <CommentPackage
                 v-model="commentPackage"
+                :component-id="getNextComponentId()"
                 @code-change="(code: string) => commentPackageCode = code"
               />
 
@@ -394,6 +415,7 @@ const combinedLatexCode = computed(() => {
               <!-- 添加FigureColorPackage组件 插图_颜色设置 14_插图_颜色设置.tex -->
               <FigureColorPackage
                 v-model="figureColorPackage"
+                :component-id="getNextComponentId()"
                 @code-change="(code: string) => figureColorPackageCode = code"
               />
 
@@ -401,6 +423,7 @@ const combinedLatexCode = computed(() => {
               <!-- 添加TablePackage组件 表格设置 15_表格设置.tex -->
               <TablePackage
                 v-model="tablePackage"
+                :component-id="getNextComponentId()"
                 @code-change="(code: string) => tablePackageCode = code"
               />
 
@@ -411,6 +434,7 @@ const combinedLatexCode = computed(() => {
               <!-- 添加DocumentContent组件 -->
               <DocumentContent
                 v-model="documentContent"
+                :component-id="getNextComponentId()"
                 @code-change="(code: string) => documentContentCode = code"
               />
 
