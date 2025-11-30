@@ -2,11 +2,8 @@
 import { ref, computed } from 'vue'
 import { ElContainer, ElHeader, ElAside, ElMain, ElFooter, ElTabs, ElTabPane, ElCard, ElInput } from 'element-plus'
 import PackageOptions from './components/PackageOptions.vue'
-// 添加导入DocumentClassSelector组件
 import DocumentClassSelector from './components/DocumentClassSelector.vue'
-// 添加导入FontSettings组件
 import FontSettings from './components/FontSettings.vue'
-// 添加导入EnglishFontSettings组件
 import EnglishFontSettings from './components/EnglishFontSettings.vue'
 
 const activeTab = ref('tab1')
@@ -73,7 +70,32 @@ const englishFontSettingsCode = ref('')
 const combinedLatexCode = computed(() => {
   return [latexCodeFromChild.value, documentClassCode.value, fontSettingsCode.value, englishFontSettingsCode.value]
     .filter(code => code.trim() !== '')
-    .join('\n')
+    .join('\n')+ '\n' + `\\begin{document}
+
+
+\\section{mainfont}
+
+
+Hello,world!
+
+你好，世界！
+
+
+
+\\section{sansfont}
+
+{\\sf
+Hello,world!
+你好，世界！
+}
+
+\\section{monofont}
+
+{\\tt
+Hello,world!
+你好，世界！
+}
+\\end{document}`;
 })
 </script>
 
