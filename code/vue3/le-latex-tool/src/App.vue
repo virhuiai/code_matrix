@@ -20,6 +20,7 @@ import ListSymbolPackage from './components/ListSymbolPackage.vue'
 import ParallelTextPackage from './components/ParallelTextPackage.vue'
 import CommentPackage from './components/CommentPackage.vue'
 import FigureColorPackage from './components/FigureColorPackage.vue'
+import TablePackage from './components/TablePackage.vue'
 
 const activeTab = ref('tab1')
 
@@ -148,6 +149,11 @@ const figureColorPackage = ref({
   enabled: true
 })
 
+// TablePackage 的默认值
+const tablePackage = ref({
+  enabled: true
+})
+
 // CodeListingPackage 的默认值
 const codeListingPackage = ref({
   xcolor: {
@@ -221,6 +227,7 @@ const listSymbolPackageCode = ref('')
 const parallelTextPackageCode = ref('')
 const commentPackageCode = ref('')
 const figureColorPackageCode = ref('')
+const tablePackageCode = ref('')
 const codeListingPackageCode = ref('')
 const documentLayoutPackageCode = ref('')
 const geometryPackageCode = ref('')
@@ -244,6 +251,7 @@ const combinedLatexCode = computed(() => {
     parallelTextPackageCode.value,
     commentPackageCode.value,
     figureColorPackageCode.value,
+    tablePackageCode.value,
     codeListingPackageCode.value,
     documentLayoutPackageCode.value,
   ]
@@ -385,6 +393,13 @@ const combinedLatexCode = computed(() => {
               <FigureColorPackage
                 v-model="figureColorPackage"
                 @code-change="(code: string) => figureColorPackageCode = code"
+              />
+
+
+              <!-- 添加TablePackage组件 表格设置 15_表格设置.tex -->
+              <TablePackage
+                v-model="tablePackage"
+                @code-change="(code: string) => tablePackageCode = code"
               />
 
 
