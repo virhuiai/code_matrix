@@ -28,6 +28,7 @@ declare module 'vue' {
     LettrinePackage: typeof import('./src/components/LettrinePackage.vue')['default']
     MoreWritesPackage: typeof import('./src/components/MoreWritesPackage.vue')['default']
     PackageOptions: typeof import('./src/components/PackageOptions.vue')['default']
+    TableOfContentsPackage: typeof import('./src/components/TableOfContentsPackage.vue')['default']
     TitleFormatPackage: typeof import('./src/components/TitleFormatPackage.vue')['default']
   }
 }

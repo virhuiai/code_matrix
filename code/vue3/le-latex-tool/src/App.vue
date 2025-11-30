@@ -14,6 +14,7 @@ import DocumentLayoutPackage from './components/DocumentLayoutPackage.vue'
 import GeometryPackage from './components/GeometryPackage.vue'
 import FancyhdrPackage from './components/FancyhdrPackage.vue'
 import TitleFormatPackage from './components/TitleFormatPackage.vue'
+import TableOfContentsPackage from './components/TableOfContentsPackage.vue'
 
 const activeTab = ref('tab1')
 
@@ -112,6 +113,11 @@ const titleFormatPackage = ref({
   enabled: true
 })
 
+// TableOfContentsPackage 的默认值
+const tableOfContentsPackage = ref({
+  enabled: true
+})
+
 // CodeListingPackage 的默认值
 const codeListingPackage = ref({
   xcolor: {
@@ -179,6 +185,7 @@ const boxPackagesCode = ref('')
 const lettrinePackageCode = ref('')
 const fancyhdrPackageCode = ref('')
 const titleFormatPackageCode = ref('')
+const tableOfContentsPackageCode = ref('')
 const codeListingPackageCode = ref('')
 const documentLayoutPackageCode = ref('')
 const geometryPackageCode = ref('')
@@ -196,6 +203,7 @@ const combinedLatexCode = computed(() => {
     lettrinePackageCode.value,
     fancyhdrPackageCode.value,
     titleFormatPackageCode.value,
+    tableOfContentsPackageCode.value,
     codeListingPackageCode.value,
     documentLayoutPackageCode.value,
   ]
@@ -298,6 +306,14 @@ const combinedLatexCode = computed(() => {
                 @code-change="(code: string) => titleFormatPackageCode = code"
               />
 
+              <!-- 添加TableOfContentsPackage组件 目录格式设置 -->
+              <TableOfContentsPackage
+                v-model="tableOfContentsPackage"
+                @code-change="(code: string) => tableOfContentsPackageCode = code"
+              />
+
+              <!-- 8_目录格式设置.tex -->
+
 
               <!-- 添加DocumentContent组件 -->
               <DocumentContent
@@ -305,15 +321,7 @@ const combinedLatexCode = computed(() => {
                 @code-change="(code: string) => documentContentCode = code"
               />
 
-              <el-card shadow="hover" class="card card--hover">
-                <el-input
-                  v-model="combinedLatexCode"
-                  type="textarea"
-                  :autosize="{ minRows: 10}"
-                  readonly
-                  class="latex-output"
-                />
-              </el-card>
+
             </div>
           </el-tab-pane>
           <el-tab-pane label="常见模板" name="tab2"></el-tab-pane>
