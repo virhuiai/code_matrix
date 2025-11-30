@@ -21,11 +21,63 @@ const emit = defineEmits<{
 const dialogVisible = ref(false)
 
 // 字体类型选项
-const fontTypes = [
+interface FontType {
+  value: string
+  label: string
+  command: string
+}
+
+const fontTypes: FontType[] = [
   { value: 'main', label: '主字体', command: 'setCJKmainfont' },
   { value: 'sans', label: '无衬线字体', command: 'setCJKsansfont' },
   { value: 'mono', label: '等宽字体', command: 'setCJKmonofont' }
 ]
+
+// 字体选项，按类型分组
+interface FontOption {
+  label: string
+  path: string
+  filename: string
+}
+
+const fontOptions: Record<string, FontOption[]> = {
+  main: [
+    {
+      label: '方正书宋简体',
+      path: '/Volumes/THAWSPACE/CshProject/code_matrix.git/code/LaTex/fontFiles/方正/',
+      filename: 'FangZhengShuSong-GBK-1.ttf'
+    },
+    {
+      label: '方正书宋繁体',
+      path: '/Volumes/THAWSPACE/CshProject/code_matrix.git/code/LaTex/fontFiles/方正FanTi/',
+      filename: 'FangZhengShuSongFanTi-1.ttf'
+    }
+  ],
+  sans: [
+    {
+      label: '方正黑体简体',
+      path: '/Volumes/THAWSPACE/CshProject/code_matrix.git/code/LaTex/fontFiles/方正/',
+      filename: 'FangZhengHeiTi-GBK-1.ttf'
+    },
+    {
+      label: '方正黑体繁体',
+      path: '/Volumes/THAWSPACE/CshProject/code_matrix.git/code/LaTex/fontFiles/方正/FanTi/',
+      filename: 'FangZhengHeiTiFanTi-1.ttf'
+    }
+  ],
+  mono: [
+    {
+      label: '方正仿宋简体',
+      path: '/Volumes/THAWSPACE/CshProject/code_matrix.git/code/LaTex/fontFiles/方正/',
+      filename: 'FangZhengFangSong-GBK-1.ttf'
+    },
+    {
+      label: '方正仿宋繁体',
+      path: '/Volumes/THAWSPACE/CshProject/code_matrix.git/code/LaTex/fontFiles/方正/FanTi/',
+      filename: 'FangZhengFangSongFanTi-1.ttf'
+    }
+  ]
+}
 
 // 默认字体配置
 const defaultFonts = [
@@ -75,6 +127,12 @@ const updateFontSetting = (type: string, field: 'path' | 'filename', value: stri
     }
   }
   emit('update:modelValue', { fonts: [...fontSettings.value] })
+}
+
+// 处理字体选择变更
+const handleFontChange = (type: string, option: { path: string; filename: string }) => {
+  updateFontSetting(type, 'path', option.path)
+  updateFontSetting(type, 'filename', option.filename)
 }
 
 const computedLatexCode = computed(() => {
@@ -144,19 +202,25 @@ defineExpose({
             <h4>{{ fontType.label }}</h4>
             <el-row :gutter="20">
               <el-col :span="18">
-                <el-input
-                  :model-value="getFontByType(fontType.value).path"
-                  placeholder="请输入字体文件路径"
-                  clearable
-                  @update:model-value="updateFontSetting(fontType.value, 'path', $event)"
-                />
+                <el-select 
+                  :model-value="`${getFontByType(fontType.value).path}${getFontByType(fontType.value).filename}`"
+                  @change="(val) => handleFontChange(fontType.value, val)"
+                  placeholder="请选择字体"
+                  style="width: 100%"
+                >
+                  <el-option
+                    v-for="(option, index) in fontOptions[fontType.value as keyof typeof fontOptions]"
+                    :key="index"
+                    :label="option.label"
+                    :value="option"
+                  />
+                </el-select>
               </el-col>
               <el-col :span="6">
                 <el-input
                   :model-value="getFontByType(fontType.value).filename"
                   placeholder="字体文件名"
-                  clearable
-                  @update:model-value="updateFontSetting(fontType.value, 'filename', $event)"
+                  readonly
                 />
               </el-col>
             </el-row>
