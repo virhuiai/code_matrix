@@ -97,6 +97,9 @@ const fontOptions: Record<string, FontOption[]> = {
   ]
 }
 
+// 存储已选择的字体标签映射
+const selectedFontLabels = ref<Record<string, string>>({})
+
 const fontSettings = ref([
   {
     type: 'main',
@@ -125,15 +128,15 @@ const getFontByType = (type: string) => {
 }
 
 // 更新特定字体类型的设置
-const updateFontSetting = (type: string, field: 'path' | 'filename' | 'label', value: string) => {
+const updateFontSetting = (type: string, field: 'path' | 'filename', value: string) => {
   const index = fontSettings.value.findIndex(font => font.type === type)
   if (index !== -1) {
-    fontSettings.value[index][field as keyof typeof fontSettings.value[number]] = value
+    fontSettings.value[index][field] = value
   } else {
     // 如果该类型不存在，则添加新项
-    fontSettings.value.push({ type, path: '', filename: '', label: '' } as any)
+    fontSettings.value.push({ type, path: '', filename: '' } as any)
     const lastIndex = fontSettings.value.length - 1
-    fontSettings.value[lastIndex][field as keyof typeof fontSettings.value[number]] = value
+    fontSettings.value[lastIndex][field] = value
   }
   emit('update:modelValue', { fonts: [...fontSettings.value] })
 }
@@ -142,6 +145,8 @@ const updateFontSetting = (type: string, field: 'path' | 'filename' | 'label', v
 const handleFontChange = (type: string, option: { path: string; filename: string; label: string }) => {
   updateFontSetting(type, 'path', option.path)
   updateFontSetting(type, 'filename', option.filename)
+  // 保存选中的标签
+  selectedFontLabels.value[type] = option.label
 }
 
 const computedLatexCode = computed(() => {
@@ -188,6 +193,16 @@ onMounted(() => {
     fontSettings.value = [...props.modelValue.fonts]
   }
   
+  // 初始化已选择的标签
+  fontSettings.value.forEach(font => {
+    const fontOption = Object.values(fontOptions)
+      .flat()
+      .find(option => option.filename === font.filename)
+    if (fontOption) {
+      selectedFontLabels.value[font.type] = fontOption.label
+    }
+  })
+  
   emit('codeChange', computedLatexCode.value)
 })
 
@@ -229,7 +244,7 @@ defineExpose({
             <el-row :gutter="20">
               <el-col :span="24">
                 <el-select 
-                  :model-value="getFontByType(fontType.value).filename"
+                  :model-value="selectedFontLabels[fontType.value] || getFontByType(fontType.value).filename"
                   @change="(val) => handleFontChange(fontType.value, val)"
                   placeholder="请选择字体"
                   style="width: 100%"
