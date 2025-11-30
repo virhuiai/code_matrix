@@ -6,6 +6,7 @@ import DocumentClassSelector from './components/DocumentClassSelector.vue'
 import FontSettings from './components/FontSettings.vue'
 import EnglishFontSettings from './components/EnglishFontSettings.vue'
 import MoreWritesPackage from './components/MoreWritesPackage.vue'
+import BoxPackages from './components/BoxPackages.vue'
 
 const activeTab = ref('tab1')
 
@@ -66,16 +67,37 @@ const moreWritesPackage = ref({
   enabled: true
 })
 
+// BoxPackages 的默认值 - 所有选项默认选中
+const boxPackages = ref({
+  fancybox: true,
+  boxedminipage: true,
+  tikz: true,
+  tcolorbox: {
+    enabled: true,
+    raster: true,
+    listings: true,
+    theorems: true,
+    skins: true,
+    xparse: true,
+    breakable: true,
+  },
+  awesomebox: true,
+  mdframed: true,
+  framed: true,
+  changepage: true
+})
+
 // 从子组件接收的LaTeX代码
 const latexCodeFromChild = ref('')
 const documentClassCode = ref('')
 const fontSettingsCode = ref('')
 const englishFontSettingsCode = ref('')
 const moreWritesPackageCode = ref('')
+const boxPackagesCode = ref('')
 
 // 合并多个组件传来的代码
 const combinedLatexCode = computed(() => {
-  return [latexCodeFromChild.value, documentClassCode.value, fontSettingsCode.value, englishFontSettingsCode.value, moreWritesPackageCode.value]
+  return [latexCodeFromChild.value, documentClassCode.value, fontSettingsCode.value, englishFontSettingsCode.value, moreWritesPackageCode.value, boxPackagesCode.value]
     .filter(code => code.trim() !== '')
     .join('\n')
 })
@@ -123,6 +145,12 @@ const combinedLatexCode = computed(() => {
               <MoreWritesPackage
                 v-model="moreWritesPackage"
                 @code-change="(code) => moreWritesPackageCode = code"
+              />
+
+              <!-- 添加BoxPackages组件 -->
+              <BoxPackages
+                v-model="boxPackages"
+                @code-change="(code: string) => boxPackagesCode = code"
               />
 
               <el-card shadow="hover" class="card card--hover">

@@ -11,6 +11,7 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
+    BoxPackages: typeof import('./src/components/BoxPackages.vue')['default']
     DocumentClassSelector: typeof import('./src/components/DocumentClassSelector.vue')['default']
     ElArea: typeof import('element-plus/es')['ElArea']
     ElOption: typeof import('element-plus/es')['ElOption']
