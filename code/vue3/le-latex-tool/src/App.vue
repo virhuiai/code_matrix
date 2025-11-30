@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { ElContainer, ElHeader, ElAside, ElMain, ElFooter, ElTabs, ElTabPane } from 'element-plus'
-import HelloWorld from './components/HelloWorld.vue'
+import { ElContainer, ElHeader, ElAside, ElMain, ElFooter, ElTabs, ElTabPane, ElCard } from 'element-plus'
+
 
 const activeTab = ref('tab1')
 </script>
@@ -14,12 +14,35 @@ const activeTab = ref('tab1')
     </el-header>
     
     <!-- 下方主要内容区域 -->
-    <el-container>
+    <el-container> 
       <!-- 左侧选项卡 -->
       <el-aside width="250px" style="background-color: #f5f5f5; padding: 10px;">
         <el-tabs v-model="activeTab" type="border-card">
-          <el-tab-pane label="选项一" name="tab1"></el-tab-pane>
-          <el-tab-pane label="选项二" name="tab2"></el-tab-pane>
+          <el-tab-pane label="选项" name="tab1">
+            <div style="display: flex; flex-direction: column; gap: 10px;">
+              <el-card shadow="hover">
+                <div style="display: flex; flex-direction: column; gap: 5px;">
+                  <strong>文档设置</strong>
+                  <p style="font-size: 0.9em; color: #666;">设置文档类型、页面大小等</p>
+                </div>
+              </el-card>
+              
+              <el-card shadow="hover">
+                <div style="display: flex; flex-direction: column; gap: 5px;">
+                  <strong>公式编辑</strong>
+                  <p style="font-size: 0.9em; color: #666;">插入和编辑数学公式</p>
+                </div>
+              </el-card>
+              
+              <el-card shadow="hover">
+                <div style="display: flex; flex-direction: column; gap: 5px;">
+                  <strong>图表生成</strong>
+                  <p style="font-size: 0.9em; color: #666;">创建和自定义图表</p>
+                </div>
+              </el-card>
+            </div>
+          </el-tab-pane>
+          <el-tab-pane label="常见模板" name="tab2"></el-tab-pane>
           <!-- <el-tab-pane label="选项三" name="tab3"></el-tab-pane>
           <el-tab-pane label="选项四" name="tab4"></el-tab-pane> -->
         </el-tabs>
