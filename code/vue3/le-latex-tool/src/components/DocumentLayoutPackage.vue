@@ -6,10 +6,10 @@ const props = defineProps<{
   modelValue: {
     parskip: {
       enabled: boolean
-    }
-    linespread: {
-      enabled: boolean
-      value: number
+      linespread: {
+        enabled: boolean
+        value: number
+      }
     }
     xspace: {
       enabled: boolean
@@ -28,11 +28,11 @@ const dialogVisible = ref(false)
 // 包配置数据
 const packages = ref({
   parskip: {
-    enabled: props.modelValue.parskip?.enabled !== undefined ? props.modelValue.parskip.enabled : true
-  },
-  linespread: {
-    enabled: props.modelValue.linespread?.enabled !== undefined ? props.modelValue.linespread.enabled : true,
-    value: props.modelValue.linespread?.value !== undefined ? props.modelValue.linespread.value : 1.245
+    enabled: props.modelValue.parskip?.enabled !== undefined ? props.modelValue.parskip.enabled : true,
+    linespread: {
+      enabled: props.modelValue.parskip?.linespread?.enabled !== undefined ? props.modelValue.parskip.linespread.enabled : true,
+      value: props.modelValue.parskip?.linespread?.value !== undefined ? props.modelValue.parskip.linespread.value : 1.245
+    }
   },
   xspace: {
     enabled: props.modelValue.xspace?.enabled !== undefined ? props.modelValue.xspace.enabled : true
@@ -60,8 +60,8 @@ const computedLatexCode = computed(() => {
     codes.push(latexTemplates.parskip())
   }
   
-  if (packages.value.linespread.enabled) {
-    codes.push(latexTemplates.linespread(packages.value.linespread.value))
+  if (packages.value.parskip.linespread.enabled) {
+    codes.push(latexTemplates.linespread(packages.value.parskip.linespread.value))
   }
   
   if (packages.value.xspace.enabled) {
@@ -78,9 +78,9 @@ const updatePackage = (pkg: string, value: any) => {
 }
 
 // 更新 linespread 值
-const updateLinespreadValue = (value: number | null) => {
-  if (value !== null) {
-    packages.value.linespread.value = value
+const updateLinespreadValue = (value: number | undefined, oldValue: number | undefined) => {
+  if (value !== undefined) {
+    packages.value.parskip.linespread.value = value
     emit('update:modelValue', { ...packages.value })
   }
 }
@@ -115,19 +115,19 @@ defineExpose({
 <template>
   <div>
     <!-- 触发弹窗的按钮 -->
-    <el-button type="primary" @click="openDialog" style="width: 100%; margin-top: 10px;">文档排版设置</el-button>
+    <el-button type="primary" @click="openDialog" style="width: 100%; margin-top: 10px;">行距和空格设置</el-button>
     
     <!-- 弹窗 -->
     <el-dialog
       v-model="dialogVisible"
-      title="文档排版设置"
+      title="行距和空格设置"
       width="60%"
       :before-close="closeDialog"
     >
       <el-card shadow="hover">
         <div>
-          <strong>文档排版设置</strong>
-          <p>配置文档段落间距、行距和空格命令</p>
+          <strong>行距和空格设置</strong>
+          <p>配置文档段落间距、行距和智能空格命令</p>
           
           <el-divider />
           
@@ -135,32 +135,31 @@ defineExpose({
           <div style="margin-bottom: 15px;">
             <el-checkbox 
               v-model="packages.parskip.enabled" 
-              @change="(val) => updatePackage('parskip', { enabled: Boolean(val) })"
+              @change="(val) => updatePackage('parskip', { ...packages.parskip, enabled: Boolean(val) })"
               label="parskip - 段落间距宏包"
             />
-          </div>
-          
-          <!-- LINESPREAD -->
-          <div style="margin-bottom: 15px;">
-            <el-checkbox 
-              v-model="packages.linespread.enabled" 
-              @change="(val) => updatePackage('linespread', { ...packages.linespread, enabled: Boolean(val) })"
-              label="linespread - 行距设置"
-            />
             
-            <div v-if="packages.linespread.enabled" style="margin-left: 20px; margin-top: 10px;">
-              <el-form>
-                <el-form-item label="行距系数">
-                  <el-input-number 
-                    v-model="packages.linespread.value"
-                    @change="updateLinespreadValue"
-                    :min="0.1"
-                    :max="3"
-                    :step="0.001"
-                    size="small"
-                  />
-                </el-form-item>
-              </el-form>
+            <div v-if="packages.parskip.enabled" style="margin-left: 20px; margin-top: 10px;">
+              <el-checkbox 
+                v-model="packages.parskip.linespread.enabled" 
+                @change="(val) => updatePackage('linespread', { ...packages.parskip.linespread, enabled: Boolean(val) })"
+                label="linespread - 行距设置"
+              />
+              
+              <div v-if="packages.parskip.linespread.enabled" style="margin-left: 20px; margin-top: 10px;">
+                <el-form>
+                  <el-form-item label="行距系数">
+                    <el-input-number 
+                      v-model="packages.parskip.linespread.value"
+                      @change="updateLinespreadValue"
+                      :min="0.1"
+                      :max="3"
+                      :step="0.001"
+                      size="small"
+                    />
+                  </el-form-item>
+                </el-form>
+              </div>
             </div>
           </div>
           
