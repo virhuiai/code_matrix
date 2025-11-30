@@ -2,6 +2,8 @@
 import { ref, computed } from 'vue'
 import { ElContainer, ElHeader, ElAside, ElMain, ElFooter, ElTabs, ElTabPane, ElCard, ElInput } from 'element-plus'
 import PackageOptions from './components/PackageOptions.vue'
+// 添加导入DocumentClassSelector组件
+import DocumentClassSelector from './components/DocumentClassSelector.vue'
 
 const activeTab = ref('tab1')
 
@@ -14,8 +16,19 @@ const packageOptions = ref({
   dvipsnames: true
 })
 
+// 添加文档类选项的默认值
+const documentClass = ref('ctexart')
+
 // 从子组件接收的LaTeX代码
 const latexCodeFromChild = ref('')
+const documentClassCode = ref('')
+
+// 合并两个组件传来的代码
+const combinedLatexCode = computed(() => {
+  return [latexCodeFromChild.value, documentClassCode.value]
+    .filter(code => code.trim() !== '')
+    .join('\n')
+})
 </script>
 
 <template>
@@ -36,6 +49,12 @@ const latexCodeFromChild = ref('')
               <PackageOptions 
                 v-model="packageOptions" 
                 @code-change="(code) => latexCodeFromChild = code"
+              />
+
+              <!-- 添加DocumentClassSelector组件 -->
+              <DocumentClassSelector
+                v-model="documentClass"
+                @code-change="(code) => documentClassCode = code"
               />
 
               <el-card shadow="hover" class="card card--hover">
@@ -72,7 +91,7 @@ const latexCodeFromChild = ref('')
         <div class="app__main-content">
           <!-- 显示从子组件传递过来的LaTeX代码 -->
           <el-input
-            v-model="latexCodeFromChild"
+            v-model="combinedLatexCode"
             type="textarea"
             :rows="10"
             readonly
