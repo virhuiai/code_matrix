@@ -30,7 +30,9 @@ const computedPassOptionsToPackage = computed(() => {
     rs.push(`\\PassOptionsToPackage{${option_fontspec}}{fontspec}`)
   }
 
-  // 添加对 xcolor 包的支持
+// 添加对 xcolor 包的支持
+//   %  加入这一行，就OK了 https://blog.csdn.net/weixin_39278265/article/details/125257636
+// % Option clash for package xcolor.
   const options_xcolor = []
   if (prologue.value) options_xcolor.push('prologue')
   if (dvipsnames.value) options_xcolor.push('dvipsnames')
@@ -67,13 +69,21 @@ const computedLatexCodeDisplay = computed(() => {
                 <div style="display: flex; flex-direction: column; gap: 5px;">
                   <strong>PassOptionsToPackage</strong>
                   
-                  <!-- 添加三个选项，针对 AutoFakeBold AutoFakeSlant no-math 是否选中，默认是选中 -->
-                  <el-checkbox v-model="autoFakeBold" label="AutoFakeBold" />
-                  <el-checkbox v-model="autoFakeSlant" label="AutoFakeSlant" />
-                  <el-checkbox v-model="noMath" label="no-math" />
+                  <!-- xeCJK 包选项 -->
+                  <div>
+                    <strong>xeCJK 选项</strong>
+                    <el-checkbox v-model="autoFakeBold" label="AutoFakeBold" />
+                    <el-checkbox v-model="autoFakeSlant" label="AutoFakeSlant" />
+                  </div>
                   
-                  <!-- 添加对 xcolor 包选项的支持 -->
-                  <div style="margin-top: 10px;">
+                  <!-- fontspec 包选项 -->
+                  <div>
+                    <strong>fontspec 选项</strong>
+                    <el-checkbox v-model="noMath" label="no-math" />
+                  </div>
+                  
+                  <!-- xcolor 包选项 -->
+                  <div>
                     <strong>xcolor 选项</strong>
                     <el-checkbox v-model="prologue" label="prologue" />
                     <el-checkbox v-model="dvipsnames" label="dvipsnames" />
