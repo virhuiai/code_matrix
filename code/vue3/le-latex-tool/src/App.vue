@@ -244,6 +244,9 @@ const combinedLatexCode = computed(() => {
     boxPackagesCode.value,
     lettrinePackageCode.value,
     fancyhdrPackageCode.value,
+    codeListingPackageCode.value,
+    documentLayoutPackageCode.value,
+    geometryPackageCode.value,
     titleFormatPackageCode.value,
     tableOfContentsPackageCode.value,
     hyperlinkIndexPackageCode.value,
@@ -252,12 +255,11 @@ const combinedLatexCode = computed(() => {
     commentPackageCode.value,
     figureColorPackageCode.value,
     tablePackageCode.value,
-    codeListingPackageCode.value,
-    documentLayoutPackageCode.value,
+    
+    
   ]
 
-  // 添加 GeometryPackage 代码
-  codes.push(geometryPackageCode.value)
+  
 
   codes.push(documentContentCode.value)
   
