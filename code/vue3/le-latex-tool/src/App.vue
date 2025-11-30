@@ -6,6 +6,8 @@ import PackageOptions from './components/PackageOptions.vue'
 import DocumentClassSelector from './components/DocumentClassSelector.vue'
 // 添加导入FontSettings组件
 import FontSettings from './components/FontSettings.vue'
+// 添加导入EnglishFontSettings组件
+import EnglishFontSettings from './components/EnglishFontSettings.vue'
 
 const activeTab = ref('tab1')
 
@@ -37,17 +39,39 @@ const documentClass = ref({
 
 // 字体设置的默认值
 const fontSettings = ref({
-  path: '/Volumes/THAWSPACE/CshProject/code_matrix.git/code/LaTex/fontFiles/方正/'
+  fonts: [
+    {
+      type: 'main',
+      path: '/Volumes/THAWSPACE/CshProject/code_matrix.git/code/LaTex/fontFiles/方正/',
+      filename: 'FangZhengShuSong-GBK-1.ttf'
+    },
+    {
+      type: 'sans',
+      path: '/Volumes/THAWSPACE/CshProject/code_matrix.git/code/LaTex/fontFiles/方正/',
+      filename: 'FangZhengHeiTi-GBK-1.ttf'
+    },
+    {
+      type: 'mono',
+      path: '/Volumes/THAWSPACE/CshProject/code_matrix.git/code/LaTex/fontFiles/方正/',
+      filename: 'FangZhengFangSong-GBK-1.ttf'
+    }
+  ]
+})
+
+// 英文字体设置的默认值
+const englishFontSettings = ref({
+  enabled: true
 })
 
 // 从子组件接收的LaTeX代码
 const latexCodeFromChild = ref('')
 const documentClassCode = ref('')
 const fontSettingsCode = ref('')
+const englishFontSettingsCode = ref('')
 
 // 合并多个组件传来的代码
 const combinedLatexCode = computed(() => {
-  return [latexCodeFromChild.value, documentClassCode.value, fontSettingsCode.value]
+  return [latexCodeFromChild.value, documentClassCode.value, fontSettingsCode.value, englishFontSettingsCode.value]
     .filter(code => code.trim() !== '')
     .join('\n')
 })
@@ -83,6 +107,12 @@ const combinedLatexCode = computed(() => {
               <FontSettings
                 v-model="fontSettings"
                 @code-change="(code) => fontSettingsCode = code"
+              />
+
+              <!-- 添加EnglishFontSettings组件 -->
+              <EnglishFontSettings
+                v-model="englishFontSettings"
+                @code-change="(code) => englishFontSettingsCode = code"
               />
 
               <el-card shadow="hover" class="card card--hover">
