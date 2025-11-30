@@ -23,9 +23,9 @@ const fontConfig = {
   
   // LaTeX 代码模板
   latexTemplate: `%
-\\cd /usr/local/texlive/2022/texmf-dist/fonts/opentype/public/cm-unicode/
-\\cd /Volumes/THAWSPACE/Soft.Ok/texlive/2024/texmf-dist/fonts/opentype/public/cm-unicode/
-\\setmainfont{ } % 论文中西文部分默认使用的字体。
+%  cd /usr/local/texlive/2022/texmf-dist/fonts/opentype/public/cm-unicode/
+%  cd /Volumes/THAWSPACE/Soft.Ok/texlive/2024/texmf-dist/fonts/opentype/public/cm-unicode/
+%  \\setmainfont{ } % 论文中西文部分默认使用的字体。
 % %通常到 Word 2003 为止，这里的默认字体都会是 Times New Roman。Linux 下也有同名字体。
 \\setmainfont{cmun}[
   Extension       = .otf,

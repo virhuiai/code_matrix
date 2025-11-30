@@ -137,26 +137,9 @@ Hello,world!
                 @code-change="(code) => englishFontSettingsCode = code"
               />
 
-              <el-card shadow="hover" class="card card--hover">
-                <div class="card">
-                  <strong class="card__title">文档设置</strong>
-                  <p class="card__description">设置文档类型、页面大小等</p>
-                </div>
-              </el-card>
-              
-              <el-card shadow="hover" class="card card--hover">
-                <div class="card">
-                  <strong class="card__title">公式编辑</strong>
-                  <p class="card__description">插入和编辑数学公式</p>
-                </div>
-              </el-card>
-              
-              <el-card shadow="hover" class="card card--hover">
-                <div class="card">
-                  <strong class="card__title">图表生成</strong>
-                  <p class="card__description">创建和自定义图表</p>
-                </div>
-              </el-card>
+
+
+             
               
             </div>
           </el-tab-pane>
@@ -173,7 +156,7 @@ Hello,world!
           <el-input
             v-model="combinedLatexCode"
             type="textarea"
-            :rows="10"
+            :autosize="{ minRows: 10}"
             readonly
             class="latex-output"
           />

@@ -12,6 +12,7 @@ export {}
 declare module 'vue' {
   export interface GlobalComponents {
     DocumentClassSelector: typeof import('./src/components/DocumentClassSelector.vue')['default']
+    ElArea: typeof import('element-plus/es')['ElArea']
     ElOption: typeof import('element-plus/es')['ElOption']
     ElSelect: typeof import('element-plus/es')['ElSelect']
     EnglishFontSettings: typeof import('./src/components/EnglishFontSettings.vue')['default']
