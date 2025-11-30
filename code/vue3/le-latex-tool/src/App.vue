@@ -11,11 +11,23 @@ const noMath = ref(true)
 
 // 计算属性，用于拼接这三个选项值
 const computedOptions = computed(() => {
-  const options = []
-  if (autoFakeBold.value) options.push('AutoFakeBold=true')
-  if (autoFakeSlant.value) options.push('AutoFakeSlant=true')
-  if (noMath.value) options.push('no-math')
-  return options
+  const rs = [];
+  const options_xeCJK = []
+  if (autoFakeBold.value) options_xeCJK.push('AutoFakeBold=true')
+  if (autoFakeSlant.value) options_xeCJK.push('AutoFakeSlant=true')
+  if(options_xeCJK.length > 0){
+    const option_xeCJK =  options_xeCJK.join(',');
+    rs.push(`\\PassOptionsToPackage{${option_xeCJK}}{xeCJK}`);
+  }
+
+  const options_fontspec = []
+  if (noMath.value) options_fontspec.push('no-math')
+  if(options_fontspec.length > 0){
+    const option_fontspec =  options_fontspec.join(',');
+    rs.push(`\PassOptionsToPackage{${option_fontspec}{fontspec}`)
+  }
+
+  return rs
 })
 </script>
 
@@ -42,16 +54,6 @@ const computedOptions = computed(() => {
                   <el-checkbox v-model="autoFakeBold" label="AutoFakeBold" />
                   <el-checkbox v-model="autoFakeSlant" label="AutoFakeSlant" />
                   <el-checkbox v-model="noMath" label="no-math" />
-                  
-                  <!-- 显示计算后的选项值 -->
-                  <div style="margin-top: 10px; padding: 5px; background-color: #f0f0f0; border-radius: 4px;">
-                    <div>\PassOptionsToPackage{</div>
-                    <div style="margin-left: 10px;">{{ computedOptions.join(', ') }}</div>
-                    <div>} xeCJK</div>
-                    <div>\PassOptionsToPackage{</div>
-                    <div style="margin-left: 10px;">{{ noMath ? 'no-math' : '' }}</div>
-                    <div>} fontspec</div>
-                  </div>
 
                 </div>
               </el-card>
@@ -88,7 +90,8 @@ const computedOptions = computed(() => {
       <!-- 中间主要内容显示区域 -->
       <el-main style="background-color: #ffffff; padding: 20px;">
         <div style="height: 100%; border: 1px dashed #ccc; display: flex; justify-content: center; align-items: center;">
-          <p>在此处显示生成的内容（只读）</p>
+          <!-- todo  -->
+          <p>{{computedOptions.join('\n')}}</p>
         </div>
       </el-main>
       
