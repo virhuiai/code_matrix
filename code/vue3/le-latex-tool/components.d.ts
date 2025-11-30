@@ -18,6 +18,7 @@ declare module 'vue' {
     EnglishFontSettings: typeof import('./src/components/EnglishFontSettings.vue')['default']
     FontSettings: typeof import('./src/components/FontSettings.vue')['default']
     HelloWorld: typeof import('./src/components/HelloWorld.vue')['default']
+    MoreWritesPackage: typeof import('./src/components/MoreWritesPackage.vue')['default']
     PackageOptions: typeof import('./src/components/PackageOptions.vue')['default']
   }
 }

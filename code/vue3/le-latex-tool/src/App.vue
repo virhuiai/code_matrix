@@ -5,6 +5,7 @@ import PackageOptions from './components/PackageOptions.vue'
 import DocumentClassSelector from './components/DocumentClassSelector.vue'
 import FontSettings from './components/FontSettings.vue'
 import EnglishFontSettings from './components/EnglishFontSettings.vue'
+import MoreWritesPackage from './components/MoreWritesPackage.vue'
 
 const activeTab = ref('tab1')
 
@@ -60,42 +61,23 @@ const englishFontSettings = ref({
   enabled: true
 })
 
+// MoreWritesPackage 的默认值
+const moreWritesPackage = ref({
+  enabled: true
+})
+
 // 从子组件接收的LaTeX代码
 const latexCodeFromChild = ref('')
 const documentClassCode = ref('')
 const fontSettingsCode = ref('')
 const englishFontSettingsCode = ref('')
+const moreWritesPackageCode = ref('')
 
 // 合并多个组件传来的代码
 const combinedLatexCode = computed(() => {
-  return [latexCodeFromChild.value, documentClassCode.value, fontSettingsCode.value, englishFontSettingsCode.value]
+  return [latexCodeFromChild.value, documentClassCode.value, fontSettingsCode.value, englishFontSettingsCode.value, moreWritesPackageCode.value]
     .filter(code => code.trim() !== '')
-    .join('\n')+ '\n' + `\\begin{document}
-
-
-\\section{mainfont}
-
-
-Hello,world!
-
-你好，世界！
-
-
-
-\\section{sansfont}
-
-{\\sf
-Hello,world!
-你好，世界！
-}
-
-\\section{monofont}
-
-{\\tt
-Hello,world!
-你好，世界！
-}
-\\end{document}`;
+    .join('\n')
 })
 </script>
 
@@ -137,10 +119,18 @@ Hello,world!
                 @code-change="(code) => englishFontSettingsCode = code"
               />
 
+              <!-- 添加MoreWritesPackage组件 -->
+              <MoreWritesPackage
+                v-model="moreWritesPackage"
+                @code-change="(code) => moreWritesPackageCode = code"
+              />
 
-
-             
-              
+              <el-card shadow="hover" class="card card--hover">
+                <div class="card">
+                  <strong class="card__title">文档设置</strong>
+                  <p class="card__description">设置文档类型、页面大小等</p>
+                </div>
+              </el-card>
             </div>
           </el-tab-pane>
           <el-tab-pane label="常见模板" name="tab2"></el-tab-pane>
