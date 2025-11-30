@@ -27,9 +27,6 @@ const fontTypes = [
   { value: 'mono', label: '等宽字体', command: 'setCJKmonofont' }
 ]
 
-// \setCJKmainfont[Path=/Volumes/THAWSPACE/CshProject/code_matrix.git/code/LaTex/fontFiles/方正/]{FangZhengShuSong-GBK-1.ttf}
-// \setCJKsansfont[Path=/Volumes/THAWSPACE/CshProject/code_matrix.git/code/LaTex/fontFiles/方正/]{FangZhengHeiTi-GBK-1.ttf}
-// \setCJKmonofont[Path=/Volumes/THAWSPACE/CshProject/code_matrix.git/code/LaTex/fontFiles/方正/]{FangZhengFangSong-GBK-1.ttf}
 // 默认字体配置
 const defaultFonts = [
   {
@@ -51,13 +48,33 @@ const defaultFonts = [
 
 const fontSettings = ref([...defaultFonts])
 
+// 获取特定类型的字体设置
+const getFontByType = (type: string) => {
+  return fontSettings.value.find(font => font.type === type) || { 
+    type, 
+    path: '', 
+    filename: '' 
+  }
+}
+
 // 更新特定字体类型的设置
 const updateFontSetting = (type: string, field: 'path' | 'filename', value: string) => {
   const index = fontSettings.value.findIndex(font => font.type === type)
   if (index !== -1) {
     fontSettings.value[index][field] = value
-    emit('update:modelValue', { fonts: [...fontSettings.value] })
+  } else {
+    // 如果该类型不存在，则添加新项
+    fontSettings.value.push({ type, [field]: value, path: '', filename: '' } as any)
+    // 确保其他字段有默认值
+    if (field === 'path') {
+      const lastIndex = fontSettings.value.length - 1
+      fontSettings.value[lastIndex].filename = ''
+    } else if (field === 'filename') {
+      const lastIndex = fontSettings.value.length - 1
+      fontSettings.value[lastIndex].path = ''
+    }
   }
+  emit('update:modelValue', { fonts: [...fontSettings.value] })
 }
 
 const computedLatexCode = computed(() => {
@@ -123,39 +140,27 @@ defineExpose({
           <strong>字体设置</strong>
           <p>设置中文字体路径</p>
           
-          <el-row :gutter="20" v-for="font in fontSettings" :key="font.type" style="margin-bottom: 15px;">
-            <el-col :span="6">
-              <el-select 
-                v-model="font.type" 
-                placeholder="选择字体类型" 
-                style="width: 100%"
-                disabled
-              >
-                <el-option
-                  v-for="item in fontTypes"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value"
+          <div v-for="fontType in fontTypes" :key="fontType.value" style="margin-bottom: 20px;">
+            <h4>{{ fontType.label }}</h4>
+            <el-row :gutter="20">
+              <el-col :span="18">
+                <el-input
+                  :model-value="getFontByType(fontType.value).path"
+                  placeholder="请输入字体文件路径"
+                  clearable
+                  @update:model-value="updateFontSetting(fontType.value, 'path', $event)"
                 />
-              </el-select>
-            </el-col>
-            <el-col :span="12">
-              <el-input
-                v-model="font.path"
-                placeholder="请输入字体文件路径"
-                clearable
-                @input="updateFontSetting(font.type, 'path', $event)"
-              />
-            </el-col>
-            <el-col :span="6">
-              <el-input
-                v-model="font.filename"
-                placeholder="字体文件名"
-                clearable
-                @input="updateFontSetting(font.type, 'filename', $event)"
-              />
-            </el-col>
-          </el-row>
+              </el-col>
+              <el-col :span="6">
+                <el-input
+                  :model-value="getFontByType(fontType.value).filename"
+                  placeholder="字体文件名"
+                  clearable
+                  @update:model-value="updateFontSetting(fontType.value, 'filename', $event)"
+                />
+              </el-col>
+            </el-row>
+          </div>
         </div>
       </el-card>
       
