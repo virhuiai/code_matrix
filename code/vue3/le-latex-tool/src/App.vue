@@ -8,6 +8,7 @@ import EnglishFontSettings from './components/EnglishFontSettings.vue'
 import MoreWritesPackage from './components/MoreWritesPackage.vue'
 import BoxPackages from './components/BoxPackages.vue'
 import DocumentContent from './components/DocumentContent.vue'
+import LettrinePackage from './components/LettrinePackage.vue'
 
 const activeTab = ref('tab1')
 
@@ -88,6 +89,14 @@ const boxPackages = ref({
   changepage: true
 })
 
+// LettrinePackage 的默认值
+const lettrinePackage = ref({
+  enabled: true,
+  lines: 1,
+  lhang: 0.1,
+  loversize: 0.1
+})
+
 // DocumentContent 的默认值
 const documentContent = ref({
   enabled: true
@@ -100,12 +109,12 @@ const fontSettingsCode = ref('')
 const englishFontSettingsCode = ref('')
 const moreWritesPackageCode = ref('')
 const boxPackagesCode = ref('')
+const lettrinePackageCode = ref('')
 const documentContentCode = ref('')
 
 // 合并多个组件传来的代码
 const combinedLatexCode = computed(() => {
-  return [latexCodeFromChild.value, documentClassCode.value, fontSettingsCode.value, englishFontSettingsCode.value, moreWritesPackageCode.value, boxPackagesCode.value
-  , documentContentCode.value]
+  return [latexCodeFromChild.value, documentClassCode.value, fontSettingsCode.value, englishFontSettingsCode.value, moreWritesPackageCode.value, boxPackagesCode.value, lettrinePackageCode.value, documentContentCode.value]
     .filter(code => code.trim() !== '')
     .join('\n')
 })
@@ -159,6 +168,12 @@ const combinedLatexCode = computed(() => {
               <BoxPackages
                 v-model="boxPackages"
                 @code-change="(code: string) => boxPackagesCode = code"
+              />
+
+              <!-- 添加LettrinePackage组件 -->
+              <LettrinePackage
+                v-model="lettrinePackage"
+                @code-change="(code: string) => lettrinePackageCode = code"
               />
 
               <!-- 添加DocumentContent组件 -->
