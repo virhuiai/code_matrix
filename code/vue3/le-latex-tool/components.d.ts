@@ -22,6 +22,7 @@ declare module 'vue' {
     ElSelect: typeof import('element-plus/es')['ElSelect']
     EnglishFontSettings: typeof import('./src/components/EnglishFontSettings.vue')['default']
     FontSettings: typeof import('./src/components/FontSettings.vue')['default']
+    GeometryPackage: typeof import('./src/components/GeometryPackage.vue')['default']
     HelloWorld: typeof import('./src/components/HelloWorld.vue')['default']
     LettrinePackage: typeof import('./src/components/LettrinePackage.vue')['default']
     MoreWritesPackage: typeof import('./src/components/MoreWritesPackage.vue')['default']

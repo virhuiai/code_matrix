@@ -11,6 +11,7 @@ import DocumentContent from './components/DocumentContent.vue'
 import LettrinePackage from './components/LettrinePackage.vue'
 import CodeListingPackage from './components/CodeListingPackage.vue'
 import DocumentLayoutPackage from './components/DocumentLayoutPackage.vue'
+import GeometryPackage from './components/GeometryPackage.vue'
 
 const activeTab = ref('tab1')
 
@@ -129,15 +130,26 @@ const codeListingPackage = ref({
 // DocumentLayoutPackage 的默认值
 const documentLayoutPackage = ref({
   parskip: {
-    enabled: true
-  },
-  linespread: {
     enabled: true,
-    value: 1.245
+    linespread: {
+      enabled: true,
+      value: 1.245
+    }
   },
   xspace: {
     enabled: true
   }
+})
+
+// GeometryPackage 的默认值
+const geometryPackage = ref({
+  enabled: true,
+  paperWidth: '185mm',
+  paperHeight: '260mm',
+  textWidth: '148mm',
+  textHeight: '220mm',
+  leftMargin: '21mm',
+  topMargin: '25.5mm'
 })
 
 // DocumentContent 的默认值
@@ -155,13 +167,27 @@ const boxPackagesCode = ref('')
 const lettrinePackageCode = ref('')
 const codeListingPackageCode = ref('')
 const documentLayoutPackageCode = ref('')
+const geometryPackageCode = ref('')
 const documentContentCode = ref('')
 
 // 合并多个组件传来的代码
 const combinedLatexCode = computed(() => {
-  return [latexCodeFromChild.value, documentClassCode.value, fontSettingsCode.value, englishFontSettingsCode.value, moreWritesPackageCode.value, boxPackagesCode.value, lettrinePackageCode.value, codeListingPackageCode.value, documentLayoutPackageCode.value, documentContentCode.value]
-    .filter(code => code.trim() !== '')
-    .join('\n')
+  const codes = [
+    latexCodeFromChild.value,
+    documentClassCode.value,
+    fontSettingsCode.value,
+    englishFontSettingsCode.value,
+    moreWritesPackageCode.value,
+    boxPackagesCode.value,
+    lettrinePackageCode.value,
+    codeListingPackageCode.value,
+    documentLayoutPackageCode.value,
+  ]
+
+  // 添加 GeometryPackage 代码
+  codes.push(geometryPackageCode.value)
+
+  return codes.filter(code => code.trim() !== '').join('\n\n')
 })
 </script>
 
@@ -224,13 +250,19 @@ const combinedLatexCode = computed(() => {
               <!-- 添加CodeListingPackage组件 3_抄录设置 -->
               <CodeListingPackage
                 v-model="codeListingPackage"
-                @code-change="(code: string) => codeListingPackageCode = code"
+                @code-change="(code) => codeListingPackageCode = code"
               />
 
               <!-- 添加DocumentLayoutPackage组件 -->
               <DocumentLayoutPackage
                 v-model="documentLayoutPackage"
-                @code-change="(code: string) => documentLayoutPackageCode = code"
+                @code-change="(code) => documentLayoutPackageCode = code"
+              />
+
+              <!-- 添加GeometryPackage组件 -->
+              <GeometryPackage
+                v-model="geometryPackage"
+                @code-change="(code: string) => geometryPackageCode = code"
               />
 
               <!-- 添加DocumentContent组件 -->
