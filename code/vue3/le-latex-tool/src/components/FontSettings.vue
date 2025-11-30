@@ -97,8 +97,7 @@ const fontOptions: Record<string, FontOption[]> = {
   ]
 }
 
-// 默认字体配置
-const defaultFonts = [
+const fontSettings = ref([
   {
     type: 'main',
     path: '/Volumes/THAWSPACE/CshProject/code_matrix.git/code/LaTex/fontFiles/方正/',
@@ -114,9 +113,7 @@ const defaultFonts = [
     path: '/Volumes/THAWSPACE/CshProject/code_matrix.git/code/LaTex/fontFiles/方正/',
     filename: 'FangZhengFangSong-GBK-1.ttf'
   }
-]
-
-const fontSettings = ref([...defaultFonts])
+])
 
 // 获取特定类型的字体设置
 const getFontByType = (type: string) => {
@@ -175,8 +172,24 @@ watch(() => props.modelValue, (newVal) => {
 onMounted(() => {
   // 如果没有初始值，则使用默认配置
   if (!props.modelValue.fonts || props.modelValue.fonts.length === 0) {
-    fontSettings.value = [...defaultFonts]
-    emit('update:modelValue', { fonts: [...defaultFonts] })
+    fontSettings.value = [
+      {
+        type: 'main',
+        path: '/Volumes/THAWSPACE/CshProject/code_matrix.git/code/LaTex/fontFiles/方正/',
+        filename: 'FangZhengShuSong-GBK-1.ttf'
+      },
+      {
+        type: 'sans',
+        path: '/Volumes/THAWSPACE/CshProject/code_matrix.git/code/LaTex/fontFiles/方正/',
+        filename: 'FangZhengHeiTi-GBK-1.ttf'
+      },
+      {
+        type: 'mono',
+        path: '/Volumes/THAWSPACE/CshProject/code_matrix.git/code/LaTex/fontFiles/方正/',
+        filename: 'FangZhengFangSong-GBK-1.ttf'
+      }
+    ]
+    emit('update:modelValue', { fonts: [...fontSettings.value] })
   } else {
     fontSettings.value = [...props.modelValue.fonts]
   }
