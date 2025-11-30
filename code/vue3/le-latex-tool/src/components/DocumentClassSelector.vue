@@ -100,15 +100,14 @@ onMounted(() => {
 </script>
 
 <template>
-  <el-card shadow="hover" class="document-class-card">
-    <div class="document-class">
-      <strong class="document-class__title">文档类选择</strong>
-      <p class="document-class__description">选择适合的中文文档类</p>
+  <el-card shadow="hover">
+    <div>
+      <strong>文档类选择</strong>
+      <p>选择适合的中文文档类</p>
       
       <!-- 将原来的 radio group 替换为 select -->
       <el-select 
         v-model="selectedClass" 
-        class="document-class__select"
         placeholder="请选择文档类"
       >
         <el-option
@@ -117,19 +116,18 @@ onMounted(() => {
           :label="docClass.label"
           :value="docClass.className"
         >
-          <span class="document-class__option-label">{{ docClass.label }}</span>
-          <span class="document-class__option-description">{{ docClass.description }}</span>
+          <span>{{ docClass.label }}</span>
+          <span>{{ docClass.description }}</span>
         </el-option>
       </el-select>
       
-      <div class="document-class__options">
-        <strong class="document-class__options-title">文档类选项</strong>
+      <div>
+        <strong>文档类选项</strong>
         <el-checkbox
           v-for="option in classOptions"
           :key="option.key"
           v-model="optionValues[option.key]"
           :label="option.label"
-          class="document-class__checkbox"
         />
       </div>
     </div>

@@ -4,6 +4,8 @@ import { ElContainer, ElHeader, ElAside, ElMain, ElFooter, ElTabs, ElTabPane, El
 import PackageOptions from './components/PackageOptions.vue'
 // 添加导入DocumentClassSelector组件
 import DocumentClassSelector from './components/DocumentClassSelector.vue'
+// 添加导入FontSettings组件
+import FontSettings from './components/FontSettings.vue'
 
 const activeTab = ref('tab1')
 
@@ -33,13 +35,19 @@ const documentClass = ref({
   }
 })
 
+// 字体设置的默认值
+const fontSettings = ref({
+  path: '/Volumes/THAWSPACE/CshProject/code_matrix.git/code/LaTex/fontFiles/方正/'
+})
+
 // 从子组件接收的LaTeX代码
 const latexCodeFromChild = ref('')
 const documentClassCode = ref('')
+const fontSettingsCode = ref('')
 
-// 合并两个组件传来的代码
+// 合并多个组件传来的代码
 const combinedLatexCode = computed(() => {
-  return [latexCodeFromChild.value, documentClassCode.value]
+  return [latexCodeFromChild.value, documentClassCode.value, fontSettingsCode.value]
     .filter(code => code.trim() !== '')
     .join('\n')
 })
@@ -69,6 +77,12 @@ const combinedLatexCode = computed(() => {
               <DocumentClassSelector
                 v-model="documentClass"
                 @code-change="(code) => documentClassCode = code"
+              />
+              
+              <!-- 添加FontSettings组件 -->
+              <FontSettings
+                v-model="fontSettings"
+                @code-change="(code) => fontSettingsCode = code"
               />
 
               <el-card shadow="hover" class="card card--hover">
