@@ -1,9 +1,22 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import { ElContainer, ElHeader, ElAside, ElMain, ElFooter, ElTabs, ElTabPane, ElCard } from 'element-plus'
-
+import { ref, computed } from 'vue'
+import { ElContainer, ElHeader, ElAside, ElMain, ElFooter, ElTabs, ElTabPane, ElCard, ElCheckbox } from 'element-plus'
 
 const activeTab = ref('tab1')
+
+// 定义三个选项的默认值，都默认选中
+const autoFakeBold = ref(true)
+const autoFakeSlant = ref(true)
+const noMath = ref(true)
+
+// 计算属性，用于拼接这三个选项值
+const computedOptions = computed(() => {
+  const options = []
+  if (autoFakeBold.value) options.push('AutoFakeBold=true')
+  if (autoFakeSlant.value) options.push('AutoFakeSlant=true')
+  if (noMath.value) options.push('no-math')
+  return options
+})
 </script>
 
 <template>
@@ -25,8 +38,20 @@ const activeTab = ref('tab1')
                 <div style="display: flex; flex-direction: column; gap: 5px;">
                   <strong>PassOptionsToPackage</strong>
                   
-<!-- \PassOptionsToPackage{AutoFakeBold=true,AutoFakeSlant=true}{xeCJK}
-\PassOptionsToPackage{no-math}{fontspec} -->
+                  <!-- 添加三个选项，针对 AutoFakeBold AutoFakeSlant no-math 是否选中，默认是选中 -->
+                  <el-checkbox v-model="autoFakeBold" label="AutoFakeBold" />
+                  <el-checkbox v-model="autoFakeSlant" label="AutoFakeSlant" />
+                  <el-checkbox v-model="noMath" label="no-math" />
+                  
+                  <!-- 显示计算后的选项值 -->
+                  <div style="margin-top: 10px; padding: 5px; background-color: #f0f0f0; border-radius: 4px;">
+                    <div>\PassOptionsToPackage{</div>
+                    <div style="margin-left: 10px;">{{ computedOptions.join(', ') }}</div>
+                    <div>} xeCJK</div>
+                    <div>\PassOptionsToPackage{</div>
+                    <div style="margin-left: 10px;">{{ noMath ? 'no-math' : '' }}</div>
+                    <div>} fontspec</div>
+                  </div>
 
                 </div>
               </el-card>
@@ -51,50 +76,6 @@ const activeTab = ref('tab1')
                   <p style="font-size: 0.9em; color: #666;">创建和自定义图表</p>
                 </div>
               </el-card>
-
-
-<!-- 0_导言区通用内容.tex
-
-\input{1_中文宏包.tex}
-\input{1_2字体.tex}
-\input{2_morewrites.tex} 
-\input{2_2_盒子设置.tex}
-\input{2_3_首行放大.tex} 
-\input{3_抄录设置.tex}
-\input{3_1行距和空格设置.tex}
-\input{3_2_版面设置16K.tex}
-\input{3_3版式.tex}
-\input{6_标题格式设置.tex}
-\input{8_目录格式设置.tex} 
-\input{10_链接_索引设置.tex}
-\input{11_列表_符号设置.tex}
-\input{12_对译环境.tex}
-\input{12_2_多栏.tex}
-\input{13_注释.tex}
-\input{14_插图_颜色设置.tex}
-\input{15_表格设置.tex}
-
-1_2字体.tex
-1_中文宏包.tex
-2_2_盒子设置.tex
-2_3_首行放大.tex
-2_morewrites.tex
-3_1行距和空格设置.tex
-3_2_版面设置16K.tex
-3_3版式.tex
-3_抄录设置_minted.tex
-3_抄录设置_tcb.tex
-3_抄录设置.tex
-6_标题格式设置.tex
-8_目录格式设置.tex
-10_链接_索引设置.tex
-11_列表_符号设置.tex
-12_2_多栏.tex
-12_对译环境.tex
-13_注释.tex
-14_插图_颜色设置.tex
-15_表格设置.tex
-16_marginPic.tex -->
               
             </div>
           </el-tab-pane>
