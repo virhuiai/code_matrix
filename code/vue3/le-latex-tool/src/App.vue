@@ -4,14 +4,16 @@ import { ElContainer, ElHeader, ElAside, ElMain, ElFooter, ElTabs, ElTabPane, El
 
 const activeTab = ref('tab1')
 
+// part 1
 // 定义三个选项的默认值，都默认选中
 const autoFakeBold = ref(true)
 const autoFakeSlant = ref(true)
 const noMath = ref(true)
+const prologue = ref(true)
+const dvipsnames = ref(true)
 
 // 计算属性，用于拼接这三个选项值
-// 修改变量名
-const computedLatexCode = computed(() => {
+const computedPassOptionsToPackage = computed(() => {
   const rs = [];
   const options_xeCJK = []
   if (autoFakeBold.value) options_xeCJK.push('AutoFakeBold=true')
@@ -28,12 +30,21 @@ const computedLatexCode = computed(() => {
     rs.push(`\\PassOptionsToPackage{${option_fontspec}}{fontspec}`)
   }
 
+  // 添加对 xcolor 包的支持
+  const options_xcolor = []
+  if (prologue.value) options_xcolor.push('prologue')
+  if (dvipsnames.value) options_xcolor.push('dvipsnames')
+  if(options_xcolor.length > 0){
+    const option_xcolor =  options_xcolor.join(',');
+    rs.push(`\\PassOptionsToPackage{${option_xcolor}}{xcolor}`)
+  }
+
   return rs.join('\n')
 })
 
 // 用于在文本框中显示的计算属性
 const computedLatexCodeDisplay = computed(() => {
-  return computedLatexCode.value
+  return computedPassOptionsToPackage.value
 })
 </script>
 
@@ -60,6 +71,13 @@ const computedLatexCodeDisplay = computed(() => {
                   <el-checkbox v-model="autoFakeBold" label="AutoFakeBold" />
                   <el-checkbox v-model="autoFakeSlant" label="AutoFakeSlant" />
                   <el-checkbox v-model="noMath" label="no-math" />
+                  
+                  <!-- 添加对 xcolor 包选项的支持 -->
+                  <div style="margin-top: 10px;">
+                    <strong>xcolor 选项</strong>
+                    <el-checkbox v-model="prologue" label="prologue" />
+                    <el-checkbox v-model="dvipsnames" label="dvipsnames" />
+                  </div>
 
                 </div>
               </el-card>
@@ -101,7 +119,6 @@ const computedLatexCodeDisplay = computed(() => {
             v-model="computedLatexCodeDisplay"
             type="textarea"
             :rows="10"
-            readonly
             style="width: 100%; height: 100%; font-family: monospace;"
           />
         </div>
