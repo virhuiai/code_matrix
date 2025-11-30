@@ -16,6 +16,7 @@ import FancyhdrPackage from './components/FancyhdrPackage.vue'
 import TitleFormatPackage from './components/TitleFormatPackage.vue'
 import TableOfContentsPackage from './components/TableOfContentsPackage.vue'
 import HyperlinkIndexPackage from './components/HyperlinkIndexPackage.vue'
+import ListSymbolPackage from './components/ListSymbolPackage.vue'
 
 const activeTab = ref('tab1')
 
@@ -124,6 +125,11 @@ const hyperlinkIndexPackage = ref({
   enabled: true
 })
 
+// ListSymbolPackage 的默认值
+const listSymbolPackage = ref({
+  enabled: true
+})
+
 // CodeListingPackage 的默认值
 const codeListingPackage = ref({
   xcolor: {
@@ -193,6 +199,7 @@ const fancyhdrPackageCode = ref('')
 const titleFormatPackageCode = ref('')
 const tableOfContentsPackageCode = ref('')
 const hyperlinkIndexPackageCode = ref('')
+const listSymbolPackageCode = ref('')
 const codeListingPackageCode = ref('')
 const documentLayoutPackageCode = ref('')
 const geometryPackageCode = ref('')
@@ -212,6 +219,7 @@ const combinedLatexCode = computed(() => {
     titleFormatPackageCode.value,
     tableOfContentsPackageCode.value,
     hyperlinkIndexPackageCode.value,
+    listSymbolPackageCode.value,
     codeListingPackageCode.value,
     documentLayoutPackageCode.value,
   ]
@@ -321,10 +329,17 @@ const combinedLatexCode = computed(() => {
               />
 
 
-              <!-- 添加HyperlinkIndexPackage组件 链接_索引设置 -->
+              <!-- 添加HyperlinkIndexPackage组件 链接_索引设置 10_链接_索引设置.tex -->
               <HyperlinkIndexPackage
                 v-model="hyperlinkIndexPackage"
                 @code-change="(code: string) => hyperlinkIndexPackageCode = code"
+              />
+
+
+              <!-- 添加ListSymbolPackage组件 列表_符号设置 11_列表_符号设置.tex -->
+              <ListSymbolPackage
+                v-model="listSymbolPackage"
+                @code-change="(code: string) => listSymbolPackageCode = code"
               />
 
 

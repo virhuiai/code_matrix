@@ -27,6 +27,7 @@ declare module 'vue' {
     HelloWorld: typeof import('./src/components/HelloWorld.vue')['default']
     HyperlinkIndexPackage: typeof import('./src/components/HyperlinkIndexPackage.vue')['default']
     LettrinePackage: typeof import('./src/components/LettrinePackage.vue')['default']
+    ListSymbolPackage: typeof import('./src/components/ListSymbolPackage.vue')['default']
     MoreWritesPackage: typeof import('./src/components/MoreWritesPackage.vue')['default']
     PackageOptions: typeof import('./src/components/PackageOptions.vue')['default']
     TableOfContentsPackage: typeof import('./src/components/TableOfContentsPackage.vue')['default']
