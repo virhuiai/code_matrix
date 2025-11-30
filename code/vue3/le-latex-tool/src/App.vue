@@ -16,8 +16,22 @@ const packageOptions = ref({
   dvipsnames: true
 })
 
-// 添加文档类选项的默认值
-const documentClass = ref('ctexart')
+// 修改文档类选项的默认值结构
+const documentClass = ref({
+  documentClass: 'ctexart',
+  options: {
+    'a4paper': true,
+    'oneside': true,
+    'zihao=-4': true,
+    'space': true,
+    'scheme=chinese': true,
+    'heading=true': true,
+    'hyperref': true,
+    'fntef': true,
+    'fancyhdr': true,
+    'fontset=none': true
+  }
+})
 
 // 从子组件接收的LaTeX代码
 const latexCodeFromChild = ref('')
@@ -51,7 +65,7 @@ const combinedLatexCode = computed(() => {
                 @code-change="(code) => latexCodeFromChild = code"
               />
 
-              <!-- 添加DocumentClassSelector组件 -->
+              <!-- 修改DocumentClassSelector组件的使用 -->
               <DocumentClassSelector
                 v-model="documentClass"
                 @code-change="(code) => documentClassCode = code"

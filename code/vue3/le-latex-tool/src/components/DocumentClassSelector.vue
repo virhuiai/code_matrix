@@ -1,13 +1,16 @@
 <script setup lang="ts">
 import { ref, computed, defineEmits, defineProps, watch, onMounted } from 'vue'
-import { ElCard, ElRadioGroup, ElRadioButton } from 'element-plus'
+import { ElCard, ElRadioGroup, ElRadioButton, ElCheckbox } from 'element-plus'
 
 const props = defineProps<{
-  modelValue: string
+  modelValue: {
+    documentClass: string
+    options: Record<string, boolean>
+  }
 }>()
 
 const emit = defineEmits<{
-  (e: 'update:modelValue', value: string): void
+  (e: 'update:modelValue', value: { documentClass: string; options: Record<string, boolean> }): void
   (e: 'codeChange', value: string): void
 }>()
 
@@ -15,6 +18,12 @@ interface DocumentClassConfig {
   className: string
   label: string
   description: string
+}
+
+// 文档类选项配置
+interface ClassOptionConfig {
+  key: string
+  label: string
 }
 
 const documentClasses: DocumentClassConfig[] = [
@@ -40,28 +49,45 @@ const documentClasses: DocumentClassConfig[] = [
   }
 ]
 
+// 文档类可选选项
+const classOptions: ClassOptionConfig[] = [
+  { key: 'a4paper', label: 'a4paper' },
+  { key: 'oneside', label: 'oneside' },
+  { key: 'zihao=-4', label: 'zihao=-4' },
+  { key: 'space', label: 'space' },
+  { key: 'scheme=chinese', label: 'scheme=chinese' },
+  { key: 'heading=true', label: 'heading=true' },
+  { key: 'hyperref', label: 'hyperref' },
+  { key: 'fntef', label: 'fntef' },
+  { key: 'fancyhdr', label: 'fancyhdr' },
+  { key: 'fontset=none', label: 'fontset=none' }
+]
+
 const selectedClass = computed({
-  get: () => props.modelValue,
-  set: (value) => emit('update:modelValue', value)
+  get: () => props.modelValue.documentClass,
+  set: (value) => emit('update:modelValue', {
+    documentClass: value,
+    options: props.modelValue.options
+  })
+})
+
+const optionValues = computed({
+  get: () => props.modelValue.options,
+  set: (value) => emit('update:modelValue', {
+    documentClass: props.modelValue.documentClass,
+    options: value
+  })
 })
 
 const computedLatexCode = computed(() => {
   if (!selectedClass.value) return ''
   
-  const commonOptions = [
-    'a4paper',
-    'oneside',
-    'zihao=-4',
-    'space',
-    'scheme=chinese',
-    'heading=true',
-    'hyperref',
-    'fntef',
-    'fancyhdr',
-    'fontset=none'
-  ]
+  // 获取选中的选项
+  const selectedOptions = classOptions
+    .filter(option => optionValues.value[option.key])
+    .map(option => option.key)
   
-  return `\\documentclass[${commonOptions.join(',')}]{${selectedClass.value}}`
+  return `\\documentclass[${selectedOptions.join(',')}]{${selectedClass.value}}`
 })
 
 watch(computedLatexCode, (newCode) => {
@@ -94,6 +120,17 @@ onMounted(() => {
           <p class="document-class__item-description">{{ docClass.description }}</p>
         </div>
       </el-radio-group>
+      
+      <div class="document-class__options">
+        <strong class="document-class__options-title">文档类选项</strong>
+        <el-checkbox
+          v-for="option in classOptions"
+          :key="option.key"
+          v-model="optionValues[option.key]"
+          :label="option.label"
+          class="document-class__checkbox"
+        />
+      </div>
     </div>
   </el-card>
 </template>
