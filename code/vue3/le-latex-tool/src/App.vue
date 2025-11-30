@@ -13,6 +13,7 @@ import CodeListingPackage from './components/CodeListingPackage.vue'
 import DocumentLayoutPackage from './components/DocumentLayoutPackage.vue'
 import GeometryPackage from './components/GeometryPackage.vue'
 import FancyhdrPackage from './components/FancyhdrPackage.vue'
+import TitleFormatPackage from './components/TitleFormatPackage.vue'
 
 const activeTab = ref('tab1')
 
@@ -106,6 +107,11 @@ const fancyhdrPackage = ref({
   enabled: true
 })
 
+// TitleFormatPackage 的默认值
+const titleFormatPackage = ref({
+  enabled: true
+})
+
 // CodeListingPackage 的默认值
 const codeListingPackage = ref({
   xcolor: {
@@ -172,6 +178,7 @@ const moreWritesPackageCode = ref('')
 const boxPackagesCode = ref('')
 const lettrinePackageCode = ref('')
 const fancyhdrPackageCode = ref('')
+const titleFormatPackageCode = ref('')
 const codeListingPackageCode = ref('')
 const documentLayoutPackageCode = ref('')
 const geometryPackageCode = ref('')
@@ -188,6 +195,7 @@ const combinedLatexCode = computed(() => {
     boxPackagesCode.value,
     lettrinePackageCode.value,
     fancyhdrPackageCode.value,
+    titleFormatPackageCode.value,
     codeListingPackageCode.value,
     documentLayoutPackageCode.value,
   ]
@@ -258,7 +266,12 @@ const combinedLatexCode = computed(() => {
                 @code-change="(code: string) => lettrinePackageCode = code"
               />
 
-          
+              <!-- 添加FancyhdrPackage组件 版式设置 -->
+              <FancyhdrPackage
+                v-model="fancyhdrPackage"
+                @code-change="(code: string) => fancyhdrPackageCode = code"
+              />
+
 
               <!-- 添加CodeListingPackage组件 3_抄录设置 -->
               <CodeListingPackage
@@ -278,21 +291,29 @@ const combinedLatexCode = computed(() => {
                 @code-change="(code: string) => geometryPackageCode = code"
               />
 
-              <!-- 添加FancyhdrPackage组件 版式设置 -->
-              <FancyhdrPackage
-                v-model="fancyhdrPackage"
-                @code-change="(code: string) => fancyhdrPackageCode = code"
+
+              <!-- 添加TitleFormatPackage组件 标题格式设置  \input{6_标题格式设置.tex}-->
+              <TitleFormatPackage
+                v-model="titleFormatPackage"
+                @code-change="(code: string) => titleFormatPackageCode = code"
               />
-          
+
+
               <!-- 添加DocumentContent组件 -->
               <DocumentContent
                 v-model="documentContent"
                 @code-change="(code: string) => documentContentCode = code"
               />
 
-               
-
-              
+              <el-card shadow="hover" class="card card--hover">
+                <el-input
+                  v-model="combinedLatexCode"
+                  type="textarea"
+                  :autosize="{ minRows: 10}"
+                  readonly
+                  class="latex-output"
+                />
+              </el-card>
             </div>
           </el-tab-pane>
           <el-tab-pane label="常见模板" name="tab2"></el-tab-pane>
