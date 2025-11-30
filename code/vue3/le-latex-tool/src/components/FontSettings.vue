@@ -261,14 +261,14 @@ defineExpose({
             
             <!-- 显示路径和文件名，并允许编辑 -->
             <el-row :gutter="20" style="margin-top: 10px;">
-              <el-col :span="12">
+              <el-col :span="24">
                 <el-input
                   :model-value="getFontByType(fontType.value).path"
                   placeholder="字体路径"
                   @update:model-value="(val) => updateFontSetting(fontType.value, 'path', val)"
                 />
               </el-col>
-              <el-col :span="12">
+              <el-col :span="24">
                 <el-input
                   :model-value="getFontByType(fontType.value).filename"
                   placeholder="字体文件名"
