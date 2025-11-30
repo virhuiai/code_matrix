@@ -2,9 +2,19 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <!-- 默认 favicon 处理  -->
+    <!-- public 目录下的文件会被直接复制到构建输出的根目录 -->
+     <!-- 路径 /vite.svg 是相对于服务器根路径的 -->
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <!-- 这个 meta 标签用于控制网页在移动设备上的显示方式，是响应式设计的基础配置。 -->
+     <!-- width=device-width:
+            设置页面宽度等于设备屏幕宽度
+            确保页面不会因为固定像素宽度而在小屏幕上出现横向滚动 -->
+      <!-- initial-scale=1.0:
+      设置页面的初始缩放比例，1.0 表示不缩放
+      防止页面在移动端浏览器中被默认缩放 -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vite + Vue + TS</title>
+    <title>le-latex-tool</title>
   </head>
   <body>
     <div id="app"></div>
