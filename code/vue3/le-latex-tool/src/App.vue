@@ -18,6 +18,7 @@ import TableOfContentsPackage from './components/TableOfContentsPackage.vue'
 import HyperlinkIndexPackage from './components/HyperlinkIndexPackage.vue'
 import ListSymbolPackage from './components/ListSymbolPackage.vue'
 import ParallelTextPackage from './components/ParallelTextPackage.vue'
+import CommentPackage from './components/CommentPackage.vue'
 
 const activeTab = ref('tab1')
 
@@ -136,6 +137,11 @@ const parallelTextPackage = ref({
   enabled: true
 })
 
+// CommentPackage 的默认值
+const commentPackage = ref({
+  enabled: true
+})
+
 // CodeListingPackage 的默认值
 const codeListingPackage = ref({
   xcolor: {
@@ -207,6 +213,7 @@ const tableOfContentsPackageCode = ref('')
 const hyperlinkIndexPackageCode = ref('')
 const listSymbolPackageCode = ref('')
 const parallelTextPackageCode = ref('')
+const commentPackageCode = ref('')
 const codeListingPackageCode = ref('')
 const documentLayoutPackageCode = ref('')
 const geometryPackageCode = ref('')
@@ -228,6 +235,7 @@ const combinedLatexCode = computed(() => {
     hyperlinkIndexPackageCode.value,
     listSymbolPackageCode.value,
     parallelTextPackageCode.value,
+    commentPackageCode.value,
     codeListingPackageCode.value,
     documentLayoutPackageCode.value,
   ]
@@ -355,6 +363,13 @@ const combinedLatexCode = computed(() => {
               <ParallelTextPackage
                 v-model="parallelTextPackage"
                 @code-change="(code: string) => parallelTextPackageCode = code"
+              />
+
+
+              <!-- 添加CommentPackage组件 注释 13_注释.tex -->
+              <CommentPackage
+                v-model="commentPackage"
+                @code-change="(code: string) => commentPackageCode = code"
               />
 
 

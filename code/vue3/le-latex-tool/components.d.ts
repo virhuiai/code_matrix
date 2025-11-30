@@ -13,6 +13,7 @@ declare module 'vue' {
   export interface GlobalComponents {
     BoxPackages: typeof import('./src/components/BoxPackages.vue')['default']
     CodeListingPackage: typeof import('./src/components/CodeListingPackage.vue')['default']
+    CommentPackage: typeof import('./src/components/CommentPackage.vue')['default']
     DocumentClassSelector: typeof import('./src/components/DocumentClassSelector.vue')['default']
     DocumentContent: typeof import('./src/components/DocumentContent.vue')['default']
     DocumentLayoutPackage: typeof import('./src/components/DocumentLayoutPackage.vue')['default']
