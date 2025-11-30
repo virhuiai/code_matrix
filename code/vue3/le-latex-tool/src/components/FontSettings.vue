@@ -43,7 +43,7 @@ interface FontOption {
 const fontOptions: Record<string, FontOption[]> = {
   main: [
     {
-      label: '方正书宋简体',
+      label: '方正书宋GBK',
       path: '/Volumes/THAWSPACE/CshProject/code_matrix.git/code/LaTex/fontFiles/方正/',
       filename: 'FangZhengShuSong-GBK-1.ttf'
     },
@@ -52,29 +52,47 @@ const fontOptions: Record<string, FontOption[]> = {
       path: '/Volumes/THAWSPACE/CshProject/code_matrix.git/code/LaTex/fontFiles/方正FanTi/',
       filename: 'FangZhengShuSongFanTi-1.ttf'
     }
+    // 添加新的简体字体选项
+    ,{
+      label: '方正楷体简体',
+      path: '/Volumes/THAWSPACE/CshProject/code_matrix.git/code/LaTex/fontFiles/方正JianTi/',
+      filename: 'FangZhengShuSongJianTi-1.ttf'
+    }
   ],
   sans: [
     {
-      label: '方正黑体简体',
+      label: '方正黑体GBK',
       path: '/Volumes/THAWSPACE/CshProject/code_matrix.git/code/LaTex/fontFiles/方正/',
       filename: 'FangZhengHeiTi-GBK-1.ttf'
     },
     {
       label: '方正黑体繁体',
-      path: '/Volumes/THAWSPACE/CshProject/code_matrix.git/code/LaTex/fontFiles/方正/FanTi/',
+      path: '/Volumes/THAWSPACE/CshProject/code_matrix.git/code/LaTex/fontFiles/方正FanTi/',
       filename: 'FangZhengHeiTiFanTi-1.ttf'
+    }
+    // 添加新的简体字体选项
+    ,{
+      label: '方正雅黑简体',
+      path: '/Volumes/THAWSPACE/CshProject/code_matrix.git/code/LaTex/fontFiles/方正JianTi/',
+      filename: 'FangZhengHeiTiJianTi-1.ttf'
     }
   ],
   mono: [
     {
-      label: '方正仿宋简体',
+      label: '方正仿宋GBK',
       path: '/Volumes/THAWSPACE/CshProject/code_matrix.git/code/LaTex/fontFiles/方正/',
       filename: 'FangZhengFangSong-GBK-1.ttf'
     },
     {
       label: '方正仿宋繁体',
-      path: '/Volumes/THAWSPACE/CshProject/code_matrix.git/code/LaTex/fontFiles/方正/FanTi/',
+      path: '/Volumes/THAWSPACE/CshProject/code_matrix.git/code/LaTex/fontFiles/方正FanTi/',
       filename: 'FangZhengFangSongFanTi-1.ttf'
+    }
+    // 添加新的简体字体选项
+    ,{
+      label: '方正宋体简体',
+      path: '/Volumes/THAWSPACE/CshProject/code_matrix.git/code/LaTex/fontFiles/方正JianTi/',
+      filename: 'FangZhengFangSongJianTi-1.ttf'
     }
   ]
 }
@@ -203,7 +221,7 @@ defineExpose({
             <el-row :gutter="20">
               <el-col :span="18">
                 <el-select 
-                  :model-value="`${getFontByType(fontType.value).path}${getFontByType(fontType.value).filename}`"
+                  :model-value="getFontByType(fontType.value).filename"
                   @change="(val) => handleFontChange(fontType.value, val)"
                   placeholder="请选择字体"
                   style="width: 100%"
