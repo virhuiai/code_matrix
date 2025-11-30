@@ -57,6 +57,15 @@ Error: Failed to resolve force included dependency: quill
 pnpm add quill -D
 ```
 
+```
+--不能下载 wget -O /Volumes/RamDisk/element-plus@2.0.4.min.css  "https://lf26-cdn-tos.bytecdntp.com/cdn/expire-1-M/element-plus/2.0.4/index.min.css"
+wget -O /Volumes/RamDisk/vform3@render.style.css "https://ks3-cn-beijing.ksyun.com/vform3/render.style.css?t=20220129"
+-- wget -O /Volumes/RamDisk/vue@3.2.30.global.min.js "https://lf26-cdn-tos.bytecdntp.com/cdn/expire-1-M/vue/3.2.30/vue.global.min.js"
+--不能下载 wget -O /Volumes/RamDisk/element-plus@2.0.4.min.js "https://lf9-cdn-tos.bytecdntp.com/cdn/expire-1-M/element-plus/2.0.4/index.full.min.js"
+wget -O /Volumes/RamDisk/vform3@render.umd.js "https://ks3-cn-beijing.ksyun.com/vform3/render.umd.js?t=20220129"
+```
+
+
 ### 开发调试
 ```
 pnpm run serve

@@ -55,27 +55,37 @@
 
 ### 安装依赖
 ```
-npm install --registry=https://registry.npmmirror.com
+pnpm install --registry=https://registry.npmmirror.com
+```
+
+```
+wget -O /Volumes/RamDisk/element-ui@2.15.7.min.css https://cdn.staticfile.org/element-ui/2.15.7/theme-chalk/index.min.css
+wget -O /Volumes/RamDisk/VFormRender.css https://ks3-cn-beijing.ksyun.com/vform2021/VFormRender.css
+wget -O /Volumes/RamDisk/babel-polyfill@6.23.0.min.js https://cdn.bootcss.com/babel-polyfill/6.23.0/polyfill.min.js
+--不能下载 wget -O /Volumes/RamDisk/vue@2.6.14.min.js https://lf26-cdn-tos.bytecdntp.com/cdn/expire-1-M/vue/2.6.14/vue.min.js
+wget -O /Volumes/RamDisk/element-ui@2.15.7.min.js https://cdn.staticfile.org/element-ui/2.15.7/index.min.js
+wget -O /Volumes/RamDisk/VFormRender.umd.min.js https://ks3-cn-beijing.ksyun.com/vform2021/VFormRender.umd.min.js
+
 ```
 
 ### 开发调试
 ```
-npm run serve
+pnpm run serve
 ```
 
 ### 生产打包
 ```
-npm run build
+pnpm run build
 ```
 
 ### 表单设计器 + 表单渲染器打包
 ```
-npm run lib
+pnpm run lib
 ```
 
 ### 表单渲染器打包
 ```
-npm run lib-render
+pnpm run lib-render
 ```
 
 ### 浏览器兼容性
