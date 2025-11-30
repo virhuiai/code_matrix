@@ -1,30 +1,75 @@
 <script setup lang="ts">
+import { ref } from 'vue'
+import { ElContainer, ElHeader, ElAside, ElMain, ElFooter, ElTabs, ElTabPane } from 'element-plus'
 import HelloWorld from './components/HelloWorld.vue'
+
+const activeTab = ref('tab1')
 </script>
 
 <template>
-  <div>
-    <!-- <a href="https://vite.dev" target="_blank">
-      <img src="/vite.svg" class="logo" alt="Vite logo" />
-    </a>
-    <a href="https://vuejs.org/" target="_blank">
-      <img src="./assets/vue.svg" class="logo vue" alt="Vue logo" />
-    </a> -->
-  </div>
-  <HelloWorld msg="Vite + Vue" />
+  <el-container style="height: 100vh;">
+    <!-- 顶部标题区域 -->
+    <el-header style="background-color: #409eff; color: white; display: flex; align-items: center;">
+      <h1>LE LaTeX 工具</h1>
+    </el-header>
+    
+    <!-- 下方主要内容区域 -->
+    <el-container>
+      <!-- 左侧选项卡 -->
+      <el-aside width="250px" style="background-color: #f5f5f5; padding: 10px;">
+        <el-tabs v-model="activeTab" type="border-card">
+          <el-tab-pane label="选项一" name="tab1"></el-tab-pane>
+          <el-tab-pane label="选项二" name="tab2"></el-tab-pane>
+          <!-- <el-tab-pane label="选项三" name="tab3"></el-tab-pane>
+          <el-tab-pane label="选项四" name="tab4"></el-tab-pane> -->
+        </el-tabs>
+      </el-aside>
+      
+      <!-- 中间主要内容显示区域 -->
+      <el-main style="background-color: #ffffff; padding: 20px;">
+        <div style="height: 100%; border: 1px dashed #ccc; display: flex; justify-content: center; align-items: center;">
+          <p>在此处显示生成的内容（只读）</p>
+        </div>
+      </el-main>
+      
+      <!-- 右侧属性设置区域 -->
+      <el-aside width="250px" style="background-color: #f5f5f5; padding: 10px;">
+        <div style="padding: 20px;">
+          <h3>属性设置</h3>
+          <div v-if="activeTab === 'tab1'">
+            <p>选项一的属性设置</p>
+          </div>
+          <div v-else-if="activeTab === 'tab2'">
+            <p>选项二的属性设置</p>
+          </div>
+          <div v-else-if="activeTab === 'tab3'">
+            <p>选项三的属性设置</p>
+          </div>
+          <div v-else-if="activeTab === 'tab4'">
+            <p>选项四的属性设置</p>
+          </div>
+        </div>
+      </el-aside>
+    </el-container>
+    
+    <!-- 底部 -->
+    <el-footer style="background-color: #eee; height: 40px; display: flex; align-items: center; justify-content: center;">
+      <span>LE LaTeX 工具 ©2023</span>
+    </el-footer>
+  </el-container>
 </template>
 
 <style scoped>
-/* .logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
+.el-header h1 {
+  margin: 0;
+  font-size: 1.5em;
 }
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
+
+.el-aside {
+  overflow-y: auto;
 }
-.logo.vue:hover {
-  filter: drop-shadow(0 0 2em #42b883aa);
-} */
+
+.el-tabs {
+  height: 100%;
+}
 </style>
