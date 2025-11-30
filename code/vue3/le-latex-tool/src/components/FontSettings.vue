@@ -20,79 +20,83 @@ const emit = defineEmits<{
 // 控制弹窗显示
 const dialogVisible = ref(false)
 
-// 字体类型选项
-interface FontType {
-  value: string
-  label: string
-  command: string
-}
-
-const fontTypes: FontType[] = [
-  { value: 'main', label: '主字体', command: 'setCJKmainfont' },
-  { value: 'sans', label: '无衬线字体', command: 'setCJKsansfont' }, 
-  { value: 'mono', label: '等宽字体', command: 'setCJKmonofont' }
-]
-
-// 字体选项，按类型分组
-interface FontOption {
-  label: string
-  path: string
-  filename: string
-}
-
-const fontOptions: Record<string, FontOption[]> = {
-  main: [
+// 字体配置数据
+const fontConfig = {
+  types: [
+    { value: 'main', label: '主字体', command: 'setCJKmainfont' },
+    { value: 'sans', label: '无衬线字体', command: 'setCJKsansfont' },
+    { value: 'mono', label: '等宽字体', command: 'setCJKmonofont' }
+  ],
+  
+  options: {
+    main: [
+      {
+        label: '方正书宋GBK',
+        path: '/Volumes/THAWSPACE/CshProject/code_matrix.git/code/LaTex/fontFiles/方正/',
+        filename: 'FangZhengShuSong-GBK-1.ttf'
+      },
+      {
+        label: '方正书宋繁体',
+        path: '/Volumes/THAWSPACE/CshProject/code_matrix.git/code/LaTex/fontFiles/方正FanTi/',
+        filename: 'FangZhengShuSongFanTi-1.ttf'
+      },
+      {
+        label: '方正楷体简体',
+        path: '/Volumes/THAWSPACE/CshProject/code_matrix.git/code/LaTex/fontFiles/方正JianTi/',
+        filename: 'FangZhengShuSongJianTi-1.ttf'
+      }
+    ],
+    sans: [
+      {
+        label: '方正黑体GBK',
+        path: '/Volumes/THAWSPACE/CshProject/code_matrix.git/code/LaTex/fontFiles/方正/',
+        filename: 'FangZhengHeiTi-GBK-1.ttf'
+      },
+      {
+        label: '方正黑体繁体',
+        path: '/Volumes/THAWSPACE/CshProject/code_matrix.git/code/LaTex/fontFiles/方正FanTi/',
+        filename: 'FangZhengHeiTiFanTi-1.ttf'
+      },
+      {
+        label: '方正雅黑简体',
+        path: '/Volumes/THAWSPACE/CshProject/code_matrix.git/code/LaTex/fontFiles/方正JianTi/',
+        filename: 'FangZhengHeiTiJianTi-1.ttf'
+      }
+    ],
+    mono: [
+      {
+        label: '方正仿宋GBK',
+        path: '/Volumes/THAWSPACE/CshProject/code_matrix.git/code/LaTex/fontFiles/方正/',
+        filename: 'FangZhengFangSong-GBK-1.ttf'
+      },
+      {
+        label: '方正仿宋繁体',
+        path: '/Volumes/THAWSPACE/CshProject/code_matrix.git/code/LaTex/fontFiles/方正FanTi/',
+        filename: 'FangZhengFangSongFanTi-1.ttf'
+      },
+      {
+        label: '方正宋体简体',
+        path: '/Volumes/THAWSPACE/CshProject/code_matrix.git/code/LaTex/fontFiles/方正JianTi/',
+        filename: 'FangZhengFangSongJianTi-1.ttf'
+      }
+    ]
+  },
+  
+  defaults: [
     {
-      label: '方正书宋GBK',
+      type: 'main',
       path: '/Volumes/THAWSPACE/CshProject/code_matrix.git/code/LaTex/fontFiles/方正/',
       filename: 'FangZhengShuSong-GBK-1.ttf'
     },
     {
-      label: '方正书宋繁体',
-      path: '/Volumes/THAWSPACE/CshProject/code_matrix.git/code/LaTex/fontFiles/方正FanTi/',
-      filename: 'FangZhengShuSongFanTi-1.ttf'
-    }
-    // 添加新的简体字体选项
-    ,{
-      label: '方正楷体简体',
-      path: '/Volumes/THAWSPACE/CshProject/code_matrix.git/code/LaTex/fontFiles/方正JianTi/',
-      filename: 'FangZhengShuSongJianTi-1.ttf'
-    }
-  ],
-  sans: [
-    {
-      label: '方正黑体GBK',
+      type: 'sans',
       path: '/Volumes/THAWSPACE/CshProject/code_matrix.git/code/LaTex/fontFiles/方正/',
       filename: 'FangZhengHeiTi-GBK-1.ttf'
     },
     {
-      label: '方正黑体繁体',
-      path: '/Volumes/THAWSPACE/CshProject/code_matrix.git/code/LaTex/fontFiles/方正FanTi/',
-      filename: 'FangZhengHeiTiFanTi-1.ttf'
-    }
-    // 添加新的简体字体选项
-    ,{
-      label: '方正雅黑简体',
-      path: '/Volumes/THAWSPACE/CshProject/code_matrix.git/code/LaTex/fontFiles/方正JianTi/',
-      filename: 'FangZhengHeiTiJianTi-1.ttf'
-    }
-  ],
-  mono: [
-    {
-      label: '方正仿宋GBK',
+      type: 'mono',
       path: '/Volumes/THAWSPACE/CshProject/code_matrix.git/code/LaTex/fontFiles/方正/',
       filename: 'FangZhengFangSong-GBK-1.ttf'
-    },
-    {
-      label: '方正仿宋繁体',
-      path: '/Volumes/THAWSPACE/CshProject/code_matrix.git/code/LaTex/fontFiles/方正FanTi/',
-      filename: 'FangZhengFangSongFanTi-1.ttf'
-    }
-    // 添加新的简体字体选项
-    ,{
-      label: '方正宋体简体',
-      path: '/Volumes/THAWSPACE/CshProject/code_matrix.git/code/LaTex/fontFiles/方正JianTi/',
-      filename: 'FangZhengFangSongJianTi-1.ttf'
     }
   ]
 }
@@ -100,23 +104,7 @@ const fontOptions: Record<string, FontOption[]> = {
 // 存储已选择的字体标签映射
 const selectedFontLabels = ref<Record<string, string>>({})
 
-const fontSettings = ref([
-  {
-    type: 'main',
-    path: '/Volumes/THAWSPACE/CshProject/code_matrix.git/code/LaTex/fontFiles/方正/',
-    filename: 'FangZhengShuSong-GBK-1.ttf'
-  },
-  {
-    type: 'sans',
-    path: '/Volumes/THAWSPACE/CshProject/code_matrix.git/code/LaTex/fontFiles/方正/',
-    filename: 'FangZhengHeiTi-GBK-1.ttf'
-  },
-  {
-    type: 'mono',
-    path: '/Volumes/THAWSPACE/CshProject/code_matrix.git/code/LaTex/fontFiles/方正/',
-    filename: 'FangZhengFangSong-GBK-1.ttf'
-  }
-])
+const fontSettings = ref([...fontConfig.defaults])
 
 // 获取特定类型的字体设置
 const getFontByType = (type: string) => {
@@ -151,7 +139,7 @@ const handleFontChange = (type: string, option: { path: string; filename: string
 
 const computedLatexCode = computed(() => {
   return fontSettings.value.map(font => {
-    const fontType = fontTypes.find(type => type.value === font.type)
+    const fontType = fontConfig.types.find(type => type.value === font.type)
     if (!fontType || !font.path || !font.filename) return ''
     return `\\${fontType.command}[Path=${font.path}]{${font.filename}}`
   }).filter(code => code !== '').join('\n')
@@ -171,23 +159,7 @@ watch(() => props.modelValue, (newVal) => {
 onMounted(() => {
   // 如果没有初始值，则使用默认配置
   if (!props.modelValue.fonts || props.modelValue.fonts.length === 0) {
-    fontSettings.value = [
-      {
-        type: 'main',
-        path: '/Volumes/THAWSPACE/CshProject/code_matrix.git/code/LaTex/fontFiles/方正/',
-        filename: 'FangZhengShuSong-GBK-1.ttf'
-      },
-      {
-        type: 'sans',
-        path: '/Volumes/THAWSPACE/CshProject/code_matrix.git/code/LaTex/fontFiles/方正/',
-        filename: 'FangZhengHeiTi-GBK-1.ttf'
-      },
-      {
-        type: 'mono',
-        path: '/Volumes/THAWSPACE/CshProject/code_matrix.git/code/LaTex/fontFiles/方正/',
-        filename: 'FangZhengFangSong-GBK-1.ttf'
-      }
-    ]
+    fontSettings.value = [...fontConfig.defaults]
     emit('update:modelValue', { fonts: [...fontSettings.value] })
   } else {
     fontSettings.value = [...props.modelValue.fonts]
@@ -195,7 +167,7 @@ onMounted(() => {
   
   // 初始化已选择的标签
   fontSettings.value.forEach(font => {
-    const fontOption = Object.values(fontOptions)
+    const fontOption = Object.values(fontConfig.options)
       .flat()
       .find(option => option.filename === font.filename)
     if (fontOption) {
@@ -239,7 +211,7 @@ defineExpose({
           <strong>字体设置</strong>
           <p>设置中文字体路径</p>
           
-          <div v-for="fontType in fontTypes" :key="fontType.value" style="margin-bottom: 20px;">
+          <div v-for="fontType in fontConfig.types" :key="fontType.value" style="margin-bottom: 20px;">
             <h4>{{ fontType.label }}</h4>
             <el-row :gutter="20">
               <el-col :span="24">
@@ -250,7 +222,7 @@ defineExpose({
                   style="width: 100%"
                 >
                   <el-option
-                    v-for="(option, index) in fontOptions[fontType.value as keyof typeof fontOptions]"
+                    v-for="(option, index) in fontConfig.options[fontType.value as keyof typeof fontConfig.options]"
                     :key="index"
                     :label="option.label"
                     :value="option"
@@ -261,7 +233,7 @@ defineExpose({
             
             <!-- 显示路径和文件名，并允许编辑 -->
             <el-row :gutter="20" style="margin-top: 10px;">
-              <el-col :span="24">
+              <el-col :span="24" style="margin-bottom: 10px;">
                 <el-input
                   :model-value="getFontByType(fontType.value).path"
                   placeholder="字体路径"
