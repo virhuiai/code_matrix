@@ -33,88 +33,61 @@ const emit = defineEmits<{
   (e: 'codeChange', value: string): void
 }>()
 
-// 定义宏包配置项的接口（类似其他语言中的结构体或类定义）
-// 描述了每个宏包应该包含哪些属性
+// 定义宏包配置项的接口
 interface PackageConfig {
-  packageName: string     // 宏包名称
-  title: string           // 显示标题
-  items: Array<{ key: string; label: string }>  // 该宏包下的选项列表
-  optionsMap: Record<string, string>            // 选项键到实际代码的映射
+  packageName: string
+  title: string
+  items: Array<{ key: string; label: string }>
+  optionsMap: Record<string, string>
 }
 
-// 创建宏包配置的工厂函数（用于简化创建 PackageConfig 对象的过程）
-// 参数：宏包名、标题、选项列表、选项映射关系
-// 返回：一个符合 PackageConfig 接口的对象
-const createPackageConfig = (
-  packageName: string,
-  title: string,
-  items: Array<{ key: string; label: string }>,
-  optionsMap: Record<string, string>
-): PackageConfig => ({
-  packageName,
-  title,
-  items,
-  optionsMap
-})
-
 // 通用的宏包代码生成函数
-// 参数：宏包配置对象、当前选中的选项值
-// 返回：生成的 LaTeX 代码字符串，如果没有选中任何选项则返回 null
-const generatePackageCode = (
-  pkg: PackageConfig,
-  values: Record<string, boolean>
-): string | null => {
-  // 过滤出被选中的选项，并获取它们对应的代码片段
+const generatePackageCode = (pkg: PackageConfig, values: Record<string, boolean>): string | null => {
   const options = pkg.items
-    .filter(item => values[item.key])               // 筛选出值为 true 的选项
-    .map(item => pkg.optionsMap[item.key])          // 将选项键映射为实际代码
+    .filter(item => values[item.key])
+    .map(item => pkg.optionsMap[item.key])
   
-  // 如果有选中的选项，则生成 \PassOptionsToPackage 命令，否则返回 null
   return options.length > 0 
     ? `\\PassOptionsToPackage{${options.join(',')}}{${pkg.packageName}}`
     : null
 }
 
-// 宏包配置数据列表（使用 ref 包装以获得响应性）
-// ref 是 Vue 3 Composition API 中用来创建响应式数据的方法
-const packageConfigs = ref([
-  // xeCJK 宏包配置
-  createPackageConfig(
-    'xeCJK',                    // 宏包名称
-    'xeCJK 选项',               // 显示标题
-    [                           // 选项列表
+// 宏包配置数据
+const packageConfigs = ref<PackageConfig[]>([
+  {
+    packageName: 'xeCJK',
+    title: 'xeCJK 选项',
+    items: [
       { key: 'autoFakeBold', label: 'AutoFakeBold' },
       { key: 'autoFakeSlant', label: 'AutoFakeSlant' }
     ],
-    {                           // 选项键到实际代码的映射
+    optionsMap: {
       autoFakeBold: 'AutoFakeBold=true',
       autoFakeSlant: 'AutoFakeSlant=true'
     }
-  ),
-  // fontspec 宏包配置
-  createPackageConfig(
-    'fontspec',
-    'fontspec 选项',
-    [
+  },
+  {
+    packageName: 'fontspec',
+    title: 'fontspec 选项',
+    items: [
       { key: 'noMath', label: 'no-math' }
     ],
-    {
+    optionsMap: {
       noMath: 'no-math'
     }
-  ),
-  // xcolor 宏包配置
-  createPackageConfig(
-    'xcolor',
-    'xcolor 选项',
-    [
+  },
+  {
+    packageName: 'xcolor',
+    title: 'xcolor 选项',
+    items: [
       { key: 'prologue', label: 'prologue' },
       { key: 'dvipsnames', label: 'dvipsnames' }
     ],
-    {
+    optionsMap: {
       prologue: 'prologue',
       dvipsnames: 'dvipsnames'
     }
-  )
+  }
 ])
 
 // 计算属性：用于获取和设置选项值
@@ -127,17 +100,11 @@ const optionValues = computed({
 })
 
 // 计算属性：生成最终的 LaTeX 代码
-// map: 遍历所有宏包配置，为每个宏包生成代码
-// filter: 过滤掉返回 null 的结果（即没有选中任何选项的宏包）
-// filter((code): code is string => code !== null) 是 TypeScript 中的类型守卫语法，
-// 用于告诉编译器过滤后的数组元素都是字符串类型
-// join: 将所有生成的代码用换行符连接起来
 const computedLatexCode = computed(() => {
-  const codes = packageConfigs.value
+  return packageConfigs.value
     .map(pkg => generatePackageCode(pkg, optionValues.value))
     .filter((code): code is string => code !== null)
-  
-  return codes.join('\n')
+    .join('\n')
 })
 
 // 监听器：监听 computedLatexCode 的变化
