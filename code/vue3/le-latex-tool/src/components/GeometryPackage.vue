@@ -23,94 +23,69 @@ const emit = defineEmits<{
 // 控制弹窗显示
 const dialogVisible = ref(false)
 
+// 默认配置值
+const defaultValues = {
+  paperWidth: '185mm',
+  paperHeight: '260mm',
+  textWidth: '148mm',
+  textHeight: '220mm',
+  leftMargin: '21mm',
+  topMargin: '25.5mm'
+}
+
 // geometry 配置数据
 const geometryConfig = ref({
-  enabled: props.modelValue.enabled !== undefined ? props.modelValue.enabled : false,
-  paperWidth: props.modelValue.paperWidth || '185mm',
-  paperHeight: props.modelValue.paperHeight || '260mm',
-  textWidth: props.modelValue.textWidth || '148mm',
-  textHeight: props.modelValue.textHeight || '220mm',
-  leftMargin: props.modelValue.leftMargin || '21mm',
-  topMargin: props.modelValue.topMargin || '25.5mm'
-} as any)
+  enabled: props.modelValue.enabled ?? false,
+  ...defaultValues,
+  ...(props.modelValue || {})
+})
 
 // LaTeX 代码模板
-const latexTemplates = {
-  geometryPackage: (options: { 
-    paperWidth: string
-    paperHeight: string
-    textWidth: string
-    textHeight: string
-    leftMargin: string
-    topMargin: string
-  }) => {
-    const optionsArray = []
-    if (options.paperWidth) optionsArray.push(`paperwidth=${options.paperWidth}`)
-    if (options.paperHeight) optionsArray.push(`paperheight=${options.paperHeight}`)
-    if (options.textWidth && options.textHeight) optionsArray.push(`text={${options.textWidth},${options.textHeight}}`)
-    else {
-      if (options.textWidth) optionsArray.push(`textwidth=${options.textWidth}`)
-      if (options.textHeight) optionsArray.push(`textheight=${options.textHeight}`)
-    }
-    if (options.leftMargin) optionsArray.push(`left=${options.leftMargin}`)
-    if (options.topMargin) optionsArray.push(`top=${options.topMargin}`)
-    
-    return `\\usepackage[${optionsArray.join(', ')}]{geometry}`
+const generateLatexCode = (options: typeof geometryConfig.value) => {
+  if (!options.enabled) return ''
+
+  const optionsArray = []
+  
+  if (options.paperWidth) optionsArray.push(`paperwidth=${options.paperWidth}`)
+  if (options.paperHeight) optionsArray.push(`paperheight=${options.paperHeight}`)
+  
+  if (options.textWidth && options.textHeight) {
+    optionsArray.push(`text={${options.textWidth},${options.textHeight}}`)
+  } else {
+    if (options.textWidth) optionsArray.push(`textwidth=${options.textWidth}`)
+    if (options.textHeight) optionsArray.push(`textheight=${options.textHeight}`)
   }
+  
+  if (options.leftMargin) optionsArray.push(`left=${options.leftMargin}`)
+  if (options.topMargin) optionsArray.push(`top=${options.topMargin}`)
+  
+  return `\\usepackage[${optionsArray.join(', ')}]{geometry}`
 }
 
 // 计算属性：生成 LaTeX 代码
-const computedLatexCode = computed(() => {
-  if (!geometryConfig.value.enabled) {
-    return ''
-  }
-
-  return latexTemplates.geometryPackage({
-    paperWidth: geometryConfig.value.paperWidth,
-    paperHeight: geometryConfig.value.paperHeight,
-    textWidth: geometryConfig.value.textWidth,
-    textHeight: geometryConfig.value.textHeight,
-    leftMargin: geometryConfig.value.leftMargin,
-    topMargin: geometryConfig.value.topMargin
-  })
-})
+const computedLatexCode = computed(() => generateLatexCode(geometryConfig.value))
 
 // 更新配置
 const updateConfig = (field: string, value: any) => {
-  ;(geometryConfig.value as any)[field] = value
+  geometryConfig.value = { ...geometryConfig.value, [field]: value }
   emit('update:modelValue', { ...geometryConfig.value })
 }
 
 // 重置单个选项
 const resetOption = (field: string) => {
-  const defaults: Record<string, string> = {
-    paperWidth: '185mm',
-    paperHeight: '260mm',
-    textWidth: '148mm',
-    textHeight: '220mm',
-    leftMargin: '21mm',
-    topMargin: '25.5mm'
-  }
-  ;(geometryConfig.value as any)[field] = defaults[field] || ''
-  emit('update:modelValue', { ...geometryConfig.value })
+  updateConfig(field, defaultValues[field as keyof typeof defaultValues] || '')
 }
 
 // 清空单个选项
 const clearOption = (field: string) => {
-  ;(geometryConfig.value as any)[field] = ''
-  emit('update:modelValue', { ...geometryConfig.value })
+  updateConfig(field, '')
 }
 
 // 重置所有配置
 const resetAll = () => {
   geometryConfig.value = {
     enabled: geometryConfig.value.enabled,
-    paperWidth: '185mm',
-    paperHeight: '260mm',
-    textWidth: '148mm',
-    textHeight: '220mm',
-    leftMargin: '21mm',
-    topMargin: '25.5mm'
+    ...defaultValues
   }
   emit('update:modelValue', { ...geometryConfig.value })
 }
@@ -137,6 +112,16 @@ const openDialog = () => {
 const closeDialog = () => {
   dialogVisible.value = false
 }
+
+// 表单项配置
+const formItems = [
+  { key: 'paperWidth', label: '纸张宽度 (paperwidth)' },
+  { key: 'paperHeight', label: '纸张高度 (paperheight)' },
+  { key: 'textWidth', label: '正文宽度 (text width)' },
+  { key: 'textHeight', label: '正文高度 (text height)' },
+  { key: 'leftMargin', label: '左边距 (left)' },
+  { key: 'topMargin', label: '上边距 (top)' }
+]
 
 defineExpose({
   openDialog,
@@ -170,92 +155,21 @@ defineExpose({
           <div v-if="geometryConfig.enabled" style="margin-top: 20px;">
             <el-divider />
             
-            <div style="margin-bottom: 15px;">
-              <el-form-item label="纸张宽度 (paperwidth)">
+            <div 
+              v-for="item in formItems"
+              :key="item.key"
+              style="margin-bottom: 15px;"
+            >
+              <el-form-item :label="item.label">
                 <div style="display: flex; gap: 10px; align-items: center;">
                   <el-input 
-                    v-model="geometryConfig.paperWidth" 
-                    @input="(val) => updateConfig('paperWidth', val)"
+                    v-model="geometryConfig[item.key]" 
+                    @input="(val) => updateConfig(item.key, val)"
                     size="small"
                     style="flex: 1;"
                   />
-                  <el-button @click="resetOption('paperWidth')" size="small">重置</el-button>
-                  <el-button @click="clearOption('paperWidth')" size="small">清空</el-button>
-                </div>
-              </el-form-item>
-            </div>
-            
-            <div style="margin-bottom: 15px;">
-              <el-form-item label="纸张高度 (paperheight)">
-                <div style="display: flex; gap: 10px; align-items: center;">
-                  <el-input 
-                    v-model="geometryConfig.paperHeight" 
-                    @input="(val) => updateConfig('paperHeight', val)"
-                    size="small"
-                    style="flex: 1;"
-                  />
-                  <el-button @click="resetOption('paperHeight')" size="small">重置</el-button>
-                  <el-button @click="clearOption('paperHeight')" size="small">清空</el-button>
-                </div>
-              </el-form-item>
-            </div>
-            
-            <div style="margin-bottom: 15px;">
-              <el-form-item label="正文宽度 (text width)">
-                <div style="display: flex; gap: 10px; align-items: center;">
-                  <el-input 
-                    v-model="geometryConfig.textWidth" 
-                    @input="(val) => updateConfig('textWidth', val)"
-                    size="small"
-                    style="flex: 1;"
-                  />
-                  <el-button @click="resetOption('textWidth')" size="small">重置</el-button>
-                  <el-button @click="clearOption('textWidth')" size="small">清空</el-button>
-                </div>
-              </el-form-item>
-            </div>
-            
-            <div style="margin-bottom: 15px;">
-              <el-form-item label="正文高度 (text height)">
-                <div style="display: flex; gap: 10px; align-items: center;">
-                  <el-input 
-                    v-model="geometryConfig.textHeight" 
-                    @input="(val) => updateConfig('textHeight', val)"
-                    size="small"
-                    style="flex: 1;"
-                  />
-                  <el-button @click="resetOption('textHeight')" size="small">重置</el-button>
-                  <el-button @click="clearOption('textHeight')" size="small">清空</el-button>
-                </div>
-              </el-form-item>
-            </div>
-            
-            <div style="margin-bottom: 15px;">
-              <el-form-item label="左边距 (left)">
-                <div style="display: flex; gap: 10px; align-items: center;">
-                  <el-input 
-                    v-model="geometryConfig.leftMargin" 
-                    @input="(val) => updateConfig('leftMargin', val)"
-                    size="small"
-                    style="flex: 1;"
-                  />
-                  <el-button @click="resetOption('leftMargin')" size="small">重置</el-button>
-                  <el-button @click="clearOption('leftMargin')" size="small">清空</el-button>
-                </div>
-              </el-form-item>
-            </div>
-            
-            <div style="margin-bottom: 15px;">
-              <el-form-item label="上边距 (top)">
-                <div style="display: flex; gap: 10px; align-items: center;">
-                  <el-input 
-                    v-model="geometryConfig.topMargin" 
-                    @input="(val) => updateConfig('topMargin', val)"
-                    size="small"
-                    style="flex: 1;"
-                  />
-                  <el-button @click="resetOption('topMargin')" size="small">重置</el-button>
-                  <el-button @click="clearOption('topMargin')" size="small">清空</el-button>
+                  <el-button @click="resetOption(item.key)" size="small">重置</el-button>
+                  <el-button @click="clearOption(item.key)" size="small">清空</el-button>
                 </div>
               </el-form-item>
             </div>
