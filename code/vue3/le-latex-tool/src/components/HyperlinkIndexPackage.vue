@@ -1,18 +1,24 @@
 <script setup lang="ts">
 import { ref, computed, defineEmits, defineProps, watch, onMounted } from 'vue'
-import { ElCard, ElCheckbox, ElDialog, ElButton, ElDivider } from 'element-plus'
+import { ElCard, ElCheckbox, ElDialog, ElButton, ElDivider, ElAlert } from 'element-plus'
 
 const props = defineProps<{
   modelValue: {
     variorefEnabled: boolean
-    multindEnabled: boolean
+    imakeidxEnabled: boolean
+    splitidxEnabled: boolean
     hyperrefEnabled: boolean
   }
   componentId?: number
 }>()
 
 const emit = defineEmits<{
-  (e: 'update:modelValue', value: { variorefEnabled: boolean, multindEnabled: boolean, hyperrefEnabled: boolean }): void
+  (e: 'update:modelValue', value: { 
+    variorefEnabled: boolean, 
+    imakeidxEnabled: boolean, 
+    splitidxEnabled: boolean, 
+    hyperrefEnabled: boolean 
+  }): void
   (e: 'codeChange', value: string): void
 }>()
 
@@ -22,29 +28,36 @@ const dialogVisible = ref(false)
 // LaTeX 代码模板
 const variorefTemplate = `\\usepackage{varioref}`
 
-const multindTemplate = `% 索引设置
-\\usepackage{multind}
-\\makeindex{command}
-\\makeindex{package}
-\\makeindex{environment}
-\\makeindex{book}
+const imakeidxTemplate = `% 使用 imakeidx 宏包（推荐）
+\\usepackage[noautomatic]{imakeidx}   % 禁止自动运行 makeindex
 
-% 命令定义
-\\newcommand{\\cmd}[1]{%
-\\texttt{\\symbol{92}#1}%
-}
-\\newcommand{\\Com}[2]{%
- \\texttt{#1}%
- \\index{command}{#2}}
-\\newcommand{\\Pac}[2]{%
- \\textsf{#1}%
- \\index{package}{#2}}
-\\newcommand{\\Env}[2]{%
- \\texttt{#1}%
- \\index{environment}{#1}}
- \\newcommand{\\Boo}[2]{%
- \\texttt{#1}%
- \\index{book}{#2}}`
+\\makeindex[name=aut,title=人名索引,intoc]
+\\makeindex[name=loc,title=地名索引,intoc]
+\\makeindex[name=conc,title=概念索引,intoc]
+
+% 正文里使用
+%\\index[aut]{爱因斯坦}
+%\\index[loc]{北京}
+%\\index[conc]{相对论}
+
+% 打印索引（顺序随意）
+%\\printindex[aut]   % 标题自动用上面 title= 设置的
+%\\printindex[loc]
+%\\printindex[conc]`
+
+const splitidxTemplate = `% 使用 splitidx 宏包（功能更强）
+\\usepackage[splitindex]{splitidx}
+
+\\newindex{aut}{idxa}   % 人名索引
+\\newindex{loc}{idxb}   % 地名索引
+
+% 正文里使用
+%\\sindex[aut]{牛顿}
+%\\sindex[loc]{伦敦}
+
+% 打印
+%\\printsplitindex[aut]{人名索引}
+%\\printsplitindex[loc]{地名索引}`
 
 const hyperrefTemplate = `% 链接设置
 \\usepackage[CJKbookmarks,bookmarksnumbered,bookmarksopen,
@@ -59,16 +72,28 @@ const variorefEnabled = computed({
   get: () => props.modelValue.variorefEnabled ?? true,
   set: (value) => emit('update:modelValue', { 
     variorefEnabled: value, 
-    multindEnabled: props.modelValue.multindEnabled ?? false,
+    imakeidxEnabled: props.modelValue.imakeidxEnabled ?? false,
+    splitidxEnabled: props.modelValue.splitidxEnabled ?? false,
     hyperrefEnabled: props.modelValue.hyperrefEnabled ?? true
   })
 })
 
-const multindEnabled = computed({
-  get: () => props.modelValue.multindEnabled ?? false,
+const imakeidxEnabled = computed({
+  get: () => props.modelValue.imakeidxEnabled ?? false,
   set: (value) => emit('update:modelValue', { 
     variorefEnabled: props.modelValue.variorefEnabled ?? true,
-    multindEnabled: value,
+    imakeidxEnabled: value,
+    splitidxEnabled: false, // 互斥选项
+    hyperrefEnabled: props.modelValue.hyperrefEnabled ?? true
+  })
+})
+
+const splitidxEnabled = computed({
+  get: () => props.modelValue.splitidxEnabled ?? false,
+  set: (value) => emit('update:modelValue', { 
+    variorefEnabled: props.modelValue.variorefEnabled ?? true,
+    imakeidxEnabled: false, // 互斥选项
+    splitidxEnabled: value,
     hyperrefEnabled: props.modelValue.hyperrefEnabled ?? true
   })
 })
@@ -77,7 +102,8 @@ const hyperrefEnabled = computed({
   get: () => props.modelValue.hyperrefEnabled ?? true,
   set: (value) => emit('update:modelValue', { 
     variorefEnabled: props.modelValue.variorefEnabled ?? true,
-    multindEnabled: props.modelValue.multindEnabled ?? false,
+    imakeidxEnabled: props.modelValue.imakeidxEnabled ?? false,
+    splitidxEnabled: props.modelValue.splitidxEnabled ?? false,
     hyperrefEnabled: value
   })
 })
@@ -88,8 +114,11 @@ const computedLatexCode = computed(() => {
   if (variorefEnabled.value) {
     codes.push(variorefTemplate)
   }
-  if (multindEnabled.value) {
-    codes.push(multindTemplate)
+  if (imakeidxEnabled.value) {
+    codes.push(imakeidxTemplate)
+  }
+  if (splitidxEnabled.value) {
+    codes.push(splitidxTemplate)
   }
   if (hyperrefEnabled.value) {
     codes.push(hyperrefTemplate)
@@ -106,11 +135,13 @@ watch(computedLatexCode, (newCode) => {
 onMounted(() => {
   // 如果未设置enabled属性，则设置默认值
   if (props.modelValue.variorefEnabled === undefined || 
-      props.modelValue.multindEnabled === undefined || 
+      props.modelValue.imakeidxEnabled === undefined || 
+      props.modelValue.splitidxEnabled === undefined || 
       props.modelValue.hyperrefEnabled === undefined) {
     emit('update:modelValue', { 
       variorefEnabled: true,
-      multindEnabled: false,
+      imakeidxEnabled: false,
+      splitidxEnabled: false,
       hyperrefEnabled: true
     })
   }
@@ -169,14 +200,33 @@ defineExpose({
           <el-divider />
           
           <div style="margin-top: 20px;">
-            <el-checkbox 
-              :model-value="multindEnabled" 
-              @update:model-value="(val) => multindEnabled = Boolean(val)"
-              label="启用 multind 宏包（用于多重索引）" 
+            <el-alert
+              title="索引宏包选择说明"
+              description="imakeidx 和 splitidx 是 multind 的现代替代品，提供了更好的功能和维护性。请注意这两个选项是互斥的，只能同时启用其中一个。"
+              type="info"
+              show-icon
+              style="margin-bottom: 15px;"
             />
             
-            <div v-if="multindEnabled" style="margin-top: 10px; margin-left: 20px;">
-              <pre style="background-color: #f5f5f5; padding: 10px; border-radius: 4px; overflow-x: auto; font-family: monospace; font-size: 12px;">{{ multindTemplate }}</pre>
+            <el-checkbox 
+              :model-value="imakeidxEnabled" 
+              @update:model-value="(val) => imakeidxEnabled = Boolean(val)"
+              label="启用 imakeidx 宏包（最简单、最推荐）" 
+            />
+            
+            <div v-if="imakeidxEnabled" style="margin-top: 10px; margin-left: 20px;">
+              <pre style="background-color: #f5f5f5; padding: 10px; border-radius: 4px; overflow-x: auto; font-family: monospace; font-size: 12px;">{{ imakeidxTemplate }}</pre>
+            </div>
+            
+            <el-checkbox 
+              :model-value="splitidxEnabled" 
+              @update:model-value="(val) => splitidxEnabled = Boolean(val)"
+              label="启用 splitidx 宏包（功能更强）" 
+              style="margin-top: 10px;"
+            />
+            
+            <div v-if="splitidxEnabled" style="margin-top: 10px; margin-left: 20px;">
+              <pre style="background-color: #f5f5f5; padding: 10px; border-radius: 4px; overflow-x: auto; font-family: monospace; font-size: 12px;">{{ splitidxTemplate }}</pre>
             </div>
           </div>
           
