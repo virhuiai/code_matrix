@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, defineEmits, defineProps, watch, onMounted } from 'vue'
-import { ElCard, ElCheckbox, ElDialog, ElButton, ElDivider, ElAlert } from 'element-plus'
+import { ElCard, ElCheckbox, ElDialog, ElButton, ElDivider, ElAlert, ElInput } from 'element-plus'
 
 const props = defineProps<{
   modelValue: {
@@ -9,6 +9,7 @@ const props = defineProps<{
     splitidxEnabled: boolean
     hyperrefEnabled: boolean
     urlEnabled: boolean
+    pdfTitle: string
   }
   componentId?: number
 }>()
@@ -19,7 +20,8 @@ const emit = defineEmits<{
     imakeidxEnabled: boolean, 
     splitidxEnabled: boolean, 
     hyperrefEnabled: boolean,
-    urlEnabled: boolean
+    urlEnabled: boolean,
+    pdfTitle: string
   }): void
   (e: 'codeChange', value: string): void
 }>()
@@ -61,11 +63,15 @@ const splitidxTemplate = `% 使用 splitidx 宏包（功能更强）
 %\\printsplitindex[aut]{人名索引}
 %\\printsplitindex[loc]{地名索引}`
 
-const hyperrefTemplate = `% 链接设置
+const generateHyperrefTemplate = (pdfTitle: string) => {
+  // 如果用户输入了PDF标题，则使用用户输入的标题，否则使用默认的\pdffilename命令
+  const titleValue = pdfTitle ? pdfTitle : "标题标题标题";
+  return `% 链接设置
 \\usepackage[CJKbookmarks,bookmarksnumbered,bookmarksopen,
-            pdftitle={\\pdffilename},pdfauthor=virhuiai,
+            pdftitle={${titleValue}},pdfauthor=virhuiai,
             colorlinks=true, pdfstartview=FitH,citecolor=blue,linktocpage,
-            linkcolor=blue,urlcolor=blue,hyperindex=true]{hyperref}`
+            linkcolor=blue,urlcolor=blue,hyperindex=true]{hyperref}`;
+};
 
 const urlTemplate = `% url样式设置
 \\usepackage{url}
@@ -79,7 +85,8 @@ const variorefEnabled = computed({
     imakeidxEnabled: props.modelValue.imakeidxEnabled ?? false,
     splitidxEnabled: props.modelValue.splitidxEnabled ?? false,
     hyperrefEnabled: props.modelValue.hyperrefEnabled ?? true,
-    urlEnabled: props.modelValue.urlEnabled ?? true
+    urlEnabled: props.modelValue.urlEnabled ?? true,
+    pdfTitle: props.modelValue.pdfTitle ?? ""
   })
 })
 
@@ -90,7 +97,8 @@ const imakeidxEnabled = computed({
     imakeidxEnabled: value,
     splitidxEnabled: false, // 互斥选项
     hyperrefEnabled: props.modelValue.hyperrefEnabled ?? true,
-    urlEnabled: props.modelValue.urlEnabled ?? true
+    urlEnabled: props.modelValue.urlEnabled ?? true,
+    pdfTitle: props.modelValue.pdfTitle ?? ""
   })
 })
 
@@ -101,7 +109,8 @@ const splitidxEnabled = computed({
     imakeidxEnabled: false, // 互斥选项
     splitidxEnabled: value,
     hyperrefEnabled: props.modelValue.hyperrefEnabled ?? true,
-    urlEnabled: props.modelValue.urlEnabled ?? true
+    urlEnabled: props.modelValue.urlEnabled ?? true,
+    pdfTitle: props.modelValue.pdfTitle ?? ""
   })
 })
 
@@ -112,7 +121,8 @@ const hyperrefEnabled = computed({
     imakeidxEnabled: props.modelValue.imakeidxEnabled ?? false,
     splitidxEnabled: props.modelValue.splitidxEnabled ?? false,
     hyperrefEnabled: value,
-    urlEnabled: props.modelValue.urlEnabled ?? true
+    urlEnabled: props.modelValue.urlEnabled ?? true,
+    pdfTitle: props.modelValue.pdfTitle ?? ""
   })
 })
 
@@ -123,7 +133,21 @@ const urlEnabled = computed({
     imakeidxEnabled: props.modelValue.imakeidxEnabled ?? false,
     splitidxEnabled: props.modelValue.splitidxEnabled ?? false,
     hyperrefEnabled: props.modelValue.hyperrefEnabled ?? true,
-    urlEnabled: value
+    urlEnabled: value,
+    pdfTitle: props.modelValue.pdfTitle ?? ""
+  })
+})
+
+// PDF标题输入值
+const pdfTitle = computed({
+  get: () => props.modelValue.pdfTitle ?? "",
+  set: (value) => emit('update:modelValue', { 
+    variorefEnabled: props.modelValue.variorefEnabled ?? true,
+    imakeidxEnabled: props.modelValue.imakeidxEnabled ?? false,
+    splitidxEnabled: props.modelValue.splitidxEnabled ?? false,
+    hyperrefEnabled: props.modelValue.hyperrefEnabled ?? true,
+    urlEnabled: props.modelValue.urlEnabled ?? true,
+    pdfTitle: value
   })
 })
 
@@ -140,7 +164,7 @@ const computedLatexCode = computed(() => {
     codes.push(splitidxTemplate)
   }
   if (hyperrefEnabled.value) {
-    codes.push(hyperrefTemplate)
+    codes.push(generateHyperrefTemplate(pdfTitle.value))
   }
   if (urlEnabled.value) {
     codes.push(urlTemplate)
@@ -160,13 +184,15 @@ onMounted(() => {
       props.modelValue.imakeidxEnabled === undefined || 
       props.modelValue.splitidxEnabled === undefined || 
       props.modelValue.hyperrefEnabled === undefined ||
-      props.modelValue.urlEnabled === undefined) {
+      props.modelValue.urlEnabled === undefined ||
+      props.modelValue.pdfTitle === undefined) {
     emit('update:modelValue', { 
       variorefEnabled: true,
       imakeidxEnabled: false,
       splitidxEnabled: false,
       hyperrefEnabled: true,
-      urlEnabled: true
+      urlEnabled: true,
+      pdfTitle: ""
     })
   }
   
@@ -264,7 +290,17 @@ defineExpose({
             />
             
             <div v-if="hyperrefEnabled" style="margin-top: 10px; margin-left: 20px;">
-              <pre style="background-color: #f5f5f5; padding: 10px; border-radius: 4px; overflow-x: auto; font-family: monospace; font-size: 12px;">{{ hyperrefTemplate }}</pre>
+              <div style="margin-bottom: 10px;">
+                <label>PDF 标题：</label>
+                <el-input 
+                  :model-value="pdfTitle" 
+                  @input="(val) => pdfTitle = val"
+                  placeholder="请输入PDF标题，留空则使用默认文件名"
+                  size="small"
+                  style="width: 300px; margin-top: 5px;"
+                />
+              </div>
+              <pre style="background-color: #f5f5f5; padding: 10px; border-radius: 4px; overflow-x: auto; font-family: monospace; font-size: 12px;">{{ generateHyperrefTemplate(pdfTitle) }}</pre>
             </div>
           </div>
           
