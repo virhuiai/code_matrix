@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, defineEmits, defineProps, watch, onMounted } from 'vue'
-import { ElCard, ElCheckbox, ElDialog, ElButton, ElDivider, ElAlert } from 'element-plus'
+import { ElCard, ElCheckbox, ElDialog, ElButton, ElDivider, ElAlert, ElRadio, ElRadioGroup } from 'element-plus'
 
 const props = defineProps<{
   modelValue: {
@@ -16,6 +16,10 @@ const props = defineProps<{
     dcolumnEnabled: boolean
     slashboxEnabled: boolean
     arydshlnEnabled: boolean
+    diagheadEnabled: boolean
+    makecellEnabled: boolean
+    hhlineEnabled: boolean
+    diagonalType: string // 'slashbox' | 'diaghead' | 'makecell' | 'hhline'
   }
   componentId?: number
 }>()
@@ -34,6 +38,10 @@ const emit = defineEmits<{
     dcolumnEnabled: boolean
     slashboxEnabled: boolean
     arydshlnEnabled: boolean
+    diagheadEnabled: boolean
+    makecellEnabled: boolean
+    hhlineEnabled: boolean
+    diagonalType: string
   }): void
   (e: 'codeChange', value: string): void
 }>()
@@ -65,12 +73,53 @@ const packageTemplates = {
 % 它专为tabular和array表格环境定义了
 % 一个用于对齐小数点或逗号等标点符号的列格式选项
 \\usepackage{dcolumn}`,
-  slashbox: `% 对角线宏包slashbox
+  slashbox: `% 对角线宏包slashbox（不推荐使用）
 \\usepackage{slashbox}`,
   arydshln: `% 虚线表格宏包arydshln
 %如果已经调用或是还需要调用与表格有关的 array、colortab、colortbl 或 longtable 宏包，
 %应将 arydshln 的调用命令放在这些宏包的调用命令之后，否则可能会造成莫名的错误
-\\usepackage{arydshln}`
+\\usepackage{arydshln}`,
+  diaghead: `% 方案1（最推荐）：用 diaghead 宏包（专门为斜线表头而生）
+\\usepackage{diaghead}   % 直接替代 slashbox
+
+% 使用方法（和 slashbox 几乎一样）
+% \\begin{tabular}{|l|c|c|c|}
+% \\hline
+% \\diaghead{\\theadfont}{宽度}{标题1}{标题2} % 例如
+% & 很长很长的列标题A & 很长很长的列标题B & 很长很长的列标题C \\\\
+% \\hline
+% 内容1 & ... & ... & ... \\\\
+% \\hline
+% \\end{tabular}
+
+% 具体例子：
+% \\diaghead{6em}{项目}{2023年}{2024年}{2025年}`,
+  makecell: `% 方案2：用 makecell 宏包（最流行、最灵活）
+\\usepackage{makecell}
+\\renewcommand\\theadfont{\\bfseries}  % 可选，让表头加粗
+
+% 使用方法：
+% \\begin{tabular}{|l|c|c|}
+% \\hline
+% \\diagbox{项目}{年份} & 2023 & 2024 \\\\
+% \\hline
+% 数据1 & 100 & 200 \\\\
+% \\hline
+% \\end{tabular}
+
+% 或者更常用：
+% \\makecell{西北\\\\角斜线} & 列1 & 列2 \\\\`,
+  hhline: `% 方案3：用 hhline + multirow（不依赖任何额外宏包）
+\\usepackage{multirow, hhline}
+
+% 使用方法：
+% \\begin{tabular}{|l|c|c|}
+% \\hline
+% \\multirow{2}{*}{\\diagbox{项目}{年份}} & 2023 & 2024 \\\\
+% \\hhline{|>{\\arrayrulecolor{white}}|>{\\arrayrulecolor{black}}-|-|}
+% & ... & ... \\\\
+% \\hline
+% \\end{tabular}`
 }
 
 // 计算属性：控制启用状态
@@ -87,8 +136,12 @@ const mainEnabled = computed({
     multirowEnabled: props.modelValue.multirowEnabled ?? true,
     arrayEnabled: props.modelValue.arrayEnabled ?? true,
     dcolumnEnabled: props.modelValue.dcolumnEnabled ?? true,
-    slashboxEnabled: props.modelValue.slashboxEnabled ?? true,
-    arydshlnEnabled: props.modelValue.arydshlnEnabled ?? true
+    slashboxEnabled: props.modelValue.slashboxEnabled ?? false, // 默认禁用
+    arydshlnEnabled: props.modelValue.arydshlnEnabled ?? true,
+    diagheadEnabled: props.modelValue.diagheadEnabled ?? true, // 默认启用推荐方案
+    makecellEnabled: props.modelValue.makecellEnabled ?? false,
+    hhlineEnabled: props.modelValue.hhlineEnabled ?? false,
+    diagonalType: props.modelValue.diagonalType ?? 'diaghead'
   })
 })
 
@@ -165,7 +218,7 @@ const dcolumnEnabled = computed({
 })
 
 const slashboxEnabled = computed({
-  get: () => props.modelValue.slashboxEnabled ?? true,
+  get: () => props.modelValue.slashboxEnabled ?? false,
   set: (value) => emit('update:modelValue', { 
     ...props.modelValue,
     slashboxEnabled: value
@@ -177,6 +230,38 @@ const arydshlnEnabled = computed({
   set: (value) => emit('update:modelValue', { 
     ...props.modelValue,
     arydshlnEnabled: value
+  })
+})
+
+const diagheadEnabled = computed({
+  get: () => props.modelValue.diagheadEnabled ?? true,
+  set: (value) => emit('update:modelValue', { 
+    ...props.modelValue,
+    diagheadEnabled: value
+  })
+})
+
+const makecellEnabled = computed({
+  get: () => props.modelValue.makecellEnabled ?? false,
+  set: (value) => emit('update:modelValue', { 
+    ...props.modelValue,
+    makecellEnabled: value
+  })
+})
+
+const hhlineEnabled = computed({
+  get: () => props.modelValue.hhlineEnabled ?? false,
+  set: (value) => emit('update:modelValue', { 
+    ...props.modelValue,
+    hhlineEnabled: value
+  })
+})
+
+const diagonalType = computed({
+  get: () => props.modelValue.diagonalType ?? 'diaghead',
+  set: (value) => emit('update:modelValue', { 
+    ...props.modelValue,
+    diagonalType: value
   })
 })
 
@@ -196,7 +281,18 @@ const computedLatexCode = computed(() => {
   if (multirowEnabled.value) codes.push(packageTemplates.multirow)
   if (arrayEnabled.value) codes.push(packageTemplates.array)
   if (dcolumnEnabled.value) codes.push(packageTemplates.dcolumn)
-  if (slashboxEnabled.value) codes.push(packageTemplates.slashbox)
+  
+  // 斜线表头宏包处理
+  if (diagonalType.value === 'slashbox' && slashboxEnabled.value) {
+    codes.push(packageTemplates.slashbox)
+  } else if (diagonalType.value === 'diaghead' && diagheadEnabled.value) {
+    codes.push(packageTemplates.diaghead)
+  } else if (diagonalType.value === 'makecell' && makecellEnabled.value) {
+    codes.push(packageTemplates.makecell)
+  } else if (diagonalType.value === 'hhline' && hhlineEnabled.value) {
+    codes.push(packageTemplates.hhline)
+  }
+  
   if (arydshlnEnabled.value) codes.push(packageTemplates.arydshln)
   
   return codes.join('\n\n')
@@ -222,8 +318,12 @@ onMounted(() => {
       multirowEnabled: true,
       arrayEnabled: true,
       dcolumnEnabled: true,
-      slashboxEnabled: true,
-      arydshlnEnabled: true
+      slashboxEnabled: false, // 默认禁用不推荐的slashbox
+      arydshlnEnabled: true,
+      diagheadEnabled: true, // 默认启用推荐的diaghead
+      makecellEnabled: false,
+      hhlineEnabled: false,
+      diagonalType: 'diaghead' // 默认使用推荐方案
     })
   }
   
@@ -376,18 +476,97 @@ defineExpose({
                   style="display: block; margin-bottom: 8px;"
                 />
                 
-                <el-checkbox 
-                  :model-value="slashboxEnabled" 
-                  @update:model-value="(val) => slashboxEnabled = Boolean(val)"
-                  label="slashbox 宏包（对角线表格）" 
-                  style="display: block; margin-bottom: 8px;"
-                />
+                <div style="margin-top: 15px;">
+                  <strong>斜线表头选项</strong>
+                  <el-alert
+                    title="推荐使用现代宏包替代 slashbox"
+                    description="slashbox 宏包已不推荐使用，建议选用以下现代替代方案之一。"
+                    type="warning"
+                    show-icon
+                    style="margin: 10px 0;"
+                  />
+                  
+                  <el-radio-group 
+                    :model-value="diagonalType" 
+                    @update:model-value="(val) => diagonalType = val"
+                    style="display: block; margin: 10px 0;"
+                  >
+                    <el-radio label="diaghead" style="display: block; margin-bottom: 8px;">
+                      diaghead 宏包（最推荐）
+                    </el-radio>
+                    <el-radio label="makecell" style="display: block; margin-bottom: 8px;">
+                      makecell 宏包（最流行）
+                    </el-radio>
+                    <el-radio label="hhline" style="display: block; margin-bottom: 8px;">
+                      hhline + multirow（原生方案）
+                    </el-radio>
+                    <el-radio label="slashbox" style="display: block; margin-bottom: 8px;">
+                      slashbox 宏包（不推荐）
+                    </el-radio>
+                  </el-radio-group>
+                  
+                  <!-- Diaghead 选项 -->
+                  <div v-if="diagonalType === 'diaghead'" style="margin-left: 20px; margin-top: 10px;">
+                    <el-checkbox 
+                      :model-value="diagheadEnabled" 
+                      @update:model-value="(val) => diagheadEnabled = Boolean(val)"
+                      label="启用 diaghead 宏包" 
+                      style="display: block; margin-bottom: 8px;"
+                    />
+                    
+                    <div v-if="diagheadEnabled" style="margin-top: 10px;">
+                      <pre style="background-color: #f5f5f5; padding: 10px; border-radius: 4px; overflow-x: auto; font-family: monospace; font-size: 12px;">{{ packageTemplates.diaghead }}</pre>
+                    </div>
+                  </div>
+                  
+                  <!-- Makecell 选项 -->
+                  <div v-if="diagonalType === 'makecell'" style="margin-left: 20px; margin-top: 10px;">
+                    <el-checkbox 
+                      :model-value="makecellEnabled" 
+                      @update:model-value="(val) => makecellEnabled = Boolean(val)"
+                      label="启用 makecell 宏包" 
+                      style="display: block; margin-bottom: 8px;"
+                    />
+                    
+                    <div v-if="makecellEnabled" style="margin-top: 10px;">
+                      <pre style="background-color: #f5f5f5; padding: 10px; border-radius: 4px; overflow-x: auto; font-family: monospace; font-size: 12px;">{{ packageTemplates.makecell }}</pre>
+                    </div>
+                  </div>
+                  
+                  <!-- HHline 选项 -->
+                  <div v-if="diagonalType === 'hhline'" style="margin-left: 20px; margin-top: 10px;">
+                    <el-checkbox 
+                      :model-value="hhlineEnabled" 
+                      @update:model-value="(val) => hhlineEnabled = Boolean(val)"
+                      label="启用 hhline 宏包" 
+                      style="display: block; margin-bottom: 8px;"
+                    />
+                    
+                    <div v-if="hhlineEnabled" style="margin-top: 10px;">
+                      <pre style="background-color: #f5f5f5; padding: 10px; border-radius: 4px; overflow-x: auto; font-family: monospace; font-size: 12px;">{{ packageTemplates.hhline }}</pre>
+                    </div>
+                  </div>
+                  
+                  <!-- Slashbox 选项 -->
+                  <div v-if="diagonalType === 'slashbox'" style="margin-left: 20px; margin-top: 10px;">
+                    <el-checkbox 
+                      :model-value="slashboxEnabled" 
+                      @update:model-value="(val) => slashboxEnabled = Boolean(val)"
+                      label="启用 slashbox 宏包（不推荐）" 
+                      style="display: block; margin-bottom: 8px;"
+                    />
+                    
+                    <div v-if="slashboxEnabled" style="margin-top: 10px;">
+                      <pre style="background-color: #f5f5f5; padding: 10px; border-radius: 4px; overflow-x: auto; font-family: monospace; font-size: 12px;">{{ packageTemplates.slashbox }}</pre>
+                    </div>
+                  </div>
+                </div>
                 
                 <el-checkbox 
                   :model-value="arydshlnEnabled" 
                   @update:model-value="(val) => arydshlnEnabled = Boolean(val)"
                   label="arydshln 宏包（虚线表格）" 
-                  style="display: block; margin-bottom: 8px;"
+                  style="display: block; margin-bottom: 8px; margin-top: 15px;"
                 />
               </div>
               
@@ -405,14 +584,6 @@ defineExpose({
               
               <div v-if="dcolumnEnabled" style="margin-top: 10px;">
                 <pre style="background-color: #f5f5f5; padding: 10px; border-radius: 4px; overflow-x: auto; font-family: monospace; font-size: 12px;">{{ packageTemplates.dcolumn }}</pre>
-              </div>
-              
-              <div v-if="slashboxEnabled" style="margin-top: 10px;">
-                <pre style="background-color: #f5f5f5; padding: 10px; border-radius: 4px; overflow-x: auto; font-family: monospace; font-size: 12px;">{{ packageTemplates.slashbox }}</pre>
-              </div>
-              
-              <div v-if="arydshlnEnabled" style="margin-top: 10px;">
-                <pre style="background-color: #f5f5f5; padding: 10px; border-radius: 4px; overflow-x: auto; font-family: monospace; font-size: 12px;">{{ packageTemplates.arydshln }}</pre>
               </div>
             </div>
             
