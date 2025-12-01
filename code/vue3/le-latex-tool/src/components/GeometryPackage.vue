@@ -95,6 +95,12 @@ const resetOption = (field: string) => {
   emit('update:modelValue', { ...geometryConfig.value })
 }
 
+// 清空单个选项
+const clearOption = (field: string) => {
+  ;(geometryConfig.value as any)[field] = ''
+  emit('update:modelValue', { ...geometryConfig.value })
+}
+
 // 重置所有配置
 const resetAll = () => {
   geometryConfig.value = {
@@ -174,6 +180,7 @@ defineExpose({
                     style="flex: 1;"
                   />
                   <el-button @click="resetOption('paperWidth')" size="small">重置</el-button>
+                  <el-button @click="clearOption('paperWidth')" size="small">清空</el-button>
                 </div>
               </el-form-item>
             </div>
@@ -188,6 +195,7 @@ defineExpose({
                     style="flex: 1;"
                   />
                   <el-button @click="resetOption('paperHeight')" size="small">重置</el-button>
+                  <el-button @click="clearOption('paperHeight')" size="small">清空</el-button>
                 </div>
               </el-form-item>
             </div>
@@ -202,6 +210,7 @@ defineExpose({
                     style="flex: 1;"
                   />
                   <el-button @click="resetOption('textWidth')" size="small">重置</el-button>
+                  <el-button @click="clearOption('textWidth')" size="small">清空</el-button>
                 </div>
               </el-form-item>
             </div>
@@ -216,6 +225,7 @@ defineExpose({
                     style="flex: 1;"
                   />
                   <el-button @click="resetOption('textHeight')" size="small">重置</el-button>
+                  <el-button @click="clearOption('textHeight')" size="small">清空</el-button>
                 </div>
               </el-form-item>
             </div>
@@ -230,6 +240,7 @@ defineExpose({
                     style="flex: 1;"
                   />
                   <el-button @click="resetOption('leftMargin')" size="small">重置</el-button>
+                  <el-button @click="clearOption('leftMargin')" size="small">清空</el-button>
                 </div>
               </el-form-item>
             </div>
@@ -244,6 +255,7 @@ defineExpose({
                     style="flex: 1;"
                   />
                   <el-button @click="resetOption('topMargin')" size="small">重置</el-button>
+                  <el-button @click="clearOption('topMargin')" size="small">清空</el-button>
                 </div>
               </el-form-item>
             </div>
