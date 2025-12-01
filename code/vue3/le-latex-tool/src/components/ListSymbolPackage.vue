@@ -54,7 +54,7 @@ const dialogVisible = ref(false)
 // 各宏包的LaTeX代码模板
 const packageTemplates = {
   pifont: '\\usepackage{pifont}',
-  mflogo: '\\usepackage{mflogo,metalogo,msh,mex}',
+  mflogo: '\\usepackage{mflogo,metalogo}',
   texnames: '\\usepackage{texnames}',
   bbding: '\\usepackage{bbding}',
   amssymb: '\\usepackage{amssymb,latexsym,textcomp,mathrsfs,euscript,yhmath}',
