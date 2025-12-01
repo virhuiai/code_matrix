@@ -204,7 +204,7 @@ defineExpose({
 <template>
   <div>
     <!-- 触发弹窗的按钮 -->
-    <el-button type="primary" @click="openDialog" style="width: 100%">中文字体设置</el-button>
+    <el-button type="primary" @click="openDialog" style="width: 100%;margin-top:10px;">中文字体设置</el-button>
     
     <!-- 弹窗 -->
     <el-dialog

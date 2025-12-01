@@ -42,7 +42,7 @@ const packageOptions = ref({
 
 // 修改文档类选项的默认值结构
 const documentClass = ref({
-  documentClass: 'ctexart',
+  documentClass: 'ctexbook',
   options: {
     'a4paper': true,
     'oneside': true,

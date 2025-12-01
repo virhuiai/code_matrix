@@ -68,7 +68,7 @@ const classOptions: ClassOptionConfig[] = [
 ]
 
 const selectedClass = computed({
-  get: () => props.modelValue.documentClass,
+  get: () => props.modelValue.documentClass || 'ctexbook', // 默认使用 ctexbook
   set: (value) => emit('update:modelValue', {
     documentClass: value,
     options: props.modelValue.options
@@ -107,6 +107,14 @@ watch(computedLatexCode, (newCode) => {
 })
 
 onMounted(() => {
+  // 如果没有设置文档类，则默认使用 ctexbook
+  if (!props.modelValue.documentClass) {
+    emit('update:modelValue', {
+      documentClass: 'ctexbook',
+      options: props.modelValue.options || {}
+    })
+  }
+  
   emit('codeChange', computedLatexCode.value)
   if (props.componentId !== undefined) {
     console.log(`DocumentClassSelector component loaded successfully with ID: ${props.componentId}`)
@@ -170,7 +178,7 @@ defineExpose({
                 v-for="option in classOptions"
                 :key="option.key"
                 :model-value="optionValues[option.key]"
-                @update:model-value="(val) => updateOptionValue(option.key, val)"
+                @update:model-value="(val) => updateOptionValue(option.key, Boolean(val))"
                 :label="option.label"
                 style="display: block; margin-bottom: 8px;"
               />
