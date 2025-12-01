@@ -8,6 +8,7 @@ const props = defineProps<{
     imakeidxEnabled: boolean
     splitidxEnabled: boolean
     hyperrefEnabled: boolean
+    urlEnabled: boolean
   }
   componentId?: number
 }>()
@@ -17,7 +18,8 @@ const emit = defineEmits<{
     variorefEnabled: boolean, 
     imakeidxEnabled: boolean, 
     splitidxEnabled: boolean, 
-    hyperrefEnabled: boolean 
+    hyperrefEnabled: boolean,
+    urlEnabled: boolean
   }): void
   (e: 'codeChange', value: string): void
 }>()
@@ -63,8 +65,10 @@ const hyperrefTemplate = `% 链接设置
 \\usepackage[CJKbookmarks,bookmarksnumbered,bookmarksopen,
             pdftitle={\\pdffilename},pdfauthor=virhuiai,
             colorlinks=true, pdfstartview=FitH,citecolor=blue,linktocpage,
-            linkcolor=blue,urlcolor=blue,hyperindex=true]{hyperref}
-% url样式设置
+            linkcolor=blue,urlcolor=blue,hyperindex=true]{hyperref}`
+
+const urlTemplate = `% url样式设置
+\\usepackage{url}
 \\urlstyle{same}`
 
 // 计算属性：控制启用状态
@@ -74,7 +78,8 @@ const variorefEnabled = computed({
     variorefEnabled: value, 
     imakeidxEnabled: props.modelValue.imakeidxEnabled ?? false,
     splitidxEnabled: props.modelValue.splitidxEnabled ?? false,
-    hyperrefEnabled: props.modelValue.hyperrefEnabled ?? true
+    hyperrefEnabled: props.modelValue.hyperrefEnabled ?? true,
+    urlEnabled: props.modelValue.urlEnabled ?? true
   })
 })
 
@@ -84,7 +89,8 @@ const imakeidxEnabled = computed({
     variorefEnabled: props.modelValue.variorefEnabled ?? true,
     imakeidxEnabled: value,
     splitidxEnabled: false, // 互斥选项
-    hyperrefEnabled: props.modelValue.hyperrefEnabled ?? true
+    hyperrefEnabled: props.modelValue.hyperrefEnabled ?? true,
+    urlEnabled: props.modelValue.urlEnabled ?? true
   })
 })
 
@@ -94,7 +100,8 @@ const splitidxEnabled = computed({
     variorefEnabled: props.modelValue.variorefEnabled ?? true,
     imakeidxEnabled: false, // 互斥选项
     splitidxEnabled: value,
-    hyperrefEnabled: props.modelValue.hyperrefEnabled ?? true
+    hyperrefEnabled: props.modelValue.hyperrefEnabled ?? true,
+    urlEnabled: props.modelValue.urlEnabled ?? true
   })
 })
 
@@ -104,7 +111,19 @@ const hyperrefEnabled = computed({
     variorefEnabled: props.modelValue.variorefEnabled ?? true,
     imakeidxEnabled: props.modelValue.imakeidxEnabled ?? false,
     splitidxEnabled: props.modelValue.splitidxEnabled ?? false,
-    hyperrefEnabled: value
+    hyperrefEnabled: value,
+    urlEnabled: props.modelValue.urlEnabled ?? true
+  })
+})
+
+const urlEnabled = computed({
+  get: () => props.modelValue.urlEnabled ?? true,
+  set: (value) => emit('update:modelValue', { 
+    variorefEnabled: props.modelValue.variorefEnabled ?? true,
+    imakeidxEnabled: props.modelValue.imakeidxEnabled ?? false,
+    splitidxEnabled: props.modelValue.splitidxEnabled ?? false,
+    hyperrefEnabled: props.modelValue.hyperrefEnabled ?? true,
+    urlEnabled: value
   })
 })
 
@@ -123,6 +142,9 @@ const computedLatexCode = computed(() => {
   if (hyperrefEnabled.value) {
     codes.push(hyperrefTemplate)
   }
+  if (urlEnabled.value) {
+    codes.push(urlTemplate)
+  }
   return codes.join('\n\n')
 })
 
@@ -137,12 +159,14 @@ onMounted(() => {
   if (props.modelValue.variorefEnabled === undefined || 
       props.modelValue.imakeidxEnabled === undefined || 
       props.modelValue.splitidxEnabled === undefined || 
-      props.modelValue.hyperrefEnabled === undefined) {
+      props.modelValue.hyperrefEnabled === undefined ||
+      props.modelValue.urlEnabled === undefined) {
     emit('update:modelValue', { 
       variorefEnabled: true,
       imakeidxEnabled: false,
       splitidxEnabled: false,
-      hyperrefEnabled: true
+      hyperrefEnabled: true,
+      urlEnabled: true
     })
   }
   
@@ -241,6 +265,20 @@ defineExpose({
             
             <div v-if="hyperrefEnabled" style="margin-top: 10px; margin-left: 20px;">
               <pre style="background-color: #f5f5f5; padding: 10px; border-radius: 4px; overflow-x: auto; font-family: monospace; font-size: 12px;">{{ hyperrefTemplate }}</pre>
+            </div>
+          </div>
+          
+          <el-divider />
+          
+          <div style="margin-top: 20px;">
+            <el-checkbox 
+              :model-value="urlEnabled" 
+              @update:model-value="(val) => urlEnabled = Boolean(val)"
+              label="启用 url 宏包（用于URL样式设置）" 
+            />
+            
+            <div v-if="urlEnabled" style="margin-top: 10px; margin-left: 20px;">
+              <pre style="background-color: #f5f5f5; padding: 10px; border-radius: 4px; overflow-x: auto; font-family: monospace; font-size: 12px;">{{ urlTemplate }}</pre>
             </div>
           </div>
           
