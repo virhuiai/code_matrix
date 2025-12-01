@@ -5,16 +5,12 @@ import { ElCard, ElCheckbox, ElDialog, ElButton, ElFormItem, ElInput, ElDivider 
 const props = defineProps<{
   modelValue: {
     enabled: boolean
-    papersize: string
-    textwidth: string
-    textlines: string
-    leftmargin: string
-    rightmargin: string
-    topmargin: string
-    bottommargin: string
-    headheight: string
-    headsep: string
-    footskip: string
+    paperWidth: string
+    paperHeight: string
+    textWidth: string
+    textHeight: string
+    leftMargin: string
+    topMargin: string
   }
   componentId?: number
 }>()
@@ -29,13 +25,13 @@ const dialogVisible = ref(false)
 
 // geometry 配置数据
 const geometryConfig = ref({
-  enabled: props.modelValue.enabled !== undefined ? props.modelValue.enabled : true,
-  paperWidth: '185mm',
-  paperHeight: '260mm',
-  textWidth: '148mm',
-  textHeight: '220mm',
-  leftMargin: '21mm',
-  topMargin: '25.5mm'
+  enabled: props.modelValue.enabled !== undefined ? props.modelValue.enabled : false,
+  paperWidth: props.modelValue.paperWidth || '185mm',
+  paperHeight: props.modelValue.paperHeight || '260mm',
+  textWidth: props.modelValue.textWidth || '148mm',
+  textHeight: props.modelValue.textHeight || '220mm',
+  leftMargin: props.modelValue.leftMargin || '21mm',
+  topMargin: props.modelValue.topMargin || '25.5mm'
 } as any)
 
 // LaTeX 代码模板
@@ -48,14 +44,18 @@ const latexTemplates = {
     leftMargin: string
     topMargin: string
   }) => {
-    return `%\\usepackage{geometry}
-%\\geometry{
-%  a4paper,
-%  total={${options.paperWidth},${options.paperHeight}},
-%  text={${options.textWidth},${options.textHeight}},
-%  left=${options.leftMargin},
-%  top=${options.topMargin}
-%}`
+    const optionsArray = []
+    if (options.paperWidth) optionsArray.push(`paperwidth=${options.paperWidth}`)
+    if (options.paperHeight) optionsArray.push(`paperheight=${options.paperHeight}`)
+    if (options.textWidth && options.textHeight) optionsArray.push(`text={${options.textWidth},${options.textHeight}}`)
+    else {
+      if (options.textWidth) optionsArray.push(`textwidth=${options.textWidth}`)
+      if (options.textHeight) optionsArray.push(`textheight=${options.textHeight}`)
+    }
+    if (options.leftMargin) optionsArray.push(`left=${options.leftMargin}`)
+    if (options.topMargin) optionsArray.push(`top=${options.topMargin}`)
+    
+    return `\\usepackage[${optionsArray.join(', ')}]{geometry}`
   }
 }
 
@@ -77,7 +77,35 @@ const computedLatexCode = computed(() => {
 
 // 更新配置
 const updateConfig = (field: string, value: any) => {
-  (geometryConfig.value as any)[field] = value
+  ;(geometryConfig.value as any)[field] = value
+  emit('update:modelValue', { ...geometryConfig.value })
+}
+
+// 重置单个选项
+const resetOption = (field: string) => {
+  const defaults: Record<string, string> = {
+    paperWidth: '185mm',
+    paperHeight: '260mm',
+    textWidth: '148mm',
+    textHeight: '220mm',
+    leftMargin: '21mm',
+    topMargin: '25.5mm'
+  }
+  ;(geometryConfig.value as any)[field] = defaults[field] || ''
+  emit('update:modelValue', { ...geometryConfig.value })
+}
+
+// 重置所有配置
+const resetAll = () => {
+  geometryConfig.value = {
+    enabled: geometryConfig.value.enabled,
+    paperWidth: '185mm',
+    paperHeight: '260mm',
+    textWidth: '148mm',
+    textHeight: '220mm',
+    leftMargin: '21mm',
+    topMargin: '25.5mm'
+  }
   emit('update:modelValue', { ...geometryConfig.value })
 }
 
@@ -138,62 +166,90 @@ defineExpose({
             
             <div style="margin-bottom: 15px;">
               <el-form-item label="纸张宽度 (paperwidth)">
-                <el-input 
-                  v-model="geometryConfig.paperWidth" 
-                  @input="(val) => updateConfig('paperWidth', val)"
-                  size="small"
-                />
+                <div style="display: flex; gap: 10px; align-items: center;">
+                  <el-input 
+                    v-model="geometryConfig.paperWidth" 
+                    @input="(val) => updateConfig('paperWidth', val)"
+                    size="small"
+                    style="flex: 1;"
+                  />
+                  <el-button @click="resetOption('paperWidth')" size="small">重置</el-button>
+                </div>
               </el-form-item>
             </div>
             
             <div style="margin-bottom: 15px;">
               <el-form-item label="纸张高度 (paperheight)">
-                <el-input 
-                  v-model="geometryConfig.paperHeight" 
-                  @input="(val) => updateConfig('paperHeight', val)"
-                  size="small"
-                />
+                <div style="display: flex; gap: 10px; align-items: center;">
+                  <el-input 
+                    v-model="geometryConfig.paperHeight" 
+                    @input="(val) => updateConfig('paperHeight', val)"
+                    size="small"
+                    style="flex: 1;"
+                  />
+                  <el-button @click="resetOption('paperHeight')" size="small">重置</el-button>
+                </div>
               </el-form-item>
             </div>
             
             <div style="margin-bottom: 15px;">
               <el-form-item label="正文宽度 (text width)">
-                <el-input 
-                  v-model="geometryConfig.textWidth" 
-                  @input="(val) => updateConfig('textWidth', val)"
-                  size="small"
-                />
+                <div style="display: flex; gap: 10px; align-items: center;">
+                  <el-input 
+                    v-model="geometryConfig.textWidth" 
+                    @input="(val) => updateConfig('textWidth', val)"
+                    size="small"
+                    style="flex: 1;"
+                  />
+                  <el-button @click="resetOption('textWidth')" size="small">重置</el-button>
+                </div>
               </el-form-item>
             </div>
             
             <div style="margin-bottom: 15px;">
               <el-form-item label="正文高度 (text height)">
-                <el-input 
-                  v-model="geometryConfig.textHeight" 
-                  @input="(val) => updateConfig('textHeight', val)"
-                  size="small"
-                />
+                <div style="display: flex; gap: 10px; align-items: center;">
+                  <el-input 
+                    v-model="geometryConfig.textHeight" 
+                    @input="(val) => updateConfig('textHeight', val)"
+                    size="small"
+                    style="flex: 1;"
+                  />
+                  <el-button @click="resetOption('textHeight')" size="small">重置</el-button>
+                </div>
               </el-form-item>
             </div>
             
             <div style="margin-bottom: 15px;">
               <el-form-item label="左边距 (left)">
-                <el-input 
-                  v-model="geometryConfig.leftMargin" 
-                  @input="(val) => updateConfig('leftMargin', val)"
-                  size="small"
-                />
+                <div style="display: flex; gap: 10px; align-items: center;">
+                  <el-input 
+                    v-model="geometryConfig.leftMargin" 
+                    @input="(val) => updateConfig('leftMargin', val)"
+                    size="small"
+                    style="flex: 1;"
+                  />
+                  <el-button @click="resetOption('leftMargin')" size="small">重置</el-button>
+                </div>
               </el-form-item>
             </div>
             
             <div style="margin-bottom: 15px;">
               <el-form-item label="上边距 (top)">
-                <el-input 
-                  v-model="geometryConfig.topMargin" 
-                  @input="(val) => updateConfig('topMargin', val)"
-                  size="small"
-                />
+                <div style="display: flex; gap: 10px; align-items: center;">
+                  <el-input 
+                    v-model="geometryConfig.topMargin" 
+                    @input="(val) => updateConfig('topMargin', val)"
+                    size="small"
+                    style="flex: 1;"
+                  />
+                  <el-button @click="resetOption('topMargin')" size="small">重置</el-button>
+                </div>
               </el-form-item>
+            </div>
+            
+            <div style="margin-top: 20px; text-align: right;">
+              <el-button @click="resetAll" type="warning">重置所有设置</el-button>
             </div>
             
             <div style="margin-top: 20px;">
