@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, defineEmits, defineProps, watch, onMounted } from 'vue'
-import { ElCard, ElRadioGroup, ElRadioButton, ElCheckbox } from 'element-plus'
+import { ElCard, ElRadioGroup, ElRadioButton, ElCheckbox, ElDialog, ElButton, ElDivider } from 'element-plus'
 
 const props = defineProps<{
   modelValue: {
@@ -14,6 +14,9 @@ const emit = defineEmits<{
   (e: 'update:modelValue', value: { documentClass: string; options: Record<string, boolean> }): void
   (e: 'codeChange', value: string): void
 }>()
+
+// 控制弹窗显示
+const dialogVisible = ref(false)
 
 interface DocumentClassConfig {
   className: string
@@ -91,6 +94,14 @@ const computedLatexCode = computed(() => {
   return `\\documentclass[${selectedOptions.join(',')}]{${selectedClass.value}}`
 })
 
+// 更新选项值
+const updateOptionValue = (key: string, value: boolean) => {
+  emit('update:modelValue', {
+    documentClass: props.modelValue.documentClass,
+    options: { ...optionValues.value, [key]: value }
+  })
+}
+
 watch(computedLatexCode, (newCode) => {
   emit('codeChange', newCode)
 })
@@ -101,39 +112,83 @@ onMounted(() => {
     console.log(`DocumentClassSelector component loaded successfully with ID: ${props.componentId}`)
   }
 })
+
+// 弹窗控制方法
+const openDialog = () => {
+  dialogVisible.value = true
+}
+
+const closeDialog = () => {
+  dialogVisible.value = false
+}
+
+defineExpose({
+  openDialog,
+  closeDialog
+})
 </script>
 
 <template>
-  <el-card shadow="hover">
-    <div>
-      <strong>文档类选择</strong>
-      <p>选择适合的中文文档类</p>
+  <div>
+    <!-- 触发弹窗的按钮 -->
+    <el-button type="primary" @click="openDialog" style="width: 100%; margin-top: 10px;">Document Class 文档类</el-button>
+    
+    <!-- 弹窗 -->
+    <el-dialog
+      v-model="dialogVisible"
+      title="Document Class 文档类"
+      width="60%"
+      :before-close="closeDialog"
+    >
+      <el-card shadow="hover">
+        <div>
+          <strong>文档类选择</strong>
+          <p>选择适合的中文文档类</p>
+          
+          <el-radio-group v-model="selectedClass" style="margin-bottom: 20px;">
+            <el-radio-button
+              v-for="docClass in documentClasses"
+              :key="docClass.className"
+              :label="docClass.className"
+            >
+              {{ docClass.label }}
+            </el-radio-button>
+          </el-radio-group>
+          
+          <div style="margin-top: 10px; color: #666; font-size: 14px; margin-bottom: 20px;">
+            <div v-for="docClass in documentClasses" :key="docClass.className" v-show="selectedClass === docClass.className">
+              {{ docClass.description }}
+            </div>
+          </div>
+          
+          <el-divider />
+          
+          <div style="margin-top: 20px;">
+            <strong>文档类选项</strong>
+            <div style="margin-top: 10px; margin-left: 20px;">
+              <el-checkbox
+                v-for="option in classOptions"
+                :key="option.key"
+                :model-value="optionValues[option.key]"
+                @update:model-value="(val) => updateOptionValue(option.key, val)"
+                :label="option.label"
+                style="display: block; margin-bottom: 8px;"
+              />
+            </div>
+          </div>
+          
+          <div style="margin-top: 20px;">
+            <pre style="background-color: #f5f5f5; padding: 15px; border-radius: 4px; overflow-x: auto; font-family: monospace;">{{ computedLatexCode }}</pre>
+          </div>
+        </div>
+      </el-card>
       
-      <!-- 将原来的 radio group 替换为 select -->
-      <el-select 
-        v-model="selectedClass" 
-        placeholder="请选择文档类"
-      >
-        <el-option
-          v-for="docClass in documentClasses"
-          :key="docClass.className"
-          :label="docClass.label"
-          :value="docClass.className"
-        >
-          <span>{{ docClass.label }}</span>
-          <span>{{ docClass.description }}</span>
-        </el-option>
-      </el-select>
-      
-      <div>
-        <strong>文档类选项</strong>
-        <el-checkbox
-          v-for="option in classOptions"
-          :key="option.key"
-          v-model="optionValues[option.key]"
-          :label="option.label"
-        />
-      </div>
-    </div>
-  </el-card>
+      <template #footer>
+        <span class="dialog-footer">
+          <el-button @click="closeDialog">取消</el-button>
+          <el-button type="primary" @click="closeDialog">确定</el-button>
+        </span>
+      </template>
+    </el-dialog>
+  </div>
 </template>
