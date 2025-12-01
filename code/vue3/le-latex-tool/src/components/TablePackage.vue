@@ -14,12 +14,11 @@ const props = defineProps<{
     multirowEnabled: boolean
     arrayEnabled: boolean
     dcolumnEnabled: boolean
-    slashboxEnabled: boolean
     arydshlnEnabled: boolean
     diagheadEnabled: boolean
     makecellEnabled: boolean
     hhlineEnabled: boolean
-    diagonalType: string // 'slashbox' | 'diaghead' | 'makecell' | 'hhline'
+    diagonalType: string // 'diaghead' | 'makecell' | 'hhline'
   }
   componentId?: number
 }>()
@@ -36,7 +35,6 @@ const emit = defineEmits<{
     multirowEnabled: boolean
     arrayEnabled: boolean
     dcolumnEnabled: boolean
-    slashboxEnabled: boolean
     arydshlnEnabled: boolean
     diagheadEnabled: boolean
     makecellEnabled: boolean
@@ -73,8 +71,6 @@ const packageTemplates = {
 % 它专为tabular和array表格环境定义了
 % 一个用于对齐小数点或逗号等标点符号的列格式选项
 \\usepackage{dcolumn}`,
-  slashbox: `% 对角线宏包slashbox（不推荐使用）
-\\usepackage{slashbox}`,
   arydshln: `% 虚线表格宏包arydshln
 %如果已经调用或是还需要调用与表格有关的 array、colortab、colortbl 或 longtable 宏包，
 %应将 arydshln 的调用命令放在这些宏包的调用命令之后，否则可能会造成莫名的错误
@@ -136,7 +132,6 @@ const mainEnabled = computed({
     multirowEnabled: props.modelValue.multirowEnabled ?? true,
     arrayEnabled: props.modelValue.arrayEnabled ?? true,
     dcolumnEnabled: props.modelValue.dcolumnEnabled ?? true,
-    slashboxEnabled: props.modelValue.slashboxEnabled ?? false, // 默认禁用
     arydshlnEnabled: props.modelValue.arydshlnEnabled ?? true,
     diagheadEnabled: props.modelValue.diagheadEnabled ?? true, // 默认启用推荐方案
     makecellEnabled: props.modelValue.makecellEnabled ?? false,
@@ -217,14 +212,6 @@ const dcolumnEnabled = computed({
   })
 })
 
-const slashboxEnabled = computed({
-  get: () => props.modelValue.slashboxEnabled ?? false,
-  set: (value) => emit('update:modelValue', { 
-    ...props.modelValue,
-    slashboxEnabled: value
-  })
-})
-
 const arydshlnEnabled = computed({
   get: () => props.modelValue.arydshlnEnabled ?? true,
   set: (value) => emit('update:modelValue', { 
@@ -259,10 +246,14 @@ const hhlineEnabled = computed({
 
 const diagonalType = computed({
   get: () => props.modelValue.diagonalType ?? 'diaghead',
-  set: (value) => emit('update:modelValue', { 
-    ...props.modelValue,
-    diagonalType: value
-  })
+  set: (value) => {
+    // 如果选择的是slashbox（已被移除），则改为选择diaghead
+    const newValue = value === 'slashbox' ? 'diaghead' : value;
+    emit('update:modelValue', { 
+      ...props.modelValue,
+      diagonalType: newValue
+    });
+  }
 })
 
 // 计算属性：生成 LaTeX 代码
@@ -283,9 +274,7 @@ const computedLatexCode = computed(() => {
   if (dcolumnEnabled.value) codes.push(packageTemplates.dcolumn)
   
   // 斜线表头宏包处理
-  if (diagonalType.value === 'slashbox' && slashboxEnabled.value) {
-    codes.push(packageTemplates.slashbox)
-  } else if (diagonalType.value === 'diaghead' && diagheadEnabled.value) {
+  if (diagonalType.value === 'diaghead' && diagheadEnabled.value) {
     codes.push(packageTemplates.diaghead)
   } else if (diagonalType.value === 'makecell' && makecellEnabled.value) {
     codes.push(packageTemplates.makecell)
@@ -318,7 +307,6 @@ onMounted(() => {
       multirowEnabled: true,
       arrayEnabled: true,
       dcolumnEnabled: true,
-      slashboxEnabled: false, // 默认禁用不推荐的slashbox
       arydshlnEnabled: true,
       diagheadEnabled: true, // 默认启用推荐的diaghead
       makecellEnabled: false,
@@ -488,7 +476,11 @@ defineExpose({
                   
                   <el-radio-group 
                     :model-value="diagonalType" 
-                    @update:model-value="(val) => diagonalType = val"
+                    @update:model-value="(val) => { 
+                      if (typeof val === 'string') {
+                        diagonalType = val;
+                      }
+                    }"
                     style="display: block; margin: 10px 0;"
                   >
                     <el-radio label="diaghead" style="display: block; margin-bottom: 8px;">
@@ -499,9 +491,6 @@ defineExpose({
                     </el-radio>
                     <el-radio label="hhline" style="display: block; margin-bottom: 8px;">
                       hhline + multirow（原生方案）
-                    </el-radio>
-                    <el-radio label="slashbox" style="display: block; margin-bottom: 8px;">
-                      slashbox 宏包（不推荐）
                     </el-radio>
                   </el-radio-group>
                   
@@ -544,20 +533,6 @@ defineExpose({
                     
                     <div v-if="hhlineEnabled" style="margin-top: 10px;">
                       <pre style="background-color: #f5f5f5; padding: 10px; border-radius: 4px; overflow-x: auto; font-family: monospace; font-size: 12px;">{{ packageTemplates.hhline }}</pre>
-                    </div>
-                  </div>
-                  
-                  <!-- Slashbox 选项 -->
-                  <div v-if="diagonalType === 'slashbox'" style="margin-left: 20px; margin-top: 10px;">
-                    <el-checkbox 
-                      :model-value="slashboxEnabled" 
-                      @update:model-value="(val) => slashboxEnabled = Boolean(val)"
-                      label="启用 slashbox 宏包（不推荐）" 
-                      style="display: block; margin-bottom: 8px;"
-                    />
-                    
-                    <div v-if="slashboxEnabled" style="margin-top: 10px;">
-                      <pre style="background-color: #f5f5f5; padding: 10px; border-radius: 4px; overflow-x: auto; font-family: monospace; font-size: 12px;">{{ packageTemplates.slashbox }}</pre>
                     </div>
                   </div>
                 </div>
