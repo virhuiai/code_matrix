@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, defineEmits, defineProps, watch, onMounted } from 'vue'
-import { ElCard, ElCheckbox, ElDialog, ElButton, ElDivider, ElAlert, ElRadio, ElRadioGroup } from 'element-plus'
+import { ElCard, ElCheckbox, ElDialog, ElButton, ElDivider, ElAlert } from 'element-plus'
 
 const props = defineProps<{
   modelValue: {
@@ -15,10 +15,8 @@ const props = defineProps<{
     arrayEnabled: boolean
     dcolumnEnabled: boolean
     arydshlnEnabled: boolean
-    diagheadEnabled: boolean
     makecellEnabled: boolean
     hhlineEnabled: boolean
-    diagonalType: string // 'diaghead' | 'makecell' | 'hhline'
   }
   componentId?: number
 }>()
@@ -36,10 +34,8 @@ const emit = defineEmits<{
     arrayEnabled: boolean
     dcolumnEnabled: boolean
     arydshlnEnabled: boolean
-    diagheadEnabled: boolean
     makecellEnabled: boolean
     hhlineEnabled: boolean
-    diagonalType: string
   }): void
   (e: 'codeChange', value: string): void
 }>()
@@ -75,21 +71,6 @@ const packageTemplates = {
 %如果已经调用或是还需要调用与表格有关的 array、colortab、colortbl 或 longtable 宏包，
 %应将 arydshln 的调用命令放在这些宏包的调用命令之后，否则可能会造成莫名的错误
 \\usepackage{arydshln}`,
-  diaghead: `% 方案1（最推荐）：用 diaghead 宏包（专门为斜线表头而生）
-\\usepackage{diaghead}   % 直接替代 slashbox
-
-% 使用方法（和 slashbox 几乎一样）
-% \\begin{tabular}{|l|c|c|c|}
-% \\hline
-% \\diaghead{\\theadfont}{宽度}{标题1}{标题2} % 例如
-% & 很长很长的列标题A & 很长很长的列标题B & 很长很长的列标题C \\\\
-% \\hline
-% 内容1 & ... & ... & ... \\\\
-% \\hline
-% \\end{tabular}
-
-% 具体例子：
-% \\diaghead{6em}{项目}{2023年}{2024年}{2025年}`,
   makecell: `% 方案2：用 makecell 宏包（最流行、最灵活）
 \\usepackage{makecell}
 \\renewcommand\\theadfont{\\bfseries}  % 可选，让表头加粗
@@ -133,10 +114,8 @@ const mainEnabled = computed({
     arrayEnabled: props.modelValue.arrayEnabled ?? true,
     dcolumnEnabled: props.modelValue.dcolumnEnabled ?? true,
     arydshlnEnabled: props.modelValue.arydshlnEnabled ?? true,
-    diagheadEnabled: props.modelValue.diagheadEnabled ?? true, // 默认启用推荐方案
     makecellEnabled: props.modelValue.makecellEnabled ?? false,
-    hhlineEnabled: props.modelValue.hhlineEnabled ?? false,
-    diagonalType: props.modelValue.diagonalType ?? 'diaghead'
+    hhlineEnabled: props.modelValue.hhlineEnabled ?? false
   })
 })
 
@@ -220,14 +199,6 @@ const arydshlnEnabled = computed({
   })
 })
 
-const diagheadEnabled = computed({
-  get: () => props.modelValue.diagheadEnabled ?? true,
-  set: (value) => emit('update:modelValue', { 
-    ...props.modelValue,
-    diagheadEnabled: value
-  })
-})
-
 const makecellEnabled = computed({
   get: () => props.modelValue.makecellEnabled ?? false,
   set: (value) => emit('update:modelValue', { 
@@ -242,18 +213,6 @@ const hhlineEnabled = computed({
     ...props.modelValue,
     hhlineEnabled: value
   })
-})
-
-const diagonalType = computed({
-  get: () => props.modelValue.diagonalType ?? 'diaghead',
-  set: (value) => {
-    // 如果选择的是slashbox（已被移除），则改为选择diaghead
-    const newValue = value === 'slashbox' ? 'diaghead' : value;
-    emit('update:modelValue', { 
-      ...props.modelValue,
-      diagonalType: newValue
-    });
-  }
 })
 
 // 计算属性：生成 LaTeX 代码
@@ -274,11 +233,10 @@ const computedLatexCode = computed(() => {
   if (dcolumnEnabled.value) codes.push(packageTemplates.dcolumn)
   
   // 斜线表头宏包处理
-  if (diagonalType.value === 'diaghead' && diagheadEnabled.value) {
-    codes.push(packageTemplates.diaghead)
-  } else if (diagonalType.value === 'makecell' && makecellEnabled.value) {
+  if (makecellEnabled.value) {
     codes.push(packageTemplates.makecell)
-  } else if (diagonalType.value === 'hhline' && hhlineEnabled.value) {
+  }
+  if (hhlineEnabled.value) {
     codes.push(packageTemplates.hhline)
   }
   
@@ -308,10 +266,8 @@ onMounted(() => {
       arrayEnabled: true,
       dcolumnEnabled: true,
       arydshlnEnabled: true,
-      diagheadEnabled: true, // 默认启用推荐的diaghead
       makecellEnabled: false,
-      hhlineEnabled: false,
-      diagonalType: 'diaghead' // 默认使用推荐方案
+      hhlineEnabled: false
     })
   }
   
@@ -467,53 +423,19 @@ defineExpose({
                 <div style="margin-top: 15px;">
                   <strong>斜线表头选项</strong>
                   <el-alert
-                    title="推荐使用现代宏包替代 slashbox"
-                    description="slashbox 宏包已不推荐使用，建议选用以下现代替代方案之一。"
-                    type="warning"
+                    title="斜线表头宏包"
+                    description="可以选择以下一种或多种方式来实现斜线表头。"
+                    type="info"
                     show-icon
                     style="margin: 10px 0;"
                   />
                   
-                  <el-radio-group 
-                    :model-value="diagonalType" 
-                    @update:model-value="(val) => { 
-                      if (typeof val === 'string') {
-                        diagonalType = val;
-                      }
-                    }"
-                    style="display: block; margin: 10px 0;"
-                  >
-                    <el-radio label="diaghead" style="display: block; margin-bottom: 8px;">
-                      diaghead 宏包（最推荐）
-                    </el-radio>
-                    <el-radio label="makecell" style="display: block; margin-bottom: 8px;">
-                      makecell 宏包（最流行）
-                    </el-radio>
-                    <el-radio label="hhline" style="display: block; margin-bottom: 8px;">
-                      hhline + multirow（原生方案）
-                    </el-radio>
-                  </el-radio-group>
-                  
-                  <!-- Diaghead 选项 -->
-                  <div v-if="diagonalType === 'diaghead'" style="margin-left: 20px; margin-top: 10px;">
-                    <el-checkbox 
-                      :model-value="diagheadEnabled" 
-                      @update:model-value="(val) => diagheadEnabled = Boolean(val)"
-                      label="启用 diaghead 宏包" 
-                      style="display: block; margin-bottom: 8px;"
-                    />
-                    
-                    <div v-if="diagheadEnabled" style="margin-top: 10px;">
-                      <pre style="background-color: #f5f5f5; padding: 10px; border-radius: 4px; overflow-x: auto; font-family: monospace; font-size: 12px;">{{ packageTemplates.diaghead }}</pre>
-                    </div>
-                  </div>
-                  
                   <!-- Makecell 选项 -->
-                  <div v-if="diagonalType === 'makecell'" style="margin-left: 20px; margin-top: 10px;">
+                  <div style="margin-left: 20px; margin-top: 10px;">
                     <el-checkbox 
                       :model-value="makecellEnabled" 
                       @update:model-value="(val) => makecellEnabled = Boolean(val)"
-                      label="启用 makecell 宏包" 
+                      label="makecell 宏包（最流行）" 
                       style="display: block; margin-bottom: 8px;"
                     />
                     
@@ -523,11 +445,11 @@ defineExpose({
                   </div>
                   
                   <!-- HHline 选项 -->
-                  <div v-if="diagonalType === 'hhline'" style="margin-left: 20px; margin-top: 10px;">
+                  <div style="margin-left: 20px; margin-top: 10px;">
                     <el-checkbox 
                       :model-value="hhlineEnabled" 
                       @update:model-value="(val) => hhlineEnabled = Boolean(val)"
-                      label="启用 hhline 宏包" 
+                      label="hhline + multirow（原生方案）" 
                       style="display: block; margin-bottom: 8px;"
                     />
                     

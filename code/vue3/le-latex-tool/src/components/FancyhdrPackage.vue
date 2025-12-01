@@ -27,8 +27,8 @@ const packageConfig = {
 \\pagestyle{fancy}
 \\fancyhf{}
 \\fancyhead[EL,OR]{\\thepage}
-\\fancyhead[OC]{\\nouppercase{\\fangsong\\rightmark}}
-\\fancyhead[EC]{\\nouppercase{\\fangsong\\leftmark}}
+\\fancyhead[OC]{\\nouppercase{\\sf\\rightmark}}
+\\fancyhead[EC]{\\nouppercase{\\sf\\leftmark}}
 %%%%%% 版式修改命令用于修改系统的plain版式，使所有章标题页的页眉和页脚都为空白。
 \\fancypagestyle{plain}{\\renewcommand{\\headrulewidth}{0pt}\\fancyhf{}}
 %%%%%% 注意，当调用ctexcap中文标题宏包后，不能再调用fancyhdr宏包！
