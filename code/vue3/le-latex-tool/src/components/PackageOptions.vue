@@ -99,8 +99,7 @@ watch(computedLatexCode, (newCode) => {
 
 // 组件挂载时触发代码变更事件
 onMounted(() => {
-  const optionInfos = generateOptionInfos()
-  emit('codeChange', computedLatexCode.value, optionInfos)
+  emit('codeChange', computedLatexCode.value)
   if (props.componentId !== undefined) {
     console.log(`PackageOptions component loaded successfully with ID: ${props.componentId}`)
   }
@@ -129,20 +128,17 @@ defineExpose({
     <!-- 弹窗 -->
     <el-dialog
       v-model="dialogVisible"
-      title="Package Options 宏包选项"
+      title="为 LaTeX 宏包传递选项参数"
       width="100%"
       :before-close="closeDialog"
       class="package-options-dialog"
     >
       <el-card shadow="hover" class="package-options-content">
         <div>
-          <strong>PassOptionsToPackage</strong>
-          <p>为 LaTeX 宏包传递选项参数</p>
           
           <div class="package-options-container">
             <!-- 左栏：选项 -->
             <div class="package-options-left">
-              <el-divider />
               
               <!-- 使用 v-for 指令遍历所有宏包配置 -->
               <div v-for="pkg in packageConfigs" :key="pkg.packageName" class="package-section">
@@ -172,10 +168,6 @@ defineExpose({
       </el-card>
       
       <template #footer>
-        <span class="dialog-footer">
-          <el-button @click="closeDialog">取消</el-button>
-          <el-button type="primary" @click="closeDialog">确定</el-button>
-        </span>
       </template>
     </el-dialog>
   </div>
