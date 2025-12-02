@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { ref, computed, defineEmits, defineProps, watch, onMounted } from 'vue'
 import { ElCard, ElRadioGroup, ElRadioButton, ElCheckbox, ElDialog, ElButton, ElDivider } from 'element-plus'
+import { DocumentClassConfig, ClassOptionConfig, DocumentClassInfo } from '../types/document-class-selector-types';
+import { generateCodeFromDocumentClassInfo } from '../utils/document-class-selector-utils';
 
 const props = defineProps<{
   modelValue: {
@@ -12,24 +14,13 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   (e: 'update:modelValue', value: { documentClass: string; options: Record<string, boolean> }): void
-  (e: 'codeChange', value: string): void
+  (e: 'codeChange', value: string, documentClassInfo?: DocumentClassInfo): void
 }>()
 
 // 控制弹窗显示
 const dialogVisible = ref(false)
 
-interface DocumentClassConfig {
-  className: string
-  label: string
-  description: string
-}
-
 // 文档类选项配置
-interface ClassOptionConfig {
-  key: string
-  label: string
-}
-
 const documentClasses: DocumentClassConfig[] = [
   {
     className: 'ctexart',
@@ -58,7 +49,7 @@ const classOptions: ClassOptionConfig[] = [
   { key: 'a4paper', label: 'a4paper' },
   { key: 'oneside', label: 'oneside' },
   { key: 'zihao=-4', label: 'zihao=-4' },
-  { key: 'space', label: 'space' },
+  { key: 'space', label: 'space' }, 
   { key: 'scheme=chinese', label: 'scheme=chinese' },
   { key: 'heading=true', label: 'heading=true' },
   { key: 'hyperref', label: 'hyperref' },
@@ -83,15 +74,24 @@ const optionValues = computed({
   })
 })
 
-const computedLatexCode = computed(() => {
-  if (!selectedClass.value) return ''
-  
+// 生成文档类信息列表
+const generateDocumentClassInfo = (): DocumentClassInfo => {
   // 获取选中的选项
   const selectedOptions = classOptions
     .filter(option => optionValues.value[option.key])
     .map(option => option.key)
+    .join(',')
   
-  return `\\documentclass[${selectedOptions.join(',')}]{${selectedClass.value}}`
+  return {
+    command: 'documentclass',
+    options: selectedOptions,
+    documentClass: selectedClass.value
+  }
+}
+
+const computedLatexCode = computed(() => {
+  const documentClassInfo = generateDocumentClassInfo();
+  return generateCodeFromDocumentClassInfo(documentClassInfo);
 })
 
 // 更新选项值
@@ -115,7 +115,8 @@ onMounted(() => {
     })
   }
   
-  emit('codeChange', computedLatexCode.value)
+  const documentClassInfo = generateDocumentClassInfo();
+  emit('codeChange', computedLatexCode.value, documentClassInfo)
   if (props.componentId !== undefined) {
     console.log(`DocumentClassSelector component loaded successfully with ID: ${props.componentId}`)
   }
@@ -147,13 +148,14 @@ defineExpose({
       title="Document Class 文档类"
       width="60%"
       :before-close="closeDialog"
+      class="document-class-selector-dialog"
     >
-      <el-card shadow="hover">
+      <el-card shadow="hover" class="document-class-selector-content">
         <div>
           <strong>文档类选择</strong>
           <p>选择适合的中文文档类</p>
           
-          <el-radio-group v-model="selectedClass" style="margin-bottom: 20px;">
+          <el-radio-group v-model="selectedClass" class="document-class-selector-section">
             <el-radio-button
               v-for="docClass in documentClasses"
               :key="docClass.className"
@@ -163,7 +165,7 @@ defineExpose({
             </el-radio-button>
           </el-radio-group>
           
-          <div style="margin-top: 10px; color: #666; font-size: 14px; margin-bottom: 20px;">
+          <div class="document-class-selector-description">
             <div v-for="docClass in documentClasses" :key="docClass.className" v-show="selectedClass === docClass.className">
               {{ docClass.description }}
             </div>
@@ -171,22 +173,22 @@ defineExpose({
           
           <el-divider />
           
-          <div style="margin-top: 20px;">
-            <strong>文档类选项</strong>
-            <div style="margin-top: 10px; margin-left: 20px;">
+          <div class="document-class-selector-options">
+            <strong class="document-class-selector-options-title">文档类选项</strong>
+            <div class="document-class-selector-options-list">
               <el-checkbox
                 v-for="option in classOptions"
                 :key="option.key"
                 :model-value="optionValues[option.key]"
                 @update:model-value="(val) => updateOptionValue(option.key, Boolean(val))"
                 :label="option.label"
-                style="display: block; margin-bottom: 8px;"
+                class="document-class-selector-option-item"
               />
             </div>
           </div>
           
-          <div style="margin-top: 20px;">
-            <pre style="background-color: #f5f5f5; padding: 15px; border-radius: 4px; overflow-x: auto; font-family: monospace;">{{ computedLatexCode }}</pre>
+          <div class="document-class-selector-code-preview">
+            <pre>{{ computedLatexCode }}</pre>
           </div>
         </div>
       </el-card>
@@ -200,3 +202,7 @@ defineExpose({
     </el-dialog>
   </div>
 </template>
+
+<style scoped>
+/* 所有样式已移至 src/style.css 文件中 */
+</style>

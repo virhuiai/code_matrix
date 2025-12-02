@@ -114,7 +114,9 @@
 
 /* PackageOptions 组件样式 */
 .package-options-dialog {
-  
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .package-options-dialog .el-dialog {
@@ -134,7 +136,7 @@
   height: 100%;
   display: flex;
   flex-direction: column;
-  padding-top: 30px;
+  padding-top: 10px;
 }
 
 .package-options-container {
@@ -186,4 +188,76 @@
   white-space: pre-wrap;
   margin: 0;
   background-color: transparent;
+}
+
+/* DocumentClassSelector 组件样式 */
+.document-class-selector-dialog {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.document-class-selector-dialog .el-dialog {
+  height: 80vh;
+  display: flex;
+  flex-direction: column;
+  margin: 0 auto !important;
+  max-width: 1200px;
+}
+
+.document-class-selector-dialog .el-dialog__body {
+  flex: 1;
+  overflow: hidden;
+}
+
+.document-class-selector-content {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  padding-top: 10px;
+}
+
+.document-class-selector-container {
+  display: flex;
+  flex-direction: column;
+  height: calc(100% - 70px);
+  margin-top: 20px;
+}
+
+.document-class-selector-section {
+  margin-bottom: 20px;
+}
+
+.document-class-selector-description {
+  margin-top: 10px;
+  color: #666;
+  font-size: 14px;
+  margin-bottom: 20px;
+}
+
+.document-class-selector-options {
+  margin-top: 20px;
+}
+
+.document-class-selector-options-title {
+  font-weight: bold;
+}
+
+.document-class-selector-options-list {
+  margin-top: 10px;
+  margin-left: 20px;
+}
+
+.document-class-selector-option-item {
+  display: block;
+  margin-bottom: 8px;
+}
+
+.document-class-selector-code-preview {
+  margin-top: 20px;
+  background-color: #f5f5f5;
+  padding: 15px;
+  border-radius: 4px;
+  overflow-x: auto;
+  font-family: monospace;
 }
