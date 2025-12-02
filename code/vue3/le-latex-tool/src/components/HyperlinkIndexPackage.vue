@@ -5,24 +5,24 @@ import { generateCodeFromPackageInfos, type PackageInfo } from '../utils/generic
 
 const props = defineProps<{
   modelValue: {
-    variorefEnabled: boolean
-    imakeidxEnabled: boolean
-    splitidxEnabled: boolean
-    hyperrefEnabled: boolean
-    urlEnabled: boolean
-    pdfTitle: string
+    variorefEnabled?: boolean
+    imakeidxEnabled?: boolean
+    splitidxEnabled?: boolean
+    hyperrefEnabled?: boolean
+    urlEnabled?: boolean
+    pdfTitle?: string
   }
   componentId?: number
 }>()
 
 const emit = defineEmits<{
   (e: 'update:modelValue', value: { 
-    variorefEnabled: boolean, 
-    imakeidxEnabled: boolean, 
-    splitidxEnabled: boolean, 
-    hyperrefEnabled: boolean,
-    urlEnabled: boolean,
-    pdfTitle: string
+    variorefEnabled?: boolean, 
+    imakeidxEnabled?: boolean, 
+    splitidxEnabled?: boolean, 
+    hyperrefEnabled?: boolean,
+    urlEnabled?: boolean,
+    pdfTitle?: string
   }): void
   (e: 'codeChange', value: string): void
 }>()
@@ -296,7 +296,7 @@ defineExpose({
               <div style="margin-top: 20px;">
                 <el-checkbox 
                   :model-value="variorefEnabled" 
-                  @update:model-value="(val) => variorefEnabled = Boolean(val)"
+                  @update:model-value="(val: boolean | string | number) => variorefEnabled = Boolean(val)"
                   label="启用 varioref 宏包（用于智能交叉引用）" 
                 />
                 <div v-if="variorefEnabled" style="margin-top: 10px; margin-left: 20px;">
@@ -317,7 +317,7 @@ defineExpose({
 
                 <el-checkbox 
                   :model-value="imakeidxEnabled" 
-                  @update:model-value="(val) => imakeidxEnabled = Boolean(val)"
+                  @update:model-value="(val: boolean | string | number) => imakeidxEnabled = Boolean(val)"
                   label="启用 imakeidx 宏包（最简单、最推荐）" 
                 />
                 <div v-if="imakeidxEnabled" style="margin-top: 10px; margin-left: 20px;">
@@ -326,7 +326,7 @@ defineExpose({
 
                 <el-checkbox 
                   :model-value="splitidxEnabled" 
-                  @update:model-value="(val) => splitidxEnabled = Boolean(val)"
+                  @update:model-value="(val: boolean | string | number) => splitidxEnabled = Boolean(val)"
                   label="启用 splitidx 宏包（功能更强）" 
                   style="margin-top: 10px;"
                 />
@@ -340,7 +340,7 @@ defineExpose({
               <div style="margin-top: 20px;">
                 <el-checkbox 
                   :model-value="hyperrefEnabled" 
-                  @update:model-value="(val) => hyperrefEnabled = Boolean(val)"
+                  @update:model-value="(val: boolean | string | number) => hyperrefEnabled = Boolean(val)"
                   label="启用 hyperref 宏包（用于超链接）" 
                 />
                 <div v-if="hyperrefEnabled" style="margin-top: 10px; margin-left: 20px;">
@@ -363,7 +363,7 @@ defineExpose({
               <div style="margin-top: 20px;">
                 <el-checkbox 
                   :model-value="urlEnabled" 
-                  @update:model-value="(val) => urlEnabled = Boolean(val)"
+                  @update:model-value="(val: boolean | string | number) => urlEnabled = Boolean(val)"
                   label="启用 url 宏包（用于URL样式设置）" 
                 />
                 <div v-if="urlEnabled" style="margin-top: 10px; margin-left: 20px;">

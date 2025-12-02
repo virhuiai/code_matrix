@@ -183,7 +183,7 @@ defineExpose({
                     v-for="option in classOptions"
                     :key="option.key"
                     :model-value="optionValues[option.key]"
-                    @update:model-value="(val) => updateOptionValue(option.key, Boolean(val))"
+                    @update:model-value="(val: boolean | string | number) => updateOptionValue(option.key, Boolean(val))"
                     :label="option.label"
                     class="document-class-selector-option-item"
                   />

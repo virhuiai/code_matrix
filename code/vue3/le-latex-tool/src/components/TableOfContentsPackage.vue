@@ -4,14 +4,14 @@ import { ElCard, ElCheckbox, ElDialog, ElButton, ElDivider } from 'element-plus'
 
 const props = defineProps<{
   modelValue: {
-    titletocEnabled: boolean
-    multitocEnabled: boolean
+    titletocEnabled?: boolean
+    multitocEnabled?: boolean
   }
   componentId?: number
 }>()
 
 const emit = defineEmits<{
-  (e: 'update:modelValue', value: { titletocEnabled: boolean, multitocEnabled: boolean }): void
+  (e: 'update:modelValue', value: { titletocEnabled?: boolean, multitocEnabled?: boolean }): void
   (e: 'codeChange', value: string): void
 }>()
 
@@ -117,7 +117,7 @@ defineExpose({
               <div style="margin-top: 20px;">
                 <el-checkbox 
                   :model-value="titletocEnabled" 
-                  @update:model-value="(val) => titletocEnabled = Boolean(val)"
+                  @update:model-value="(val: boolean | string | number) => titletocEnabled = Boolean(val)"
                   label="启用 titletoc 宏包（用于自定义目录样式）" 
                 />
                 <div v-if="titletocEnabled" style="margin-top: 10px; margin-left: 20px;">
@@ -130,7 +130,7 @@ defineExpose({
               <div style="margin-top: 20px;">
                 <el-checkbox 
                   :model-value="multitocEnabled" 
-                  @update:model-value="(val) => multitocEnabled = Boolean(val)"
+                  @update:model-value="(val: boolean | string | number) => multitocEnabled = Boolean(val)"
                   label="启用 multitoc 宏包（用于多栏目录）" 
                 />
                 <div v-if="multitocEnabled" style="margin-top: 10px; margin-left: 20px;">

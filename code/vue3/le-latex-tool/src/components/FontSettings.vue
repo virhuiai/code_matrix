@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, defineEmits, defineProps, watch, onMounted } from 'vue'
-import { ElCard, ElInput, ElSelect, ElOption, ElRow, ElCol, ElDialog, ElButton } from 'element-plus'
+import { setupCodeEmission } from '../utils/code-emitter'
 
 const props = defineProps<{
   modelValue: {
@@ -102,6 +102,12 @@ const fontConfig = {
   ]
 }
 
+type FontTypeKey = 'main' | 'sans' | 'mono'
+const getOptionsForType = (type: string) => {
+  const key = type as FontTypeKey
+  return (fontConfig.options as Record<FontTypeKey, Array<{ label: string; path: string; filename: string }>>)[key] ?? []
+}
+
 // 存储已选择的字体标签映射
 const selectedFontLabels = ref<Record<string, string>>({})
 
@@ -131,7 +137,7 @@ const updateFontSetting = (type: string, field: 'path' | 'filename', value: stri
 }
 
 // 处理字体选择变更
-const handleFontChange = (type: string, option: { path: string; filename: string; label: string }) => {
+const handleFontChange = (type: string, option: any) => {
   updateFontSetting(type, 'path', option.path)
   updateFontSetting(type, 'filename', option.filename)
   // 保存选中的标签
@@ -149,9 +155,7 @@ const computedLatexCode = computed(() => {
 
 })
 
-watch(computedLatexCode, (newCode) => {
-  emit('codeChange', newCode)
-})
+setupCodeEmission(computedLatexCode, emit, props.componentId, 'FontSettings')
 
 // 监听modelValue变化
 watch(() => props.modelValue, (newVal) => {
@@ -179,10 +183,7 @@ onMounted(() => {
     }
   })
   
-  emit('codeChange', computedLatexCode.value)
-  if (props.componentId !== undefined) {
-    console.log(`FontSettings component loaded successfully with ID: ${props.componentId}`)
-  }
+  
 })
 
 // 打开弹窗
@@ -224,12 +225,12 @@ defineExpose({
               <el-col :span="24">
                 <el-select 
                   :model-value="selectedFontLabels[fontType.value] || getFontByType(fontType.value).filename"
-                  @change="(val) => handleFontChange(fontType.value, val)"
+                  @change="(val: any) => handleFontChange(fontType.value, val)"
                   placeholder="请选择字体"
                   style="width: 100%"
                 >
                   <el-option
-                    v-for="(option, index) in fontConfig.options[fontType.value as keyof typeof fontConfig.options]"
+                    v-for="(option, index) in getOptionsForType(fontType.value)"
                     :key="index"
                     :label="option.label"
                     :value="option"
@@ -244,14 +245,14 @@ defineExpose({
                 <el-input
                   :model-value="getFontByType(fontType.value).path"
                   placeholder="字体路径"
-                  @update:model-value="(val) => updateFontSetting(fontType.value, 'path', val)"
+                  @update:model-value="(val: string) => updateFontSetting(fontType.value, 'path', val)"
                 />
               </el-col>
               <el-col :span="24">
                 <el-input
                   :model-value="getFontByType(fontType.value).filename"
                   placeholder="字体文件名"
-                  @update:model-value="(val) => updateFontSetting(fontType.value, 'filename', val)"
+                  @update:model-value="(val: string) => updateFontSetting(fontType.value, 'filename', val)"
                 />
               </el-col>
             </el-row>

@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { ref, computed, defineEmits, defineProps, watch, onMounted } from 'vue'
-import { ElCard, ElCheckbox, ElDialog, ElButton, ElFormItem, ElInputNumber, ElDivider } from 'element-plus'
+import { ref, computed, defineEmits, defineProps } from 'vue'
 import { generateCodeFromPackageInfos, PackageInfo } from '../utils/generic-packages-utils'
+import { setupCodeEmission } from '../utils/code-emitter'
 
 const props = defineProps<{
   modelValue: {
@@ -65,25 +65,14 @@ const updatePackage = (pkg: string, value: any) => {
 }
 
 // 更新 linespread 值
-const updateLinespreadValue = (value: number | undefined, oldValue: number | undefined) => {
+const updateLinespreadValue = (value: number | undefined) => {
   if (value !== undefined) {
     packages.value.parskip.linespread.value = value
     emit('update:modelValue', { ...packages.value })
   }
 }
 
-// 监听代码变化
-watch(computedLatexCode, (newCode) => {
-  emit('codeChange', newCode)
-})
-
-// 组件挂载时触发代码变更事件
-onMounted(() => {
-  emit('codeChange', computedLatexCode.value)
-  if (props.componentId !== undefined) {
-    console.log(`DocumentLayoutPackage component loaded successfully with ID: ${props.componentId}`)
-  }
-})
+setupCodeEmission(computedLatexCode, emit, props.componentId, 'DocumentLayoutPackage')
 
 // 打开弹窗
 const openDialog = () => {
@@ -125,14 +114,14 @@ defineExpose({
               <div class="package-section">
                 <el-checkbox 
                   v-model="packages.parskip.enabled" 
-                  @change="(val) => updatePackage('parskip', { ...packages.parskip, enabled: Boolean(val) })"
+                  @change="(val: boolean | string | number) => updatePackage('parskip', { ...packages.parskip, enabled: Boolean(val) })"
                   label="parskip - 段落间距宏包"
                 />
 
                 <div v-if="packages.parskip.enabled" style="margin-left: 20px; margin-top: 10px;">
                   <el-checkbox 
                     v-model="packages.parskip.linespread.enabled" 
-                    @update:model-value="(val) => updatePackage('linespread', { ...packages.parskip.linespread, enabled: Boolean(val) })"
+                    @update:model-value="(val: boolean | string | number) => updatePackage('linespread', { ...packages.parskip.linespread, enabled: Boolean(val) })"
                     label="linespread - 行距设置"
                   />
 
@@ -157,7 +146,7 @@ defineExpose({
               <div class="package-section">
                 <el-checkbox 
                   v-model="packages.xspace.enabled" 
-                  @change="(val) => updatePackage('xspace', { enabled: Boolean(val) })"
+                  @change="(val: boolean | string | number) => updatePackage('xspace', { enabled: Boolean(val) })"
                   label="xspace - 智能空格宏包"
                 />
               </div>

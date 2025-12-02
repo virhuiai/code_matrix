@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { ref, computed, defineEmits, defineProps, watch, onMounted } from 'vue'
-import { ElCard, ElCheckbox, ElDialog, ElButton, ElDivider } from 'element-plus'
+import { ref, computed, defineEmits, defineProps } from 'vue'
 import { generateCodeFromBoxPackageInfos, BoxPackageInfo } from '../utils/box-packages-utils'
+import { setupCodeEmission } from '../utils/code-emitter'
 
 const props = defineProps<{
   modelValue: {
@@ -99,7 +99,6 @@ const computedLatexCode = computed(() => {
   return generateCodeFromBoxPackageInfos(infos)
 })
 
-// 监听包选项变化
 const updatePackage = (pkg: string, value: any) => {
   (packages.value as any)[pkg] = value
   emit('update:modelValue', { ...packages.value })
@@ -136,18 +135,7 @@ const updateTcolorboxBreakable = (value: boolean | string | number) => {
   emit('update:modelValue', { ...packages.value })
 }
 
-// 监听代码变化
-watch(computedLatexCode, (newCode) => {
-  emit('codeChange', newCode)
-})
-
-// 组件挂载时触发代码变更事件
-onMounted(() => {
-  emit('codeChange', computedLatexCode.value)
-  if (props.componentId !== undefined) {
-    console.log(`BoxPackages component loaded successfully with ID: ${props.componentId}`)
-  }
-})
+setupCodeEmission(computedLatexCode, emit, props.componentId, 'BoxPackages')
 
 // 打开弹窗
 const openDialog = () => {
@@ -186,19 +174,19 @@ defineExpose({
                 <div class="package-options-list">
                   <el-checkbox 
                     v-model="packages.fancybox" 
-                    @change="(val) => updatePackage('fancybox', val)"
+                    @change="(val: boolean | string | number) => updatePackage('fancybox', Boolean(val))"
                     label="fancybox - 盒子宏包，扩展 \\fbox 命令"
                     class="package-option-item"
                   />
                   <el-checkbox 
                     v-model="packages.boxedminipage" 
-                    @change="(val) => updatePackage('boxedminipage', val)"
+                    @change="(val: boolean | string | number) => updatePackage('boxedminipage', Boolean(val))"
                     label="boxedminipage - 盒子环境"
                     class="package-option-item"
                   />
                   <el-checkbox 
                     v-model="packages.tikz" 
-                    @change="(val) => updatePackage('tikz', val)"
+                    @change="(val: boolean | string | number) => updatePackage('tikz', Boolean(val))"
                     label="tikz - 绘图宏包"
                     class="package-option-item"
                   />
@@ -210,7 +198,7 @@ defineExpose({
                 <div class="package-options-list">
                   <el-checkbox 
                     v-model="packages.tcolorbox.enabled" 
-                    @change="(val) => updatePackage('tcolorbox', {...packages.tcolorbox, enabled: val})"
+                    @change="(val: boolean | string | number) => updatePackage('tcolorbox', {...packages.tcolorbox, enabled: Boolean(val)})"
                     label="启用 tcolorbox"
                     class="package-option-item"
                   />
@@ -260,25 +248,25 @@ defineExpose({
                 <div class="package-options-list">
                   <el-checkbox 
                     v-model="packages.awesomebox" 
-                    @change="(val) => updatePackage('awesomebox', val)"
+                    @change="(val: boolean | string | number) => updatePackage('awesomebox', Boolean(val))"
                     label="awesomebox - 图标盒子宏包"
                     class="package-option-item"
                   />
                   <el-checkbox 
                     v-model="packages.mdframed" 
-                    @change="(val) => updatePackage('mdframed', val)"
+                    @change="(val: boolean | string | number) => updatePackage('mdframed', Boolean(val))"
                     label="mdframed - 框架环境宏包"
                     class="package-option-item"
                   />
                   <el-checkbox 
                     v-model="packages.framed" 
-                    @change="(val) => updatePackage('framed', val)"
+                    @change="(val: boolean | string | number) => updatePackage('framed', Boolean(val))"
                     label="framed - 框架环境宏包"
                     class="package-option-item"
                   />
                   <el-checkbox 
                     v-model="packages.changepage" 
-                    @change="(val) => updatePackage('changepage', val)"
+                    @change="(val: boolean | string | number) => updatePackage('changepage', Boolean(val))"
                     label="changepage - 页面调整宏包"
                     class="package-option-item"
                   />

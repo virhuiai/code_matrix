@@ -1,30 +1,30 @@
 <script setup lang="ts">
-import { ref, computed, defineEmits, defineProps, watch, onMounted } from 'vue'
-import { ElCard, ElCheckbox, ElDialog, ElButton, ElDivider, ElAlert } from 'element-plus'
+import { ref, computed, defineEmits, defineProps, onMounted } from 'vue'
 import { generateCodeFromPackageInfos, type PackageInfo } from '../utils/generic-packages-utils'
+import { setupCodeEmission } from '../utils/code-emitter'
 
 const props = defineProps<{
   modelValue: {
-    enabled: boolean
-    pdfcolparcolumnsEnabled: boolean
-    paracolEnabled: boolean
-    lengthsEnabled: boolean
-    commandsEnabled: boolean
-    dualColumnEnvEnabled: boolean
-    dualColumnEnvTwoEnabled: boolean
+    enabled?: boolean
+    pdfcolparcolumnsEnabled?: boolean
+    paracolEnabled?: boolean
+    lengthsEnabled?: boolean
+    commandsEnabled?: boolean
+    dualColumnEnvEnabled?: boolean
+    dualColumnEnvTwoEnabled?: boolean
   }
   componentId?: number
 }>()
 
 const emit = defineEmits<{
   (e: 'update:modelValue', value: { 
-    enabled: boolean
-    pdfcolparcolumnsEnabled: boolean
-    paracolEnabled: boolean
-    lengthsEnabled: boolean
-    commandsEnabled: boolean
-    dualColumnEnvEnabled: boolean
-    dualColumnEnvTwoEnabled: boolean
+    enabled?: boolean
+    pdfcolparcolumnsEnabled?: boolean
+    paracolEnabled?: boolean
+    lengthsEnabled?: boolean
+    commandsEnabled?: boolean
+    dualColumnEnvEnabled?: boolean
+    dualColumnEnvTwoEnabled?: boolean
   }): void
   (e: 'codeChange', value: string): void
 }>()
@@ -32,11 +32,7 @@ const emit = defineEmits<{
 // 控制弹窗显示
 const dialogVisible = ref(false)
 
-// 各宏包的LaTeX代码模板
-const packageTemplates = {
-  pdfcolparcolumns: '\\usepackage{pdfcolparcolumns}',
-  paracol: '\\usepackage{paracol}'
-}
+ 
 
 // 长度定义代码模板
 const lengthTemplates = `\\newlength{\\栏间距}
@@ -161,12 +157,8 @@ const computedLatexCode = computed(() => {
   return [pkgLines, ...extraBlocks].filter(Boolean).join('\n\n')
 })
 
-// 监听代码变化
-watch(computedLatexCode, (newCode) => {
-  emit('codeChange', newCode)
-})
+setupCodeEmission(computedLatexCode, emit, props.componentId, 'ParallelTextPackage')
 
-// 组件挂载时触发代码变更事件
 onMounted(() => {
   // 如果未设置enabled属性，则设置默认值
   if (Object.values(props.modelValue).every(v => v === undefined)) {
@@ -181,10 +173,6 @@ onMounted(() => {
     })
   }
   
-  emit('codeChange', computedLatexCode.value)
-  if (props.componentId !== undefined) {
-    console.log(`ParallelTextPackage component loaded successfully with ID: ${props.componentId}`)
-  }
 })
 
 // 打开弹窗
@@ -233,7 +221,7 @@ defineExpose({
               <div class="package-section">
                 <el-checkbox 
                   :model-value="mainEnabled" 
-                  @update:model-value="(val) => mainEnabled = Boolean(val)"
+                  @update:model-value="(val: boolean | string | number) => mainEnabled = Boolean(val)"
                   label="启用对译环境设置" 
                 />
               </div>
@@ -247,13 +235,13 @@ defineExpose({
                   <div style="margin-top: 10px; margin-left: 12px;">
                     <el-checkbox 
                       :model-value="pdfcolparcolumnsEnabled" 
-                      @update:model-value="(val) => pdfcolparcolumnsEnabled = Boolean(val)"
+                      @update:model-value="(val: boolean | string | number) => pdfcolparcolumnsEnabled = Boolean(val)"
                       label="pdfcolparcolumns 宏包（提供带颜色支持的并排栏）" 
                       class="package-option-item"
                     />
                     <el-checkbox 
                       :model-value="paracolEnabled" 
-                      @update:model-value="(val) => paracolEnabled = Boolean(val)"
+                      @update:model-value="(val: boolean | string | number) => paracolEnabled = Boolean(val)"
                       label="paracol 宏包（提供并排文本环境）" 
                       class="package-option-item"
                     />
@@ -268,7 +256,7 @@ defineExpose({
                   <div style="margin-top: 10px; margin-left: 12px;">
                     <el-checkbox 
                       :model-value="lengthsEnabled" 
-                      @update:model-value="(val) => lengthsEnabled = Boolean(val)"
+                      @update:model-value="(val: boolean | string | number) => lengthsEnabled = Boolean(val)"
                       label="启用长度定义（栏间距、左右栏宽度等）" 
                       class="package-option-item"
                     />
@@ -283,7 +271,7 @@ defineExpose({
                   <div style="margin-top: 10px; margin-left: 12px;">
                     <el-checkbox 
                       :model-value="commandsEnabled" 
-                      @update:model-value="(val) => commandsEnabled = Boolean(val)"
+                      @update:model-value="(val: boolean | string | number) => commandsEnabled = Boolean(val)"
                       label="启用自定义命令（栏宽调整、换栏等）" 
                       class="package-option-item"
                     />
@@ -298,13 +286,13 @@ defineExpose({
                   <div style="margin-top: 10px; margin-left: 12px;">
                     <el-checkbox 
                       :model-value="dualColumnEnvEnabled" 
-                      @update:model-value="(val) => dualColumnEnvEnabled = Boolean(val)"
+                      @update:model-value="(val: boolean | string | number) => dualColumnEnvEnabled = Boolean(val)"
                       label="双栏 环境（基于 parcolumns）" 
                       class="package-option-item"
                     />
                     <el-checkbox 
                       :model-value="dualColumnEnvTwoEnabled" 
-                      @update:model-value="(val) => dualColumnEnvTwoEnabled = Boolean(val)"
+                      @update:model-value="(val: boolean | string | number) => dualColumnEnvTwoEnabled = Boolean(val)"
                       label="双栏二 环境（基于 paracol）" 
                       class="package-option-item"
                     />

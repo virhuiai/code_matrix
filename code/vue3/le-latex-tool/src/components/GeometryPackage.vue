@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { ref, computed, defineEmits, defineProps, watch, onMounted } from 'vue'
-import { ElCard, ElCheckbox, ElDialog, ElButton, ElFormItem, ElInput, ElDivider } from 'element-plus'
-import { generateCodeFromPackageInfos, PackageInfo } from '../utils/generic-packages-utils'
+import { ref, computed, defineEmits, defineProps } from 'vue'
+import { generateCodeFromPackageInfos } from '../utils/generic-packages-utils'
+import { setupCodeEmission } from '../utils/code-emitter'
 
 const props = defineProps<{
   modelValue: {
@@ -110,18 +110,7 @@ const resetAll = () => {
   emit('update:modelValue', { ...geometryConfig.value })
 }
 
-// 监听代码变化
-watch(computedLatexCode, (newCode) => {
-  emit('codeChange', newCode)
-})
-
-// 组件挂载时触发代码变更事件
-onMounted(() => {
-  emit('codeChange', computedLatexCode.value)
-  if (props.componentId !== undefined) {
-    console.log(`GeometryPackage component loaded successfully with ID: ${props.componentId}`)
-  }
-})
+setupCodeEmission(computedLatexCode, emit, props.componentId, 'GeometryPackage')
 
 // 弹窗控制方法
 const openDialog = () => {
@@ -159,7 +148,7 @@ defineExpose({
               
               <el-checkbox 
                 :model-value="geometryConfig.enabled" 
-                @update:model-value="(val) => updateConfig('enabled', !!val)"
+                @update:model-value="(val: boolean | string | number) => updateConfig('enabled', !!val)"
                 label="启用 Geometry 版面设置宏包"
               />
               
@@ -175,7 +164,7 @@ defineExpose({
                     <div style="display: flex; gap: 10px; align-items: center;">
                       <el-input 
                         :model-value="geometryConfig[item.key]" 
-                        @input="(val) => updateConfig(item.key, val)"
+                        @input="(val: string) => updateConfig(item.key, val)"
                         size="small"
                         style="flex: 1;"
                       />

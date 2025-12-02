@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { ref, computed, defineEmits, defineProps, watch, onMounted } from 'vue'
-import { ElCard, ElCheckbox, ElDialog, ElButton, ElFormItem, ElInputNumber, ElDivider } from 'element-plus'
+import { ref, computed, defineEmits, defineProps } from 'vue'
 import { generateCodeFromBoxPackageInfos, BoxPackageInfo } from '../utils/box-packages-utils'
+import { setupCodeEmission } from '../utils/code-emitter'
 
 const props = defineProps<{
   modelValue: {
@@ -45,18 +45,7 @@ const updateConfig = (field: string, value: any) => {
   emit('update:modelValue', { ...lettrineConfig.value })
 }
 
-// 监听代码变化
-watch(computedLatexCode, (newCode) => {
-  emit('codeChange', newCode)
-})
-
-// 组件挂载时触发代码变更事件
-onMounted(() => {
-  emit('codeChange', computedLatexCode.value)
-  if (props.componentId !== undefined) {
-    console.log(`LettrinePackage component loaded successfully with ID: ${props.componentId}`)
-  }
-})
+setupCodeEmission(computedLatexCode, emit, props.componentId, 'LettrinePackage')
 
 // 打开弹窗
 const openDialog = () => {
@@ -95,7 +84,7 @@ defineExpose({
                 <div class="package-options-list">
                   <el-checkbox 
                     :model-value="lettrineConfig.enabled" 
-                    @update:model-value="(val) => updateConfig('enabled', Boolean(val))"
+                    @update:model-value="(val: boolean | string | number) => updateConfig('enabled', Boolean(val))"
                     label="启用 Lettrine 首字下沉"
                     class="package-option-item"
                   />
@@ -103,7 +92,7 @@ defineExpose({
                     <el-form-item label="下沉行数 (lines)">
                       <el-input-number 
                         :model-value="lettrineConfig.lines" 
-                        @update:model-value="(val) => updateConfig('lines', Number(val))"
+                        @update:model-value="(val: number | string) => updateConfig('lines', Number(val))"
                         :min="1"
                         :max="10"
                         size="small"
@@ -113,7 +102,7 @@ defineExpose({
                     <el-form-item label="左悬挂 (lhang)">
                       <el-input-number 
                         :model-value="lettrineConfig.lhang" 
-                        @update:model-value="(val) => updateConfig('lhang', Number(val))"
+                        @update:model-value="(val: number | string) => updateConfig('lhang', Number(val))"
                         :step="0.05"
                         :min="0"
                         :max="1"
@@ -124,7 +113,7 @@ defineExpose({
                     <el-form-item label="垂直尺寸 (loversize)">
                       <el-input-number 
                         :model-value="lettrineConfig.loversize" 
-                        @update:model-value="(val) => updateConfig('loversize', Number(val))"
+                        @update:model-value="(val: number | string) => updateConfig('loversize', Number(val))"
                         :step="0.05"
                         :min="0"
                         :max="2"

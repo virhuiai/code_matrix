@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { ref, computed, defineEmits, defineProps, watch, onMounted } from 'vue'
-import { ElCard, ElCheckbox, ElDialog, ElButton, ElDivider } from 'element-plus'
+import { ref, computed, defineEmits, defineProps } from 'vue'
+import { ElCard, ElCheckbox, ElDialog, ElButton } from 'element-plus'
 import { OptionInfo, PackageConfig } from '../types/package-options-types';
 import { generateCodeFromOptionInfos } from '../utils/package-options-utils';
+import { setupCodeEmission } from '../utils/code-emitter'
 
 const props = defineProps<{
   modelValue: Record<string, boolean>
@@ -92,18 +93,7 @@ const updateOptionValue = (key: string, value: boolean) => {
   emit('update:modelValue', { ...optionValues.value, [key]: value })
 }
 
-// 监听代码变化
-watch(computedLatexCode, (newCode) => {
-  emit('codeChange', newCode)
-})
-
-// 组件挂载时触发代码变更事件
-onMounted(() => {
-  emit('codeChange', computedLatexCode.value)
-  if (props.componentId !== undefined) {
-    console.log(`PackageOptions component loaded successfully with ID: ${props.componentId}`)
-  }
-})
+setupCodeEmission(computedLatexCode, emit, props.componentId, 'PackageOptions')
 
 // 弹窗控制方法
 const openDialog = () => {
@@ -149,7 +139,7 @@ defineExpose({
                     v-for="item in pkg.items" 
                     :key="item.key"
                     :model-value="optionValues[item.key]"
-                    @update:model-value="(val) => updateOptionValue(item.key, Boolean(val))"
+                    @update:model-value="(val: boolean | string | number) => updateOptionValue(item.key, Boolean(val))"
                     :label="item.label"
                     class="package-option-item"
                   />

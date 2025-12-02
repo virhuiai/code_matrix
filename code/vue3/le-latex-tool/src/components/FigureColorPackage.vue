@@ -4,28 +4,28 @@ import { ElCard, ElCheckbox, ElDialog, ElButton, ElDivider, ElAlert } from 'elem
 
 const props = defineProps<{
   modelValue: {
-    enabled: boolean
-    graphicxEnabled: boolean
-    floatrowEnabled: boolean
-    rotatingEnabled: boolean
-    pdfpagesEnabled: boolean
-    picinparEnabled: boolean
-    xcolorEnabled: boolean
-    pgfUmlcdEnabled: boolean
+    enabled?: boolean
+    graphicxEnabled?: boolean
+    floatrowEnabled?: boolean
+    rotatingEnabled?: boolean
+    pdfpagesEnabled?: boolean
+    picinparEnabled?: boolean
+    xcolorEnabled?: boolean
+    pgfUmlcdEnabled?: boolean
   }
   componentId?: number
 }>()
 
 const emit = defineEmits<{
   (e: 'update:modelValue', value: { 
-    enabled: boolean
-    graphicxEnabled: boolean
-    floatrowEnabled: boolean
-    rotatingEnabled: boolean
-    pdfpagesEnabled: boolean
-    picinparEnabled: boolean
-    xcolorEnabled: boolean
-    pgfUmlcdEnabled: boolean
+    enabled?: boolean
+    graphicxEnabled?: boolean
+    floatrowEnabled?: boolean
+    rotatingEnabled?: boolean
+    pdfpagesEnabled?: boolean
+    picinparEnabled?: boolean
+    xcolorEnabled?: boolean
+    pgfUmlcdEnabled?: boolean
   }): void
   (e: 'codeChange', value: string): void
 }>()
@@ -223,7 +223,7 @@ defineExpose({
           
           <el-checkbox 
             :model-value="mainEnabled" 
-            @update:model-value="(val) => mainEnabled = Boolean(val)"
+            @update:model-value="(val: boolean | string | number) => mainEnabled = Boolean(val)"
             label="启用插图和颜色设置" 
           />
           
@@ -243,7 +243,7 @@ defineExpose({
               <div style="margin-top: 10px; margin-left: 20px;">
                 <el-checkbox 
                   :model-value="graphicxEnabled" 
-                  @update:model-value="(val) => graphicxEnabled = Boolean(val)"
+                  @update:model-value="(val: boolean | string | number) => graphicxEnabled = Boolean(val)"
                   label="graphicx/grffile 宏包（提供图像插入功能）" 
                   style="display: block; margin-bottom: 8px;"
                 />
@@ -261,14 +261,14 @@ defineExpose({
               <div style="margin-top: 10px; margin-left: 20px;">
                 <el-checkbox 
                   :model-value="floatrowEnabled" 
-                  @update:model-value="(val) => floatrowEnabled = Boolean(val)"
+                  @update:model-value="(val: boolean | string | number) => floatrowEnabled = Boolean(val)"
                   label="floatrow 宏包（浮动体环境）" 
                   style="display: block; margin-bottom: 8px;"
                 />
                 
                 <el-checkbox 
                   :model-value="rotatingEnabled" 
-                  @update:model-value="(val) => rotatingEnabled = Boolean(val)"
+                  @update:model-value="(val: boolean | string | number) => rotatingEnabled = Boolean(val)"
                   label="rotating 宏包（旋转对象）" 
                   style="display: block; margin-bottom: 8px;"
                 />
@@ -290,7 +290,7 @@ defineExpose({
               <div style="margin-top: 10px; margin-left: 20px;">
                 <el-checkbox 
                   :model-value="pdfpagesEnabled" 
-                  @update:model-value="(val) => pdfpagesEnabled = Boolean(val)"
+                  @update:model-value="(val: boolean | string | number) => pdfpagesEnabled = Boolean(val)"
                   label="pdfpages 宏包（插入 PDF 页面）" 
                   style="display: block; margin-bottom: 8px;"
                 />
@@ -308,7 +308,7 @@ defineExpose({
               <div style="margin-top: 10px; margin-left: 20px;">
                 <el-checkbox 
                   :model-value="picinparEnabled" 
-                  @update:model-value="(val) => picinparEnabled = Boolean(val)"
+                  @update:model-value="(val: boolean | string | number) => picinparEnabled = Boolean(val)"
                   label="picinpar 宏包（图片绕排文本）" 
                   style="display: block; margin-bottom: 8px;"
                 />
@@ -326,7 +326,7 @@ defineExpose({
               <div style="margin-top: 10px; margin-left: 20px;">
                 <el-checkbox 
                   :model-value="xcolorEnabled" 
-                  @update:model-value="(val) => xcolorEnabled = Boolean(val)"
+                  @update:model-value="(val: boolean | string | number) => xcolorEnabled = Boolean(val)"
                   label="xcolor 宏包（颜色支持）" 
                   style="display: block; margin-bottom: 8px;"
                 />
@@ -344,7 +344,7 @@ defineExpose({
               <div style="margin-top: 10px; margin-left: 20px;">
                 <el-checkbox 
                   :model-value="pgfUmlcdEnabled" 
-                  @update:model-value="(val) => pgfUmlcdEnabled = Boolean(val)"
+                  @update:model-value="(val: boolean | string | number) => pgfUmlcdEnabled = Boolean(val)"
                   label="pgf-umlcd 宏包（绘制 UML 类图）" 
                   style="display: block; margin-bottom: 8px;"
                 />
