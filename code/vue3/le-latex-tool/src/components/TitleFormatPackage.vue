@@ -84,27 +84,27 @@ defineExpose({
     <el-dialog
       v-model="dialogVisible"
       title="标题格式设置"
-      width="60%"
       :before-close="closeDialog"
     >
       <el-card shadow="hover">
         <div>
-          <strong>标题格式设置</strong>
-          <p>设置章节标题和图表标题的格式</p>
-          
-          <el-checkbox v-model="isEnabled" label="启用标题格式设置" />
-          
-          <div v-if="isEnabled" style="margin-top: 20px;">
-            <pre style="background-color: #f5f5f5; padding: 15px; border-radius: 4px; overflow-x: auto; font-family: monospace;">{{ packageConfig.latexTemplate }}</pre>
+          <div class="package-options-container">
+            <div class="package-options-left">
+              <strong>标题格式设置</strong>
+              <p>设置章节标题和图表标题的格式</p>
+              <el-checkbox v-model="isEnabled" label="启用标题格式设置" />
+            </div>
+            <div class="package-options-right">
+              <div class="code-preview">
+                <pre class="code-preview-content">{{ isEnabled ? packageConfig.latexTemplate : '' }}</pre>
+              </div>
+            </div>
           </div>
         </div>
       </el-card>
       
       <template #footer>
-        <span class="dialog-footer">
-          <el-button @click="closeDialog">取消</el-button>
-          <el-button type="primary" @click="closeDialog">确定</el-button>
-        </span>
+        
       </template>
     </el-dialog>
   </div>

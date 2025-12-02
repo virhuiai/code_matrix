@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, defineEmits, defineProps, watch, onMounted } from 'vue'
 import { ElCard, ElCheckbox, ElDialog, ElButton, ElFormItem, ElInput, ElDivider } from 'element-plus'
+import { generateCodeFromPackageInfos, PackageInfo } from '../utils/generic-packages-utils'
 
 const props = defineProps<{
   modelValue: {
@@ -69,30 +70,22 @@ const formItems = [
 
 type FormItemKey = typeof formItems[number]['key']
 
-// LaTeX 代码模板
-const generateLatexCode = (options: GeometryConfig) => {
-  if (!options.enabled) return ''
-
-  const optionsArray = []
-  
-  if (options.paperWidth) optionsArray.push(`paperwidth=${options.paperWidth}`)
-  if (options.paperHeight) optionsArray.push(`paperheight=${options.paperHeight}`)
-  
-  if (options.textWidth && options.textHeight) {
-    optionsArray.push(`text={${options.textWidth},${options.textHeight}}`)
+// 计算属性：生成 LaTeX 代码（使用通用工具）
+const computedLatexCode = computed(() => {
+  if (!geometryConfig.value.enabled) return ''
+  const opts: string[] = []
+  if (geometryConfig.value.paperWidth) opts.push(`paperwidth=${geometryConfig.value.paperWidth}`)
+  if (geometryConfig.value.paperHeight) opts.push(`paperheight=${geometryConfig.value.paperHeight}`)
+  if (geometryConfig.value.textWidth && geometryConfig.value.textHeight) {
+    opts.push(`text={${geometryConfig.value.textWidth},${geometryConfig.value.textHeight}}`)
   } else {
-    if (options.textWidth) optionsArray.push(`textwidth=${options.textWidth}`)
-    if (options.textHeight) optionsArray.push(`textheight=${options.textHeight}`)
+    if (geometryConfig.value.textWidth) opts.push(`textwidth=${geometryConfig.value.textWidth}`)
+    if (geometryConfig.value.textHeight) opts.push(`textheight=${geometryConfig.value.textHeight}`)
   }
-  
-  if (options.leftMargin) optionsArray.push(`left=${options.leftMargin}`)
-  if (options.topMargin) optionsArray.push(`top=${options.topMargin}`)
-  
-  return `\\usepackage[${optionsArray.join(', ')}]{geometry}`
-}
-
-// 计算属性：生成 LaTeX 代码
-const computedLatexCode = computed(() => generateLatexCode(geometryConfig.value))
+  if (geometryConfig.value.leftMargin) opts.push(`left=${geometryConfig.value.leftMargin}`)
+  if (geometryConfig.value.topMargin) opts.push(`top=${geometryConfig.value.topMargin}`)
+  return generateCodeFromPackageInfos([{ package: 'geometry', options: opts }])
+})
 
 // 更新配置
 const updateConfig = <T extends keyof GeometryConfig>(field: T, value: GeometryConfig[T]) => {
@@ -154,58 +147,62 @@ defineExpose({
     <el-dialog
       v-model="dialogVisible"
       title="Geometry 版面设置"
-      width="60%"
       :before-close="closeDialog"
     >
       <el-card shadow="hover">
         <div>
-          <strong>Geometry 版面设置</strong>
-          <p>设置页面尺寸、边距等版面参数</p>
-          
-          <el-checkbox 
-            :model-value="geometryConfig.enabled" 
-            @update:model-value="(val) => updateConfig('enabled', !!val)"
-            label="启用 Geometry 版面设置宏包"
-          />
-          
-          <div v-if="geometryConfig.enabled" style="margin-top: 20px;">
-            <el-divider />
-            
-            <div 
-              v-for="item in formItems"
-              :key="item.key"
-              style="margin-bottom: 15px;"
-            >
-              <el-form-item :label="item.label">
-                <div style="display: flex; gap: 10px; align-items: center;">
-                  <el-input 
-                    :model-value="geometryConfig[item.key]" 
-                    @input="(val) => updateConfig(item.key, val)"
-                    size="small"
-                    style="flex: 1;"
-                  />
-                  <el-button @click="() => handleOptionAction(item.key, 'reset')" size="small">重置</el-button>
-                  <el-button @click="() => handleOptionAction(item.key, 'clear')" size="small">清空</el-button>
+          <div class="package-options-container">
+            <!-- 左栏：选项 -->
+            <div class="package-options-left">
+              <strong>Geometry 版面设置</strong>
+              <p>设置页面尺寸、边距等版面参数</p>
+              
+              <el-checkbox 
+                :model-value="geometryConfig.enabled" 
+                @update:model-value="(val) => updateConfig('enabled', !!val)"
+                label="启用 Geometry 版面设置宏包"
+              />
+              
+              <div v-if="geometryConfig.enabled" style="margin-top: 20px;">
+                <el-divider />
+                
+                <div 
+                  v-for="item in formItems"
+                  :key="item.key"
+                  style="margin-bottom: 15px;"
+                >
+                  <el-form-item :label="item.label">
+                    <div style="display: flex; gap: 10px; align-items: center;">
+                      <el-input 
+                        :model-value="geometryConfig[item.key]" 
+                        @input="(val) => updateConfig(item.key, val)"
+                        size="small"
+                        style="flex: 1;"
+                      />
+                      <el-button @click="() => handleOptionAction(item.key, 'reset')" size="small">重置</el-button>
+                      <el-button @click="() => handleOptionAction(item.key, 'clear')" size="small">清空</el-button>
+                    </div>
+                  </el-form-item>
                 </div>
-              </el-form-item>
+                
+                <div style="margin-top: 20px; text-align: right;">
+                  <el-button @click="resetAll" type="warning">重置所有设置</el-button>
+                </div>
+              </div>
             </div>
-            
-            <div style="margin-top: 20px; text-align: right;">
-              <el-button @click="resetAll" type="warning">重置所有设置</el-button>
-            </div>
-            
-            <div style="margin-top: 20px;">
-              <pre style="background-color: #f5f5f5; padding: 15px; border-radius: 4px; overflow-x: auto; font-family: monospace;">{{ computedLatexCode }}</pre>
+
+            <!-- 右栏：代码预览 -->
+            <div class="package-options-right">
+              <div class="code-preview">
+                <pre class="code-preview-content">{{ computedLatexCode }}</pre>
+              </div>
             </div>
           </div>
         </div>
       </el-card>
       
       <template #footer>
-        <span class="dialog-footer">
-          <el-button @click="closeDialog">取消</el-button>
-          <el-button type="primary" @click="closeDialog">确定</el-button>
-        </span>
+        
       </template>
     </el-dialog>
   </div>

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, defineEmits, defineProps, watch, onMounted } from 'vue'
 import { ElCard, ElCheckbox, ElDialog, ElButton, ElDivider, ElAlert, ElInput } from 'element-plus'
+import { generateCodeFromPackageInfos, type PackageInfo } from '../utils/generic-packages-utils'
 
 const props = defineProps<{
   modelValue: {
@@ -151,25 +152,80 @@ const pdfTitle = computed({
   })
 })
 
-// 计算属性：生成 LaTeX 代码
+// 计算属性：生成 LaTeX 代码（使用通用宏包工具）
 const computedLatexCode = computed(() => {
-  const codes = []
+  const infos: PackageInfo[] = []
+
   if (variorefEnabled.value) {
-    codes.push(variorefTemplate)
+    infos.push({ package: 'varioref' })
   }
+
   if (imakeidxEnabled.value) {
-    codes.push(imakeidxTemplate)
+    infos.push({ 
+      package: 'imakeidx', 
+      options: ['noautomatic'],
+      afterLines: [
+        '\\makeindex[name=aut,title=人名索引,intoc]',
+        '\\makeindex[name=loc,title=地名索引,intoc]',
+        '\\makeindex[name=conc,title=概念索引,intoc]',
+        '% 正文里使用',
+        '%\\index[aut]{爱因斯坦}',
+        '%\\index[loc]{北京}',
+        '%\\index[conc]{相对论}',
+        '% 打印索引（顺序随意）',
+        '%\\printindex[aut]   % 标题自动用上面 title= 设置的',
+        '%\\printindex[loc]',
+        '%\\printindex[conc]'
+      ]
+    })
   }
+
   if (splitidxEnabled.value) {
-    codes.push(splitidxTemplate)
+    infos.push({ 
+      package: 'splitidx', 
+      options: ['splitindex'],
+      afterLines: [
+        '\\newindex{aut}{idxa}   % 人名索引',
+        '\\newindex{loc}{idxb}   % 地名索引',
+        '% 正文里使用',
+        '%\\sindex[aut]{牛顿}',
+        '%\\sindex[loc]{伦敦}',
+        '% 打印',
+        '%\\printsplitindex[aut]{人名索引}',
+        '%\\printsplitindex[loc]{地名索引}'
+      ]
+    })
   }
+
   if (hyperrefEnabled.value) {
-    codes.push(generateHyperrefTemplate(pdfTitle.value))
+    const titleValue = pdfTitle.value ? `pdftitle={${pdfTitle.value}}` : 'pdftitle={标题标题标题}'
+    infos.push({
+      package: 'hyperref',
+      options: [
+        'CJKbookmarks',
+        'bookmarksnumbered',
+        'bookmarksopen',
+        titleValue,
+        'pdfauthor=virhuiai',
+        'colorlinks=true',
+        'pdfstartview=FitH',
+        'citecolor=blue',
+        'linktocpage',
+        'linkcolor=blue',
+        'urlcolor=blue',
+        'hyperindex=true'
+      ]
+    })
   }
+
   if (urlEnabled.value) {
-    codes.push(urlTemplate)
+    infos.push({ 
+      package: 'url',
+      afterLines: ['\\urlstyle{same}']
+    })
   }
-  return codes.join('\n\n')
+
+  return generateCodeFromPackageInfos(infos)
 })
 
 // 监听代码变化
@@ -227,109 +283,107 @@ defineExpose({
     <el-dialog
       v-model="dialogVisible"
       title="链接和索引设置"
-      width="60%"
       :before-close="closeDialog"
     >
       <el-card shadow="hover">
         <div>
-          <strong>链接和索引设置</strong>
-          <p>设置文档中的链接和索引功能，包括超链接、参考文献链接以及各种索引</p>
-          
-          <div style="margin-top: 20px;">
-            <el-checkbox 
-              :model-value="variorefEnabled" 
-              @update:model-value="(val) => variorefEnabled = Boolean(val)"
-              label="启用 varioref 宏包（用于智能交叉引用）" 
-            />
-            
-            <div v-if="variorefEnabled" style="margin-top: 10px; margin-left: 20px;">
-              <pre style="background-color: #f5f5f5; padding: 10px; border-radius: 4px; overflow-x: auto; font-family: monospace; font-size: 12px;">{{ variorefTemplate }}</pre>
-            </div>
-          </div>
-          
-          <el-divider />
-          
-          <div style="margin-top: 20px;">
-            <el-alert
-              title="索引宏包选择说明"
-              description="imakeidx 和 splitidx 是 multind 的现代替代品，提供了更好的功能和维护性。请注意这两个选项是互斥的，只能同时启用其中一个。"
-              type="info"
-              show-icon
-              style="margin-bottom: 15px;"
-            />
-            
-            <el-checkbox 
-              :model-value="imakeidxEnabled" 
-              @update:model-value="(val) => imakeidxEnabled = Boolean(val)"
-              label="启用 imakeidx 宏包（最简单、最推荐）" 
-            />
-            
-            <div v-if="imakeidxEnabled" style="margin-top: 10px; margin-left: 20px;">
-              <pre style="background-color: #f5f5f5; padding: 10px; border-radius: 4px; overflow-x: auto; font-family: monospace; font-size: 12px;">{{ imakeidxTemplate }}</pre>
-            </div>
-            
-            <el-checkbox 
-              :model-value="splitidxEnabled" 
-              @update:model-value="(val) => splitidxEnabled = Boolean(val)"
-              label="启用 splitidx 宏包（功能更强）" 
-              style="margin-top: 10px;"
-            />
-            
-            <div v-if="splitidxEnabled" style="margin-top: 10px; margin-left: 20px;">
-              <pre style="background-color: #f5f5f5; padding: 10px; border-radius: 4px; overflow-x: auto; font-family: monospace; font-size: 12px;">{{ splitidxTemplate }}</pre>
-            </div>
-          </div>
-          
-          <el-divider />
-          
-          <div style="margin-top: 20px;">
-            <el-checkbox 
-              :model-value="hyperrefEnabled" 
-              @update:model-value="(val) => hyperrefEnabled = Boolean(val)"
-              label="启用 hyperref 宏包（用于超链接）" 
-            />
-            
-            <div v-if="hyperrefEnabled" style="margin-top: 10px; margin-left: 20px;">
-              <div style="margin-bottom: 10px;">
-                <label>PDF 标题：</label>
-                <el-input 
-                  :model-value="pdfTitle" 
-                  @input="(val) => pdfTitle = val"
-                  placeholder="请输入PDF标题，留空则使用默认文件名"
-                  size="small"
-                  style="width: 300px; margin-top: 5px;"
+          <div class="package-options-container">
+            <!-- 左栏：选项 -->
+            <div class="package-options-left">
+              <strong>链接和索引设置</strong>
+              <p>设置文档中的链接和索引功能，包括超链接、参考文献链接以及各种索引</p>
+
+              <div style="margin-top: 20px;">
+                <el-checkbox 
+                  :model-value="variorefEnabled" 
+                  @update:model-value="(val) => variorefEnabled = Boolean(val)"
+                  label="启用 varioref 宏包（用于智能交叉引用）" 
                 />
+                <div v-if="variorefEnabled" style="margin-top: 10px; margin-left: 20px;">
+                  <pre style="background-color: #f5f5f5; padding: 10px; border-radius: 4px; overflow-x: auto; font-family: monospace; font-size: 12px;">{{ variorefTemplate }}</pre>
+                </div>
               </div>
-              <pre style="background-color: #f5f5f5; padding: 10px; border-radius: 4px; overflow-x: auto; font-family: monospace; font-size: 12px;">{{ generateHyperrefTemplate(pdfTitle) }}</pre>
+
+              <el-divider />
+
+              <div style="margin-top: 20px;">
+                <el-alert
+                  title="索引宏包选择说明"
+                  description="imakeidx 和 splitidx 是 multind 的现代替代品，提供了更好的功能和维护性。请注意这两个选项是互斥的，只能同时启用其中一个。"
+                  type="info"
+                  show-icon
+                  style="margin-bottom: 15px;"
+                />
+
+                <el-checkbox 
+                  :model-value="imakeidxEnabled" 
+                  @update:model-value="(val) => imakeidxEnabled = Boolean(val)"
+                  label="启用 imakeidx 宏包（最简单、最推荐）" 
+                />
+                <div v-if="imakeidxEnabled" style="margin-top: 10px; margin-left: 20px;">
+                  <pre style="background-color: #f5f5f5; padding: 10px; border-radius: 4px; overflow-x: auto; font-family: monospace; font-size: 12px;">{{ imakeidxTemplate }}</pre>
+                </div>
+
+                <el-checkbox 
+                  :model-value="splitidxEnabled" 
+                  @update:model-value="(val) => splitidxEnabled = Boolean(val)"
+                  label="启用 splitidx 宏包（功能更强）" 
+                  style="margin-top: 10px;"
+                />
+                <div v-if="splitidxEnabled" style="margin-top: 10px; margin-left: 20px;">
+                  <pre style="background-color: #f5f5f5; padding: 10px; border-radius: 4px; overflow-x: auto; font-family: monospace; font-size: 12px;">{{ splitidxTemplate }}</pre>
+                </div>
+              </div>
+
+              <el-divider />
+
+              <div style="margin-top: 20px;">
+                <el-checkbox 
+                  :model-value="hyperrefEnabled" 
+                  @update:model-value="(val) => hyperrefEnabled = Boolean(val)"
+                  label="启用 hyperref 宏包（用于超链接）" 
+                />
+                <div v-if="hyperrefEnabled" style="margin-top: 10px; margin-left: 20px;">
+                  <div style="margin-bottom: 10px;">
+                    <label>PDF 标题：</label>
+                    <el-input 
+                      :model-value="pdfTitle" 
+                      @input="(val) => pdfTitle = val"
+                      placeholder="请输入PDF标题，留空则使用默认文件名"
+                      size="small"
+                      style="width: 300px; margin-top: 5px;"
+                    />
+                  </div>
+                  <pre style="background-color: #f5f5f5; padding: 10px; border-radius: 4px; overflow-x: auto; font-family: monospace; font-size: 12px;">{{ generateHyperrefTemplate(pdfTitle) }}</pre>
+                </div>
+              </div>
+
+              <el-divider />
+
+              <div style="margin-top: 20px;">
+                <el-checkbox 
+                  :model-value="urlEnabled" 
+                  @update:model-value="(val) => urlEnabled = Boolean(val)"
+                  label="启用 url 宏包（用于URL样式设置）" 
+                />
+                <div v-if="urlEnabled" style="margin-top: 10px; margin-left: 20px;">
+                  <pre style="background-color: #f5f5f5; padding: 10px; border-radius: 4px; overflow-x: auto; font-family: monospace; font-size: 12px;">{{ urlTemplate }}</pre>
+                </div>
+              </div>
             </div>
-          </div>
-          
-          <el-divider />
-          
-          <div style="margin-top: 20px;">
-            <el-checkbox 
-              :model-value="urlEnabled" 
-              @update:model-value="(val) => urlEnabled = Boolean(val)"
-              label="启用 url 宏包（用于URL样式设置）" 
-            />
-            
-            <div v-if="urlEnabled" style="margin-top: 10px; margin-left: 20px;">
-              <pre style="background-color: #f5f5f5; padding: 10px; border-radius: 4px; overflow-x: auto; font-family: monospace; font-size: 12px;">{{ urlTemplate }}</pre>
+
+            <!-- 右栏：代码预览 -->
+            <div class="package-options-right">
+              <div class="code-preview">
+                <pre class="code-preview-content">{{ computedLatexCode }}</pre>
+              </div>
             </div>
-          </div>
-          
-          <div style="margin-top: 20px;">
-            <strong>完整代码预览</strong>
-            <pre style="background-color: #f5f5f5; padding: 15px; border-radius: 4px; overflow-x: auto; font-family: monospace; margin-top: 10px;">{{ computedLatexCode }}</pre>
           </div>
         </div>
       </el-card>
       
       <template #footer>
-        <span class="dialog-footer">
-          <el-button @click="closeDialog">取消</el-button>
-          <el-button type="primary" @click="closeDialog">确定</el-button>
-        </span>
+        
       </template>
     </el-dialog>
   </div>

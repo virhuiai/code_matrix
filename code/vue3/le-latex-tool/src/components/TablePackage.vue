@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, defineEmits, defineProps, watch, onMounted } from 'vue'
 import { ElCard, ElCheckbox, ElDialog, ElButton, ElDivider, ElAlert } from 'element-plus'
+import { generateCodeFromPackageInfos, type PackageInfo } from '../utils/generic-packages-utils'
 
 const props = defineProps<{
   modelValue: {
@@ -215,34 +216,35 @@ const hhlineEnabled = computed({
   })
 })
 
-// 计算属性：生成 LaTeX 代码
+// 计算属性：生成 LaTeX 代码（使用通用宏包工具）
 const computedLatexCode = computed(() => {
   if (!mainEnabled.value) return ''
-  
-  const codes = []
-  
-  // 添加启用的宏包
-  if (longtableEnabled.value) codes.push(packageTemplates.longtable)
-  if (booktabsEnabled.value) codes.push(packageTemplates.booktabs)
-  if (tabularxEnabled.value) codes.push(packageTemplates.tabularx)
-  if (tabularyEnabled.value) codes.push(packageTemplates.tabulary)
-  if (ltablexEnabled.value) codes.push(packageTemplates.ltablex)
-  if (colortblEnabled.value) codes.push(packageTemplates.colortbl)
-  if (multirowEnabled.value) codes.push(packageTemplates.multirow)
-  if (arrayEnabled.value) codes.push(packageTemplates.array)
-  if (dcolumnEnabled.value) codes.push(packageTemplates.dcolumn)
-  
-  // 斜线表头宏包处理
+
+  const infos: PackageInfo[] = []
+
+  // 基础与增强表格宏包
+  if (longtableEnabled.value) infos.push({ package: 'longtable' })
+  if (booktabsEnabled.value) infos.push({ package: 'booktabs' })
+  if (tabularxEnabled.value) infos.push({ package: 'tabularx' })
+  if (tabularyEnabled.value) infos.push({ package: 'tabulary' })
+  if (ltablexEnabled.value) infos.push({ package: 'ltablex' })
+  if (colortblEnabled.value) infos.push({ package: 'colortbl' })
+  if (multirowEnabled.value) infos.push({ package: 'multirow' })
+  if (arrayEnabled.value) infos.push({ package: 'array' })
+  if (dcolumnEnabled.value) infos.push({ package: 'dcolumn' })
+
+  // 斜线表头相关
   if (makecellEnabled.value) {
-    codes.push(packageTemplates.makecell)
+    infos.push({ package: 'makecell', afterLines: ['\\renewcommand\\theadfont{\\bfseries}'] })
   }
   if (hhlineEnabled.value) {
-    codes.push(packageTemplates.hhline)
+    infos.push({ package: 'hhline' })
   }
-  
-  if (arydshlnEnabled.value) codes.push(packageTemplates.arydshln)
-  
-  return codes.join('\n\n')
+
+  // 建议 arydshln 放在相关宏包之后
+  if (arydshlnEnabled.value) infos.push({ package: 'arydshln' })
+
+  return generateCodeFromPackageInfos(infos)
 })
 
 // 监听代码变化
@@ -302,203 +304,161 @@ defineExpose({
     <el-dialog
       v-model="dialogVisible"
       title="表格设置"
-      width="60%"
       :before-close="closeDialog"
     >
       <el-card shadow="hover">
         <div>
-          <strong>表格设置</strong>
-          <p>设置文档中的表格相关功能，包括长表格、表格线、列格式等功能</p>
-          
-          <el-checkbox 
-            :model-value="mainEnabled" 
-            @update:model-value="(val) => mainEnabled = Boolean(val)"
-            label="启用表格设置" 
-          />
-          
-          <div v-if="mainEnabled" style="margin-top: 20px;">
-            <el-alert
-              title="使用说明"
-              description="以下宏包可以单独启用或禁用。"
-              type="info"
-              show-icon
-              style="margin-bottom: 15px;"
-            />
-            
-            <el-divider />
-            
-            <div style="margin-top: 20px;">
-              <strong>基础表格宏包</strong>
-              <div style="margin-top: 10px; margin-left: 20px;">
-                <el-checkbox 
-                  :model-value="longtableEnabled" 
-                  @update:model-value="(val) => longtableEnabled = Boolean(val)"
-                  label="longtable 宏包（跨页长表格）" 
-                  style="display: block; margin-bottom: 8px;"
+          <div class="package-options-container">
+            <!-- 左栏：选项 -->
+            <div class="package-options-left">
+              <strong>表格设置</strong>
+              <p>设置文档中的表格相关功能，包括长表格、表格线、列格式等功能</p>
+
+              <el-checkbox 
+                :model-value="mainEnabled" 
+                @update:model-value="(val) => mainEnabled = Boolean(val)"
+                label="启用表格设置" 
+              />
+
+              <div v-if="mainEnabled" style="margin-top: 20px;">
+                <el-alert
+                  title="使用说明"
+                  description="以下宏包可以单独启用或禁用。斜线表头可选 makecell 或 hhline + multirow。"
+                  type="info"
+                  show-icon
+                  style="margin-bottom: 15px;"
                 />
-                
-                <el-checkbox 
-                  :model-value="booktabsEnabled" 
-                  @update:model-value="(val) => booktabsEnabled = Boolean(val)"
-                  label="booktabs 宏包（专业表格线）" 
-                  style="display: block; margin-bottom: 8px;"
-                />
-                
-                <el-checkbox 
-                  :model-value="tabularxEnabled" 
-                  @update:model-value="(val) => tabularxEnabled = Boolean(val)"
-                  label="tabularx 宏包（增强列格式）" 
-                  style="display: block; margin-bottom: 8px;"
-                />
-                
-                <el-checkbox 
-                  :model-value="tabularyEnabled" 
-                  @update:model-value="(val) => tabularyEnabled = Boolean(val)"
-                  label="tabulary 宏包（自动调整列宽）" 
-                  style="display: block; margin-bottom: 8px;"
-                />
-                
-                <el-checkbox 
-                  :model-value="ltablexEnabled" 
-                  @update:model-value="(val) => ltablexEnabled = Boolean(val)"
-                  label="ltablex 宏包（自动分页的 tabularx）" 
-                  style="display: block; margin-bottom: 8px;"
-                />
-              </div>
-              
-              <div v-if="longtableEnabled" style="margin-top: 10px;">
-                <pre style="background-color: #f5f5f5; padding: 10px; border-radius: 4px; overflow-x: auto; font-family: monospace; font-size: 12px;">{{ packageTemplates.longtable }}</pre>
-              </div>
-              
-              <div v-if="booktabsEnabled" style="margin-top: 10px;">
-                <pre style="background-color: #f5f5f5; padding: 10px; border-radius: 4px; overflow-x: auto; font-family: monospace; font-size: 12px;">{{ packageTemplates.booktabs }}</pre>
-              </div>
-              
-              <div v-if="tabularxEnabled" style="margin-top: 10px;">
-                <pre style="background-color: #f5f5f5; padding: 10px; border-radius: 4px; overflow-x: auto; font-family: monospace; font-size: 12px;">{{ packageTemplates.tabularx }}</pre>
-              </div>
-              
-              <div v-if="tabularyEnabled" style="margin-top: 10px;">
-                <pre style="background-color: #f5f5f5; padding: 10px; border-radius: 4px; overflow-x: auto; font-family: monospace; font-size: 12px;">{{ packageTemplates.tabulary }}</pre>
-              </div>
-              
-              <div v-if="ltablexEnabled" style="margin-top: 10px;">
-                <pre style="background-color: #f5f5f5; padding: 10px; border-radius: 4px; overflow-x: auto; font-family: monospace; font-size: 12px;">{{ packageTemplates.ltablex }}</pre>
-              </div>
-            </div>
-            
-            <el-divider />
-            
-            <div style="margin-top: 20px;">
-              <strong>表格增强宏包</strong>
-              <div style="margin-top: 10px; margin-left: 20px;">
-                <el-checkbox 
-                  :model-value="colortblEnabled" 
-                  @update:model-value="(val) => colortblEnabled = Boolean(val)"
-                  label="colortbl 宏包（彩色表格）" 
-                  style="display: block; margin-bottom: 8px;"
-                />
-                
-                <el-checkbox 
-                  :model-value="multirowEnabled" 
-                  @update:model-value="(val) => multirowEnabled = Boolean(val)"
-                  label="multirow 宏包（跨行表格）" 
-                  style="display: block; margin-bottom: 8px;"
-                />
-                
-                <el-checkbox 
-                  :model-value="arrayEnabled" 
-                  @update:model-value="(val) => arrayEnabled = Boolean(val)"
-                  label="array 宏包（增强表格功能）" 
-                  style="display: block; margin-bottom: 8px;"
-                />
-                
-                <el-checkbox 
-                  :model-value="dcolumnEnabled" 
-                  @update:model-value="(val) => dcolumnEnabled = Boolean(val)"
-                  label="dcolumn 宏包（小数点对齐）" 
-                  style="display: block; margin-bottom: 8px;"
-                />
-                
-                <div style="margin-top: 15px;">
-                  <strong>斜线表头选项</strong>
-                  <el-alert
-                    title="斜线表头宏包"
-                    description="可以选择以下一种或多种方式来实现斜线表头。"
-                    type="info"
-                    show-icon
-                    style="margin: 10px 0;"
-                  />
-                  
-                  <!-- Makecell 选项 -->
-                  <div style="margin-left: 20px; margin-top: 10px;">
+
+                <el-divider />
+
+                <div style="margin-top: 20px;">
+                  <strong>基础表格宏包</strong>
+                  <div style="margin-top: 10px; margin-left: 20px;">
                     <el-checkbox 
-                      :model-value="makecellEnabled" 
-                      @update:model-value="(val) => makecellEnabled = Boolean(val)"
-                      label="makecell 宏包（最流行）" 
-                      style="display: block; margin-bottom: 8px;"
+                      :model-value="longtableEnabled" 
+                      @update:model-value="(val) => longtableEnabled = Boolean(val)"
+                      label="longtable 宏包（跨页长表格）" 
+                      class="package-option-item"
                     />
                     
-                    <div v-if="makecellEnabled" style="margin-top: 10px;">
-                      <pre style="background-color: #f5f5f5; padding: 10px; border-radius: 4px; overflow-x: auto; font-family: monospace; font-size: 12px;">{{ packageTemplates.makecell }}</pre>
-                    </div>
-                  </div>
-                  
-                  <!-- HHline 选项 -->
-                  <div style="margin-left: 20px; margin-top: 10px;">
                     <el-checkbox 
-                      :model-value="hhlineEnabled" 
-                      @update:model-value="(val) => hhlineEnabled = Boolean(val)"
-                      label="hhline + multirow（原生方案）" 
-                      style="display: block; margin-bottom: 8px;"
+                      :model-value="booktabsEnabled" 
+                      @update:model-value="(val) => booktabsEnabled = Boolean(val)"
+                      label="booktabs 宏包（专业表格线）" 
+                      class="package-option-item"
                     />
                     
-                    <div v-if="hhlineEnabled" style="margin-top: 10px;">
-                      <pre style="background-color: #f5f5f5; padding: 10px; border-radius: 4px; overflow-x: auto; font-family: monospace; font-size: 12px;">{{ packageTemplates.hhline }}</pre>
-                    </div>
+                    <el-checkbox 
+                      :model-value="tabularxEnabled" 
+                      @update:model-value="(val) => tabularxEnabled = Boolean(val)"
+                      label="tabularx 宏包（增强列格式）" 
+                      class="package-option-item"
+                    />
+                    
+                    <el-checkbox 
+                      :model-value="tabularyEnabled" 
+                      @update:model-value="(val) => tabularyEnabled = Boolean(val)"
+                      label="tabulary 宏包（自动调整列宽）" 
+                      class="package-option-item"
+                    />
+                    
+                    <el-checkbox 
+                      :model-value="ltablexEnabled" 
+                      @update:model-value="(val) => ltablexEnabled = Boolean(val)"
+                      label="ltablex 宏包（自动分页的 tabularx）" 
+                      class="package-option-item"
+                    />
                   </div>
                 </div>
-                
-                <el-checkbox 
-                  :model-value="arydshlnEnabled" 
-                  @update:model-value="(val) => arydshlnEnabled = Boolean(val)"
-                  label="arydshln 宏包（虚线表格）" 
-                  style="display: block; margin-bottom: 8px; margin-top: 15px;"
-                />
-              </div>
-              
-              <div v-if="colortblEnabled" style="margin-top: 10px;">
-                <pre style="background-color: #f5f5f5; padding: 10px; border-radius: 4px; overflow-x: auto; font-family: monospace; font-size: 12px;">{{ packageTemplates.colortbl }}</pre>
-              </div>
-              
-              <div v-if="multirowEnabled" style="margin-top: 10px;">
-                <pre style="background-color: #f5f5f5; padding: 10px; border-radius: 4px; overflow-x: auto; font-family: monospace; font-size: 12px;">{{ packageTemplates.multirow }}</pre>
-              </div>
-              
-              <div v-if="arrayEnabled" style="margin-top: 10px;">
-                <pre style="background-color: #f5f5f5; padding: 10px; border-radius: 4px; overflow-x: auto; font-family: monospace; font-size: 12px;">{{ packageTemplates.array }}</pre>
-              </div>
-              
-              <div v-if="dcolumnEnabled" style="margin-top: 10px;">
-                <pre style="background-color: #f5f5f5; padding: 10px; border-radius: 4px; overflow-x: auto; font-family: monospace; font-size: 12px;">{{ packageTemplates.dcolumn }}</pre>
+
+                <el-divider />
+
+                <div style="margin-top: 20px;">
+                  <strong>表格增强宏包</strong>
+                  <div style="margin-top: 10px; margin-left: 20px;">
+                    <el-checkbox 
+                      :model-value="colortblEnabled" 
+                      @update:model-value="(val) => colortblEnabled = Boolean(val)"
+                      label="colortbl 宏包（彩色表格）" 
+                      class="package-option-item"
+                    />
+                    
+                    <el-checkbox 
+                      :model-value="multirowEnabled" 
+                      @update:model-value="(val) => multirowEnabled = Boolean(val)"
+                      label="multirow 宏包（跨行表格）" 
+                      class="package-option-item"
+                    />
+                    
+                    <el-checkbox 
+                      :model-value="arrayEnabled" 
+                      @update:model-value="(val) => arrayEnabled = Boolean(val)"
+                      label="array 宏包（增强表格功能）" 
+                      class="package-option-item"
+                    />
+                    
+                    <el-checkbox 
+                      :model-value="dcolumnEnabled" 
+                      @update:model-value="(val) => dcolumnEnabled = Boolean(val)"
+                      label="dcolumn 宏包（小数点对齐）" 
+                      class="package-option-item"
+                    />
+
+                    <div style="margin-top: 15px;">
+                      <strong>斜线表头选项</strong>
+                      <el-alert
+                        title="斜线表头宏包"
+                        description="可以选择以下一种或多种方式来实现斜线表头。"
+                        type="info"
+                        show-icon
+                        style="margin: 10px 0;"
+                      />
+                      
+                      <!-- Makecell 选项 -->
+                      <div style="margin-left: 20px; margin-top: 10px;">
+                        <el-checkbox 
+                          :model-value="makecellEnabled" 
+                          @update:model-value="(val) => makecellEnabled = Boolean(val)"
+                          label="makecell 宏包（最流行）" 
+                          class="package-option-item"
+                        />
+                      </div>
+                      
+                      <!-- HHline 选项 -->
+                      <div style="margin-left: 20px; margin-top: 10px;">
+                        <el-checkbox 
+                          :model-value="hhlineEnabled" 
+                          @update:model-value="(val) => hhlineEnabled = Boolean(val)"
+                          label="hhline + multirow（原生方案）" 
+                          class="package-option-item"
+                        />
+                      </div>
+                    </div>
+                    
+                    <el-checkbox 
+                      :model-value="arydshlnEnabled" 
+                      @update:model-value="(val) => arydshlnEnabled = Boolean(val)"
+                      label="arydshln 宏包（虚线表格）" 
+                      class="package-option-item"
+                      style="margin-top: 15px;"
+                    />
+                  </div>
+                </div>
               </div>
             </div>
-            
-            <el-divider />
-            
-            <div style="margin-top: 20px;">
-              <strong>完整代码预览</strong>
-              <pre style="background-color: #f5f5f5; padding: 15px; border-radius: 4px; overflow-x: auto; font-family: monospace; margin-top: 10px;">{{ computedLatexCode }}</pre>
+
+            <!-- 右栏：代码预览 -->
+            <div class="package-options-right">
+              <div class="code-preview">
+                <pre class="code-preview-content">{{ computedLatexCode }}</pre>
+              </div>
             </div>
           </div>
         </div>
       </el-card>
       
       <template #footer>
-        <span class="dialog-footer">
-          <el-button @click="closeDialog">取消</el-button>
-          <el-button type="primary" @click="closeDialog">确定</el-button>
-        </span>
+        
       </template>
     </el-dialog>
   </div>

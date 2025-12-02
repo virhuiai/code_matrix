@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, defineEmits, defineProps, watch, onMounted } from 'vue'
 import { ElCard, ElCheckbox, ElDialog, ElButton, ElFormItem, ElInputNumber, ElDivider } from 'element-plus'
+import { generateCodeFromPackageInfos, PackageInfo } from '../utils/generic-packages-utils'
 
 const props = defineProps<{
   modelValue: {
@@ -40,36 +41,21 @@ const packages = ref({
   }
 })
 
-// LaTeX 代码模板
-const latexTemplates = {
-  parskip: () => {
-    return `\\usepackage{parskip}`
-  },
-  linespread: (value: number) => {
-    return `\\linespread{${value}}`
-  },
-  xspace: () => {
-    return `\\usepackage{xspace}`
-  }
-}
-
-// 计算属性：生成 LaTeX 代码
+// 计算属性：生成 LaTeX 代码（使用通用工具）
 const computedLatexCode = computed(() => {
-  const codes = []
-  
+  const infos: PackageInfo[] = []
   if (packages.value.parskip.enabled) {
-    codes.push(latexTemplates.parskip())
+    infos.push({ package: 'parskip' })
   }
-  
-  if (packages.value.parskip.linespread.enabled) {
-    codes.push(latexTemplates.linespread(packages.value.parskip.linespread.value))
-  }
-  
   if (packages.value.xspace.enabled) {
-    codes.push(latexTemplates.xspace())
+    infos.push({ package: 'xspace' })
   }
-  
-  return codes.join('\n\n')
+  const pkgLines = generateCodeFromPackageInfos(infos)
+  const extraLines: string[] = []
+  if (packages.value.parskip.linespread.enabled) {
+    extraLines.push(`\\linespread{${packages.value.parskip.linespread.value}}`)
+  }
+  return [pkgLines, ...extraLines].filter(Boolean).join('\n\n')
 })
 
 // 更新包选项
@@ -124,72 +110,71 @@ defineExpose({
     <el-dialog
       v-model="dialogVisible"
       title="行距和空格设置"
-      width="60%"
       :before-close="closeDialog"
     >
       <el-card shadow="hover">
         <div>
-          <strong>行距和空格设置</strong>
-          <p>配置文档段落间距、行距和智能空格命令</p>
-          
-          <el-divider />
-          
-          <!-- PARSKIP -->
-          <div style="margin-bottom: 15px;">
-            <el-checkbox 
-              v-model="packages.parskip.enabled" 
-              @change="(val) => updatePackage('parskip', { ...packages.parskip, enabled: Boolean(val) })"
-              label="parskip - 段落间距宏包"
-            />
-            
-            <div v-if="packages.parskip.enabled" style="margin-left: 20px; margin-top: 10px;">
-              <el-checkbox 
-                v-model="packages.parskip.linespread.enabled" 
-                @change="(val) => updatePackage('linespread', { ...packages.parskip.linespread, enabled: Boolean(val) })"
-                label="linespread - 行距设置"
-              />
-              
-              <div v-if="packages.parskip.linespread.enabled" style="margin-left: 20px; margin-top: 10px;">
-                <el-form>
-                  <el-form-item label="行距系数">
-                    <el-input-number 
-                      v-model="packages.parskip.linespread.value"
-                      @change="updateLinespreadValue"
-                      :min="0.1"
-                      :max="3"
-                      :step="0.001"
-                      size="small"
-                    />
-                  </el-form-item>
-                </el-form>
+          <div class="package-options-container">
+            <!-- 左栏：选项 -->
+            <div class="package-options-left">
+              <strong>行距和空格设置</strong>
+              <p>配置文档段落间距、行距和智能空格命令</p>
+              <el-divider />
+
+              <!-- PARSKIP -->
+              <div class="package-section">
+                <el-checkbox 
+                  v-model="packages.parskip.enabled" 
+                  @change="(val) => updatePackage('parskip', { ...packages.parskip, enabled: Boolean(val) })"
+                  label="parskip - 段落间距宏包"
+                />
+
+                <div v-if="packages.parskip.enabled" style="margin-left: 20px; margin-top: 10px;">
+                  <el-checkbox 
+                    v-model="packages.parskip.linespread.enabled" 
+                    @update:model-value="(val) => updatePackage('linespread', { ...packages.parskip.linespread, enabled: Boolean(val) })"
+                    label="linespread - 行距设置"
+                  />
+
+                  <div v-if="packages.parskip.linespread.enabled" style="margin-left: 20px; margin-top: 10px;">
+                    <el-form>
+                      <el-form-item label="行距系数">
+                        <el-input-number 
+                          v-model="packages.parskip.linespread.value"
+                          @change="updateLinespreadValue"
+                          :min="0.1"
+                          :max="3"
+                          :step="0.001"
+                          size="small"
+                        />
+                      </el-form-item>
+                    </el-form>
+                  </div>
+                </div>
+              </div>
+
+              <!-- XSPACE -->
+              <div class="package-section">
+                <el-checkbox 
+                  v-model="packages.xspace.enabled" 
+                  @change="(val) => updatePackage('xspace', { enabled: Boolean(val) })"
+                  label="xspace - 智能空格宏包"
+                />
               </div>
             </div>
-          </div>
-          
-          <!-- XSPACE -->
-          <div style="margin-bottom: 15px;">
-            <el-checkbox 
-              v-model="packages.xspace.enabled" 
-              @change="(val) => updatePackage('xspace', { enabled: Boolean(val) })"
-              label="xspace - 智能空格宏包"
-            />
-          </div>
-          
-          <el-divider />
-          
-          <!-- 代码预览 -->
-          <div v-if="computedLatexCode" style="margin-top: 20px;">
-            <div><strong>生成的 LaTeX 代码:</strong></div>
-            <pre style="background-color: #f5f5f5; padding: 15px; border-radius: 4px; overflow-x: auto; font-family: monospace;">{{ computedLatexCode }}</pre>
+
+            <!-- 右栏：代码预览 -->
+            <div class="package-options-right">
+              <div class="code-preview">
+                <pre class="code-preview-content">{{ computedLatexCode }}</pre>
+              </div>
+            </div>
           </div>
         </div>
       </el-card>
       
       <template #footer>
-        <span class="dialog-footer">
-          <el-button @click="closeDialog">取消</el-button>
-          <el-button type="primary" @click="closeDialog">确定</el-button>
-        </span>
+        
       </template>
     </el-dialog>
   </div>

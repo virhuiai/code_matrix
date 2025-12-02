@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, defineEmits, defineProps, watch, onMounted } from 'vue'
 import { ElCard, ElCheckbox, ElDialog, ElButton, ElDivider, ElAlert } from 'element-plus'
+import { generateCodeFromPackageInfos, type PackageInfo } from '../utils/generic-packages-utils'
 
 const props = defineProps<{
   modelValue: {
@@ -134,32 +135,30 @@ const dualColumnEnvTwoEnabled = computed({
   })
 })
 
-// 计算属性：生成 LaTeX 代码
+// 计算属性：生成 LaTeX 代码（使用通用工具 + 追加自定义定义块）
 const computedLatexCode = computed(() => {
   if (!mainEnabled.value) return ''
-  
-  const codes = []
-  
-  // 添加启用的宏包
-  if (pdfcolparcolumnsEnabled.value) codes.push(packageTemplates.pdfcolparcolumns)
-  if (paracolEnabled.value) codes.push(packageTemplates.paracol)
-  
-  // 添加启用的长度定义
-  if (lengthsEnabled.value) codes.push(lengthTemplates)
-  
-  // 添加启用的命令定义
-  if (commandsEnabled.value) codes.push(commandTemplates)
-  
-  // 添加启用的环境定义
-  const envCodes = []
-  if (dualColumnEnvEnabled.value) envCodes.push(environmentTemplates.dualColumn)
-  if (dualColumnEnvTwoEnabled.value) envCodes.push(environmentTemplates.dualColumnTwo)
-  
-  if (envCodes.length > 0) {
-    codes.push(...envCodes)
+
+  const infos: PackageInfo[] = []
+  if (pdfcolparcolumnsEnabled.value) {
+    infos.push({ package: 'pdfcolparcolumns' })
   }
-  
-  return codes.join('\n\n')
+  if (paracolEnabled.value) {
+    infos.push({ package: 'paracol' })
+  }
+
+  const pkgLines = generateCodeFromPackageInfos(infos)
+
+  const extraBlocks: string[] = []
+  if (lengthsEnabled.value) extraBlocks.push(lengthTemplates)
+  if (commandsEnabled.value) extraBlocks.push(commandTemplates)
+
+  const envBlocks: string[] = []
+  if (dualColumnEnvEnabled.value) envBlocks.push(environmentTemplates.dualColumn)
+  if (dualColumnEnvTwoEnabled.value) envBlocks.push(environmentTemplates.dualColumnTwo)
+  if (envBlocks.length > 0) extraBlocks.push(envBlocks.join('\n\n'))
+
+  return [pkgLines, ...extraBlocks].filter(Boolean).join('\n\n')
 })
 
 // 监听代码变化
@@ -213,130 +212,119 @@ defineExpose({
     <el-dialog
       v-model="dialogVisible"
       title="对译环境设置"
-      width="60%"
       :before-close="closeDialog"
     >
       <el-card shadow="hover">
         <div>
           <strong>对译环境设置</strong>
           <p>设置文档中的对译环境，包括双栏排版和栏宽调整命令</p>
-          
-          <el-checkbox 
-            :model-value="mainEnabled" 
-            @update:model-value="(val) => mainEnabled = Boolean(val)"
-            label="启用对译环境设置" 
-          />
-          
-          <div v-if="mainEnabled" style="margin-top: 20px;">
-            <el-alert
-              title="使用说明"
-              description="以下宏包和自定义命令可以单独启用或禁用。"
-              type="info"
-              show-icon
-              style="margin-bottom: 15px;"
-            />
-            
-            <el-divider />
-            
-            <div style="margin-top: 20px;">
-              <strong>宏包选项</strong>
-              <div style="margin-top: 10px; margin-left: 20px;">
+
+          <div class="package-options-container">
+            <!-- 左栏：选项 -->
+            <div class="package-options-left">
+              <el-alert
+                title="使用说明"
+                description="以下宏包和自定义命令可以单独启用或禁用。"
+                type="info"
+                show-icon
+                style="margin-bottom: 15px;"
+              />
+
+              <div class="package-section">
                 <el-checkbox 
-                  :model-value="pdfcolparcolumnsEnabled" 
-                  @update:model-value="(val) => pdfcolparcolumnsEnabled = Boolean(val)"
-                  label="pdfcolparcolumns 宏包（提供带颜色支持的并排栏）" 
-                  style="display: block; margin-bottom: 8px;"
-                />
-                
-                <el-checkbox 
-                  :model-value="paracolEnabled" 
-                  @update:model-value="(val) => paracolEnabled = Boolean(val)"
-                  label="paracol 宏包（提供并排文本环境）" 
-                  style="display: block; margin-bottom: 8px;"
+                  :model-value="mainEnabled" 
+                  @update:model-value="(val) => mainEnabled = Boolean(val)"
+                  label="启用对译环境设置" 
                 />
               </div>
-            </div>
-            
-            <el-divider />
-            
-            <div style="margin-top: 20px;">
-              <strong>长度定义</strong>
-              <div style="margin-top: 10px; margin-left: 20px;">
-                <el-checkbox 
-                  :model-value="lengthsEnabled" 
-                  @update:model-value="(val) => lengthsEnabled = Boolean(val)"
-                  label="启用长度定义（栏间距、左右栏宽度等）" 
-                  style="display: block; margin-bottom: 8px;"
-                />
-                
-                <div v-if="lengthsEnabled" style="margin-top: 10px;">
-                  <pre style="background-color: #f5f5f5; padding: 10px; border-radius: 4px; overflow-x: auto; font-family: monospace; font-size: 12px;">{{ lengthTemplates }}</pre>
+
+              <div v-if="mainEnabled">
+                <el-divider />
+
+                <!-- 宏包选项 -->
+                <div class="package-section">
+                  <strong>宏包选项</strong>
+                  <div style="margin-top: 10px; margin-left: 12px;">
+                    <el-checkbox 
+                      :model-value="pdfcolparcolumnsEnabled" 
+                      @update:model-value="(val) => pdfcolparcolumnsEnabled = Boolean(val)"
+                      label="pdfcolparcolumns 宏包（提供带颜色支持的并排栏）" 
+                      class="package-option-item"
+                    />
+                    <el-checkbox 
+                      :model-value="paracolEnabled" 
+                      @update:model-value="(val) => paracolEnabled = Boolean(val)"
+                      label="paracol 宏包（提供并排文本环境）" 
+                      class="package-option-item"
+                    />
+                  </div>
+                </div>
+
+                <el-divider />
+
+                <!-- 长度定义 -->
+                <div class="package-section">
+                  <strong>长度定义</strong>
+                  <div style="margin-top: 10px; margin-left: 12px;">
+                    <el-checkbox 
+                      :model-value="lengthsEnabled" 
+                      @update:model-value="(val) => lengthsEnabled = Boolean(val)"
+                      label="启用长度定义（栏间距、左右栏宽度等）" 
+                      class="package-option-item"
+                    />
+                  </div>
+                </div>
+
+                <el-divider />
+
+                <!-- 命令定义 -->
+                <div class="package-section">
+                  <strong>命令定义</strong>
+                  <div style="margin-top: 10px; margin-left: 12px;">
+                    <el-checkbox 
+                      :model-value="commandsEnabled" 
+                      @update:model-value="(val) => commandsEnabled = Boolean(val)"
+                      label="启用自定义命令（栏宽调整、换栏等）" 
+                      class="package-option-item"
+                    />
+                  </div>
+                </div>
+
+                <el-divider />
+
+                <!-- 环境定义 -->
+                <div class="package-section">
+                  <strong>环境定义</strong>
+                  <div style="margin-top: 10px; margin-left: 12px;">
+                    <el-checkbox 
+                      :model-value="dualColumnEnvEnabled" 
+                      @update:model-value="(val) => dualColumnEnvEnabled = Boolean(val)"
+                      label="双栏 环境（基于 parcolumns）" 
+                      class="package-option-item"
+                    />
+                    <el-checkbox 
+                      :model-value="dualColumnEnvTwoEnabled" 
+                      @update:model-value="(val) => dualColumnEnvTwoEnabled = Boolean(val)"
+                      label="双栏二 环境（基于 paracol）" 
+                      class="package-option-item"
+                    />
+                  </div>
                 </div>
               </div>
             </div>
-            
-            <el-divider />
-            
-            <div style="margin-top: 20px;">
-              <strong>命令定义</strong>
-              <div style="margin-top: 10px; margin-left: 20px;">
-                <el-checkbox 
-                  :model-value="commandsEnabled" 
-                  @update:model-value="(val) => commandsEnabled = Boolean(val)"
-                  label="启用自定义命令（栏宽调整、换栏等）" 
-                  style="display: block; margin-bottom: 8px;"
-                />
-                
-                <div v-if="commandsEnabled" style="margin-top: 10px;">
-                  <pre style="background-color: #f5f5f5; padding: 10px; border-radius: 4px; overflow-x: auto; font-family: monospace; font-size: 12px;">{{ commandTemplates }}</pre>
-                </div>
+
+            <!-- 右栏：代码预览 -->
+            <div class="package-options-right">
+              <div class="code-preview">
+                <pre class="code-preview-content">{{ computedLatexCode }}</pre>
               </div>
-            </div>
-            
-            <el-divider />
-            
-            <div style="margin-top: 20px;">
-              <strong>环境定义</strong>
-              <div style="margin-top: 10px; margin-left: 20px;">
-                <el-checkbox 
-                  :model-value="dualColumnEnvEnabled" 
-                  @update:model-value="(val) => dualColumnEnvEnabled = Boolean(val)"
-                  label="双栏 环境（基于 parcolumns）" 
-                  style="display: block; margin-bottom: 8px;"
-                />
-                
-                <div v-if="dualColumnEnvEnabled" style="margin-top: 10px;">
-                  <pre style="background-color: #f5f5f5; padding: 10px; border-radius: 4px; overflow-x: auto; font-family: monospace; font-size: 12px;">{{ environmentTemplates.dualColumn }}</pre>
-                </div>
-                
-                <el-checkbox 
-                  :model-value="dualColumnEnvTwoEnabled" 
-                  @update:model-value="(val) => dualColumnEnvTwoEnabled = Boolean(val)"
-                  label="双栏二 环境（基于 paracol）" 
-                  style="display: block; margin-bottom: 8px; margin-top: 10px;"
-                />
-                
-                <div v-if="dualColumnEnvTwoEnabled" style="margin-top: 10px;">
-                  <pre style="background-color: #f5f5f5; padding: 10px; border-radius: 4px; overflow-x: auto; font-family: monospace; font-size: 12px;">{{ environmentTemplates.dualColumnTwo }}</pre>
-                </div>
-              </div>
-            </div>
-            
-            <el-divider />
-            
-            <div style="margin-top: 20px;">
-              <strong>完整代码预览</strong>
-              <pre style="background-color: #f5f5f5; padding: 15px; border-radius: 4px; overflow-x: auto; font-family: monospace; margin-top: 10px;">{{ computedLatexCode }}</pre>
             </div>
           </div>
         </div>
       </el-card>
       
       <template #footer>
-        <span class="dialog-footer">
-          <el-button @click="closeDialog">取消</el-button>
-          <el-button type="primary" @click="closeDialog">确定</el-button>
-        </span>
+        
       </template>
     </el-dialog>
   </div>

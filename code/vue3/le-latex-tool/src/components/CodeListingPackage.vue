@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, defineEmits, defineProps, watch, onMounted } from 'vue'
 import { ElCard, ElCheckbox, ElDialog, ElButton, ElDivider } from 'element-plus'
+import { generateCodeFromPackageInfos, PackageInfo } from '../utils/generic-packages-utils'
 
 const props = defineProps<{
   modelValue: {
@@ -66,86 +67,62 @@ const packages = ref({
   }
 })
 
-// LaTeX 代码模板
-const latexTemplates = {
-  xcolor: (options: any) => {
-    const opts = []
-    if (options.dvipsnames) opts.push('dvipsnames')
-    return `\\usepackage${opts.length > 0 ? `[${opts.join(',')}]` : ''}{xcolor}`
-  },
-  cprotect: '\\usepackage{cprotect}',
-  spverbatim: '\\usepackage{spverbatim}',
-  fancyvrb: '\\usepackage{fancyvrb}\n\\newsavebox{\\vTmpOne}',
-  fancyvrbEx: '\\usepackage{fancyvrb-ex}',
-  xparse: '\\usepackage{xparse}',
-  minted: (options: any) => {
-    const opts = []
-    if (options.newfloat) opts.push('newfloat')
-    if (options.cache === false) opts.push('cache=false')
-    return `\\usepackage${opts.length > 0 ? `[${opts.join(',')}]` : ''}{minted}`
-  },
-  listings: '\\usepackage{listings}',
-  accsupp: '\\usepackage{accsupp}',
-  tcolorbox: (options: any) => {
-    let code = '\\usepackage{tcolorbox}'
-    const libraries = []
-    if (options.listings) libraries.push('listings')
-    if (options.skins) libraries.push('skins')
-    if (options.breakable) libraries.push('breakable')
-    if (options.xparse) libraries.push('xparse')
-    
-    if (libraries.length > 0) {
-      code += '\n\\tcbuselibrary{' + libraries.join(',') + '}'
-    }
-    return code
-  }
-}
-
-// 计算属性：生成 LaTeX 代码
+// 计算属性：生成 LaTeX 代码（使用通用工具）
 const computedLatexCode = computed(() => {
-  const codes = []
-  
+  const infos: PackageInfo[] = []
+
   if (packages.value.xcolor.enabled) {
-    codes.push(latexTemplates.xcolor(packages.value.xcolor))
+    const opts: string[] = []
+    if (packages.value.xcolor.dvipsnames) opts.push('dvipsnames')
+    infos.push({ package: 'xcolor', options: opts })
   }
-  
+
   if (packages.value.cprotect) {
-    codes.push(latexTemplates.cprotect)
+    infos.push({ package: 'cprotect' })
   }
-  
+
   if (packages.value.spverbatim) {
-    codes.push(latexTemplates.spverbatim)
+    infos.push({ package: 'spverbatim' })
   }
-  
+
   if (packages.value.fancyvrb) {
-    codes.push(latexTemplates.fancyvrb)
+    infos.push({ package: 'fancyvrb', afterLines: ['\\newsavebox{\\vTmpOne}'] })
   }
-  
+
   if (packages.value.fancyvrbEx) {
-    codes.push(latexTemplates.fancyvrbEx)
+    infos.push({ package: 'fancyvrb-ex' })
   }
-  
+
   if (packages.value.xparse) {
-    codes.push(latexTemplates.xparse)
+    infos.push({ package: 'xparse' })
   }
-  
+
   if (packages.value.minted.enabled) {
-    codes.push(latexTemplates.minted(packages.value.minted))
+    const opts: string[] = []
+    if (packages.value.minted.newfloat) opts.push('newfloat')
+    if (packages.value.minted.cache === false) opts.push('cache=false')
+    infos.push({ package: 'minted', options: opts })
   }
-  
+
   if (packages.value.listings) {
-    codes.push(latexTemplates.listings)
+    infos.push({ package: 'listings' })
   }
-  
+
   if (packages.value.accsupp) {
-    codes.push(latexTemplates.accsupp)
+    infos.push({ package: 'accsupp' })
   }
-  
+
   if (packages.value.tcolorbox.enabled) {
-    codes.push(latexTemplates.tcolorbox(packages.value.tcolorbox))
+    const libs: string[] = []
+    if (packages.value.tcolorbox.listings) libs.push('listings')
+    if (packages.value.tcolorbox.skins) libs.push('skins')
+    if (packages.value.tcolorbox.breakable) libs.push('breakable')
+    if (packages.value.tcolorbox.xparse) libs.push('xparse')
+    const after: string[] = libs.length > 0 ? [`\\tcbuselibrary{${libs.join(',')}}`] : []
+    infos.push({ package: 'tcolorbox', afterLines: after })
   }
-  
-  return codes.join('\n\n')
+
+  return generateCodeFromPackageInfos(infos)
 })
 
 // 监听包选项变化
@@ -230,166 +207,162 @@ defineExpose({
     <el-dialog
       v-model="dialogVisible"
       title="代码抄录宏包设置"
-      width="70%"
       :before-close="closeDialog"
     >
       <el-card shadow="hover">
         <div>
-          <strong>代码抄录宏包设置</strong>
-          <p>配置代码抄录相关的宏包及其选项</p>
-          
-          <el-divider />
-          
-          <!-- Xcolor -->
-          <div style="margin-bottom: 15px;">
-            <el-checkbox 
-              v-model="packages.xcolor.enabled" 
-              @change="(val) => updatePackage('xcolor', { ...packages.xcolor, enabled: Boolean(val) })"
-              label="xcolor - 颜色支持宏包"
-            />
-            
-            <div v-if="packages.xcolor.enabled" style="margin-left: 20px; margin-top: 10px;">
-              <el-checkbox 
-                v-model="packages.xcolor.dvipsnames" 
-                @change="updateXcolorDvipsnames"
-                label="dvipsnames"
-              />
+          <div class="package-options-container">
+            <!-- 左栏：选项 -->
+            <div class="package-options-left">
+              <strong>代码抄录宏包设置</strong>
+              <p>配置代码抄录相关的宏包及其选项</p>
+              <el-divider />
+
+              <!-- Xcolor -->
+              <div class="package-section">
+                <el-checkbox 
+                  v-model="packages.xcolor.enabled" 
+                  @change="(val) => updatePackage('xcolor', { ...packages.xcolor, enabled: Boolean(val) })"
+                  label="xcolor - 颜色支持宏包"
+                />
+                <div v-if="packages.xcolor.enabled" style="margin-left: 20px; margin-top: 10px;">
+                  <el-checkbox 
+                    v-model="packages.xcolor.dvipsnames" 
+                    @change="updateXcolorDvipsnames"
+                    label="dvipsnames"
+                  />
+                </div>
+              </div>
+
+              <!-- Cprotect -->
+              <div class="package-section">
+                <el-checkbox 
+                  v-model="packages.cprotect" 
+                  @change="(val) => updatePackage('cprotect', val)"
+                  label="cprotect - 保护命令宏包"
+                />
+              </div>
+
+              <!-- Spverbatim -->
+              <div class="package-section">
+                <el-checkbox 
+                  v-model="packages.spverbatim" 
+                  @change="(val) => updatePackage('spverbatim', val)"
+                  label="spverbatim - 支持空格的 Verbatim 宏包"
+                />
+              </div>
+
+              <!-- Fancyvrb -->
+              <div class="package-section">
+                <el-checkbox 
+                  v-model="packages.fancyvrb" 
+                  @change="(val) => updatePackage('fancyvrb', val)"
+                  label="fancyvrb - 增强的 Verbatim 宏包"
+                />
+              </div>
+
+              <!-- Fancyvrb-ex -->
+              <div class="package-section">
+                <el-checkbox 
+                  v-model="packages.fancyvrbEx" 
+                  @change="(val) => updatePackage('fancyvrbEx', val)"
+                  label="fancyvrb-ex - Fancyvrb 扩展宏包"
+                />
+              </div>
+
+              <!-- Xparse -->
+              <div class="package-section">
+                <el-checkbox 
+                  v-model="packages.xparse" 
+                  @change="(val) => updatePackage('xparse', val)"
+                  label="xparse - 新一代命令定义宏包"
+                />
+              </div>
+
+              <!-- Minted -->
+              <div class="package-section">
+                <el-checkbox 
+                  v-model="packages.minted.enabled" 
+                  @change="(val) => updatePackage('minted', { ...packages.minted, enabled: Boolean(val) })"
+                  label="minted - 代码高亮宏包"
+                />
+                <div v-if="packages.minted.enabled" style="margin-left: 20px; margin-top: 10px;">
+                  <el-checkbox 
+                    v-model="packages.minted.newfloat" 
+                    @change="updateMintedNewfloat"
+                    label="newfloat"
+                  />
+                  <el-checkbox 
+                    v-model="packages.minted.cache" 
+                    @change="updateMintedCache"
+                    label="cache=false"
+                  />
+                </div>
+              </div>
+
+              <!-- Listings -->
+              <div class="package-section">
+                <el-checkbox 
+                  v-model="packages.listings" 
+                  @change="(val) => updatePackage('listings', val)"
+                  label="listings - 代码环境宏包"
+                />
+              </div>
+
+              <!-- Accsupp -->
+              <div class="package-section">
+                <el-checkbox 
+                  v-model="packages.accsupp" 
+                  @change="(val) => updatePackage('accsupp', val)"
+                  label="accsupp - 辅助支持宏包"
+                />
+              </div>
+
+              <!-- Tcolorbox -->
+              <div class="package-section">
+                <el-checkbox 
+                  v-model="packages.tcolorbox.enabled" 
+                  @change="(val) => updatePackage('tcolorbox', { ...packages.tcolorbox, enabled: Boolean(val) })"
+                  label="tcolorbox - 彩色文本框宏包"
+                />
+                <div v-if="packages.tcolorbox.enabled" style="margin-left: 20px; margin-top: 10px;">
+                  <div>tcolorbox 库:</div>
+                  <el-checkbox 
+                    v-model="packages.tcolorbox.listings" 
+                    @change="updateTcolorboxListings"
+                    label="listings"
+                  />
+                  <el-checkbox 
+                    v-model="packages.tcolorbox.skins" 
+                    @change="updateTcolorboxSkins"
+                    label="skins"
+                  />
+                  <el-checkbox 
+                    v-model="packages.tcolorbox.breakable" 
+                    @change="updateTcolorboxBreakable"
+                    label="breakable"
+                  />
+                  <el-checkbox 
+                    v-model="packages.tcolorbox.xparse" 
+                    @change="updateTcolorboxXparse"
+                    label="xparse"
+                  />
+                </div>
+              </div>
             </div>
-          </div>
-          
-          <!-- Cprotect -->
-          <div style="margin-bottom: 15px;">
-            <el-checkbox 
-              v-model="packages.cprotect" 
-              @change="(val) => updatePackage('cprotect', val)"
-              label="cprotect - 保护命令宏包"
-            />
-          </div>
-          
-          <!-- Spverbatim -->
-          <div style="margin-bottom: 15px;">
-            <el-checkbox 
-              v-model="packages.spverbatim" 
-              @change="(val) => updatePackage('spverbatim', val)"
-              label="spverbatim - 支持空格的 Verbatim 宏包"
-            />
-          </div>
-          
-          <!-- Fancyvrb -->
-          <div style="margin-bottom: 15px;">
-            <el-checkbox 
-              v-model="packages.fancyvrb" 
-              @change="(val) => updatePackage('fancyvrb', val)"
-              label="fancyvrb - 增强的 Verbatim 宏包"
-            />
-          </div>
-          
-          <!-- Fancyvrb-ex -->
-          <div style="margin-bottom: 15px;">
-            <el-checkbox 
-              v-model="packages.fancyvrbEx" 
-              @change="(val) => updatePackage('fancyvrbEx', val)"
-              label="fancyvrb-ex - Fancyvrb 扩展宏包"
-            />
-          </div>
-          
-          <!-- Xparse -->
-          <div style="margin-bottom: 15px;">
-            <el-checkbox 
-              v-model="packages.xparse" 
-              @change="(val) => updatePackage('xparse', val)"
-              label="xparse - 新一代命令定义宏包"
-            />
-          </div>
-          
-          <!-- Minted -->
-          <div style="margin-bottom: 15px;">
-            <el-checkbox 
-              v-model="packages.minted.enabled" 
-              @change="(val) => updatePackage('minted', { ...packages.minted, enabled: Boolean(val) })"
-              label="minted - 代码高亮宏包"
-            />
-            
-            <div v-if="packages.minted.enabled" style="margin-left: 20px; margin-top: 10px;">
-              <el-checkbox 
-                v-model="packages.minted.newfloat" 
-                @change="updateMintedNewfloat"
-                label="newfloat"
-              />
-              <el-checkbox 
-                v-model="packages.minted.cache" 
-                @change="updateMintedCache"
-                label="cache=false"
-              />
+
+            <!-- 右栏：代码预览 -->
+            <div class="package-options-right">
+              <div class="code-preview">
+                <pre class="code-preview-content">{{ computedLatexCode }}</pre>
+              </div>
             </div>
-          </div>
-          
-          <!-- Listings -->
-          <div style="margin-bottom: 15px;">
-            <el-checkbox 
-              v-model="packages.listings" 
-              @change="(val) => updatePackage('listings', val)"
-              label="listings - 代码环境宏包"
-            />
-          </div>
-          
-          <!-- Accsupp -->
-          <div style="margin-bottom: 15px;">
-            <el-checkbox 
-              v-model="packages.accsupp" 
-              @change="(val) => updatePackage('accsupp', val)"
-              label="accsupp - 辅助支持宏包"
-            />
-          </div>
-          
-          <!-- Tcolorbox -->
-          <div style="margin-bottom: 15px;">
-            <el-checkbox 
-              v-model="packages.tcolorbox.enabled" 
-              @change="(val) => updatePackage('tcolorbox', { ...packages.tcolorbox, enabled: Boolean(val) })"
-              label="tcolorbox - 彩色文本框宏包"
-            />
-            
-            <div v-if="packages.tcolorbox.enabled" style="margin-left: 20px; margin-top: 10px;">
-              <div>tcolorbox 库:</div>
-              <el-checkbox 
-                v-model="packages.tcolorbox.listings" 
-                @change="updateTcolorboxListings"
-                label="listings"
-              />
-              <el-checkbox 
-                v-model="packages.tcolorbox.skins" 
-                @change="updateTcolorboxSkins"
-                label="skins"
-              />
-              <el-checkbox 
-                v-model="packages.tcolorbox.breakable" 
-                @change="updateTcolorboxBreakable"
-                label="breakable"
-              />
-              <el-checkbox 
-                v-model="packages.tcolorbox.xparse" 
-                @change="updateTcolorboxXparse"
-                label="xparse"
-              />
-            </div>
-          </div>
-          
-          <el-divider />
-          
-          <!-- 代码预览 -->
-          <div v-if="computedLatexCode" style="margin-top: 20px;">
-            <div><strong>生成的 LaTeX 代码:</strong></div>
-            <pre style="background-color: #f5f5f5; padding: 15px; border-radius: 4px; overflow-x: auto; font-family: monospace; max-height: 300px;">{{ computedLatexCode }}</pre>
           </div>
         </div>
       </el-card>
       
       <template #footer>
-        <span class="dialog-footer">
-          <el-button @click="closeDialog">取消</el-button>
-          <el-button type="primary" @click="closeDialog">确定</el-button>
-        </span>
+        
       </template>
     </el-dialog>
   </div>
