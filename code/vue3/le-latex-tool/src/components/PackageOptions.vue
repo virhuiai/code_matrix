@@ -105,6 +105,18 @@ const generateOptionInfos = (): OptionInfo[] => {
     .filter((info): info is OptionInfo => info !== null)
 }
 
+// 根据OptionInfo数组生成LaTeX代码
+const generateCodeFromOptionInfos = (optionInfos: OptionInfo[]): string => {
+  // 确保optionInfos是一个数组
+  if (!Array.isArray(optionInfos)) {
+    return ''
+  }
+  
+  return optionInfos
+    .map(info => `\\PassOptionsToPackage{${info.options}}{${info.package}}`)
+    .join('\n')
+}
+
 // 计算属性：生成最终的 LaTeX 代码
 const computedLatexCode = computed(() => {
   return packageConfigs.value
@@ -120,12 +132,20 @@ const updateOptionValue = (key: string, value: boolean) => {
 
 // 监听代码变化
 watch(computedLatexCode, (newCode) => {
-  emit('codeChange', newCode, generateOptionInfos())
+  const optionInfos = generateOptionInfos()
+
+  const abc = generateCodeFromOptionInfos(optionInfos);
+  debugger
+  console.log('abc');
+  console.log(abc);
+
+  emit('codeChange', newCode, optionInfos)
 })
 
 // 组件挂载时触发代码变更事件
 onMounted(() => {
-  emit('codeChange', computedLatexCode.value, generateOptionInfos())
+  const optionInfos = generateOptionInfos()
+  emit('codeChange', computedLatexCode.value, optionInfos)
   if (props.componentId !== undefined) {
     console.log(`PackageOptions component loaded successfully with ID: ${props.componentId}`)
   }
