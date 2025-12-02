@@ -103,10 +103,20 @@ defineExpose({
     >
       <el-card shadow="hover">
         <div>
-          <strong>英文字体设置</strong>
-          <p>设置英文字体配置</p>
-          
-          <el-checkbox v-model="isEnabled" label="启用cm-unicode" />
+          <div class="package-options-container">
+            <!-- 左栏：选项 -->
+            <div class="package-options-left">
+              <strong>英文字体设置</strong>
+              <p>设置英文字体配置</p>
+              <el-checkbox v-model="isEnabled" label="启用cm-unicode" />
+            </div>
+            <!-- 右栏：代码预览 -->
+            <div class="package-options-right">
+              <div class="code-preview">
+                <pre class="code-preview-content">{{ computedLatexCode }}</pre>
+              </div>
+            </div>
+          </div>
         </div>
       </el-card>
       

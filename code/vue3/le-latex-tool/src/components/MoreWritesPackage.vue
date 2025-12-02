@@ -73,13 +73,19 @@ defineExpose({
     >
       <el-card shadow="hover">
         <div>
-          <strong>MoreWrites 包设置</strong>
-          <p>解决 "no room for a new \write" 错误</p>
-          
-          <el-checkbox v-model="isEnabled" label="启用 MoreWrites 包" />
-          
-          <div v-if="isEnabled" style="margin-top: 20px;">
-            <pre style="background-color: #f5f5f5; padding: 15px; border-radius: 4px; overflow-x: auto; font-family: monospace;">{{ packageConfig.latexTemplate }}</pre>
+          <div class="package-options-container">
+            <!-- 左栏：选项 -->
+            <div class="package-options-left">
+              <strong>MoreWrites 包设置</strong>
+              <p>解决 "no room for a new \write" 错误</p>
+              <el-checkbox v-model="isEnabled" label="启用 MoreWrites 包" />
+            </div>
+            <!-- 右栏：代码预览 -->
+            <div class="package-options-right">
+              <div class="code-preview">
+                <pre class="code-preview-content">{{ computedLatexCode }}</pre>
+              </div>
+            </div>
           </div>
         </div>
       </el-card>
