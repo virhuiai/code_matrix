@@ -40,6 +40,9 @@ const packageOptions = ref({
   dvipsnames: true
 })
 
+// 新增存储选项信息的变量
+const packageOptionsInfo = ref<Array<{command: string, options: string, package: string}>>([])
+
 // 修改文档类选项的默认值结构
 const documentClass = ref({
   documentClass: 'ctexbook',
@@ -293,7 +296,12 @@ const combinedLatexCode = computed(() => {
               <PackageOptions 
                 v-model="packageOptions" 
                 :component-id="getNextComponentId()"
-                @code-change="(code) => latexCodeFromChild = code"
+                @code-change="(code, optionInfos) => {
+                  latexCodeFromChild = code;
+                  if (optionInfos) {packageOptionsInfo = optionInfos;
+                  console.log('optionInfos')
+                  console.log(optionInfos)
+                  } }"
               />
 
               <!-- 修改DocumentClassSelector组件的使用 -->

@@ -2,6 +2,13 @@
 import { ref, computed, defineEmits, defineProps, watch, onMounted } from 'vue'
 import { ElCard, ElCheckbox, ElDialog, ElButton, ElDivider } from 'element-plus'
 
+// 定义选项信息的接口
+interface OptionInfo {
+  command: string
+  options: string
+  package: string
+}
+
 const props = defineProps<{
   modelValue: Record<string, boolean>
   componentId?: number
@@ -9,7 +16,7 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   (e: 'update:modelValue', value: Record<string, boolean>): void
-  (e: 'codeChange', value: string): void
+  (e: 'codeChange', value: string, optionInfos?: OptionInfo[]): void
 }>()
 
 // 控制弹窗显示
@@ -78,6 +85,26 @@ const generatePackageCode = (pkg: PackageConfig, values: Record<string, boolean>
     : null
 }
 
+// 生成选项信息列表
+const generateOptionInfos = (): OptionInfo[] => {
+  return packageConfigs.value
+    .map(pkg => {
+      const options = pkg.items
+        .filter(item => optionValues.value[item.key])
+        .map(item => pkg.optionsMap[item.key])
+      
+      if (options.length > 0) {
+        return {
+          command: 'PassOptionsToPackage',
+          options: options.join(','),
+          package: pkg.packageName
+        }
+      }
+      return null
+    })
+    .filter((info): info is OptionInfo => info !== null)
+}
+
 // 计算属性：生成最终的 LaTeX 代码
 const computedLatexCode = computed(() => {
   return packageConfigs.value
@@ -93,12 +120,12 @@ const updateOptionValue = (key: string, value: boolean) => {
 
 // 监听代码变化
 watch(computedLatexCode, (newCode) => {
-  emit('codeChange', newCode)
+  emit('codeChange', newCode, generateOptionInfos())
 })
 
 // 组件挂载时触发代码变更事件
 onMounted(() => {
-  emit('codeChange', computedLatexCode.value)
+  emit('codeChange', computedLatexCode.value, generateOptionInfos())
   if (props.componentId !== undefined) {
     console.log(`PackageOptions component loaded successfully with ID: ${props.componentId}`)
   }
@@ -148,10 +175,11 @@ defineExpose({
                   v-for="item in pkg.items" 
                   :key="item.key"
                   :model-value="optionValues[item.key]"
-                  @update:model-value="(val) => updateOptionValue(item.key, val)"
+                  @update:model-value="(val) => updateOptionValue(item.key, Boolean(val))"
                   :label="item.label"
                   style="display: block; margin-bottom: 8px;"
                 />
+
               </div>
             </div>
             
