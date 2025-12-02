@@ -119,10 +119,8 @@ const generateCodeFromOptionInfos = (optionInfos: OptionInfo[]): string => {
 
 // 计算属性：生成最终的 LaTeX 代码
 const computedLatexCode = computed(() => {
-  return packageConfigs.value
-    .map(pkg => generatePackageCode(pkg, optionValues.value))
-    .filter((code): code is string => code !== null)
-    .join('\n')
+  const optionInfos = generateOptionInfos()
+  return generateCodeFromOptionInfos(optionInfos);
 })
 
 // 更新选项值
@@ -132,14 +130,7 @@ const updateOptionValue = (key: string, value: boolean) => {
 
 // 监听代码变化
 watch(computedLatexCode, (newCode) => {
-  const optionInfos = generateOptionInfos()
-
-  const abc = generateCodeFromOptionInfos(optionInfos);
-  debugger
-  console.log('abc');
-  console.log(abc);
-
-  emit('codeChange', newCode, optionInfos)
+  emit('codeChange', newCode)
 })
 
 // 组件挂载时触发代码变更事件
