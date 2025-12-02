@@ -296,12 +296,7 @@ const combinedLatexCode = computed(() => {
               <PackageOptions 
                 v-model="packageOptions" 
                 :component-id="getNextComponentId()"
-                @code-change="(code, optionInfos) => {
-                  latexCodeFromChild = code;
-                  if (optionInfos) {packageOptionsInfo = optionInfos;
-                  console.log('optionInfos')
-                  console.log(optionInfos)
-                  } }"
+                @code-change="(code) => {latexCodeFromChild = code;}"
               />
 
               <!-- 修改DocumentClassSelector组件的使用 -->

@@ -74,15 +74,16 @@ const optionValues = computed({
   set: (value) => emit('update:modelValue', value)
 })
 
-// 通用的宏包代码生成函数
-const generatePackageCode = (pkg: PackageConfig, values: Record<string, boolean>): string | null => {
-  const options = pkg.items
-    .filter(item => values[item.key])
-    .map(item => pkg.optionsMap[item.key])
+// 根据OptionInfo数组生成LaTeX代码
+const generateCodeFromOptionInfos = (optionInfos: OptionInfo[]): string => {
+  // 确保optionInfos是一个数组
+  if (!Array.isArray(optionInfos)) {
+    return ''
+  }
   
-  return options.length > 0 
-    ? `\\PassOptionsToPackage{${options.join(',')}}{${pkg.packageName}}`
-    : null
+  return optionInfos
+    .map(info => `\\PassOptionsToPackage{${info.options}}{${info.package}}`)
+    .join('\n')
 }
 
 // 生成选项信息列表
@@ -103,18 +104,6 @@ const generateOptionInfos = (): OptionInfo[] => {
       return null
     })
     .filter((info): info is OptionInfo => info !== null)
-}
-
-// 根据OptionInfo数组生成LaTeX代码
-const generateCodeFromOptionInfos = (optionInfos: OptionInfo[]): string => {
-  // 确保optionInfos是一个数组
-  if (!Array.isArray(optionInfos)) {
-    return ''
-  }
-  
-  return optionInfos
-    .map(info => `\\PassOptionsToPackage{${info.options}}{${info.package}}`)
-    .join('\n')
 }
 
 // 计算属性：生成最终的 LaTeX 代码
