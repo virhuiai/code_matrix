@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, defineEmits, defineProps, watch, onMounted } from 'vue'
 import { ElCard, ElCheckbox, ElDialog, ElButton, ElFormItem, ElInputNumber, ElDivider } from 'element-plus'
+import { generateCodeFromBoxPackageInfos, BoxPackageInfo } from '../utils/box-packages-utils'
 
 const props = defineProps<{
   modelValue: {
@@ -28,28 +29,14 @@ const lettrineConfig = ref({
   loversize: props.modelValue.loversize !== undefined ? props.modelValue.loversize : 0.1
 })
 
-// LaTeX 代码模板
-const latexTemplates = {
-  lettrinePackage: '\\usepackage{lettrine}',
-  lettrineCommand: (options: { lines: number; lhang: number; loversize: number }) => {
-    return `%\\lettrine[lines=${options.lines},lhang=${options.lhang},loversize=${options.loversize}] {我}{}`
-  }
-}
-
-// 计算属性：生成 LaTeX 代码
+// 计算属性：生成 LaTeX 代码（使用工具函数）
 const computedLatexCode = computed(() => {
-  const codes = []
-  
-  if (lettrineConfig.value.enabled) {
-    codes.push(latexTemplates.lettrinePackage)
-    codes.push(latexTemplates.lettrineCommand({
-      lines: lettrineConfig.value.lines,
-      lhang: lettrineConfig.value.lhang,
-      loversize: lettrineConfig.value.loversize
-    }))
-  }
-  
-  return codes.join('\n')
+  if (!lettrineConfig.value.enabled) return ''
+
+  const infos: BoxPackageInfo[] = [{ package: 'lettrine' }]
+  const usePkg = generateCodeFromBoxPackageInfos(infos)
+  const cmd = `%\\lettrine[lines=${lettrineConfig.value.lines},lhang=${lettrineConfig.value.lhang},loversize=${lettrineConfig.value.loversize}] {我}{}`
+  return `${usePkg}\n${cmd}`
 })
 
 // 更新配置
@@ -96,72 +83,71 @@ defineExpose({
     <el-dialog
       v-model="dialogVisible"
       title="Lettrine 首字下沉设置"
-      width="60%"
       :before-close="closeDialog"
     >
       <el-card shadow="hover">
         <div>
-          <strong>Lettrine 首字下沉设置</strong>
-          <p>设置首字下沉效果</p>
-          
-          <el-checkbox 
-            v-model="lettrineConfig.enabled" 
-            @change="(val) => updateConfig('enabled', val)"
-            label="启用 Lettrine 首字下沉宏包"
-          />
-          
-          <div v-if="lettrineConfig.enabled" style="margin-top: 20px;">
-            <el-divider />
-            <div style="margin-bottom: 15px;">
-              <el-form-item label="下沉行数 (lines)">
-                <el-input-number 
-                  v-model="lettrineConfig.lines" 
-                  @change="(val) => updateConfig('lines', val)"
-                  :min="1"
-                  :max="10"
-                  size="small"
-                />
-              </el-form-item>
+          <div class="package-options-container">
+            <!-- 左栏：选项 -->
+            <div class="package-options-left">
+              <div class="package-section">
+                <strong>Lettrine 首字下沉设置</strong>
+                <div class="package-options-list">
+                  <el-checkbox 
+                    :model-value="lettrineConfig.enabled" 
+                    @update:model-value="(val) => updateConfig('enabled', Boolean(val))"
+                    label="启用 Lettrine 首字下沉"
+                    class="package-option-item"
+                  />
+                  <div v-if="lettrineConfig.enabled">
+                    <el-form-item label="下沉行数 (lines)">
+                      <el-input-number 
+                        :model-value="lettrineConfig.lines" 
+                        @update:model-value="(val) => updateConfig('lines', Number(val))"
+                        :min="1"
+                        :max="10"
+                        size="small"
+                      />
+                    </el-form-item>
+                    
+                    <el-form-item label="左悬挂 (lhang)">
+                      <el-input-number 
+                        :model-value="lettrineConfig.lhang" 
+                        @update:model-value="(val) => updateConfig('lhang', Number(val))"
+                        :step="0.05"
+                        :min="0"
+                        :max="1"
+                        size="small"
+                      />
+                    </el-form-item>
+                    
+                    <el-form-item label="垂直尺寸 (loversize)">
+                      <el-input-number 
+                        :model-value="lettrineConfig.loversize" 
+                        @update:model-value="(val) => updateConfig('loversize', Number(val))"
+                        :step="0.05"
+                        :min="0"
+                        :max="2"
+                        size="small"
+                      />
+                    </el-form-item>
+                  </div>
+                </div>
+              </div>
             </div>
-            
-            <div style="margin-bottom: 15px;">
-              <el-form-item label="左悬挂 (lhang)">
-                <el-input-number 
-                  v-model="lettrineConfig.lhang" 
-                  @change="(val) => updateConfig('lhang', val)"
-                  :min="0"
-                  :max="1"
-                  :step="0.1"
-                  size="small"
-                />
-              </el-form-item>
-            </div>
-            
-            <div style="margin-bottom: 15px;">
-              <el-form-item label="垂直尺寸 (loversize)">
-                <el-input-number 
-                  v-model="lettrineConfig.loversize" 
-                  @change="(val) => updateConfig('loversize', val)"
-                  :min="0"
-                  :max="1"
-                  :step="0.1"
-                  size="small"
-                />
-              </el-form-item>
-            </div>
-            
-            <div style="margin-top: 20px;">
-              <pre style="background-color: #f5f5f5; padding: 15px; border-radius: 4px; overflow-x: auto; font-family: monospace;">{{ computedLatexCode }}</pre>
+
+            <!-- 右栏：代码预览 -->
+            <div class="package-options-right">
+              <div class="code-preview">
+                <pre class="code-preview-content">{{ computedLatexCode }}</pre>
+              </div>
             </div>
           </div>
         </div>
       </el-card>
       
       <template #footer>
-        <span class="dialog-footer">
-          <el-button @click="closeDialog">取消</el-button>
-          <el-button type="primary" @click="closeDialog">确定</el-button>
-        </span>
+        
       </template>
     </el-dialog>
   </div>

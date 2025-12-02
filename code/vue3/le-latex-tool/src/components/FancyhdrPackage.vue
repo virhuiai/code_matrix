@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, defineEmits, defineProps, watch, onMounted } from 'vue'
 import { ElCard, ElCheckbox, ElDialog, ElButton } from 'element-plus'
+import { generateCodeFromBoxPackageInfos, BoxPackageInfo } from '../utils/box-packages-utils'
 
 const props = defineProps<{
   modelValue: {
@@ -42,9 +43,12 @@ const isEnabled = computed({
   set: (value) => emit('update:modelValue', { enabled: value })
 })
 
-// 计算属性：生成 LaTeX 代码
+// 计算属性：生成 LaTeX 代码（使用工具函数）
 const computedLatexCode = computed(() => {
-  return isEnabled.value ? packageConfig.latexTemplate : ''
+  if (!isEnabled.value) return ''
+  const infos: BoxPackageInfo[] = [{ package: 'fancyhdr' }]
+  const usePkg = generateCodeFromBoxPackageInfos(infos)
+  return `${usePkg}\n\n${packageConfig.latexTemplate}`
 })
 
 // 监听代码变化
@@ -85,27 +89,37 @@ defineExpose({
     <el-dialog
       v-model="dialogVisible"
       title="Fancyhdr 版式包设置"
-      width="60%"
       :before-close="closeDialog"
     >
       <el-card shadow="hover">
         <div>
-          <strong>Fancyhdr 版式包设置</strong>
-          <p>设置文档的页眉页脚样式</p>
-          
-          <el-checkbox v-model="isEnabled" label="启用 Fancyhdr 版式包" />
-          
-          <div v-if="isEnabled" style="margin-top: 20px;">
-            <pre style="background-color: #f5f5f5; padding: 15px; border-radius: 4px; overflow-x: auto; font-family: monospace;">{{ packageConfig.latexTemplate }}</pre>
+          <div class="package-options-container">
+            <!-- 左栏：选项 -->
+            <div class="package-options-left">
+              <div class="package-section">
+                <strong>Fancyhdr 版式包设置</strong>
+                <div class="package-options-list">
+                  <el-checkbox 
+                    v-model="isEnabled" 
+                    label="启用 Fancyhdr 版式包"
+                    class="package-option-item"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <!-- 右栏：代码预览 -->
+            <div class="package-options-right">
+              <div class="code-preview">
+                <pre class="code-preview-content">{{ computedLatexCode }}</pre>
+              </div>
+            </div>
           </div>
         </div>
       </el-card>
       
       <template #footer>
-        <span class="dialog-footer">
-          <el-button @click="closeDialog">取消</el-button>
-          <el-button type="primary" @click="closeDialog">确定</el-button>
-        </span>
+        
       </template>
     </el-dialog>
   </div>
