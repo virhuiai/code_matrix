@@ -131,9 +131,9 @@ defineExpose({
       title="为 LaTeX 宏包传递选项参数"
       width="100%"
       :before-close="closeDialog"
-      class="package-options-dialog"
+    
     >
-      <el-card shadow="hover" class="package-options-content">
+      <el-card shadow="hover" >
         <div>
           
           <div class="package-options-container">

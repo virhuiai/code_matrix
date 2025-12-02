@@ -148,9 +148,9 @@ defineExpose({
       title="Document Class 文档类"
       width="100%"
       :before-close="closeDialog"
-      class="document-class-selector-dialog"
+      
     >
-      <el-card shadow="hover" class="document-class-selector-content">
+      <el-card shadow="hover">
         <div>
           <strong>文档类选择</strong>
           <p>选择适合的中文文档类</p>
