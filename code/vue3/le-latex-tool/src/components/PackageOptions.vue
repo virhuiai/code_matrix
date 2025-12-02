@@ -1,13 +1,8 @@
 <script setup lang="ts">
 import { ref, computed, defineEmits, defineProps, watch, onMounted } from 'vue'
 import { ElCard, ElCheckbox, ElDialog, ElButton, ElDivider } from 'element-plus'
-
-// 定义选项信息的接口
-interface OptionInfo {
-  command: string
-  options: string
-  package: string
-}
+import { OptionInfo, PackageConfig } from '../types/package-options-types';
+import { generateCodeFromOptionInfos } from '../utils/package-options-utils';
 
 const props = defineProps<{
   modelValue: Record<string, boolean>
@@ -21,14 +16,6 @@ const emit = defineEmits<{
 
 // 控制弹窗显示
 const dialogVisible = ref(false)
-
-// 定义宏包配置项的接口
-interface PackageConfig {
-  packageName: string
-  title: string
-  items: Array<{ key: string; label: string }>
-  optionsMap: Record<string, string>
-}
 
 // 宏包配置数据
 const packageConfigs = ref<PackageConfig[]>([
@@ -73,18 +60,6 @@ const optionValues = computed({
   get: () => props.modelValue,
   set: (value) => emit('update:modelValue', value)
 })
-
-// 根据OptionInfo数组生成LaTeX代码
-const generateCodeFromOptionInfos = (optionInfos: OptionInfo[]): string => {
-  // 确保optionInfos是一个数组
-  if (!Array.isArray(optionInfos)) {
-    return ''
-  }
-  
-  return optionInfos
-    .map(info => `\\PassOptionsToPackage{${info.options}}{${info.package}}`)
-    .join('\n')
-}
 
 // 生成选项信息列表
 const generateOptionInfos = (): OptionInfo[] => {
@@ -208,80 +183,4 @@ defineExpose({
 
 <style scoped>
 /* 所有样式已移至 src/style.css 文件中 */
-
-.package-options-dialog {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.package-options-dialog :deep(.el-dialog) {
-  height: 80vh;
-  display: flex;
-  flex-direction: column;
-  margin: 0 auto !important;
-  max-width: 1200px;
-}
-
-.package-options-dialog :deep(.el-dialog__body) {
-  flex: 1;
-  overflow: hidden;
-}
-
-.package-options-content {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-}
-
-.package-options-container {
-  display: flex;
-  height: calc(100% - 60px);
-  margin-top: 20px;
-  gap: 20px;
-}
-
-.package-options-left {
-  flex: 1;
-  overflow-y: auto;
-  padding-right: 10px;
-}
-
-.package-options-right {
-  flex: 1;
-  overflow-y: auto;
-  padding-left: 10px;
-}
-
-.package-section {
-  margin-bottom: 20px;
-}
-
-.package-options-list {
-  margin-top: 10px;
-  margin-left: 20px;
-}
-
-.package-option-item {
-  display: block;
-  margin-bottom: 8px;
-}
-
-.code-preview {
-  background-color: #f5f5f5;
-  border-radius: 4px;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-}
-
-.code-preview-content {
-  flex: 1;
-  padding: 15px;
-  overflow-x: auto;
-  font-family: monospace;
-  white-space: pre-wrap;
-  margin: 0;
-  background-color: transparent;
-}
 </style>
