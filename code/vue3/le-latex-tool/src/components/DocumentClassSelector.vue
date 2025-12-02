@@ -146,7 +146,7 @@ defineExpose({
     <el-dialog
       v-model="dialogVisible"
       title="Document Class 文档类"
-      width="60%"
+      width="100%"
       :before-close="closeDialog"
       class="document-class-selector-dialog"
     >
@@ -155,49 +155,54 @@ defineExpose({
           <strong>文档类选择</strong>
           <p>选择适合的中文文档类</p>
           
-          <el-radio-group v-model="selectedClass" class="document-class-selector-section">
-            <el-radio-button
-              v-for="docClass in documentClasses"
-              :key="docClass.className"
-              :label="docClass.className"
-            >
-              {{ docClass.label }}
-            </el-radio-button>
-          </el-radio-group>
-          
-          <div class="document-class-selector-description">
-            <div v-for="docClass in documentClasses" :key="docClass.className" v-show="selectedClass === docClass.className">
-              {{ docClass.description }}
+          <div class="document-class-selector-container">
+            <!-- 左栏：选项 -->
+            <div class="document-class-selector-left">
+              <el-divider />
+              
+              <el-radio-group v-model="selectedClass" class="document-class-selector-section">
+                <el-radio-button
+                  v-for="docClass in documentClasses"
+                  :key="docClass.className"
+                  :label="docClass.className"
+                >
+                  {{ docClass.label }}
+                </el-radio-button>
+              </el-radio-group>
+              
+              <div class="document-class-selector-description">
+                <div v-for="docClass in documentClasses" :key="docClass.className" v-show="selectedClass === docClass.className">
+                  {{ docClass.description }}
+                </div>
+              </div>
+              
+              <div class="document-class-selector-options">
+                <strong class="document-class-selector-options-title">文档类选项</strong>
+                <div class="document-class-selector-options-list">
+                  <el-checkbox
+                    v-for="option in classOptions"
+                    :key="option.key"
+                    :model-value="optionValues[option.key]"
+                    @update:model-value="(val) => updateOptionValue(option.key, Boolean(val))"
+                    :label="option.label"
+                    class="document-class-selector-option-item"
+                  />
+                </div>
+              </div>
             </div>
-          </div>
-          
-          <el-divider />
-          
-          <div class="document-class-selector-options">
-            <strong class="document-class-selector-options-title">文档类选项</strong>
-            <div class="document-class-selector-options-list">
-              <el-checkbox
-                v-for="option in classOptions"
-                :key="option.key"
-                :model-value="optionValues[option.key]"
-                @update:model-value="(val) => updateOptionValue(option.key, Boolean(val))"
-                :label="option.label"
-                class="document-class-selector-option-item"
-              />
+            
+            <!-- 右栏：代码预览 -->
+            <div class="document-class-selector-right">
+              <div class="document-class-selector-code-preview">
+                <pre class="document-class-selector-code-preview-content">{{ computedLatexCode }}</pre>
+              </div>
             </div>
-          </div>
-          
-          <div class="document-class-selector-code-preview">
-            <pre>{{ computedLatexCode }}</pre>
           </div>
         </div>
       </el-card>
       
       <template #footer>
-        <span class="dialog-footer">
-          <el-button @click="closeDialog">取消</el-button>
-          <el-button type="primary" @click="closeDialog">确定</el-button>
-        </span>
+        
       </template>
     </el-dialog>
   </div>
