@@ -155,36 +155,42 @@ defineExpose({
     <el-dialog
       v-model="dialogVisible"
       title="Package Options 宏包选项"
-      width="60%"
+      width="100%"
       :before-close="closeDialog"
+      class="package-options-dialog"
     >
-      <el-card shadow="hover">
+      <el-card shadow="hover" class="package-options-content">
         <div>
           <strong>PassOptionsToPackage</strong>
           <p>为 LaTeX 宏包传递选项参数</p>
           
-          <div style="margin-top: 20px;">
-            <el-divider />
-            
-            <!-- 使用 v-for 指令遍历所有宏包配置 -->
-            <div v-for="pkg in packageConfigs" :key="pkg.packageName" style="margin-bottom: 20px;">
-              <strong>{{ pkg.title }}</strong>
-              <!-- 为每个宏包的选项创建复选框 -->
-              <div style="margin-top: 10px; margin-left: 20px;">
-                <el-checkbox 
-                  v-for="item in pkg.items" 
-                  :key="item.key"
-                  :model-value="optionValues[item.key]"
-                  @update:model-value="(val) => updateOptionValue(item.key, Boolean(val))"
-                  :label="item.label"
-                  style="display: block; margin-bottom: 8px;"
-                />
-
+          <div class="package-options-container">
+            <!-- 左栏：选项 -->
+            <div class="package-options-left">
+              <el-divider />
+              
+              <!-- 使用 v-for 指令遍历所有宏包配置 -->
+              <div v-for="pkg in packageConfigs" :key="pkg.packageName" class="package-section">
+                <strong>{{ pkg.title }}</strong>
+                <!-- 为每个宏包的选项创建复选框 -->
+                <div class="package-options-list">
+                  <el-checkbox 
+                    v-for="item in pkg.items" 
+                    :key="item.key"
+                    :model-value="optionValues[item.key]"
+                    @update:model-value="(val) => updateOptionValue(item.key, Boolean(val))"
+                    :label="item.label"
+                    class="package-option-item"
+                  />
+                </div>
               </div>
             </div>
             
-            <div style="margin-top: 20px;">
-              <pre style="background-color: #f5f5f5; padding: 15px; border-radius: 4px; overflow-x: auto; font-family: monospace;">{{ computedLatexCode }}</pre>
+            <!-- 右栏：代码预览 -->
+            <div class="package-options-right">
+              <div class="code-preview">
+                <pre class="code-preview-content">{{ computedLatexCode }}</pre>
+              </div>
             </div>
           </div>
         </div>
@@ -202,4 +208,80 @@ defineExpose({
 
 <style scoped>
 /* 所有样式已移至 src/style.css 文件中 */
+
+.package-options-dialog {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.package-options-dialog :deep(.el-dialog) {
+  height: 80vh;
+  display: flex;
+  flex-direction: column;
+  margin: 0 auto !important;
+  max-width: 1200px;
+}
+
+.package-options-dialog :deep(.el-dialog__body) {
+  flex: 1;
+  overflow: hidden;
+}
+
+.package-options-content {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.package-options-container {
+  display: flex;
+  height: calc(100% - 60px);
+  margin-top: 20px;
+  gap: 20px;
+}
+
+.package-options-left {
+  flex: 1;
+  overflow-y: auto;
+  padding-right: 10px;
+}
+
+.package-options-right {
+  flex: 1;
+  overflow-y: auto;
+  padding-left: 10px;
+}
+
+.package-section {
+  margin-bottom: 20px;
+}
+
+.package-options-list {
+  margin-top: 10px;
+  margin-left: 20px;
+}
+
+.package-option-item {
+  display: block;
+  margin-bottom: 8px;
+}
+
+.code-preview {
+  background-color: #f5f5f5;
+  border-radius: 4px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.code-preview-content {
+  flex: 1;
+  padding: 15px;
+  overflow-x: auto;
+  font-family: monospace;
+  white-space: pre-wrap;
+  margin: 0;
+  background-color: transparent;
+}
 </style>
