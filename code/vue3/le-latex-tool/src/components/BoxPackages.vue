@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, defineEmits, defineProps, watch, onMounted } from 'vue'
 import { ElCard, ElCheckbox, ElDialog, ElButton, ElDivider } from 'element-plus'
+import { generateCodeFromBoxPackageInfos, BoxPackageInfo } from '../utils/box-packages-utils'
 
 const props = defineProps<{
   modelValue: {
@@ -52,70 +53,50 @@ const packages = ref({
   changepage: props.modelValue.changepage !== undefined ? props.modelValue.changepage : true
 })
 
-// LaTeX 代码模板 - 只生成引入宏包的代码
-const latexTemplates = {
-  fancybox: '\\usepackage{fancybox}',
-  boxedminipage: '\\usepackage{boxedminipage}',
-  tikz: '\\usepackage{tikz}',
-  tcolorbox: (options: any) => {
-    let code = '\\usepackage{tcolorbox}'
-    const libraries = []
-    if (options.raster) libraries.push('raster')
-    if (options.listings) libraries.push('listings')
-    if (options.theorems) libraries.push('theorems')
-    if (options.skins) libraries.push('skins')
-    if (options.xparse) libraries.push('xparse')
-    if (options.breakable) libraries.push('breakable')
-    
-    if (libraries.length > 0) {
-      code += '\n\\tcbuselibrary{' + libraries.join(',') + '}'
-    }
-    return code
-  },
-  awesomebox: '\\usepackage{awesomebox}',
-  mdframed: '\\usepackage{mdframed}',
-  framed: '\\usepackage{framed}',
-  changepage: '\\usepackage{changepage}'
-}
-
-// 计算属性：生成 LaTeX 代码 - 只生成引入宏包的代码
+// 计算属性：生成 LaTeX 代码（使用工具函数）
 const computedLatexCode = computed(() => {
-  const codes = []
-  
-  // 添加启用的包
+  const infos: BoxPackageInfo[] = []
+
   if (packages.value.fancybox) {
-    codes.push(latexTemplates.fancybox)
+    infos.push({ package: 'fancybox' })
   }
-  
+
   if (packages.value.boxedminipage) {
-    codes.push(latexTemplates.boxedminipage)
+    infos.push({ package: 'boxedminipage' })
   }
-  
+
   if (packages.value.tikz) {
-    codes.push(latexTemplates.tikz)
+    infos.push({ package: 'tikz' })
   }
-  
+
   if (packages.value.tcolorbox.enabled) {
-    codes.push(latexTemplates.tcolorbox(packages.value.tcolorbox))
+    const libs: string[] = []
+    if (packages.value.tcolorbox.raster) libs.push('raster')
+    if (packages.value.tcolorbox.listings) libs.push('listings')
+    if (packages.value.tcolorbox.theorems) libs.push('theorems')
+    if (packages.value.tcolorbox.skins) libs.push('skins')
+    if (packages.value.tcolorbox.xparse) libs.push('xparse')
+    if (packages.value.tcolorbox.breakable) libs.push('breakable')
+    infos.push({ package: 'tcolorbox', libraries: libs })
   }
-  
+
   if (packages.value.awesomebox) {
-    codes.push(latexTemplates.awesomebox)
+    infos.push({ package: 'awesomebox' })
   }
-  
+
   if (packages.value.mdframed) {
-    codes.push(latexTemplates.mdframed)
+    infos.push({ package: 'mdframed' })
   }
-  
+
   if (packages.value.framed) {
-    codes.push(latexTemplates.framed)
+    infos.push({ package: 'framed' })
   }
-  
+
   if (packages.value.changepage) {
-    codes.push(latexTemplates.changepage)
+    infos.push({ package: 'changepage' })
   }
-  
-  return codes.join('\n\n')
+
+  return generateCodeFromBoxPackageInfos(infos)
 })
 
 // 监听包选项变化
@@ -193,137 +174,130 @@ defineExpose({
     <el-dialog
       v-model="dialogVisible"
       title="盒子宏包设置"
-      width="70%"
       :before-close="closeDialog"
     >
       <el-card shadow="hover">
         <div>
-          <strong>盒子宏包设置</strong>
-          <p>配置各种盒子宏包及其选项</p>
-          
-          <el-divider />
-          
-          <!-- Fancybox -->
-          <div style="margin-bottom: 15px;">
-            <el-checkbox 
-              v-model="packages.fancybox" 
-              @change="(val) => updatePackage('fancybox', val)"
-              label="fancybox - 盒子宏包，扩展 \fbox 命令"
-            />
-          </div>
-          
-          <!-- Boxedminipage -->
-          <div style="margin-bottom: 15px;">
-            <el-checkbox 
-              v-model="packages.boxedminipage" 
-              @change="(val) => updatePackage('boxedminipage', val)"
-              label="boxedminipage - 盒子环境"
-            />
-          </div>
-          
-          <!-- Tikz -->
-          <div style="margin-bottom: 15px;">
-            <el-checkbox 
-              v-model="packages.tikz" 
-              @change="(val) => updatePackage('tikz', val)"
-              label="tikz - 绘图宏包"
-            />
-          </div>
-          
-          <!-- Tcolorbox -->
-          <div style="margin-bottom: 15px;">
-            <el-checkbox 
-              v-model="packages.tcolorbox.enabled" 
-              @change="(val) => updatePackage('tcolorbox', {...packages.tcolorbox, enabled: val})"
-              label="tcolorbox - 彩色文本框宏包"
-            />
-            
-            <div v-if="packages.tcolorbox.enabled" style="margin-left: 20px; margin-top: 10px;">
-              <div>tcolorbox 库:</div>
-              <el-checkbox 
-                v-model="packages.tcolorbox.raster" 
-                @change="updateTcolorboxRaster"
-                label="raster"
-              />
-              <el-checkbox 
-                v-model="packages.tcolorbox.listings" 
-                @change="updateTcolorboxListings"
-                label="listings"
-              />
-              <el-checkbox 
-                v-model="packages.tcolorbox.theorems" 
-                @change="updateTcolorboxTheorems"
-                label="theorems"
-              />
-              <el-checkbox 
-                v-model="packages.tcolorbox.skins" 
-                @change="updateTcolorboxSkins"
-                label="skins"
-              />
-              <el-checkbox 
-                v-model="packages.tcolorbox.xparse" 
-                @change="updateTcolorboxXparse"
-                label="xparse"
-              />
-              <el-checkbox 
-                v-model="packages.tcolorbox.breakable" 
-                @change="updateTcolorboxBreakable"
-                label="breakable"
-              />
+          <div class="package-options-container">
+            <!-- 左栏：选项 -->
+            <div class="package-options-left">
+              <div class="package-section">
+                <strong>基础盒子宏包</strong>
+                <div class="package-options-list">
+                  <el-checkbox 
+                    v-model="packages.fancybox" 
+                    @change="(val) => updatePackage('fancybox', val)"
+                    label="fancybox - 盒子宏包，扩展 \\fbox 命令"
+                    class="package-option-item"
+                  />
+                  <el-checkbox 
+                    v-model="packages.boxedminipage" 
+                    @change="(val) => updatePackage('boxedminipage', val)"
+                    label="boxedminipage - 盒子环境"
+                    class="package-option-item"
+                  />
+                  <el-checkbox 
+                    v-model="packages.tikz" 
+                    @change="(val) => updatePackage('tikz', val)"
+                    label="tikz - 绘图宏包"
+                    class="package-option-item"
+                  />
+                </div>
+              </div>
+
+              <div class="package-section">
+                <strong>tcolorbox 库</strong>
+                <div class="package-options-list">
+                  <el-checkbox 
+                    v-model="packages.tcolorbox.enabled" 
+                    @change="(val) => updatePackage('tcolorbox', {...packages.tcolorbox, enabled: val})"
+                    label="启用 tcolorbox"
+                    class="package-option-item"
+                  />
+                  <div v-if="packages.tcolorbox.enabled">
+                    <el-checkbox 
+                      v-model="packages.tcolorbox.raster" 
+                      @change="updateTcolorboxRaster"
+                      label="raster"
+                      class="package-option-item"
+                    />
+                    <el-checkbox 
+                      v-model="packages.tcolorbox.listings" 
+                      @change="updateTcolorboxListings"
+                      label="listings"
+                      class="package-option-item"
+                    />
+                    <el-checkbox 
+                      v-model="packages.tcolorbox.theorems" 
+                      @change="updateTcolorboxTheorems"
+                      label="theorems"
+                      class="package-option-item"
+                    />
+                    <el-checkbox 
+                      v-model="packages.tcolorbox.skins" 
+                      @change="updateTcolorboxSkins"
+                      label="skins"
+                      class="package-option-item"
+                    />
+                    <el-checkbox 
+                      v-model="packages.tcolorbox.xparse" 
+                      @change="updateTcolorboxXparse"
+                      label="xparse"
+                      class="package-option-item"
+                    />
+                    <el-checkbox 
+                      v-model="packages.tcolorbox.breakable" 
+                      @change="updateTcolorboxBreakable"
+                      label="breakable"
+                      class="package-option-item"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div class="package-section">
+                <strong>其他盒子宏包</strong>
+                <div class="package-options-list">
+                  <el-checkbox 
+                    v-model="packages.awesomebox" 
+                    @change="(val) => updatePackage('awesomebox', val)"
+                    label="awesomebox - 图标盒子宏包"
+                    class="package-option-item"
+                  />
+                  <el-checkbox 
+                    v-model="packages.mdframed" 
+                    @change="(val) => updatePackage('mdframed', val)"
+                    label="mdframed - 框架环境宏包"
+                    class="package-option-item"
+                  />
+                  <el-checkbox 
+                    v-model="packages.framed" 
+                    @change="(val) => updatePackage('framed', val)"
+                    label="framed - 框架环境宏包"
+                    class="package-option-item"
+                  />
+                  <el-checkbox 
+                    v-model="packages.changepage" 
+                    @change="(val) => updatePackage('changepage', val)"
+                    label="changepage - 页面调整宏包"
+                    class="package-option-item"
+                  />
+                </div>
+              </div>
             </div>
-          </div>
-          
-          <!-- Awesomebox -->
-          <div style="margin-bottom: 15px;">
-            <el-checkbox 
-              v-model="packages.awesomebox" 
-              @change="(val) => updatePackage('awesomebox', val)"
-              label="awesomebox - 图标盒子宏包"
-            />
-          </div>
-          
-          <!-- Mdframed -->
-          <div style="margin-bottom: 15px;">
-            <el-checkbox 
-              v-model="packages.mdframed" 
-              @change="(val) => updatePackage('mdframed', val)"
-              label="mdframed - 框架环境宏包"
-            />
-          </div>
-          
-          <!-- Framed -->
-          <div style="margin-bottom: 15px;">
-            <el-checkbox 
-              v-model="packages.framed" 
-              @change="(val) => updatePackage('framed', val)"
-              label="framed - 框架环境宏包"
-            />
-          </div>
-          
-          <!-- Changepage -->
-          <div style="margin-bottom: 15px;">
-            <el-checkbox 
-              v-model="packages.changepage" 
-              @change="(val) => updatePackage('changepage', val)"
-              label="changepage - 页面调整宏包"
-            />
-          </div>
-          
-          <el-divider />
-          
-          <!-- 代码预览 -->
-          <div v-if="computedLatexCode" style="margin-top: 20px;">
-            <div><strong>生成的 LaTeX 代码:</strong></div>
-            <pre style="background-color: #f5f5f5; padding: 15px; border-radius: 4px; overflow-x: auto; font-family: monospace; max-height: 300px;">{{ computedLatexCode }}</pre>
+
+            <!-- 右栏：代码预览 -->
+            <div class="package-options-right">
+              <div class="code-preview">
+                <pre class="code-preview-content">{{ computedLatexCode }}</pre>
+              </div>
+            </div>
           </div>
         </div>
       </el-card>
       
       <template #footer>
-        <span class="dialog-footer">
-          <el-button @click="closeDialog">取消</el-button>
-          <el-button type="primary" @click="closeDialog">确定</el-button>
-        </span>
+        
       </template>
     </el-dialog>
   </div>
