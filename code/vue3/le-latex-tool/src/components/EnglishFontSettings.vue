@@ -19,10 +19,6 @@ const dialogVisible = ref(false)
 
 // 字体配置数据
 const fontConfig = {
-  // 默认启用英文字体设置
-  defaultEnabled: true,
-  
-  // LaTeX 代码模板
   latexTemplate: `%
 %  cd /usr/local/texlive/2022/texmf-dist/fonts/opentype/public/cm-unicode/
 %  cd /Volumes/THAWSPACE/Soft.Ok/texlive/2024/texmf-dist/fonts/opentype/public/cm-unicode/
@@ -53,8 +49,8 @@ const fontConfig = {
   ItalicFont     = *bto,%  light version
   BoldFont       = *tb,
   BoldItalicFont = *tx,
-]`
-+ '\n' + `% 消除 \\t 命令的字体 warning
+]
+% 消除 \\t 命令的字体 warning
 \\AtBeginDocument{%}
   \\renewcommand*\\t[1]{{\\edef\\restore@font{\\the\\font}\\usefont{OML}{cmm}{m}{it}\\accent"7F\\restore@font#1}}
 }`
