@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { ref, computed, defineEmits, defineProps, watch, onMounted } from 'vue'
+import { ref, computed, defineEmits, defineProps } from 'vue'
 import { ElCard, ElCheckbox, ElDialog, ElButton } from 'element-plus'
+import { setupCodeEmission } from '../utils/code-emitter'
 import { generateCodeFromBoxPackageInfos, BoxPackageInfo } from '../utils/box-packages-utils'
 
 const props = defineProps<{
@@ -51,18 +52,7 @@ const computedLatexCode = computed(() => {
   return `${usePkg}\n\n${packageConfig.latexTemplate}`
 })
 
-// 监听代码变化
-watch(computedLatexCode, (newCode) => {
-  emit('codeChange', newCode)
-})
-
-// 组件挂载时触发代码变更事件
-onMounted(() => {
-  emit('codeChange', computedLatexCode.value)
-  if (props.componentId !== undefined) {
-    console.log(`FancyhdrPackage component loaded successfully with ID: ${props.componentId}`)
-  }
-})
+setupCodeEmission(computedLatexCode, emit, props.componentId, 'FancyhdrPackage')
 
 // 打开弹窗
 const openDialog = () => {

@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { ref, computed, defineEmits, defineProps, watch, onMounted } from 'vue'
+import { ref, computed, defineEmits, defineProps } from 'vue'
 import { ElCard, ElRadioGroup, ElRadioButton, ElCheckbox, ElDialog, ElButton, ElDivider } from 'element-plus'
 import { DocumentClassConfig, ClassOptionConfig, DocumentClassInfo } from '../types/document-class-selector-types';
 import { generateCodeFromDocumentClassInfo } from '../utils/document-class-selector-utils';
+import { setupCodeEmission } from '../utils/code-emitter'
 
 const props = defineProps<{
   modelValue: {
@@ -102,25 +103,14 @@ const updateOptionValue = (key: string, value: boolean) => {
   })
 }
 
-watch(computedLatexCode, (newCode) => {
-  emit('codeChange', newCode)
-})
+if (!props.modelValue.documentClass) {
+  emit('update:modelValue', {
+    documentClass: 'ctexbook',
+    options: props.modelValue.options || {}
+  })
+}
 
-onMounted(() => {
-  // 如果没有设置文档类，则默认使用 ctexbook
-  if (!props.modelValue.documentClass) {
-    emit('update:modelValue', {
-      documentClass: 'ctexbook',
-      options: props.modelValue.options || {}
-    })
-  }
-  
-  const documentClassInfo = generateDocumentClassInfo();
-  emit('codeChange', computedLatexCode.value, documentClassInfo)
-  if (props.componentId !== undefined) {
-    console.log(`DocumentClassSelector component loaded successfully with ID: ${props.componentId}`)
-  }
-})
+setupCodeEmission(computedLatexCode, emit as any, props.componentId, 'DocumentClassSelector')
 
 // 弹窗控制方法
 const openDialog = () => {

@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { ref, computed, defineEmits, defineProps, watch, onMounted } from 'vue'
+import { ref, computed, defineEmits, defineProps } from 'vue'
 import { ElCard, ElCheckbox, ElDialog, ElButton, ElDivider } from 'element-plus'
+import { setupCodeEmission } from '../utils/code-emitter'
 
 const props = defineProps<{
   modelValue: {
@@ -58,26 +59,14 @@ const computedLatexCode = computed(() => {
   return codes.join('\n')
 })
 
-// 监听代码变化
-watch(computedLatexCode, (newCode) => {
-  emit('codeChange', newCode)
-})
+if (props.modelValue.titletocEnabled === undefined || props.modelValue.multitocEnabled === undefined) {
+  emit('update:modelValue', { 
+    titletocEnabled: true, 
+    multitocEnabled: false 
+  })
+}
 
-// 组件挂载时触发代码变更事件
-onMounted(() => {
-  // 如果未设置enabled属性，则设置默认值
-  if (props.modelValue.titletocEnabled === undefined || props.modelValue.multitocEnabled === undefined) {
-    emit('update:modelValue', { 
-      titletocEnabled: true, 
-      multitocEnabled: false 
-    })
-  }
-  
-  emit('codeChange', computedLatexCode.value)
-  if (props.componentId !== undefined) {
-    console.log(`TableOfContentsPackage component loaded successfully with ID: ${props.componentId}`)
-  }
-})
+setupCodeEmission(computedLatexCode, emit, props.componentId, 'TableOfContentsPackage')
 
 // 打开弹窗
 const openDialog = () => {

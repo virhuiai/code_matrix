@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { ref, computed, defineEmits, defineProps, watch, onMounted } from 'vue'
+import { ref, computed, defineEmits, defineProps } from 'vue'
 import { ElCard, ElCheckbox, ElDialog, ElButton, ElDivider, ElAlert } from 'element-plus'
+import { setupCodeEmission } from '../utils/code-emitter'
 import { generateCodeFromPackageInfos, type PackageInfo } from '../utils/generic-packages-utils'
 
 const props = defineProps<{
@@ -192,37 +193,25 @@ const computedLatexCode = computed(() => {
   return generateCodeFromPackageInfos(infos)
 })
 
-// 监听代码变化
-watch(computedLatexCode, (newCode) => {
-  emit('codeChange', newCode)
-})
+if (Object.values(props.modelValue).every(v => v === undefined)) {
+  emit('update:modelValue', { 
+    enabled: true,
+    longtableEnabled: true,
+    booktabsEnabled: true,
+    tabularxEnabled: true,
+    tabularyEnabled: true,
+    ltablexEnabled: true,
+    colortblEnabled: true,
+    multirowEnabled: true,
+    arrayEnabled: true,
+    dcolumnEnabled: true,
+    arydshlnEnabled: true,
+    makecellEnabled: false,
+    hhlineEnabled: false
+  })
+}
 
-// 组件挂载时触发代码变更事件
-onMounted(() => {
-  // 如果未设置enabled属性，则设置默认值
-  if (Object.values(props.modelValue).every(v => v === undefined)) {
-    emit('update:modelValue', { 
-      enabled: true,
-      longtableEnabled: true,
-      booktabsEnabled: true,
-      tabularxEnabled: true,
-      tabularyEnabled: true,
-      ltablexEnabled: true,
-      colortblEnabled: true,
-      multirowEnabled: true,
-      arrayEnabled: true,
-      dcolumnEnabled: true,
-      arydshlnEnabled: true,
-      makecellEnabled: false,
-      hhlineEnabled: false
-    })
-  }
-  
-  emit('codeChange', computedLatexCode.value)
-  if (props.componentId !== undefined) {
-    console.log(`TablePackage component loaded successfully with ID: ${props.componentId}`)
-  }
-})
+setupCodeEmission(computedLatexCode, emit, props.componentId, 'TablePackage')
 
 // 打开弹窗
 const openDialog = () => {

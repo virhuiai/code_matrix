@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { ref, computed, defineEmits, defineProps, watch, onMounted } from 'vue'
+import { ref, computed, defineEmits, defineProps } from 'vue'
 import { ElCard, ElCheckbox, ElDialog, ElButton, ElDivider, ElAlert } from 'element-plus'
+import { setupCodeEmission } from '../utils/code-emitter'
 
 const props = defineProps<{
   modelValue: {
@@ -161,32 +162,20 @@ const computedLatexCode = computed(() => {
   return codes.join('\n\n')
 })
 
-// 监听代码变化
-watch(computedLatexCode, (newCode) => {
-  emit('codeChange', newCode)
-})
+if (Object.values(props.modelValue).every(v => v === undefined)) {
+  emit('update:modelValue', { 
+    enabled: true,
+    graphicxEnabled: true,
+    floatrowEnabled: true,
+    rotatingEnabled: true,
+    pdfpagesEnabled: true,
+    picinparEnabled: true,
+    xcolorEnabled: true,
+    pgfUmlcdEnabled: true
+  })
+}
 
-// 组件挂载时触发代码变更事件
-onMounted(() => {
-  // 如果未设置enabled属性，则设置默认值
-  if (Object.values(props.modelValue).every(v => v === undefined)) {
-    emit('update:modelValue', { 
-      enabled: true,
-      graphicxEnabled: true,
-      floatrowEnabled: true,
-      rotatingEnabled: true,
-      pdfpagesEnabled: true,
-      picinparEnabled: true,
-      xcolorEnabled: true,
-      pgfUmlcdEnabled: true
-    })
-  }
-  
-  emit('codeChange', computedLatexCode.value)
-  if (props.componentId !== undefined) {
-    console.log(`FigureColorPackage component loaded successfully with ID: ${props.componentId}`)
-  }
-})
+setupCodeEmission(computedLatexCode, emit, props.componentId, 'FigureColorPackage')
 
 // 打开弹窗
 const openDialog = () => {
