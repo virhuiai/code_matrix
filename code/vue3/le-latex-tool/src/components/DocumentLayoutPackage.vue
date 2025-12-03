@@ -91,7 +91,7 @@ defineExpose({
 </script>
 
 <template>
-  <div>
+  <div class="package-options-dialog">
     <!-- 触发弹窗的按钮 -->
     <el-button type="primary" @click="openDialog" style="width: 100%; margin-top: 10px;">行距和空格设置</el-button>
     
