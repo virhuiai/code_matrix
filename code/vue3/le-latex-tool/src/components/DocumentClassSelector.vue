@@ -47,16 +47,16 @@ const documentClasses: DocumentClassConfig[] = [
 
 // 文档类可选选项
 const classOptions: ClassOptionConfig[] = [
-  { key: 'a4paper', label: 'a4paper' },
-  { key: 'oneside', label: 'oneside' },
-  { key: 'zihao=-4', label: 'zihao=-4' },
-  { key: 'space', label: 'space' }, 
-  { key: 'scheme=chinese', label: 'scheme=chinese' },
-  { key: 'heading=true', label: 'heading=true' },
-  { key: 'hyperref', label: 'hyperref' },
-  { key: 'fntef', label: 'fntef' },
-  { key: 'fancyhdr', label: 'fancyhdr' },
-  { key: 'fontset=none', label: 'fontset=none' }
+  { key: 'a4paper', label: 'a4paper', desc: '设置纸张大小为 A4', },
+  { key: 'oneside', label: 'oneside', desc: '单面排版模式' },
+  { key: 'zihao=-4', label: 'zihao=-4', desc: '中文字号设置为小四' },
+  { key: 'space', label: 'space', desc: '启用空格相关优化' }, 
+  { key: 'scheme=chinese', label: 'scheme=chinese', desc: '中文排版方案' },
+  { key: 'heading=true', label: 'heading=true', desc: '启用中文标题格式支持' },
+  { key: 'hyperref', label: 'hyperref', desc: '与超链接设置兼容' },
+  { key: 'fntef', label: 'fntef', desc: '与中文字体特效兼容' },
+  { key: 'fancyhdr', label: 'fancyhdr', desc: '自动加载 fancyhdr 并启用中文页眉支持' },
+  { key: 'fontset=none', label: 'fontset=none', desc: '不使用默认字体集，便于自定义字体' }
 ]
 
 const selectedClass = computed({
@@ -94,6 +94,8 @@ const computedLatexCode = computed(() => {
   const documentClassInfo = generateDocumentClassInfo();
   return generateCodeFromDocumentClassInfo(documentClassInfo);
 })
+
+const exampleForOption = (opt: string) => `\\documentclass[${opt}]{$${selectedClass.value}}`.replace('$','')
 
 // 更新选项值
 const updateOptionValue = (key: string, value: boolean) => {
@@ -177,6 +179,10 @@ defineExpose({
                     :label="option.label"
                     class="document-class-selector-option-item"
                   />
+                  <div v-for="option in classOptions" :key="option.key + '-doc'" v-if="optionValues[option.key]" style="margin-left: 20px; margin-top: 8px;">
+                    <div>{{ option.desc }}</div>
+                    <pre style="background:#f5f5f5;padding:10px;border-radius:4px;white-space:pre-wrap;">{{ exampleForOption(option.key) }}</pre>
+                  </div>
                 </div>
               </div>
             </div>

@@ -68,6 +68,78 @@ const packages = ref({
   }
 })
 
+// 选项说明与示例
+const optionDocs = {
+  xcolor: {
+    desc: '提供颜色支持，可选 dvipsnames 预定义颜色集',
+    example: '\\usepackage[dvipsnames]{xcolor}\n\\textcolor{BrickRed}{Hello}'
+  },
+  xcolorDvipsnames: {
+    desc: '启用 dvipsnames 预定义颜色名称',
+    example: '\\textcolor{BrickRed}{示例文本}'
+  },
+  cprotect: {
+    desc: '保护命令在浮动环境中的内容，避免被展开破坏',
+    example: '\\cprotect\\caption{包含特殊命令的标题}'
+  },
+  spverbatim: {
+    desc: '支持空格的 verbatim 环境，保留空白字符',
+    example: '\\begin{spverbatim}\ncode with  spaces\n\\end{spverbatim}'
+  },
+  fancyvrb: {
+    desc: '增强的 verbatim，支持边框、行号等',
+    example: '\\begin{Verbatim}[frame=single]\n...\\end{Verbatim}'
+  },
+  fancyvrbEx: {
+    desc: 'fancyvrb 的扩展功能集合',
+    example: '% 使用 fancyvrb-ex 扩展特性'
+  },
+  xparse: {
+    desc: '提供新一代命令定义接口',
+    example: '\\NewDocumentCommand{\\foo}{m}{#1}'
+  },
+  minted: {
+    desc: '基于 Pygments 的代码高亮，需要 -shell-escape',
+    example: '\\begin{minted}{python}\nprint(1)\n\\end{minted}'
+  },
+  mintedNewfloat: {
+    desc: '将 minted 定义为浮动体，支持题注',
+    example: '\\usepackage[newfloat]{minted}'
+  },
+  mintedCache: {
+    desc: '关闭缓存便于调试，或启用以提升性能',
+    example: '\\usepackage[cache=false]{minted}'
+  },
+  listings: {
+    desc: '标准代码环境宏包，支持多语言格式化',
+    example: '\\begin{lstlisting}\n...\n\\end{lstlisting}'
+  },
+  accsupp: {
+    desc: '可访问性辅助支持，如设置实际文本',
+    example: '\\BeginAccSupp{ActualText=hello}Text\\EndAccSupp'
+  },
+  tcolorbox: {
+    desc: '彩色文本框，支持丰富样式',
+    example: '\\begin{tcolorbox}内容\\end{tcolorbox}'
+  },
+  tcolorboxListings: {
+    desc: '启用 tcolorbox 的 listings 库',
+    example: '\\tcbuselibrary{listings}'
+  },
+  tcolorboxSkins: {
+    desc: '启用 tcolorbox 的 skins 库',
+    example: '\\tcbuselibrary{skins}'
+  },
+  tcolorboxBreakable: {
+    desc: '允许 tcolorbox 在分页时断开',
+    example: '\\begin{tcolorbox}[breakable]...\\end{tcolorbox}'
+  },
+  tcolorboxXparse: {
+    desc: '启用 tcolorbox 的 xparse 库',
+    example: '\\tcbuselibrary{xparse}'
+  }
+}
+
 // 计算属性：生成 LaTeX 代码（使用通用工具）
 const computedLatexCode = computed(() => {
   const infos: PackageInfo[] = []
@@ -221,6 +293,14 @@ defineExpose({
                     @change="updateXcolorDvipsnames"
                     label="dvipsnames"
                   />
+                  <div class="option-doc" style="margin-top: 8px;">
+                    <div>{{ optionDocs.xcolor.desc }}</div>
+                    <pre style="background:#f5f5f5;padding:10px;border-radius:4px;white-space:pre-wrap;">{{ optionDocs.xcolor.example }}</pre>
+                    <div v-if="packages.xcolor.dvipsnames" style="margin-top:8px;">
+                      <div>{{ optionDocs.xcolorDvipsnames.desc }}</div>
+                      <pre style="background:#f5f5f5;padding:10px;border-radius:4px;white-space:pre-wrap;">{{ optionDocs.xcolorDvipsnames.example }}</pre>
+                    </div>
+                  </div>
                 </div>
               </div>
 
@@ -231,6 +311,10 @@ defineExpose({
                   @change="(val) => updatePackage('cprotect', val)"
                   label="cprotect - 保护命令宏包"
                 />
+                <div v-if="packages.cprotect" class="option-doc" style="margin-top: 8px; margin-left: 20px;">
+                  <div>{{ optionDocs.cprotect.desc }}</div>
+                  <pre style="background:#f5f5f5;padding:10px;border-radius:4px;white-space:pre-wrap;">{{ optionDocs.cprotect.example }}</pre>
+                </div>
               </div>
 
               <!-- Spverbatim -->
@@ -240,6 +324,10 @@ defineExpose({
                   @change="(val) => updatePackage('spverbatim', val)"
                   label="spverbatim - 支持空格的 Verbatim 宏包"
                 />
+                <div v-if="packages.spverbatim" class="option-doc" style="margin-top: 8px; margin-left: 20px;">
+                  <div>{{ optionDocs.spverbatim.desc }}</div>
+                  <pre style="background:#f5f5f5;padding:10px;border-radius:4px;white-space:pre-wrap;">{{ optionDocs.spverbatim.example }}</pre>
+                </div>
               </div>
 
               <!-- Fancyvrb -->
@@ -249,6 +337,10 @@ defineExpose({
                   @change="(val) => updatePackage('fancyvrb', val)"
                   label="fancyvrb - 增强的 Verbatim 宏包"
                 />
+                <div v-if="packages.fancyvrb" class="option-doc" style="margin-top: 8px; margin-left: 20px;">
+                  <div>{{ optionDocs.fancyvrb.desc }}</div>
+                  <pre style="background:#f5f5f5;padding:10px;border-radius:4px;white-space:pre-wrap;">{{ optionDocs.fancyvrb.example }}</pre>
+                </div>
               </div>
 
               <!-- Fancyvrb-ex -->
@@ -258,6 +350,10 @@ defineExpose({
                   @change="(val) => updatePackage('fancyvrbEx', val)"
                   label="fancyvrb-ex - Fancyvrb 扩展宏包"
                 />
+                <div v-if="packages.fancyvrbEx" class="option-doc" style="margin-top: 8px; margin-left: 20px;">
+                  <div>{{ optionDocs.fancyvrbEx.desc }}</div>
+                  <pre style="background:#f5f5f5;padding:10px;border-radius:4px;white-space:pre-wrap;">{{ optionDocs.fancyvrbEx.example }}</pre>
+                </div>
               </div>
 
               <!-- Xparse -->
@@ -267,6 +363,10 @@ defineExpose({
                   @change="(val) => updatePackage('xparse', val)"
                   label="xparse - 新一代命令定义宏包"
                 />
+                <div v-if="packages.xparse" class="option-doc" style="margin-top: 8px; margin-left: 20px;">
+                  <div>{{ optionDocs.xparse.desc }}</div>
+                  <pre style="background:#f5f5f5;padding:10px;border-radius:4px;white-space:pre-wrap;">{{ optionDocs.xparse.example }}</pre>
+                </div>
               </div>
 
               <!-- Minted -->
@@ -287,6 +387,18 @@ defineExpose({
                     @change="updateMintedCache"
                     label="cache=false"
                   />
+                  <div class="option-doc" style="margin-top: 8px;">
+                    <div>{{ optionDocs.minted.desc }}</div>
+                    <pre style="background:#f5f5f5;padding:10px;border-radius:4px;white-space:pre-wrap;">{{ optionDocs.minted.example }}</pre>
+                    <div v-if="packages.minted.newfloat" style="margin-top:8px;">
+                      <div>{{ optionDocs.mintedNewfloat.desc }}</div>
+                      <pre style="background:#f5f5f5;padding:10px;border-radius:4px;white-space:pre-wrap;">{{ optionDocs.mintedNewfloat.example }}</pre>
+                    </div>
+                    <div v-if="packages.minted.cache === false" style="margin-top:8px;">
+                      <div>{{ optionDocs.mintedCache.desc }}</div>
+                      <pre style="background:#f5f5f5;padding:10px;border-radius:4px;white-space:pre-wrap;">{{ optionDocs.mintedCache.example }}</pre>
+                    </div>
+                  </div>
                 </div>
               </div>
 
@@ -297,6 +409,10 @@ defineExpose({
                   @change="(val) => updatePackage('listings', val)"
                   label="listings - 代码环境宏包"
                 />
+                <div v-if="packages.listings" class="option-doc" style="margin-top: 8px; margin-left: 20px;">
+                  <div>{{ optionDocs.listings.desc }}</div>
+                  <pre style="background:#f5f5f5;padding:10px;border-radius:4px;white-space:pre-wrap;">{{ optionDocs.listings.example }}</pre>
+                </div>
               </div>
 
               <!-- Accsupp -->
@@ -306,6 +422,10 @@ defineExpose({
                   @change="(val) => updatePackage('accsupp', val)"
                   label="accsupp - 辅助支持宏包"
                 />
+                <div v-if="packages.accsupp" class="option-doc" style="margin-top: 8px; margin-left: 20px;">
+                  <div>{{ optionDocs.accsupp.desc }}</div>
+                  <pre style="background:#f5f5f5;padding:10px;border-radius:4px;white-space:pre-wrap;">{{ optionDocs.accsupp.example }}</pre>
+                </div>
               </div>
 
               <!-- Tcolorbox -->
@@ -337,6 +457,26 @@ defineExpose({
                     @change="updateTcolorboxXparse"
                     label="xparse"
                   />
+                  <div class="option-doc" style="margin-top: 8px;">
+                    <div>{{ optionDocs.tcolorbox.desc }}</div>
+                    <pre style="background:#f5f5f5;padding:10px;border-radius:4px;white-space:pre-wrap;">{{ optionDocs.tcolorbox.example }}</pre>
+                    <div v-if="packages.tcolorbox.listings" style="margin-top:8px;">
+                      <div>{{ optionDocs.tcolorboxListings.desc }}</div>
+                      <pre style="background:#f5f5f5;padding:10px;border-radius:4px;white-space:pre-wrap;">{{ optionDocs.tcolorboxListings.example }}</pre>
+                    </div>
+                    <div v-if="packages.tcolorbox.skins" style="margin-top:8px;">
+                      <div>{{ optionDocs.tcolorboxSkins.desc }}</div>
+                      <pre style="background:#f5f5f5;padding:10px;border-radius:4px;white-space:pre-wrap;">{{ optionDocs.tcolorboxSkins.example }}</pre>
+                    </div>
+                    <div v-if="packages.tcolorbox.breakable" style="margin-top:8px;">
+                      <div>{{ optionDocs.tcolorboxBreakable.desc }}</div>
+                      <pre style="background:#f5f5f5;padding:10px;border-radius:4px;white-space:pre-wrap;">{{ optionDocs.tcolorboxBreakable.example }}</pre>
+                    </div>
+                    <div v-if="packages.tcolorbox.xparse" style="margin-top:8px;">
+                      <div>{{ optionDocs.tcolorboxXparse.desc }}</div>
+                      <pre style="background:#f5f5f5;padding:10px;border-radius:4px;white-space:pre-wrap;">{{ optionDocs.tcolorboxXparse.example }}</pre>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>

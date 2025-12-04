@@ -38,6 +38,13 @@ const packageConfig = {
 %%%%%% 并对其中某些命令重新定义，以正确显示中文页眉。`
 }
 
+const optionDocs = {
+  enabled: {
+    desc: '启用 fancyhdr 并设置页眉页脚格式',
+    example: '\\pagestyle{fancy}\n\\fancyhf{}\n\\fancyhead[EL,OR]{\\thepage}'
+  }
+}
+
 // 计算属性：控制启用状态
 const isEnabled = computed({
   get: () => props.modelValue.enabled,
@@ -94,6 +101,10 @@ defineExpose({
                     label="启用 Fancyhdr 版式包"
                     class="package-option-item"
                   />
+                  <div v-if="isEnabled" style="margin-left: 20px; margin-top: 8px;">
+                    <div>{{ optionDocs.enabled.desc }}</div>
+                    <pre style="background:#f5f5f5;padding:10px;border-radius:4px;white-space:pre-wrap;">{{ optionDocs.enabled.example }}</pre>
+                  </div>
                 </div>
               </div>
             </div>

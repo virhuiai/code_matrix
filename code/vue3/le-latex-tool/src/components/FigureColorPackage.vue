@@ -73,6 +73,16 @@ const packageTemplates = {
   pgfUmlcd: '\\usepackage{pgf-umlcd}'
 }
 
+const optionDocs = {
+  graphicx: { desc: '提供图像插入与文件名处理，搭配 grffile 支持复杂文件名' },
+  floatrow: { desc: '提供浮动体布局与标题控制环境，增强图表排版' },
+  rotating: { desc: '旋转对象（图、表等），支持横向页面或局部旋转' },
+  pdfpages: { desc: '插入外部 PDF 页，支持页选择与合并插入' },
+  picinpar: { desc: '图片绕排文本，提供 window/figwindow/tabwindow 环境' },
+  xcolor: { desc: '颜色支持，含 dvipsnames 预定义颜色集' },
+  pgfUmlcd: { desc: '绘制 UML 类图的宏包，基于 PGF/TikZ' }
+}
+
 // 计算属性：控制启用状态
 const mainEnabled = computed({
   get: () => props.modelValue.enabled,
@@ -206,149 +216,134 @@ defineExpose({
       :before-close="closeDialog"
     >
       <el-card shadow="hover">
-        <div>
-          <strong>插图和颜色设置</strong>
-          <p>设置文档中的插图、浮动体、旋转和颜色相关功能</p>
-          
-          <el-checkbox 
-            :model-value="mainEnabled" 
-            @update:model-value="(val: boolean | string | number) => mainEnabled = Boolean(val)"
-            label="启用插图和颜色设置" 
-          />
-          
-          <div v-if="mainEnabled" style="margin-top: 20px;">
-            <el-alert
-              title="使用说明"
-              description="以下宏包可以单独启用或禁用。"
-              type="info"
-              show-icon
-              style="margin-bottom: 15px;"
+        <div class="package-options-container">
+          <div class="package-options-left">
+            <strong>插图和颜色设置</strong>
+            <p>设置文档中的插图、浮动体、旋转和颜色相关功能</p>
+            <el-checkbox 
+              :model-value="mainEnabled" 
+              @update:model-value="(val: boolean | string | number) => mainEnabled = Boolean(val)"
+              label="启用插图和颜色设置" 
             />
-            
-            <el-divider />
-            
-            <div style="margin-top: 20px;">
-              <strong>图形和插图宏包</strong>
-              <div style="margin-top: 10px; margin-left: 20px;">
-                <el-checkbox 
-                  :model-value="graphicxEnabled" 
-                  @update:model-value="(val: boolean | string | number) => graphicxEnabled = Boolean(val)"
-                  label="graphicx/grffile 宏包（提供图像插入功能）" 
-                  style="display: block; margin-bottom: 8px;"
-                />
-                
-                <div v-if="graphicxEnabled" style="margin-top: 10px;">
-                  <pre style="background-color: #f5f5f5; padding: 10px; border-radius: 4px; overflow-x: auto; font-family: monospace; font-size: 12px;">{{ packageTemplates.graphicx }}</pre>
+            <div v-if="mainEnabled" style="margin-top: 15px;">
+              <el-alert
+                title="使用说明"
+                description="以下宏包可以单独启用或禁用。"
+                type="info"
+                show-icon
+                style="margin-bottom: 15px;"
+              />
+              <el-divider />
+              <div style="margin-top: 15px;">
+                <strong>图形和插图宏包</strong>
+                <div style="margin-top: 10px; margin-left: 20px;">
+                  <el-checkbox 
+                    :model-value="graphicxEnabled" 
+                    @update:model-value="(val: boolean | string | number) => graphicxEnabled = Boolean(val)"
+                    label="graphicx/grffile 宏包（提供图像插入功能）" 
+                    style="display: block; margin-bottom: 8px;"
+                  />
+                  <div v-if="graphicxEnabled" style="margin-top: 10px;">
+                    <div>{{ optionDocs.graphicx.desc }}</div>
+                    <pre style="background:#f5f5f5;padding:10px;border-radius:4px;white-space:pre-wrap;font-family:monospace;font-size:12px;">{{ packageTemplates.graphicx }}</pre>
+                  </div>
+                </div>
+              </div>
+              <el-divider />
+              <div style="margin-top: 15px;">
+                <strong>浮动体和旋转宏包</strong>
+                <div style="margin-top: 10px; margin-left: 20px;">
+                  <el-checkbox 
+                    :model-value="floatrowEnabled" 
+                    @update:model-value="(val: boolean | string | number) => floatrowEnabled = Boolean(val)"
+                    label="floatrow 宏包（浮动体环境）" 
+                    style="display: block; margin-bottom: 8px;"
+                  />
+                  <div v-if="floatrowEnabled" style="margin-top: 10px;">
+                    <div>{{ optionDocs.floatrow.desc }}</div>
+                    <pre style="background:#f5f5f5;padding:10px;border-radius:4px;white-space:pre-wrap;font-family:monospace;font-size:12px;">{{ packageTemplates.floatrow }}</pre>
+                  </div>
+                  <el-checkbox 
+                    :model-value="rotatingEnabled" 
+                    @update:model-value="(val: boolean | string | number) => rotatingEnabled = Boolean(val)"
+                    label="rotating 宏包（旋转对象）" 
+                    style="display: block; margin-top: 8px;"
+                  />
+                  <div v-if="rotatingEnabled" style="margin-top: 10px;">
+                    <div>{{ optionDocs.rotating.desc }}</div>
+                    <pre style="background:#f5f5f5;padding:10px;border-radius:4px;white-space:pre-wrap;font-family:monospace;font-size:12px;">{{ packageTemplates.rotating }}</pre>
+                  </div>
+                </div>
+              </div>
+              <el-divider />
+              <div style="margin-top: 15px;">
+                <strong>PDF 页面处理</strong>
+                <div style="margin-top: 10px; margin-left: 20px;">
+                  <el-checkbox 
+                    :model-value="pdfpagesEnabled" 
+                    @update:model-value="(val: boolean | string | number) => pdfpagesEnabled = Boolean(val)"
+                    label="pdfpages 宏包（插入 PDF 页面）" 
+                    style="display: block; margin-bottom: 8px;"
+                  />
+                  <div v-if="pdfpagesEnabled" style="margin-top: 10px;">
+                    <div>{{ optionDocs.pdfpages.desc }}</div>
+                    <pre style="background:#f5f5f5;padding:10px;border-radius:4px;white-space:pre-wrap;font-family:monospace;font-size:12px;">{{ packageTemplates.pdfpages }}</pre>
+                  </div>
+                </div>
+              </div>
+              <el-divider />
+              <div style="margin-top: 15px;">
+                <strong>绕排文本宏包</strong>
+                <div style="margin-top: 10px; margin-left: 20px;">
+                  <el-checkbox 
+                    :model-value="picinparEnabled" 
+                    @update:model-value="(val: boolean | string | number) => picinparEnabled = Boolean(val)"
+                    label="picinpar 宏包（图片绕排文本）" 
+                    style="display: block; margin-bottom: 8px;"
+                  />
+                  <div v-if="picinparEnabled" style="margin-top: 10px;">
+                    <div>{{ optionDocs.picinpar.desc }}</div>
+                    <pre style="background:#f5f5f5;padding:10px;border-radius:4px;white-space:pre-wrap;font-family:monospace;font-size:12px;">{{ packageTemplates.picinpar }}</pre>
+                  </div>
+                </div>
+              </div>
+              <el-divider />
+              <div style="margin-top: 15px;">
+                <strong>颜色宏包</strong>
+                <div style="margin-top: 10px; margin-left: 20px;">
+                  <el-checkbox 
+                    :model-value="xcolorEnabled" 
+                    @update:model-value="(val: boolean | string | number) => xcolorEnabled = Boolean(val)"
+                    label="xcolor 宏包（颜色支持）" 
+                    style="display: block; margin-bottom: 8px;"
+                  />
+                  <div v-if="xcolorEnabled" style="margin-top: 10px;">
+                    <div>{{ optionDocs.xcolor.desc }}</div>
+                    <pre style="background:#f5f5f5;padding:10px;border-radius:4px;white-space:pre-wrap;font-family:monospace;font-size:12px;">{{ packageTemplates.xcolor }}</pre>
+                  </div>
+                </div>
+              </div>
+              <el-divider />
+              <div style="margin-top: 15px;">
+                <strong>UML 图宏包</strong>
+                <div style="margin-top: 10px; margin-left: 20px;">
+                  <el-checkbox 
+                    :model-value="pgfUmlcdEnabled" 
+                    @update:model-value="(val: boolean | string | number) => pgfUmlcdEnabled = Boolean(val)"
+                    label="pgf-umlcd 宏包（绘制 UML 类图）" 
+                    style="display: block; margin-bottom: 8px;"
+                  />
+                  <div v-if="pgfUmlcdEnabled" style="margin-top: 10px;">
+                    <div>{{ optionDocs.pgfUmlcd.desc }}</div>
+                    <pre style="background:#f5f5f5;padding:10px;border-radius:4px;white-space:pre-wrap;font-family:monospace;font-size:12px;">{{ packageTemplates.pgfUmlcd }}</pre>
+                  </div>
                 </div>
               </div>
             </div>
-            
-            <el-divider />
-            
-            <div style="margin-top: 20px;">
-              <strong>浮动体和旋转宏包</strong>
-              <div style="margin-top: 10px; margin-left: 20px;">
-                <el-checkbox 
-                  :model-value="floatrowEnabled" 
-                  @update:model-value="(val: boolean | string | number) => floatrowEnabled = Boolean(val)"
-                  label="floatrow 宏包（浮动体环境）" 
-                  style="display: block; margin-bottom: 8px;"
-                />
-                
-                <el-checkbox 
-                  :model-value="rotatingEnabled" 
-                  @update:model-value="(val: boolean | string | number) => rotatingEnabled = Boolean(val)"
-                  label="rotating 宏包（旋转对象）" 
-                  style="display: block; margin-bottom: 8px;"
-                />
-              </div>
-              
-              <div v-if="floatrowEnabled" style="margin-top: 10px; margin-left: 20px;">
-                <pre style="background-color: #f5f5f5; padding: 10px; border-radius: 4px; overflow-x: auto; font-family: monospace; font-size: 12px;">{{ packageTemplates.floatrow }}</pre>
-              </div>
-              
-              <div v-if="rotatingEnabled" style="margin-top: 10px; margin-left: 20px;">
-                <pre style="background-color: #f5f5f5; padding: 10px; border-radius: 4px; overflow-x: auto; font-family: monospace; font-size: 12px;">{{ packageTemplates.rotating }}</pre>
-              </div>
-            </div>
-            
-            <el-divider />
-            
-            <div style="margin-top: 20px;">
-              <strong>PDF 页面处理</strong>
-              <div style="margin-top: 10px; margin-left: 20px;">
-                <el-checkbox 
-                  :model-value="pdfpagesEnabled" 
-                  @update:model-value="(val: boolean | string | number) => pdfpagesEnabled = Boolean(val)"
-                  label="pdfpages 宏包（插入 PDF 页面）" 
-                  style="display: block; margin-bottom: 8px;"
-                />
-                
-                <div v-if="pdfpagesEnabled" style="margin-top: 10px;">
-                  <pre style="background-color: #f5f5f5; padding: 10px; border-radius: 4px; overflow-x: auto; font-family: monospace; font-size: 12px;">{{ packageTemplates.pdfpages }}</pre>
-                </div>
-              </div>
-            </div>
-            
-            <el-divider />
-            
-            <div style="margin-top: 20px;">
-              <strong>绕排文本宏包</strong>
-              <div style="margin-top: 10px; margin-left: 20px;">
-                <el-checkbox 
-                  :model-value="picinparEnabled" 
-                  @update:model-value="(val: boolean | string | number) => picinparEnabled = Boolean(val)"
-                  label="picinpar 宏包（图片绕排文本）" 
-                  style="display: block; margin-bottom: 8px;"
-                />
-                
-                <div v-if="picinparEnabled" style="margin-top: 10px;">
-                  <pre style="background-color: #f5f5f5; padding: 10px; border-radius: 4px; overflow-x: auto; font-family: monospace; font-size: 12px;">{{ packageTemplates.picinpar }}</pre>
-                </div>
-              </div>
-            </div>
-            
-            <el-divider />
-            
-            <div style="margin-top: 20px;">
-              <strong>颜色宏包</strong>
-              <div style="margin-top: 10px; margin-left: 20px;">
-                <el-checkbox 
-                  :model-value="xcolorEnabled" 
-                  @update:model-value="(val: boolean | string | number) => xcolorEnabled = Boolean(val)"
-                  label="xcolor 宏包（颜色支持）" 
-                  style="display: block; margin-bottom: 8px;"
-                />
-                
-                <div v-if="xcolorEnabled" style="margin-top: 10px;">
-                  <pre style="background-color: #f5f5f5; padding: 10px; border-radius: 4px; overflow-x: auto; font-family: monospace; font-size: 12px;">{{ packageTemplates.xcolor }}</pre>
-                </div>
-              </div>
-            </div>
-            
-            <el-divider />
-            
-            <div style="margin-top: 20px;">
-              <strong>UML 图宏包</strong>
-              <div style="margin-top: 10px; margin-left: 20px;">
-                <el-checkbox 
-                  :model-value="pgfUmlcdEnabled" 
-                  @update:model-value="(val: boolean | string | number) => pgfUmlcdEnabled = Boolean(val)"
-                  label="pgf-umlcd 宏包（绘制 UML 类图）" 
-                  style="display: block; margin-bottom: 8px;"
-                />
-                
-                <div v-if="pgfUmlcdEnabled" style="margin-top: 10px;">
-                  <pre style="background-color: #f5f5f5; padding: 10px; border-radius: 4px; overflow-x: auto; font-family: monospace; font-size: 12px;">{{ packageTemplates.pgfUmlcd }}</pre>
-                </div>
-              </div>
-            </div>
-            
-            <el-divider />
-            
-            <div style="margin-top: 20px;">
-              <strong>完整代码预览</strong>
-              <pre style="background-color: #f5f5f5; padding: 15px; border-radius: 4px; overflow-x: auto; font-family: monospace; margin-top: 10px;">{{ computedLatexCode }}</pre>
+          </div>
+          <div class="package-options-right">
+            <div class="code-preview">
+              <pre class="code-preview-content">{{ computedLatexCode }}</pre>
             </div>
           </div>
         </div>

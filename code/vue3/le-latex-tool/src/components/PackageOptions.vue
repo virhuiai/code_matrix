@@ -24,8 +24,8 @@ const packageConfigs = ref<PackageConfig[]>([
     packageName: 'xeCJK',
     title: 'xeCJK 选项',
     items: [
-      { key: 'autoFakeBold', label: 'AutoFakeBold' },
-      { key: 'autoFakeSlant', label: 'AutoFakeSlant' }
+      { key: 'autoFakeBold', label: 'AutoFakeBold', desc: '自动伪粗体以增强中文粗体显示', example: '\\PassOptionsToPackage{AutoFakeBold=true}{xeCJK}' },
+      { key: 'autoFakeSlant', label: 'AutoFakeSlant', desc: '自动伪斜体以增强中文斜体显示', example: '\\PassOptionsToPackage{AutoFakeSlant=true}{xeCJK}' }
     ],
     optionsMap: {
       autoFakeBold: 'AutoFakeBold=true',
@@ -36,7 +36,7 @@ const packageConfigs = ref<PackageConfig[]>([
     packageName: 'fontspec',
     title: 'fontspec 选项',
     items: [
-      { key: 'noMath', label: 'no-math' }
+      { key: 'noMath', label: 'no-math', desc: '不覆盖数学字体，避免与数学环境冲突', example: '\\PassOptionsToPackage{no-math}{fontspec}' }
     ],
     optionsMap: {
       noMath: 'no-math'
@@ -46,8 +46,8 @@ const packageConfigs = ref<PackageConfig[]>([
     packageName: 'xcolor',
     title: 'xcolor 选项',
     items: [
-      { key: 'prologue', label: 'prologue' },
-      { key: 'dvipsnames', label: 'dvipsnames' }
+      { key: 'prologue', label: 'prologue', desc: '提前加载颜色选项，提高兼容性', example: '\\PassOptionsToPackage{prologue}{xcolor}' },
+      { key: 'dvipsnames', label: 'dvipsnames', desc: '启用 dvipsnames 预定义颜色集', example: '\\PassOptionsToPackage{dvipsnames}{xcolor}' }
     ],
     optionsMap: {
       prologue: 'prologue',
@@ -143,6 +143,10 @@ defineExpose({
                     :label="item.label"
                     class="package-option-item"
                   />
+                  <div v-for="item in pkg.items" :key="item.key + '-doc'" v-if="optionValues[item.key]" style="margin-left: 20px; margin-top: 8px;">
+                    <div>{{ item.desc }}</div>
+                    <pre style="background:#f5f5f5;padding:10px;border-radius:4px;white-space:pre-wrap;">{{ item.example }}</pre>
+                  </div>
                 </div>
               </div>
             </div>

@@ -30,6 +30,13 @@ const packageConfig = {
 \\usepackage{morewrites}`
 }
 
+const optionDocs = {
+  enabled: {
+    desc: '启用 morewrites 以解决 “no room for a new \\write” 错误',
+    example: '\\usepackage{morewrites}'
+  }
+}
+
 // 计算属性：控制启用状态
 const isEnabled = computed({
   get: () => props.modelValue.enabled,
@@ -79,6 +86,10 @@ defineExpose({
               <strong>MoreWrites 包设置</strong>
               <p>解决 "no room for a new \write" 错误</p>
               <el-checkbox v-model="isEnabled" label="启用 MoreWrites 包" />
+              <div v-if="isEnabled" style="margin-top: 8px;">
+                <div>{{ optionDocs.enabled.desc }}</div>
+                <pre style="background:#f5f5f5;padding:10px;border-radius:4px;white-space:pre-wrap;">{{ optionDocs.enabled.example }}</pre>
+              </div>
             </div>
             <!-- 右栏：代码预览 -->
             <div class="package-options-right">

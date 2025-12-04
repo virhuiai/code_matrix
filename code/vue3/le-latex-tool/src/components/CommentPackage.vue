@@ -31,6 +31,13 @@ const packageConfig = {
 %%%%%% \\end{comment}`
 }
 
+const optionDocs = {
+  enabled: {
+    desc: '启用 comment 宏包以包裹需要忽略的内容',
+    example: '\\begin{comment}\n... 注释内容 ...\n\\end{comment}'
+  }
+}
+
 // 计算属性：控制启用状态
 const isEnabled = computed({
   get: () => props.modelValue.enabled,
@@ -78,9 +85,9 @@ defineExpose({
           <p>设置文档中的注释环境，可以方便地添加和移除注释内容</p>
           
           <el-checkbox v-model="isEnabled" label="启用注释宏包" />
-          
-          <div v-if="isEnabled" style="margin-top: 20px;">
-            <pre style="background-color: #f5f5f5; padding: 15px; border-radius: 4px; overflow-x: auto; font-family: monospace;">{{ packageConfig.latexTemplate }}</pre>
+          <div v-if="isEnabled" style="margin-top: 8px;">
+            <div>{{ optionDocs.enabled.desc }}</div>
+            <pre style="background:#f5f5f5;padding:10px;border-radius:4px;white-space:pre-wrap;">{{ optionDocs.enabled.example }}</pre>
           </div>
         </div>
       </el-card>
