@@ -45,7 +45,57 @@ const emit = defineEmits<{
 // 控制弹窗显示
 const dialogVisible = ref(false)
 
-
+// 选项说明与示例（JS 配置化）
+const optionDocs: Record<string, { desc: string; example: string }> = {
+  longtable: {
+    desc: '跨页长表格环境',
+    example: '\\begin{longtable}{ccc}\n...\\end{longtable}'
+  },
+  booktabs: {
+    desc: '专业表格线，提供\\toprule/\\midrule/\\bottomrule',
+    example: '\\usepackage{booktabs}\n\\begin{tabular}{cc}\n\\toprule\nA & B \\\\ \\midrule\n1 & 2 \\\\ \\bottomrule\n\\end{tabular}'
+  },
+  tabularx: {
+    desc: '增强列格式，X 列可自动伸缩',
+    example: '\\begin{tabularx}{\\textwidth}{|X|X|}...\\end{tabularx}'
+  },
+  tabulary: {
+    desc: '自动调整列宽以适配内容',
+    example: '\\begin{tabulary}{\\textwidth}{LL}...\\end{tabulary}'
+  },
+  ltablex: {
+    desc: '结合 longtable 与 tabularx，实现可分页的伸缩列',
+    example: '\\begin{ltablex}{\\textwidth}{|X|X|}...\\end{ltablex}'
+  },
+  colortbl: {
+    desc: '为表格提供背景色与彩色线条',
+    example: '\\rowcolor{lightgray} A & B'
+  },
+  multirow: {
+    desc: '跨行合并单元格',
+    example: '\\multirow{2}{*}{A} & B \\\\ \\cline{2-2} & C'
+  },
+  array: {
+    desc: '增强列类型与对齐控制',
+    example: '\\newcolumntype{Y}{>{\\centering\\arraybackslash}X}'
+  },
+  dcolumn: {
+    desc: '按小数点对齐数字列',
+    example: '\\begin{tabular}{|D{.}{.}{2}|} 3.14 \\ 2.7 \\end{tabular}'
+  },
+  makecell: {
+    desc: '提供表头斜线与多行单元格排版',
+    example: '\\makecell{行一\\\\行二}'
+  },
+  hhline: {
+    desc: '更灵活的横线绘制（配合 multirow 可做斜线表头）',
+    example: '\\begin{tabular}{|c|c|}\\hhline{|==|} A & B \\ \\end{tabular}'
+  },
+  arydshln: {
+    desc: '绘制虚线表格线',
+    example: '\\begin{tabular}{:c:|:c:} A & B \\ \\end{tabular}'
+  }
+};
 // 计算属性：控制启用状态
 const mainEnabled = computed({
   get: () => props.modelValue.enabled,
@@ -225,175 +275,59 @@ const closeDialog = () => {
 
 defineExpose({
   openDialog,
-  closeDialog
+  closeDialog,
+  optionDocs
 })
 </script>
 
 <template>
-  <div class="package-options-dialog">
-    <!-- 触发弹窗的按钮 -->
-    <el-button type="primary" @click="openDialog" style="width: 100%; margin-top: 10px;">表格</el-button>
-    
-    <!-- 弹窗 -->
-    <el-dialog
-      v-model="dialogVisible"
-      title="表格设置"
-      :before-close="closeDialog"
-    >
-      <el-card shadow="hover">
-        <div>
-          <div class="package-options-container">
-            <!-- 左栏：选项 -->
-            <div class="package-options-left">
-              <strong>表格设置</strong>
-              <p>设置文档中的表格相关功能，包括长表格、表格线、列格式等功能</p>
-
-              <el-checkbox 
-                :model-value="mainEnabled" 
-                @update:model-value="(val: boolean | string | number) => mainEnabled = Boolean(val)"
-                label="启用表格设置" 
-              />
-
-              <div v-if="mainEnabled" style="margin-top: 20px;">
-                <el-alert
-                  title="使用说明"
-                  description="以下宏包可以单独启用或禁用。斜线表头可选 makecell 或 hhline + multirow。"
-                  type="info"
-                  show-icon
-                  style="margin-bottom: 15px;"
-                />
-
-                <el-divider />
-
-                <div style="margin-top: 20px;">
-                  <strong>基础表格宏包</strong>
-                  <div style="margin-top: 10px; margin-left: 20px;">
-                    <el-checkbox 
-                      :model-value="longtableEnabled" 
-                      @update:model-value="(val: boolean | string | number) => longtableEnabled = Boolean(val)"
-                      label="longtable 宏包（跨页长表格）" 
-                      class="package-option-item"
-                    />
-                    
-                    <el-checkbox 
-                      :model-value="booktabsEnabled" 
-                      @update:model-value="(val: boolean | string | number) => booktabsEnabled = Boolean(val)"
-                      label="booktabs 宏包（专业表格线）" 
-                      class="package-option-item"
-                    />
-                    
-                    <el-checkbox 
-                      :model-value="tabularxEnabled" 
-                      @update:model-value="(val: boolean | string | number) => tabularxEnabled = Boolean(val)"
-                      label="tabularx 宏包（增强列格式）" 
-                      class="package-option-item"
-                    />
-                    
-                    <el-checkbox 
-                      :model-value="tabularyEnabled" 
-                      @update:model-value="(val: boolean | string | number) => tabularyEnabled = Boolean(val)"
-                      label="tabulary 宏包（自动调整列宽）" 
-                      class="package-option-item"
-                    />
-                    
-                    <el-checkbox 
-                      :model-value="ltablexEnabled" 
-                      @update:model-value="(val: boolean | string | number) => ltablexEnabled = Boolean(val)"
-                      label="ltablex 宏包（自动分页的 tabularx）" 
-                      class="package-option-item"
-                    />
-                  </div>
-                </div>
-
-                <el-divider />
-
-                <div style="margin-top: 20px;">
-                  <strong>表格增强宏包</strong>
-                  <div style="margin-top: 10px; margin-left: 20px;">
-                    <el-checkbox 
-                      :model-value="colortblEnabled" 
-                      @update:model-value="(val: boolean | string | number) => colortblEnabled = Boolean(val)"
-                      label="colortbl 宏包（彩色表格）" 
-                      class="package-option-item"
-                    />
-                    
-                    <el-checkbox 
-                      :model-value="multirowEnabled" 
-                      @update:model-value="(val: boolean | string | number) => multirowEnabled = Boolean(val)"
-                      label="multirow 宏包（跨行表格）" 
-                      class="package-option-item"
-                    />
-                    
-                    <el-checkbox 
-                      :model-value="arrayEnabled" 
-                      @update:model-value="(val: boolean | string | number) => arrayEnabled = Boolean(val)"
-                      label="array 宏包（增强表格功能）" 
-                      class="package-option-item"
-                    />
-                    
-                    <el-checkbox 
-                      :model-value="dcolumnEnabled" 
-                      @update:model-value="(val: boolean | string | number) => dcolumnEnabled = Boolean(val)"
-                      label="dcolumn 宏包（小数点对齐）" 
-                      class="package-option-item"
-                    />
-
-                    <div style="margin-top: 15px;">
-                      <strong>斜线表头选项</strong>
-                      <el-alert
-                        title="斜线表头宏包"
-                        description="可以选择以下一种或多种方式来实现斜线表头。"
-                        type="info"
-                        show-icon
-                        style="margin: 10px 0;"
-                      />
-                      
-                      <!-- Makecell 选项 -->
-                      <div style="margin-left: 20px; margin-top: 10px;">
-                        <el-checkbox 
-                          :model-value="makecellEnabled" 
-                          @update:model-value="(val: boolean | string | number) => makecellEnabled = Boolean(val)"
-                          label="makecell 宏包（最流行）" 
-                          class="package-option-item"
-                        />
-                      </div>
-                      
-                      <!-- HHline 选项 -->
-                      <div style="margin-left: 20px; margin-top: 10px;">
-                        <el-checkbox 
-                          :model-value="hhlineEnabled" 
-                          @update:model-value="(val: boolean | string | number) => hhlineEnabled = Boolean(val)"
-                          label="hhline + multirow（原生方案）" 
-                          class="package-option-item"
-                        />
-                      </div>
-                    </div>
-                    
-                    <el-checkbox 
-                      :model-value="arydshlnEnabled" 
-                      @update:model-value="(val: boolean | string | number) => arydshlnEnabled = Boolean(val)"
-                      label="arydshln 宏包（虚线表格）" 
-                      class="package-option-item"
-                      style="margin-top: 15px;"
-                    />
-                  </div>
-                </div>
+  <div>
+    <el-button type="primary" @click="openDialog">表格</el-button>
+    <el-dialog v-model="dialogVisible" title="表格设置" :before-close="closeDialog">
+      <el-row :gutter="20">
+        <el-col :span="12">
+          <el-card shadow="hover">
+            <strong>表格设置</strong>
+            <el-alert title="说明" description="以下宏包可独立启用或禁用。斜线表头可选 makecell 或 hhline + multirow。" type="info" show-icon />
+            <el-divider />
+            <el-checkbox :model-value="mainEnabled" @update:model-value="(val: boolean | string | number) => mainEnabled = Boolean(val)" label="启用表格设置" />
+            <template v-if="mainEnabled">
+              <el-divider />
+              <strong>基础表格宏包</strong>
+              <div>
+                <el-checkbox :model-value="longtableEnabled" @update:model-value="(val: boolean | string | number) => longtableEnabled = Boolean(val)" label="longtable（跨页长表格）" />
+                <el-checkbox :model-value="booktabsEnabled" @update:model-value="(val: boolean | string | number) => booktabsEnabled = Boolean(val)" label="booktabs（专业表格线）" />
+                <el-checkbox :model-value="tabularxEnabled" @update:model-value="(val: boolean | string | number) => tabularxEnabled = Boolean(val)" label="tabularx（增强列格式）" />
+                <el-checkbox :model-value="tabularyEnabled" @update:model-value="(val: boolean | string | number) => tabularyEnabled = Boolean(val)" label="tabulary（自动调整列宽）" />
+                <el-checkbox :model-value="ltablexEnabled" @update:model-value="(val: boolean | string | number) => ltablexEnabled = Boolean(val)" label="ltablex（分页的 tabularx）" />
               </div>
-            </div>
-
-            <!-- 右栏：代码预览 -->
-            <div class="package-options-right">
-              <div class="code-preview">
-                <pre class="code-preview-content">{{ computedLatexCode }}</pre>
+              <el-divider />
+              <strong>表格增强宏包</strong>
+              <div>
+                <el-checkbox :model-value="colortblEnabled" @update:model-value="(val: boolean | string | number) => colortblEnabled = Boolean(val)" label="colortbl（彩色表格）" />
+                <el-checkbox :model-value="multirowEnabled" @update:model-value="(val: boolean | string | number) => multirowEnabled = Boolean(val)" label="multirow（跨行）" />
+                <el-checkbox :model-value="arrayEnabled" @update:model-value="(val: boolean | string | number) => arrayEnabled = Boolean(val)" label="array（增强表格功能）" />
+                <el-checkbox :model-value="dcolumnEnabled" @update:model-value="(val: boolean | string | number) => dcolumnEnabled = Boolean(val)" label="dcolumn（小数点对齐）" />
+                <el-divider />
+                <strong>斜线表头选项</strong>
+                <el-checkbox :model-value="makecellEnabled" @update:model-value="(val: boolean | string | number) => makecellEnabled = Boolean(val)" label="makecell（常用方案）" />
+                <el-checkbox :model-value="hhlineEnabled" @update:model-value="(val: boolean | string | number) => hhlineEnabled = Boolean(val)" label="hhline + multirow（原生）" />
+                <el-checkbox :model-value="arydshlnEnabled" @update:model-value="(val: boolean | string | number) => arydshlnEnabled = Boolean(val)" label="arydshln（虚线表格）" />
               </div>
-            </div>
-          </div>
-        </div>
-      </el-card>
-      
-      <template #footer>
-        
-      </template>
+            </template>
+          </el-card>
+        </el-col>
+        <el-col :span="12">
+          <el-card shadow="hover">
+            <strong>代码预览</strong>
+            <el-divider />
+            <el-scrollbar max-height="60vh">
+              <pre>{{ computedLatexCode }}</pre>
+            </el-scrollbar>
+          </el-card>
+        </el-col>
+      </el-row>
+      <template #footer></template>
     </el-dialog>
   </div>
 </template>

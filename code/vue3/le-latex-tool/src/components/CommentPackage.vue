@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, defineEmits, defineProps } from 'vue'
-import { ElCard, ElCheckbox, ElDialog, ElButton } from 'element-plus'
+import { ElCard, ElCheckbox, ElDialog, ElButton, ElDivider, ElAlert } from 'element-plus'
 import { setupCodeEmission } from '../utils/code-emitter'
 
 const props = defineProps<{
@@ -33,8 +33,8 @@ const packageConfig = {
 
 const optionDocs = {
   enabled: {
-    desc: '启用 comment 宏包，提供可屏蔽的注释环境',
-    example: '\\usepackage{comment}\n\\begin{comment}\n被屏蔽的内容\\n\\end{comment}'
+    desc: '启用 comment 宏包以包裹需要忽略的内容',
+    example: '\\usepackage{comment}\n\\begin{comment}\n... 注释内容 ...\n\\end{comment}'
   }
 }
 
@@ -68,38 +68,33 @@ defineExpose({
 </script>
 
 <template>
-  <div class="package-options-dialog">
-    <el-button type="primary" @click="openDialog" style="width: 100%; margin-top: 10px;">注释</el-button>
-    <el-dialog
-      v-model="dialogVisible"
-      title="注释宏包设置"
-      width="60%"
-      :before-close="closeDialog"
-    >
-      <el-card shadow="hover">
-        <div class="package-options-container">
-          <div class="package-options-left">
+  <div>
+    <el-button type="primary" @click="openDialog">注释</el-button>
+    <el-dialog v-model="dialogVisible" title="注释宏包设置" :before-close="closeDialog">
+      <el-row :gutter="20">
+        <el-col :span="12">
+          <el-card shadow="hover">
             <strong>注释宏包设置</strong>
-            <p>设置文档中的注释环境，可以方便地添加和移除注释内容</p>
+            <el-alert title="说明" description="为文档提供可屏蔽的注释环境" type="info" show-icon />
+            <el-divider />
             <el-checkbox v-model="isEnabled" label="启用注释宏包" />
-            <div v-if="isEnabled" style="margin-top: 10px; margin-left: 20px;">
-              <div>{{ optionDocs.enabled.desc }}</div>
-              <pre style="background:#f5f5f5;padding:10px;border-radius:4px;white-space:pre-wrap;">{{ optionDocs.enabled.example }}</pre>
-            </div>
-          </div>
-          <div class="package-options-right">
-            <div class="code-preview">
-              <pre class="code-preview-content">{{ computedLatexCode }}</pre>
-            </div>
-          </div>
-        </div>
-      </el-card>
-      <template #footer>
-        <span class="dialog-footer">
-          <el-button @click="closeDialog">取消</el-button>
-          <el-button type="primary" @click="closeDialog">确定</el-button>
-        </span>
-      </template>
+            <template v-if="isEnabled">
+              <el-alert :title="optionDocs.enabled.desc" type="success" show-icon />
+              <el-card><pre>{{ optionDocs.enabled.example }}</pre></el-card>
+            </template>
+          </el-card>
+        </el-col>
+        <el-col :span="12">
+          <el-card shadow="hover">
+            <strong>代码预览</strong>
+            <el-divider />
+            <el-scrollbar max-height="60vh">
+              <pre>{{ computedLatexCode }}</pre>
+            </el-scrollbar>
+          </el-card>
+        </el-col>
+      </el-row>
+      <template #footer></template>
     </el-dialog>
   </div>
 </template>
