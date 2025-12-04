@@ -33,8 +33,8 @@ const packageConfig = {
 
 const optionDocs = {
   enabled: {
-    desc: '启用 comment 宏包以包裹需要忽略的内容',
-    example: '\\begin{comment}\n... 注释内容 ...\n\\end{comment}'
+    desc: '启用 comment 宏包，提供可屏蔽的注释环境',
+    example: '\\usepackage{comment}\n\\begin{comment}\n被屏蔽的内容\\n\\end{comment}'
   }
 }
 
@@ -69,10 +69,7 @@ defineExpose({
 
 <template>
   <div class="package-options-dialog">
-    <!-- 触发弹窗的按钮 -->
     <el-button type="primary" @click="openDialog" style="width: 100%; margin-top: 10px;">注释</el-button>
-    
-    <!-- 弹窗 -->
     <el-dialog
       v-model="dialogVisible"
       title="注释宏包设置"
@@ -80,18 +77,23 @@ defineExpose({
       :before-close="closeDialog"
     >
       <el-card shadow="hover">
-        <div>
-          <strong>注释宏包设置</strong>
-          <p>设置文档中的注释环境，可以方便地添加和移除注释内容</p>
-          
-          <el-checkbox v-model="isEnabled" label="启用注释宏包" />
-          <div v-if="isEnabled" style="margin-top: 8px;">
-            <div>{{ optionDocs.enabled.desc }}</div>
-            <pre style="background:#f5f5f5;padding:10px;border-radius:4px;white-space:pre-wrap;">{{ optionDocs.enabled.example }}</pre>
+        <div class="package-options-container">
+          <div class="package-options-left">
+            <strong>注释宏包设置</strong>
+            <p>设置文档中的注释环境，可以方便地添加和移除注释内容</p>
+            <el-checkbox v-model="isEnabled" label="启用注释宏包" />
+            <div v-if="isEnabled" style="margin-top: 10px; margin-left: 20px;">
+              <div>{{ optionDocs.enabled.desc }}</div>
+              <pre style="background:#f5f5f5;padding:10px;border-radius:4px;white-space:pre-wrap;">{{ optionDocs.enabled.example }}</pre>
+            </div>
+          </div>
+          <div class="package-options-right">
+            <div class="code-preview">
+              <pre class="code-preview-content">{{ computedLatexCode }}</pre>
+            </div>
           </div>
         </div>
       </el-card>
-      
       <template #footer>
         <span class="dialog-footer">
           <el-button @click="closeDialog">取消</el-button>

@@ -9,6 +9,7 @@ export interface DocumentClassConfig {
 export interface ClassOptionConfig {
   key: string
   label: string
+  desc?: string
 }
 
 export interface DocumentClassInfo {

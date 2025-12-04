@@ -170,20 +170,20 @@ defineExpose({
               
               <div class="document-class-selector-options">
                 <strong class="document-class-selector-options-title">文档类选项</strong>
-                <div class="document-class-selector-options-list">
+              <div class="document-class-selector-options-list">
+                <div v-for="opt in classOptions" :key="opt.key" style="margin-bottom: 8px;">
                   <el-checkbox
-                    v-for="option in classOptions"
-                    :key="option.key"
-                    :model-value="optionValues[option.key]"
-                    @update:model-value="(val: boolean | string | number) => updateOptionValue(option.key, Boolean(val))"
-                    :label="option.label"
+                    :model-value="optionValues[opt.key]"
+                    @update:model-value="(val: boolean | string | number) => updateOptionValue(opt.key, Boolean(val))"
+                    :label="opt.label"
                     class="document-class-selector-option-item"
                   />
-                  <div v-for="option in classOptions" :key="option.key + '-doc'" v-if="optionValues[option.key]" style="margin-left: 20px; margin-top: 8px;">
-                    <div>{{ option.desc }}</div>
-                    <pre style="background:#f5f5f5;padding:10px;border-radius:4px;white-space:pre-wrap;">{{ exampleForOption(option.key) }}</pre>
+                  <div v-if="optionValues[opt.key]" style="margin-left: 20px; margin-top: 8px;">
+                    <div>{{ opt.desc }}</div>
+                    <pre style="background:#f5f5f5;padding:10px;border-radius:4px;white-space:pre-wrap;">{{ exampleForOption(opt.key) }}</pre>
                   </div>
                 </div>
+              </div>
               </div>
             </div>
             

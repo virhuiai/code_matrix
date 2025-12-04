@@ -9,6 +9,6 @@ export interface OptionInfo {
 export interface PackageConfig {
   packageName: string
   title: string
-  items: Array<{ key: string; label: string }>
+  items: Array<{ key: string; label: string; desc?: string; example?: string }>
   optionsMap: Record<string, string>
 }

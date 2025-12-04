@@ -133,19 +133,18 @@ defineExpose({
               <!-- 使用 v-for 指令遍历所有宏包配置 -->
               <div v-for="pkg in packageConfigs" :key="pkg.packageName" class="package-section">
                 <strong>{{ pkg.title }}</strong>
-                <!-- 为每个宏包的选项创建复选框 -->
                 <div class="package-options-list">
-                  <el-checkbox 
-                    v-for="item in pkg.items" 
-                    :key="item.key"
-                    :model-value="optionValues[item.key]"
-                    @update:model-value="(val: boolean | string | number) => updateOptionValue(item.key, Boolean(val))"
-                    :label="item.label"
-                    class="package-option-item"
-                  />
-                  <div v-for="item in pkg.items" :key="item.key + '-doc'" v-if="optionValues[item.key]" style="margin-left: 20px; margin-top: 8px;">
-                    <div>{{ item.desc }}</div>
-                    <pre style="background:#f5f5f5;padding:10px;border-radius:4px;white-space:pre-wrap;">{{ item.example }}</pre>
+                  <div v-for="item in pkg.items" :key="item.key" style="margin-bottom: 8px;">
+                    <el-checkbox 
+                      :model-value="optionValues[item.key]"
+                      @update:model-value="(val: boolean | string | number) => updateOptionValue(item.key, Boolean(val))"
+                      :label="item.label"
+                      class="package-option-item"
+                    />
+                    <div v-if="optionValues[item.key]" style="margin-left: 20px; margin-top: 8px;">
+                      <div>{{ item.desc }}</div>
+                      <pre style="background:#f5f5f5;padding:10px;border-radius:4px;white-space:pre-wrap;">{{ item.example }}</pre>
+                    </div>
                   </div>
                 </div>
               </div>
