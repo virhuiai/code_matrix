@@ -19,10 +19,10 @@ const emit = defineEmits<{
 }>()
 
 // 控制弹窗显示
-const dialogVisible = ref(false)
+const isDialogOpen = ref(false)
 
 // lettrine 配置数据
-const lettrineConfig = ref({
+const lettrineOptions = ref({
   enabled: props.modelValue.enabled !== undefined ? props.modelValue.enabled : true,
   lines: props.modelValue.lines !== undefined ? props.modelValue.lines : 1,
   lhang: props.modelValue.lhang !== undefined ? props.modelValue.lhang : 0.1,
@@ -30,49 +30,49 @@ const lettrineConfig = ref({
 })
 
 // 计算属性：生成 LaTeX 代码（使用工具函数）
-const computedLatexCode = computed(() => {
-  if (!lettrineConfig.value.enabled) return ''
+const latexCode = computed(() => {
+  if (!lettrineOptions.value.enabled) return ''
 
   const infos: BoxPackageInfo[] = [{ package: 'lettrine' }]
   const usePkg = generateCodeFromBoxPackageInfos(infos)
-  const cmd = `%\\lettrine[lines=${lettrineConfig.value.lines},lhang=${lettrineConfig.value.lhang},loversize=${lettrineConfig.value.loversize}] {我}{}`
+  const cmd = `%\\lettrine[lines=${lettrineOptions.value.lines},lhang=${lettrineOptions.value.lhang},loversize=${lettrineOptions.value.loversize}] {我}{}`
   return `${usePkg}\n${cmd}`
 })
 
 // 更新配置
-const updateConfig = (field: string, value: any) => {
-  (lettrineConfig.value as any)[field] = value
-  emit('update:modelValue', { ...lettrineConfig.value })
+const updateOption = (field: string, value: any) => {
+  (lettrineOptions.value as any)[field] = value
+  emit('update:modelValue', { ...lettrineOptions.value })
 }
 
-setupCodeEmission(computedLatexCode, emit, props.componentId, 'LettrinePackage')
+setupCodeEmission(latexCode, emit, props.componentId, 'LettrinePackage')
 
 // 打开弹窗
-const openDialog = () => {
-  dialogVisible.value = true
+const showDialog = () => {
+  isDialogOpen.value = true
 }
 
 // 关闭弹窗
-const closeDialog = () => {
-  dialogVisible.value = false
+const hideDialog = () => {
+  isDialogOpen.value = false
 }
 
 defineExpose({
-  openDialog,
-  closeDialog
+  showDialog,
+  hideDialog
 })
 </script>
 
 <template>
   <div class="package-options-dialog">
     <!-- 触发弹窗的按钮 -->
-    <el-button type="primary" @click="openDialog" style="width: 100%; margin-top: 10px;">Lettrine 首字下沉设置</el-button>
+    <el-button type="primary" @click="showDialog" style="width: 100%; margin-top: 10px;">Lettrine 首字下沉设置</el-button>
     
     <!-- 弹窗 -->
     <el-dialog
-      v-model="dialogVisible"
+      v-model="isDialogOpen"
       title="Lettrine 首字下沉设置"
-      :before-close="closeDialog"
+      :before-close="hideDialog"
     >
       <el-card shadow="hover">
         <div>
@@ -83,16 +83,16 @@ defineExpose({
                 <strong>Lettrine 首字下沉设置</strong>
                 <div class="package-options-list">
                   <el-checkbox 
-                    :model-value="lettrineConfig.enabled" 
-                    @update:model-value="(val: boolean | string | number) => updateConfig('enabled', Boolean(val))"
+                    :model-value="lettrineOptions.enabled" 
+                    @update:model-value="(val: boolean | string | number) => updateOption('enabled', Boolean(val))"
                     label="启用 Lettrine 首字下沉"
                     class="package-option-item"
                   />
-                  <div v-if="lettrineConfig.enabled">
+                  <div v-if="lettrineOptions.enabled">
                     <el-form-item label="下沉行数 (lines)">
                       <el-input-number 
-                        :model-value="lettrineConfig.lines" 
-                        @update:model-value="(val: number | string) => updateConfig('lines', Number(val))"
+                        :model-value="lettrineOptions.lines" 
+                        @update:model-value="(val: number | string) => updateOption('lines', Number(val))"
                         :min="1"
                         :max="10"
                         size="small"
@@ -101,8 +101,8 @@ defineExpose({
                     
                     <el-form-item label="左悬挂 (lhang)">
                       <el-input-number 
-                        :model-value="lettrineConfig.lhang" 
-                        @update:model-value="(val: number | string) => updateConfig('lhang', Number(val))"
+                        :model-value="lettrineOptions.lhang" 
+                        @update:model-value="(val: number | string) => updateOption('lhang', Number(val))"
                         :step="0.05"
                         :min="0"
                         :max="1"
@@ -112,8 +112,8 @@ defineExpose({
                     
                     <el-form-item label="垂直尺寸 (loversize)">
                       <el-input-number 
-                        :model-value="lettrineConfig.loversize" 
-                        @update:model-value="(val: number | string) => updateConfig('loversize', Number(val))"
+                        :model-value="lettrineOptions.loversize" 
+                        @update:model-value="(val: number | string) => updateOption('loversize', Number(val))"
                         :step="0.05"
                         :min="0"
                         :max="2"
@@ -128,7 +128,7 @@ defineExpose({
             <!-- 右栏：代码预览 -->
             <div class="package-options-right">
               <div class="code-preview">
-                <pre class="code-preview-content">{{ computedLatexCode }}</pre>
+                <pre class="code-preview-content">{{ latexCode }}</pre>
               </div>
             </div>
           </div>

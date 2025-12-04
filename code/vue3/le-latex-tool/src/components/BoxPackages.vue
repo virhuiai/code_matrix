@@ -31,10 +31,10 @@ const emit = defineEmits<{
 }>()
 
 // 控制弹窗显示
-const dialogVisible = ref(false)
+const isDialogOpen = ref(false)
 
 // 包配置数据 - 所有宏包默认选中
-const packages = ref({
+const packageOptions = ref({
   fancybox: props.modelValue.fancybox !== undefined ? props.modelValue.fancybox : true,
   boxedminipage: props.modelValue.boxedminipage !== undefined ? props.modelValue.boxedminipage : true,
   tikz: props.modelValue.tikz !== undefined ? props.modelValue.tikz : true,
@@ -54,45 +54,45 @@ const packages = ref({
 })
 
 // 计算属性：生成 LaTeX 代码（使用工具函数）
-const computedLatexCode = computed(() => {
+const latexCode = computed(() => {
   const infos: BoxPackageInfo[] = []
 
-  if (packages.value.fancybox) {
+  if (packageOptions.value.fancybox) {
     infos.push({ package: 'fancybox' })
   }
 
-  if (packages.value.boxedminipage) {
+  if (packageOptions.value.boxedminipage) {
     infos.push({ package: 'boxedminipage' })
   }
 
-  if (packages.value.tikz) {
+  if (packageOptions.value.tikz) {
     infos.push({ package: 'tikz' })
   }
 
-  if (packages.value.tcolorbox.enabled) {
+  if (packageOptions.value.tcolorbox.enabled) {
     const libs: string[] = []
-    if (packages.value.tcolorbox.raster) libs.push('raster')
-    if (packages.value.tcolorbox.listings) libs.push('listings')
-    if (packages.value.tcolorbox.theorems) libs.push('theorems')
-    if (packages.value.tcolorbox.skins) libs.push('skins')
-    if (packages.value.tcolorbox.xparse) libs.push('xparse')
-    if (packages.value.tcolorbox.breakable) libs.push('breakable')
+    if (packageOptions.value.tcolorbox.raster) libs.push('raster')
+    if (packageOptions.value.tcolorbox.listings) libs.push('listings')
+    if (packageOptions.value.tcolorbox.theorems) libs.push('theorems')
+    if (packageOptions.value.tcolorbox.skins) libs.push('skins')
+    if (packageOptions.value.tcolorbox.xparse) libs.push('xparse')
+    if (packageOptions.value.tcolorbox.breakable) libs.push('breakable')
     infos.push({ package: 'tcolorbox', libraries: libs })
   }
 
-  if (packages.value.awesomebox) {
+  if (packageOptions.value.awesomebox) {
     infos.push({ package: 'awesomebox' })
   }
 
-  if (packages.value.mdframed) {
+  if (packageOptions.value.mdframed) {
     infos.push({ package: 'mdframed' })
   }
 
-  if (packages.value.framed) {
+  if (packageOptions.value.framed) {
     infos.push({ package: 'framed' })
   }
 
-  if (packages.value.changepage) {
+  if (packageOptions.value.changepage) {
     infos.push({ package: 'changepage' })
   }
 
@@ -100,69 +100,69 @@ const computedLatexCode = computed(() => {
 })
 
 const updatePackage = (pkg: string, value: any) => {
-  (packages.value as any)[pkg] = value
-  emit('update:modelValue', { ...packages.value })
+  (packageOptions.value as any)[pkg] = value
+  emit('update:modelValue', { ...packageOptions.value })
 }
 
 // 监听 tcolorbox 子选项变化
 const updateTcolorboxRaster = (value: boolean | string | number) => {
-  packages.value.tcolorbox.raster = Boolean(value)
-  emit('update:modelValue', { ...packages.value })
+  packageOptions.value.tcolorbox.raster = Boolean(value)
+  emit('update:modelValue', { ...packageOptions.value })
 }
 
 const updateTcolorboxListings = (value: boolean | string | number) => {
-  packages.value.tcolorbox.listings = Boolean(value)
-  emit('update:modelValue', { ...packages.value })
+  packageOptions.value.tcolorbox.listings = Boolean(value)
+  emit('update:modelValue', { ...packageOptions.value })
 }
 
 const updateTcolorboxTheorems = (value: boolean | string | number) => {
-  packages.value.tcolorbox.theorems = Boolean(value)
-  emit('update:modelValue', { ...packages.value })
+  packageOptions.value.tcolorbox.theorems = Boolean(value)
+  emit('update:modelValue', { ...packageOptions.value })
 }
 
 const updateTcolorboxSkins = (value: boolean | string | number) => {
-  packages.value.tcolorbox.skins = Boolean(value)
-  emit('update:modelValue', { ...packages.value })
+  packageOptions.value.tcolorbox.skins = Boolean(value)
+  emit('update:modelValue', { ...packageOptions.value })
 }
 
 const updateTcolorboxXparse = (value: boolean | string | number) => {
-  packages.value.tcolorbox.xparse = Boolean(value)
-  emit('update:modelValue', { ...packages.value })
+  packageOptions.value.tcolorbox.xparse = Boolean(value)
+  emit('update:modelValue', { ...packageOptions.value })
 }
 
 const updateTcolorboxBreakable = (value: boolean | string | number) => {
-  packages.value.tcolorbox.breakable = Boolean(value)
-  emit('update:modelValue', { ...packages.value })
+  packageOptions.value.tcolorbox.breakable = Boolean(value)
+  emit('update:modelValue', { ...packageOptions.value })
 }
 
-setupCodeEmission(computedLatexCode, emit, props.componentId, 'BoxPackages')
+setupCodeEmission(latexCode, emit, props.componentId, 'BoxPackages')
 
 // 打开弹窗
-const openDialog = () => {
-  dialogVisible.value = true
+const showDialog = () => {
+  isDialogOpen.value = true
 }
 
 // 关闭弹窗
-const closeDialog = () => {
-  dialogVisible.value = false
+const hideDialog = () => {
+  isDialogOpen.value = false
 }
 
 defineExpose({
-  openDialog,
-  closeDialog
+  showDialog,
+  hideDialog
 })
 </script>
 
 <template>
   <div class="package-options-dialog">
     <!-- 触发弹窗的按钮 -->
-    <el-button type="primary" @click="openDialog" style="width: 100%; margin-top: 10px;">盒子宏包设置</el-button>
+    <el-button type="primary" @click="showDialog">盒子宏包设置</el-button>
     
     <!-- 弹窗 -->
     <el-dialog
-      v-model="dialogVisible"
+      v-model="isDialogOpen"
       title="盒子宏包设置"
-      :before-close="closeDialog"
+      :before-close="hideDialog"
     >
       <el-card shadow="hover">
         <div>
@@ -173,19 +173,19 @@ defineExpose({
                 <strong>基础盒子宏包</strong>
                 <div class="package-options-list">
                   <el-checkbox 
-                    v-model="packages.fancybox" 
+                    v-model="packageOptions.fancybox" 
                     @change="(val: boolean | string | number) => updatePackage('fancybox', Boolean(val))"
                     label="fancybox - 盒子宏包，扩展 \\fbox 命令"
                     class="package-option-item"
                   />
                   <el-checkbox 
-                    v-model="packages.boxedminipage" 
+                    v-model="packageOptions.boxedminipage" 
                     @change="(val: boolean | string | number) => updatePackage('boxedminipage', Boolean(val))"
                     label="boxedminipage - 盒子环境"
                     class="package-option-item"
                   />
                   <el-checkbox 
-                    v-model="packages.tikz" 
+                    v-model="packageOptions.tikz" 
                     @change="(val: boolean | string | number) => updatePackage('tikz', Boolean(val))"
                     label="tikz - 绘图宏包"
                     class="package-option-item"
@@ -197,44 +197,44 @@ defineExpose({
                 <strong>tcolorbox 库</strong>
                 <div class="package-options-list">
                   <el-checkbox 
-                    v-model="packages.tcolorbox.enabled" 
-                    @change="(val: boolean | string | number) => updatePackage('tcolorbox', {...packages.tcolorbox, enabled: Boolean(val)})"
+                    v-model="packageOptions.tcolorbox.enabled" 
+                    @change="(val: boolean | string | number) => updatePackage('tcolorbox', {...packageOptions.tcolorbox, enabled: Boolean(val)})"
                     label="启用 tcolorbox"
                     class="package-option-item"
                   />
-                  <div v-if="packages.tcolorbox.enabled">
+                  <div v-if="packageOptions.tcolorbox.enabled">
                     <el-checkbox 
-                      v-model="packages.tcolorbox.raster" 
+                      v-model="packageOptions.tcolorbox.raster" 
                       @change="updateTcolorboxRaster"
                       label="raster"
                       class="package-option-item"
                     />
                     <el-checkbox 
-                      v-model="packages.tcolorbox.listings" 
+                      v-model="packageOptions.tcolorbox.listings" 
                       @change="updateTcolorboxListings"
                       label="listings"
                       class="package-option-item"
                     />
                     <el-checkbox 
-                      v-model="packages.tcolorbox.theorems" 
+                      v-model="packageOptions.tcolorbox.theorems" 
                       @change="updateTcolorboxTheorems"
                       label="theorems"
                       class="package-option-item"
                     />
                     <el-checkbox 
-                      v-model="packages.tcolorbox.skins" 
+                      v-model="packageOptions.tcolorbox.skins" 
                       @change="updateTcolorboxSkins"
                       label="skins"
                       class="package-option-item"
                     />
                     <el-checkbox 
-                      v-model="packages.tcolorbox.xparse" 
+                      v-model="packageOptions.tcolorbox.xparse" 
                       @change="updateTcolorboxXparse"
                       label="xparse"
                       class="package-option-item"
                     />
                     <el-checkbox 
-                      v-model="packages.tcolorbox.breakable" 
+                      v-model="packageOptions.tcolorbox.breakable" 
                       @change="updateTcolorboxBreakable"
                       label="breakable"
                       class="package-option-item"
@@ -247,25 +247,25 @@ defineExpose({
                 <strong>其他盒子宏包</strong>
                 <div class="package-options-list">
                   <el-checkbox 
-                    v-model="packages.awesomebox" 
+                    v-model="packageOptions.awesomebox" 
                     @change="(val: boolean | string | number) => updatePackage('awesomebox', Boolean(val))"
                     label="awesomebox - 图标盒子宏包"
                     class="package-option-item"
                   />
                   <el-checkbox 
-                    v-model="packages.mdframed" 
+                    v-model="packageOptions.mdframed" 
                     @change="(val: boolean | string | number) => updatePackage('mdframed', Boolean(val))"
                     label="mdframed - 框架环境宏包"
                     class="package-option-item"
                   />
                   <el-checkbox 
-                    v-model="packages.framed" 
+                    v-model="packageOptions.framed" 
                     @change="(val: boolean | string | number) => updatePackage('framed', Boolean(val))"
                     label="framed - 框架环境宏包"
                     class="package-option-item"
                   />
                   <el-checkbox 
-                    v-model="packages.changepage" 
+                    v-model="packageOptions.changepage" 
                     @change="(val: boolean | string | number) => updatePackage('changepage', Boolean(val))"
                     label="changepage - 页面调整宏包"
                     class="package-option-item"
@@ -277,7 +277,7 @@ defineExpose({
             <!-- 右栏：代码预览 -->
             <div class="package-options-right">
               <div class="code-preview">
-                <pre class="code-preview-content">{{ computedLatexCode }}</pre>
+                <pre class="code-preview-content">{{ latexCode }}</pre>
               </div>
             </div>
           </div>

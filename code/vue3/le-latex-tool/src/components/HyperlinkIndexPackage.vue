@@ -29,7 +29,7 @@ const emit = defineEmits<{
 }>()
 
 // 控制弹窗显示
-const dialogVisible = ref(false)
+const isDialogOpen = ref(false)
 
 // LaTeX 代码模板
 const variorefTemplate = `\\usepackage{varioref}`
@@ -154,7 +154,7 @@ const pdfTitle = computed({
 })
 
 // 计算属性：生成 LaTeX 代码（使用通用宏包工具）
-const computedLatexCode = computed(() => {
+const latexCode = computed(() => {
   const infos: PackageInfo[] = []
 
   if (variorefEnabled.value) {
@@ -245,16 +245,16 @@ if (props.modelValue.variorefEnabled === undefined ||
   })
 }
 
-setupCodeEmission(computedLatexCode, emit, props.componentId, 'HyperlinkIndexPackage')
+setupCodeEmission(latexCode, emit, props.componentId, 'HyperlinkIndexPackage')
 
 // 打开弹窗
 const openDialog = () => {
-  dialogVisible.value = true
+  isDialogOpen.value = true
 }
 
 // 关闭弹窗
 const closeDialog = () => {
-  dialogVisible.value = false
+  isDialogOpen.value = false
 }
 
 defineExpose({
@@ -266,11 +266,11 @@ defineExpose({
 <template>
   <div class="package-options-dialog">
     <!-- 触发弹窗的按钮 -->
-    <el-button type="primary" @click="openDialog" style="width: 100%; margin-top: 10px;">链接和索引设置</el-button>
+    <el-button type="primary" @click="openDialog">链接和索引设置</el-button>
     
     <!-- 弹窗 -->
     <el-dialog
-      v-model="dialogVisible"
+      v-model="isDialogOpen"
       title="链接和索引设置"
       :before-close="closeDialog"
     >
@@ -282,26 +282,25 @@ defineExpose({
               <strong>链接和索引设置</strong>
               <p>设置文档中的链接和索引功能，包括超链接、参考文献链接以及各种索引</p>
 
-              <div style="margin-top: 20px;">
+              <div>
                 <el-checkbox 
                   :model-value="variorefEnabled" 
                   @update:model-value="(val: boolean | string | number) => variorefEnabled = Boolean(val)"
                   label="启用 varioref 宏包（用于智能交叉引用）" 
                 />
-                <div v-if="variorefEnabled" style="margin-top: 10px; margin-left: 20px;">
-                  <pre style="background-color: #f5f5f5; padding: 10px; border-radius: 4px; overflow-x: auto; font-family: monospace; font-size: 12px;">{{ variorefTemplate }}</pre>
+                <div v-if="variorefEnabled">
+                  <pre class="code-preview-content">{{ variorefTemplate }}</pre>
                 </div>
               </div>
 
               <el-divider />
 
-              <div style="margin-top: 20px;">
+              <div>
                 <el-alert
                   title="索引宏包选择说明"
                   description="imakeidx 和 splitidx 是 multind 的现代替代品，提供了更好的功能和维护性。请注意这两个选项是互斥的，只能同时启用其中一个。"
                   type="info"
                   show-icon
-                  style="margin-bottom: 15px;"
                 />
 
                 <el-checkbox 
@@ -309,54 +308,52 @@ defineExpose({
                   @update:model-value="(val: boolean | string | number) => imakeidxEnabled = Boolean(val)"
                   label="启用 imakeidx 宏包（最简单、最推荐）" 
                 />
-                <div v-if="imakeidxEnabled" style="margin-top: 10px; margin-left: 20px;">
-                  <pre style="background-color: #f5f5f5; padding: 10px; border-radius: 4px; overflow-x: auto; font-family: monospace; font-size: 12px;">{{ imakeidxTemplate }}</pre>
+                <div v-if="imakeidxEnabled">
+                  <pre class="code-preview-content">{{ imakeidxTemplate }}</pre>
                 </div>
 
                 <el-checkbox 
                   :model-value="splitidxEnabled" 
                   @update:model-value="(val: boolean | string | number) => splitidxEnabled = Boolean(val)"
                   label="启用 splitidx 宏包（功能更强）" 
-                  style="margin-top: 10px;"
                 />
-                <div v-if="splitidxEnabled" style="margin-top: 10px; margin-left: 20px;">
-                  <pre style="background-color: #f5f5f5; padding: 10px; border-radius: 4px; overflow-x: auto; font-family: monospace; font-size: 12px;">{{ splitidxTemplate }}</pre>
+                <div v-if="splitidxEnabled">
+                  <pre class="code-preview-content">{{ splitidxTemplate }}</pre>
                 </div>
               </div>
 
               <el-divider />
 
-              <div style="margin-top: 20px;">
+              <div>
                 <el-checkbox 
                   :model-value="hyperrefEnabled" 
                   @update:model-value="(val: boolean | string | number) => hyperrefEnabled = Boolean(val)"
                   label="启用 hyperref 宏包（用于超链接）" 
                 />
-                <div v-if="hyperrefEnabled" style="margin-top: 10px; margin-left: 20px;">
-                  <div style="margin-bottom: 10px;">
+                <div v-if="hyperrefEnabled">
+                  <div>
                     <label>PDF 标题：</label>
                     <el-input 
                       :model-value="pdfTitle" 
                       @input="(val) => pdfTitle = val"
                       placeholder="请输入PDF标题，留空则使用默认文件名"
                       size="small"
-                      style="width: 300px; margin-top: 5px;"
                     />
                   </div>
-                  <pre style="background-color: #f5f5f5; padding: 10px; border-radius: 4px; overflow-x: auto; font-family: monospace; font-size: 12px;">{{ generateHyperrefTemplate(pdfTitle) }}</pre>
+                  <pre class="code-preview-content">{{ generateHyperrefTemplate(pdfTitle) }}</pre>
                 </div>
               </div>
 
               <el-divider />
 
-              <div style="margin-top: 20px;">
+              <div>
                 <el-checkbox 
                   :model-value="urlEnabled" 
                   @update:model-value="(val: boolean | string | number) => urlEnabled = Boolean(val)"
                   label="启用 url 宏包（用于URL样式设置）" 
                 />
-                <div v-if="urlEnabled" style="margin-top: 10px; margin-left: 20px;">
-                  <pre style="background-color: #f5f5f5; padding: 10px; border-radius: 4px; overflow-x: auto; font-family: monospace; font-size: 12px;">{{ urlTemplate }}</pre>
+                <div v-if="urlEnabled">
+                  <pre class="code-preview-content">{{ urlTemplate }}</pre>
                 </div>
               </div>
             </div>
@@ -364,7 +361,7 @@ defineExpose({
             <!-- 右栏：代码预览 -->
             <div class="package-options-right">
               <div class="code-preview">
-                <pre class="code-preview-content">{{ computedLatexCode }}</pre>
+                <pre class="code-preview-content">{{ latexCode }}</pre>
               </div>
             </div>
           </div>

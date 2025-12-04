@@ -19,7 +19,7 @@ const emit = defineEmits<{
 }>()
 
 // 控制弹窗显示
-const dialogVisible = ref(false)
+const isDialogOpen = ref(false)
 
 // 文档类选项配置
 const documentClasses: DocumentClassConfig[] = [
@@ -90,7 +90,7 @@ const generateDocumentClassInfo = (): DocumentClassInfo => {
   }
 }
 
-const computedLatexCode = computed(() => {
+const latexCode = computed(() => {
   const documentClassInfo = generateDocumentClassInfo();
   return generateCodeFromDocumentClassInfo(documentClassInfo);
 })
@@ -112,15 +112,15 @@ if (!props.modelValue.documentClass) {
   })
 }
 
-setupCodeEmission(computedLatexCode, emit as any, props.componentId, 'DocumentClassSelector')
+setupCodeEmission(latexCode, emit as any, props.componentId, 'DocumentClassSelector')
 
 // 弹窗控制方法
 const openDialog = () => {
-  dialogVisible.value = true
+  isDialogOpen.value = true
 }
 
 const closeDialog = () => {
-  dialogVisible.value = false
+  isDialogOpen.value = false
 }
 
 defineExpose({
@@ -132,13 +132,12 @@ defineExpose({
 <template>
   <div>
     <!-- 触发弹窗的按钮 -->
-    <el-button type="primary" @click="openDialog" style="width: 100%; margin-top: 10px;">Document Class 文档类</el-button>
+    <el-button type="primary" @click="openDialog">Document Class 文档类</el-button>
     
     <!-- 弹窗 -->
     <el-dialog
-      v-model="dialogVisible"
+      v-model="isDialogOpen"
       title="Document Class 文档类"
-      width="100%"
       :before-close="closeDialog"
       
     >
@@ -171,16 +170,16 @@ defineExpose({
               <div class="document-class-selector-options">
                 <strong class="document-class-selector-options-title">文档类选项</strong>
               <div class="document-class-selector-options-list">
-                <div v-for="opt in classOptions" :key="opt.key" style="margin-bottom: 8px;">
+                <div v-for="opt in classOptions" :key="opt.key">
                   <el-checkbox
                     :model-value="optionValues[opt.key]"
                     @update:model-value="(val: boolean | string | number) => updateOptionValue(opt.key, Boolean(val))"
                     :label="opt.label"
                     class="document-class-selector-option-item"
                   />
-                  <div v-if="optionValues[opt.key]" style="margin-left: 20px; margin-top: 8px;">
+                  <div v-if="optionValues[opt.key]">
                     <div>{{ opt.desc }}</div>
-                    <pre style="background:#f5f5f5;padding:10px;border-radius:4px;white-space:pre-wrap;">{{ exampleForOption(opt.key) }}</pre>
+                    <pre class="code-preview-content">{{ exampleForOption(opt.key) }}</pre>
                   </div>
                 </div>
               </div>
@@ -190,7 +189,7 @@ defineExpose({
             <!-- 右栏：代码预览 -->
             <div class="document-class-selector-right">
               <div class="document-class-selector-code-preview">
-                <pre class="document-class-selector-code-preview-content">{{ computedLatexCode }}</pre>
+                <pre class="document-class-selector-code-preview-content">{{ latexCode }}</pre>
               </div>
             </div>
           </div>

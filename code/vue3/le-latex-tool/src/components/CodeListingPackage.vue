@@ -39,10 +39,10 @@ const emit = defineEmits<{
 }>()
 
 // 控制弹窗显示
-const dialogVisible = ref(false)
+const isDialogOpen = ref(false)
 
 // 包配置数据
-const packages = ref({
+const packageOptions = ref({
   xcolor: {
     enabled: props.modelValue.xcolor?.enabled !== undefined ? props.modelValue.xcolor.enabled : true,
     dvipsnames: props.modelValue.xcolor?.dvipsnames !== undefined ? props.modelValue.xcolor.dvipsnames : true
@@ -141,56 +141,56 @@ const optionDocs = {
 }
 
 // 计算属性：生成 LaTeX 代码（使用通用工具）
-const computedLatexCode = computed(() => {
+const latexCode = computed(() => {
   const infos: PackageInfo[] = []
 
-  if (packages.value.xcolor.enabled) {
+  if (packageOptions.value.xcolor.enabled) {
     const opts: string[] = []
-    if (packages.value.xcolor.dvipsnames) opts.push('dvipsnames')
+    if (packageOptions.value.xcolor.dvipsnames) opts.push('dvipsnames')
     infos.push({ package: 'xcolor', options: opts })
   }
 
-  if (packages.value.cprotect) {
+  if (packageOptions.value.cprotect) {
     infos.push({ package: 'cprotect' })
   }
 
-  if (packages.value.spverbatim) {
+  if (packageOptions.value.spverbatim) {
     infos.push({ package: 'spverbatim' })
   }
 
-  if (packages.value.fancyvrb) {
+  if (packageOptions.value.fancyvrb) {
     infos.push({ package: 'fancyvrb', afterLines: ['\\newsavebox{\\vTmpOne}'] })
   }
 
-  if (packages.value.fancyvrbEx) {
+  if (packageOptions.value.fancyvrbEx) {
     infos.push({ package: 'fancyvrb-ex' })
   }
 
-  if (packages.value.xparse) {
+  if (packageOptions.value.xparse) {
     infos.push({ package: 'xparse' })
   }
 
-  if (packages.value.minted.enabled) {
+  if (packageOptions.value.minted.enabled) {
     const opts: string[] = []
-    if (packages.value.minted.newfloat) opts.push('newfloat')
-    if (packages.value.minted.cache === false) opts.push('cache=false')
+    if (packageOptions.value.minted.newfloat) opts.push('newfloat')
+    if (packageOptions.value.minted.cache === false) opts.push('cache=false')
     infos.push({ package: 'minted', options: opts })
   }
 
-  if (packages.value.listings) {
+  if (packageOptions.value.listings) {
     infos.push({ package: 'listings' })
   }
 
-  if (packages.value.accsupp) {
+  if (packageOptions.value.accsupp) {
     infos.push({ package: 'accsupp' })
   }
 
-  if (packages.value.tcolorbox.enabled) {
+  if (packageOptions.value.tcolorbox.enabled) {
     const libs: string[] = []
-    if (packages.value.tcolorbox.listings) libs.push('listings')
-    if (packages.value.tcolorbox.skins) libs.push('skins')
-    if (packages.value.tcolorbox.breakable) libs.push('breakable')
-    if (packages.value.tcolorbox.xparse) libs.push('xparse')
+    if (packageOptions.value.tcolorbox.listings) libs.push('listings')
+    if (packageOptions.value.tcolorbox.skins) libs.push('skins')
+    if (packageOptions.value.tcolorbox.breakable) libs.push('breakable')
+    if (packageOptions.value.tcolorbox.xparse) libs.push('xparse')
     const after: string[] = libs.length > 0 ? [`\\tcbuselibrary{${libs.join(',')}}`] : []
     infos.push({ package: 'tcolorbox', afterLines: after })
   }
@@ -200,76 +200,76 @@ const computedLatexCode = computed(() => {
 
 // 监听包选项变化
 const updatePackage = (pkg: string, value: any) => {
-  (packages.value as any)[pkg] = value
-  emit('update:modelValue', { ...packages.value })
+  (packageOptions.value as any)[pkg] = value
+  emit('update:modelValue', { ...packageOptions.value })
 }
 
 // 监听 xcolor 子选项变化
 const updateXcolorDvipsnames = (value: boolean | string | number) => {
-  packages.value.xcolor.dvipsnames = Boolean(value)
-  emit('update:modelValue', { ...packages.value })
+  packageOptions.value.xcolor.dvipsnames = Boolean(value)
+  emit('update:modelValue', { ...packageOptions.value })
 }
 
 // 监听 minted 子选项变化
 const updateMintedNewfloat = (value: boolean | string | number) => {
-  packages.value.minted.newfloat = Boolean(value)
-  emit('update:modelValue', { ...packages.value })
+  packageOptions.value.minted.newfloat = Boolean(value)
+  emit('update:modelValue', { ...packageOptions.value })
 }
 
 const updateMintedCache = (value: boolean | string | number) => {
-  packages.value.minted.cache = Boolean(value)
-  emit('update:modelValue', { ...packages.value })
+  packageOptions.value.minted.cache = Boolean(value)
+  emit('update:modelValue', { ...packageOptions.value })
 }
 
 // 监听 tcolorbox 子选项变化
 const updateTcolorboxListings = (value: boolean | string | number) => {
-  packages.value.tcolorbox.listings = Boolean(value)
-  emit('update:modelValue', { ...packages.value })
+  packageOptions.value.tcolorbox.listings = Boolean(value)
+  emit('update:modelValue', { ...packageOptions.value })
 }
 
 const updateTcolorboxSkins = (value: boolean | string | number) => {
-  packages.value.tcolorbox.skins = Boolean(value)
-  emit('update:modelValue', { ...packages.value })
+  packageOptions.value.tcolorbox.skins = Boolean(value)
+  emit('update:modelValue', { ...packageOptions.value })
 }
 
 const updateTcolorboxBreakable = (value: boolean | string | number) => {
-  packages.value.tcolorbox.breakable = Boolean(value)
-  emit('update:modelValue', { ...packages.value })
+  packageOptions.value.tcolorbox.breakable = Boolean(value)
+  emit('update:modelValue', { ...packageOptions.value })
 }
 
 const updateTcolorboxXparse = (value: boolean | string | number) => {
-  packages.value.tcolorbox.xparse = Boolean(value)
-  emit('update:modelValue', { ...packages.value })
+  packageOptions.value.tcolorbox.xparse = Boolean(value)
+  emit('update:modelValue', { ...packageOptions.value })
 }
 
-setupCodeEmission(computedLatexCode, emit, props.componentId, 'CodeListingPackage')
+setupCodeEmission(latexCode, emit, props.componentId, 'CodeListingPackage')
 
 // 打开弹窗
-const openDialog = () => {
-  dialogVisible.value = true
+const showDialog = () => {
+  isDialogOpen.value = true
 }
 
 // 关闭弹窗
-const closeDialog = () => {
-  dialogVisible.value = false
+const hideDialog = () => {
+  isDialogOpen.value = false
 }
 
 defineExpose({
-  openDialog,
-  closeDialog
+  showDialog,
+  hideDialog
 })
 </script>
 
 <template>
   <div class="package-options-dialog">
     <!-- 触发弹窗的按钮 -->
-    <el-button type="primary" @click="openDialog" style="width: 100%; margin-top: 10px;">代码抄录宏包设置</el-button>
+    <el-button type="primary" @click="showDialog" style="width: 100%; margin-top: 10px;">代码抄录宏包设置</el-button>
     
     <!-- 弹窗 -->
     <el-dialog
-      v-model="dialogVisible"
+      v-model="isDialogOpen"
       title="代码抄录宏包设置"
-      :before-close="closeDialog"
+      :before-close="hideDialog"
     >
       <el-card shadow="hover">
         <div>
@@ -283,20 +283,20 @@ defineExpose({
               <!-- Xcolor -->
               <div class="package-section">
                 <el-checkbox 
-                  v-model="packages.xcolor.enabled" 
-                  @change="(val) => updatePackage('xcolor', { ...packages.xcolor, enabled: Boolean(val) })"
+                  v-model="packageOptions.xcolor.enabled" 
+                  @change="(val) => updatePackage('xcolor', { ...packageOptions.xcolor, enabled: Boolean(val) })"
                   label="xcolor - 颜色支持宏包"
                 />
-                <div v-if="packages.xcolor.enabled" style="margin-left: 20px; margin-top: 10px;">
+                <div v-if="packageOptions.xcolor.enabled" style="margin-left: 20px; margin-top: 10px;">
                   <el-checkbox 
-                    v-model="packages.xcolor.dvipsnames" 
+                    v-model="packageOptions.xcolor.dvipsnames" 
                     @change="updateXcolorDvipsnames"
                     label="dvipsnames"
                   />
                   <div class="option-doc" style="margin-top: 8px;">
                     <div>{{ optionDocs.xcolor.desc }}</div>
                     <pre style="background:#f5f5f5;padding:10px;border-radius:4px;white-space:pre-wrap;">{{ optionDocs.xcolor.example }}</pre>
-                    <div v-if="packages.xcolor.dvipsnames" style="margin-top:8px;">
+                    <div v-if="packageOptions.xcolor.dvipsnames" style="margin-top:8px;">
                       <div>{{ optionDocs.xcolorDvipsnames.desc }}</div>
                       <pre style="background:#f5f5f5;padding:10px;border-radius:4px;white-space:pre-wrap;">{{ optionDocs.xcolorDvipsnames.example }}</pre>
                     </div>
@@ -307,11 +307,11 @@ defineExpose({
               <!-- Cprotect -->
               <div class="package-section">
                 <el-checkbox 
-                  v-model="packages.cprotect" 
+                  v-model="packageOptions.cprotect" 
                   @change="(val) => updatePackage('cprotect', val)"
                   label="cprotect - 保护命令宏包"
                 />
-                <div v-if="packages.cprotect" class="option-doc" style="margin-top: 8px; margin-left: 20px;">
+                <div v-if="packageOptions.cprotect" class="option-doc" style="margin-top: 8px; margin-left: 20px;">
                   <div>{{ optionDocs.cprotect.desc }}</div>
                   <pre style="background:#f5f5f5;padding:10px;border-radius:4px;white-space:pre-wrap;">{{ optionDocs.cprotect.example }}</pre>
                 </div>
@@ -320,11 +320,11 @@ defineExpose({
               <!-- Spverbatim -->
               <div class="package-section">
                 <el-checkbox 
-                  v-model="packages.spverbatim" 
+                  v-model="packageOptions.spverbatim" 
                   @change="(val) => updatePackage('spverbatim', val)"
                   label="spverbatim - 支持空格的 Verbatim 宏包"
                 />
-                <div v-if="packages.spverbatim" class="option-doc" style="margin-top: 8px; margin-left: 20px;">
+                <div v-if="packageOptions.spverbatim" class="option-doc" style="margin-top: 8px; margin-left: 20px;">
                   <div>{{ optionDocs.spverbatim.desc }}</div>
                   <pre style="background:#f5f5f5;padding:10px;border-radius:4px;white-space:pre-wrap;">{{ optionDocs.spverbatim.example }}</pre>
                 </div>
@@ -333,11 +333,11 @@ defineExpose({
               <!-- Fancyvrb -->
               <div class="package-section">
                 <el-checkbox 
-                  v-model="packages.fancyvrb" 
+                  v-model="packageOptions.fancyvrb" 
                   @change="(val) => updatePackage('fancyvrb', val)"
                   label="fancyvrb - 增强的 Verbatim 宏包"
                 />
-                <div v-if="packages.fancyvrb" class="option-doc" style="margin-top: 8px; margin-left: 20px;">
+                <div v-if="packageOptions.fancyvrb" class="option-doc" style="margin-top: 8px; margin-left: 20px;">
                   <div>{{ optionDocs.fancyvrb.desc }}</div>
                   <pre style="background:#f5f5f5;padding:10px;border-radius:4px;white-space:pre-wrap;">{{ optionDocs.fancyvrb.example }}</pre>
                 </div>
@@ -346,11 +346,11 @@ defineExpose({
               <!-- Fancyvrb-ex -->
               <div class="package-section">
                 <el-checkbox 
-                  v-model="packages.fancyvrbEx" 
+                  v-model="packageOptions.fancyvrbEx" 
                   @change="(val) => updatePackage('fancyvrbEx', val)"
                   label="fancyvrb-ex - Fancyvrb 扩展宏包"
                 />
-                <div v-if="packages.fancyvrbEx" class="option-doc" style="margin-top: 8px; margin-left: 20px;">
+                <div v-if="packageOptions.fancyvrbEx" class="option-doc" style="margin-top: 8px; margin-left: 20px;">
                   <div>{{ optionDocs.fancyvrbEx.desc }}</div>
                   <pre style="background:#f5f5f5;padding:10px;border-radius:4px;white-space:pre-wrap;">{{ optionDocs.fancyvrbEx.example }}</pre>
                 </div>
@@ -359,11 +359,11 @@ defineExpose({
               <!-- Xparse -->
               <div class="package-section">
                 <el-checkbox 
-                  v-model="packages.xparse" 
+                  v-model="packageOptions.xparse" 
                   @change="(val) => updatePackage('xparse', val)"
                   label="xparse - 新一代命令定义宏包"
                 />
-                <div v-if="packages.xparse" class="option-doc" style="margin-top: 8px; margin-left: 20px;">
+                <div v-if="packageOptions.xparse" class="option-doc" style="margin-top: 8px; margin-left: 20px;">
                   <div>{{ optionDocs.xparse.desc }}</div>
                   <pre style="background:#f5f5f5;padding:10px;border-radius:4px;white-space:pre-wrap;">{{ optionDocs.xparse.example }}</pre>
                 </div>
@@ -372,29 +372,29 @@ defineExpose({
               <!-- Minted -->
               <div class="package-section">
                 <el-checkbox 
-                  v-model="packages.minted.enabled" 
-                  @change="(val) => updatePackage('minted', { ...packages.minted, enabled: Boolean(val) })"
+                  v-model="packageOptions.minted.enabled" 
+                  @change="(val) => updatePackage('minted', { ...packageOptions.minted, enabled: Boolean(val) })"
                   label="minted - 代码高亮宏包"
                 />
-                <div v-if="packages.minted.enabled" style="margin-left: 20px; margin-top: 10px;">
+                <div v-if="packageOptions.minted.enabled" style="margin-left: 20px; margin-top: 10px;">
                   <el-checkbox 
-                    v-model="packages.minted.newfloat" 
+                    v-model="packageOptions.minted.newfloat" 
                     @change="updateMintedNewfloat"
                     label="newfloat"
                   />
                   <el-checkbox 
-                    v-model="packages.minted.cache" 
+                    v-model="packageOptions.minted.cache" 
                     @change="updateMintedCache"
                     label="cache=false"
                   />
                   <div class="option-doc" style="margin-top: 8px;">
                     <div>{{ optionDocs.minted.desc }}</div>
                     <pre style="background:#f5f5f5;padding:10px;border-radius:4px;white-space:pre-wrap;">{{ optionDocs.minted.example }}</pre>
-                    <div v-if="packages.minted.newfloat" style="margin-top:8px;">
+                    <div v-if="packageOptions.minted.newfloat" style="margin-top:8px;">
                       <div>{{ optionDocs.mintedNewfloat.desc }}</div>
                       <pre style="background:#f5f5f5;padding:10px;border-radius:4px;white-space:pre-wrap;">{{ optionDocs.mintedNewfloat.example }}</pre>
                     </div>
-                    <div v-if="packages.minted.cache === false" style="margin-top:8px;">
+                    <div v-if="packageOptions.minted.cache === false" style="margin-top:8px;">
                       <div>{{ optionDocs.mintedCache.desc }}</div>
                       <pre style="background:#f5f5f5;padding:10px;border-radius:4px;white-space:pre-wrap;">{{ optionDocs.mintedCache.example }}</pre>
                     </div>
@@ -405,11 +405,11 @@ defineExpose({
               <!-- Listings -->
               <div class="package-section">
                 <el-checkbox 
-                  v-model="packages.listings" 
+                  v-model="packageOptions.listings" 
                   @change="(val) => updatePackage('listings', val)"
                   label="listings - 代码环境宏包"
                 />
-                <div v-if="packages.listings" class="option-doc" style="margin-top: 8px; margin-left: 20px;">
+                <div v-if="packageOptions.listings" class="option-doc" style="margin-top: 8px; margin-left: 20px;">
                   <div>{{ optionDocs.listings.desc }}</div>
                   <pre style="background:#f5f5f5;padding:10px;border-radius:4px;white-space:pre-wrap;">{{ optionDocs.listings.example }}</pre>
                 </div>
@@ -418,11 +418,11 @@ defineExpose({
               <!-- Accsupp -->
               <div class="package-section">
                 <el-checkbox 
-                  v-model="packages.accsupp" 
+                  v-model="packageOptions.accsupp" 
                   @change="(val) => updatePackage('accsupp', val)"
                   label="accsupp - 辅助支持宏包"
                 />
-                <div v-if="packages.accsupp" class="option-doc" style="margin-top: 8px; margin-left: 20px;">
+                <div v-if="packageOptions.accsupp" class="option-doc" style="margin-top: 8px; margin-left: 20px;">
                   <div>{{ optionDocs.accsupp.desc }}</div>
                   <pre style="background:#f5f5f5;padding:10px;border-radius:4px;white-space:pre-wrap;">{{ optionDocs.accsupp.example }}</pre>
                 </div>
@@ -431,48 +431,48 @@ defineExpose({
               <!-- Tcolorbox -->
               <div class="package-section">
                 <el-checkbox 
-                  v-model="packages.tcolorbox.enabled" 
-                  @change="(val) => updatePackage('tcolorbox', { ...packages.tcolorbox, enabled: Boolean(val) })"
+                  v-model="packageOptions.tcolorbox.enabled" 
+                  @change="(val) => updatePackage('tcolorbox', { ...packageOptions.tcolorbox, enabled: Boolean(val) })"
                   label="tcolorbox - 彩色文本框宏包"
                 />
-                <div v-if="packages.tcolorbox.enabled" style="margin-left: 20px; margin-top: 10px;">
+                <div v-if="packageOptions.tcolorbox.enabled" style="margin-left: 20px; margin-top: 10px;">
                   <div>tcolorbox 库:</div>
                   <el-checkbox 
-                    v-model="packages.tcolorbox.listings" 
+                    v-model="packageOptions.tcolorbox.listings" 
                     @change="updateTcolorboxListings"
                     label="listings"
                   />
                   <el-checkbox 
-                    v-model="packages.tcolorbox.skins" 
+                    v-model="packageOptions.tcolorbox.skins" 
                     @change="updateTcolorboxSkins"
                     label="skins"
                   />
                   <el-checkbox 
-                    v-model="packages.tcolorbox.breakable" 
+                    v-model="packageOptions.tcolorbox.breakable" 
                     @change="updateTcolorboxBreakable"
                     label="breakable"
                   />
                   <el-checkbox 
-                    v-model="packages.tcolorbox.xparse" 
+                    v-model="packageOptions.tcolorbox.xparse" 
                     @change="updateTcolorboxXparse"
                     label="xparse"
                   />
                   <div class="option-doc" style="margin-top: 8px;">
                     <div>{{ optionDocs.tcolorbox.desc }}</div>
                     <pre style="background:#f5f5f5;padding:10px;border-radius:4px;white-space:pre-wrap;">{{ optionDocs.tcolorbox.example }}</pre>
-                    <div v-if="packages.tcolorbox.listings" style="margin-top:8px;">
+                    <div v-if="packageOptions.tcolorbox.listings" style="margin-top:8px;">
                       <div>{{ optionDocs.tcolorboxListings.desc }}</div>
                       <pre style="background:#f5f5f5;padding:10px;border-radius:4px;white-space:pre-wrap;">{{ optionDocs.tcolorboxListings.example }}</pre>
                     </div>
-                    <div v-if="packages.tcolorbox.skins" style="margin-top:8px;">
+                    <div v-if="packageOptions.tcolorbox.skins" style="margin-top:8px;">
                       <div>{{ optionDocs.tcolorboxSkins.desc }}</div>
                       <pre style="background:#f5f5f5;padding:10px;border-radius:4px;white-space:pre-wrap;">{{ optionDocs.tcolorboxSkins.example }}</pre>
                     </div>
-                    <div v-if="packages.tcolorbox.breakable" style="margin-top:8px;">
+                    <div v-if="packageOptions.tcolorbox.breakable" style="margin-top:8px;">
                       <div>{{ optionDocs.tcolorboxBreakable.desc }}</div>
                       <pre style="background:#f5f5f5;padding:10px;border-radius:4px;white-space:pre-wrap;">{{ optionDocs.tcolorboxBreakable.example }}</pre>
                     </div>
-                    <div v-if="packages.tcolorbox.xparse" style="margin-top:8px;">
+                    <div v-if="packageOptions.tcolorbox.xparse" style="margin-top:8px;">
                       <div>{{ optionDocs.tcolorboxXparse.desc }}</div>
                       <pre style="background:#f5f5f5;padding:10px;border-radius:4px;white-space:pre-wrap;">{{ optionDocs.tcolorboxXparse.example }}</pre>
                     </div>
@@ -484,7 +484,7 @@ defineExpose({
             <!-- 右栏：代码预览 -->
             <div class="package-options-right">
               <div class="code-preview">
-                <pre class="code-preview-content">{{ computedLatexCode }}</pre>
+                <pre class="code-preview-content">{{ latexCode }}</pre>
               </div>
             </div>
           </div>

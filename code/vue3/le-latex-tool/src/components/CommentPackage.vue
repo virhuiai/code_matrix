@@ -16,7 +16,7 @@ const emit = defineEmits<{
 }>()
 
 // 控制弹窗显示
-const dialogVisible = ref(false)
+const isDialogOpen = ref(false)
 
 // 包配置数据
 const packageConfig = {
@@ -45,32 +45,32 @@ const isEnabled = computed({
 })
 
 // 计算属性：生成 LaTeX 代码
-const computedLatexCode = computed(() => {
+const latexCode = computed(() => {
   return isEnabled.value ? packageConfig.latexTemplate : ''
 })
 
-setupCodeEmission(computedLatexCode, emit, props.componentId, 'CommentPackage')
+setupCodeEmission(latexCode, emit, props.componentId, 'CommentPackage')
 
 // 打开弹窗
-const openDialog = () => {
-  dialogVisible.value = true
+const showDialog = () => {
+  isDialogOpen.value = true
 }
 
 // 关闭弹窗
-const closeDialog = () => {
-  dialogVisible.value = false
+const hideDialog = () => {
+  isDialogOpen.value = false
 }
 
 defineExpose({
-  openDialog,
-  closeDialog
+  showDialog,
+  hideDialog
 })
 </script>
 
 <template>
   <div>
-    <el-button type="primary" @click="openDialog">注释</el-button>
-    <el-dialog v-model="dialogVisible" title="注释宏包设置" :before-close="closeDialog">
+    <el-button type="primary" @click="showDialog">注释</el-button>
+    <el-dialog v-model="isDialogOpen" title="注释宏包设置" :before-close="hideDialog">
       <el-row :gutter="20">
         <el-col :span="12">
           <el-card shadow="hover">
@@ -89,7 +89,7 @@ defineExpose({
             <strong>代码预览</strong>
             <el-divider />
             <el-scrollbar max-height="60vh">
-              <pre>{{ computedLatexCode }}</pre>
+              <pre>{{ latexCode }}</pre>
             </el-scrollbar>
           </el-card>
         </el-col>

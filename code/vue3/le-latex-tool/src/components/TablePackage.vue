@@ -43,7 +43,7 @@ const emit = defineEmits<{
 }>()
 
 // 控制弹窗显示
-const dialogVisible = ref(false)
+const isDialogOpen = ref(false)
 
 // 选项说明与示例（JS 配置化）
 const optionDocs: Record<string, { desc: string; example: string }> = {
@@ -213,7 +213,7 @@ const hhlineEnabled = computed({
 })
 
 // 计算属性：生成 LaTeX 代码（使用通用宏包工具）
-const computedLatexCode = computed(() => {
+const latexCode = computed(() => {
   if (!mainEnabled.value) return ''
 
   const infos: PackageInfo[] = []
@@ -261,29 +261,29 @@ if (Object.values(props.modelValue).every(v => v === undefined)) {
   })
 }
 
-setupCodeEmission(computedLatexCode, emit, props.componentId, 'TablePackage')
+setupCodeEmission(latexCode, emit, props.componentId, 'TablePackage')
 
 // 打开弹窗
-const openDialog = () => {
-  dialogVisible.value = true
+const showDialog = () => {
+  isDialogOpen.value = true
 }
 
 // 关闭弹窗
-const closeDialog = () => {
-  dialogVisible.value = false
+const hideDialog = () => {
+  isDialogOpen.value = false
 }
 
 defineExpose({
-  openDialog,
-  closeDialog,
+  showDialog,
+  hideDialog,
   optionDocs
 })
 </script>
 
 <template>
   <div>
-    <el-button type="primary" @click="openDialog">表格</el-button>
-    <el-dialog v-model="dialogVisible" title="表格设置" :before-close="closeDialog">
+    <el-button type="primary" @click="showDialog">表格</el-button>
+    <el-dialog v-model="isDialogOpen" title="表格设置" :before-close="hideDialog">
       <el-row :gutter="20">
         <el-col :span="12">
           <el-card shadow="hover">
@@ -322,7 +322,7 @@ defineExpose({
             <strong>代码预览</strong>
             <el-divider />
             <el-scrollbar max-height="60vh">
-              <pre>{{ computedLatexCode }}</pre>
+              <pre>{{ latexCode }}</pre>
             </el-scrollbar>
           </el-card>
         </el-col>

@@ -22,7 +22,7 @@ const emit = defineEmits<{
 }>()
 
 // 控制弹窗显示
-const dialogVisible = ref(false)
+const isDialogOpen = ref(false)
 
 // 默认配置值
 const defaultValues = {
@@ -71,7 +71,7 @@ const formItems = [
 type FormItemKey = typeof formItems[number]['key']
 
 // 计算属性：生成 LaTeX 代码（使用通用工具）
-const computedLatexCode = computed(() => {
+const latexCode = computed(() => {
   if (!geometryConfig.value.enabled) return ''
   const opts: string[] = []
   if (geometryConfig.value.paperWidth) opts.push(`paperwidth=${geometryConfig.value.paperWidth}`)
@@ -84,7 +84,7 @@ const computedLatexCode = computed(() => {
   }
   if (geometryConfig.value.leftMargin) opts.push(`left=${geometryConfig.value.leftMargin}`)
   if (geometryConfig.value.topMargin) opts.push(`top=${geometryConfig.value.topMargin}`)
-  return generateCodeFromPackageInfos([{ package: 'geometry', options: opts }])
+return generateCodeFromPackageInfos([{ package: 'geometry', options: opts }])
 })
 
 // 更新配置
@@ -110,15 +110,15 @@ const resetAll = () => {
   emit('update:modelValue', { ...geometryConfig.value })
 }
 
-setupCodeEmission(computedLatexCode, emit, props.componentId, 'GeometryPackage')
+setupCodeEmission(latexCode, emit, props.componentId, 'GeometryPackage')
 
 // 弹窗控制方法
 const openDialog = () => {
-  dialogVisible.value = true
+  isDialogOpen.value = true
 }
 
 const closeDialog = () => {
-  dialogVisible.value = false
+  isDialogOpen.value = false
 }
 
 defineExpose({
@@ -130,11 +130,11 @@ defineExpose({
 <template>
   <div class="package-options-dialog">
     <!-- 触发弹窗的按钮 -->
-    <el-button type="primary" @click="openDialog" style="width: 100%; margin-top: 10px;">Geometry 版面设置</el-button>
+    <el-button type="primary" @click="openDialog">Geometry 版面设置</el-button>
     
     <!-- 弹窗 -->
     <el-dialog
-      v-model="dialogVisible"
+      v-model="isDialogOpen"
       title="Geometry 版面设置"
       :before-close="closeDialog"
     >
@@ -183,7 +183,7 @@ defineExpose({
             <!-- 右栏：代码预览 -->
             <div class="package-options-right">
               <div class="code-preview">
-                <pre class="code-preview-content">{{ computedLatexCode }}</pre>
+                <pre class="code-preview-content">{{ latexCode }}</pre>
               </div>
             </div>
           </div>

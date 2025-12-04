@@ -19,7 +19,7 @@ const emit = defineEmits<{
 }>()
 
 // 控制弹窗显示
-const dialogVisible = ref(false)
+const isDialogOpen = ref(false)
 
 // 字体配置数据
 const fontConfig = {
@@ -144,7 +144,7 @@ const handleFontChange = (type: string, option: any) => {
   selectedFontLabels.value[type] = option.label
 }
 
-const computedLatexCode = computed(() => {
+const latexCode = computed(() => {
   return fontSettings.value.map(font => {
     const fontType = fontConfig.types.find(type => type.value === font.type)
     if (!fontType || !font.path || !font.filename) return ''
@@ -155,7 +155,7 @@ const computedLatexCode = computed(() => {
 
 })
 
-setupCodeEmission(computedLatexCode, emit, props.componentId, 'FontSettings')
+setupCodeEmission(latexCode, emit, props.componentId, 'FontSettings')
 
 // 监听modelValue变化
 watch(() => props.modelValue, (newVal) => {
@@ -188,12 +188,12 @@ onMounted(() => {
 
 // 打开弹窗
 const openDialog = () => {
-  dialogVisible.value = true
+  isDialogOpen.value = true
 }
 
 // 关闭弹窗
 const closeDialog = () => {
-  dialogVisible.value = false
+  isDialogOpen.value = false
 }
 
 defineExpose({
@@ -205,11 +205,11 @@ defineExpose({
 <template>
   <div class="package-options-dialog">
     <!-- 触发弹窗的按钮 -->
-    <el-button type="primary" @click="openDialog" style="width: 100%;margin-top:10px;">中文字体设置</el-button>
+    <el-button type="primary" @click="openDialog">中文字体设置</el-button>
     
     <!-- 弹窗 -->
     <el-dialog
-      v-model="dialogVisible"
+      v-model="isDialogOpen"
       title="字体设置"
       width="60%"
       :before-close="closeDialog"

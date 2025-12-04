@@ -30,7 +30,7 @@ const emit = defineEmits<{
 }>()
 
 // 控制弹窗显示
-const dialogVisible = ref(false)
+const isDialogOpen = ref(false)
 
  
 
@@ -132,7 +132,7 @@ const dualColumnEnvTwoEnabled = computed({
 })
 
 // 计算属性：生成 LaTeX 代码（使用通用工具 + 追加自定义定义块）
-const computedLatexCode = computed(() => {
+const latexCode = computed(() => {
   if (!mainEnabled.value) return ''
 
   const infos: PackageInfo[] = []
@@ -157,7 +157,7 @@ const computedLatexCode = computed(() => {
   return [pkgLines, ...extraBlocks].filter(Boolean).join('\n\n')
 })
 
-setupCodeEmission(computedLatexCode, emit, props.componentId, 'ParallelTextPackage')
+setupCodeEmission(latexCode, emit, props.componentId, 'ParallelTextPackage')
 
 onMounted(() => {
   // 如果未设置enabled属性，则设置默认值
@@ -176,31 +176,31 @@ onMounted(() => {
 })
 
 // 打开弹窗
-const openDialog = () => {
-  dialogVisible.value = true
+const showDialog = () => {
+  isDialogOpen.value = true
 }
 
 // 关闭弹窗
-const closeDialog = () => {
-  dialogVisible.value = false
+const hideDialog = () => {
+  isDialogOpen.value = false
 }
 
 defineExpose({
-  openDialog,
-  closeDialog
+  showDialog,
+  hideDialog
 })
 </script>
 
 <template>
   <div class="package-options-dialog">
     <!-- 触发弹窗的按钮 -->
-    <el-button type="primary" @click="openDialog" style="width: 100%; margin-top: 10px;">对译环境</el-button>
+    <el-button type="primary" @click="showDialog" style="width: 100%; margin-top: 10px;">对译环境</el-button>
     
     <!-- 弹窗 -->
     <el-dialog
-      v-model="dialogVisible"
+      v-model="isDialogOpen"
       title="对译环境设置"
-      :before-close="closeDialog"
+      :before-close="hideDialog"
     >
       <el-card shadow="hover">
         <div>
@@ -304,7 +304,7 @@ defineExpose({
             <!-- 右栏：代码预览 -->
             <div class="package-options-right">
               <div class="code-preview">
-                <pre class="code-preview-content">{{ computedLatexCode }}</pre>
+                <pre class="code-preview-content">{{ latexCode }}</pre>
               </div>
             </div>
           </div>
