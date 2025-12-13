@@ -268,6 +268,7 @@ defineExpose({
     <el-dialog
       v-model="isDialogOpen"
       title="代码抄录宏包设置"
+      fullscreen
       :before-close="hideDialog"
     >
       <el-card shadow="hover">

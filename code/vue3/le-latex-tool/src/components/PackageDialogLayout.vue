@@ -39,7 +39,7 @@ defineExpose({ openDialog, closeDialog })
       v-model="visible"
       :title="dialogTitle"
       :before-close="closeDialog"
-      :width="dialogWidth ?? '100%'"
+      fullscreen
     >
       <el-card shadow="hover">
         <div class="package-options-container">

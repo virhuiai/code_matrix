@@ -71,6 +71,7 @@ defineExpose({
     <el-dialog
       v-model="isDialogOpen"
       title="Lettrine 首字下沉设置"
+      fullscreen
       :before-close="hideDialog"
     >
       <el-card shadow="hover">

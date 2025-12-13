@@ -98,6 +98,7 @@ defineExpose({
     <el-dialog
       v-model="isDialogOpen"
       title="行距和空格设置"
+      fullscreen
       :before-close="hideDialog"
     >
       <el-card shadow="hover">

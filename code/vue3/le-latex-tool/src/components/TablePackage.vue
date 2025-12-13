@@ -284,7 +284,7 @@ defineExpose({
 <template>
   <div>
 
-    <el-dialog v-model="isDialogOpen" title="表格设置" :before-close="hideDialog">
+    <el-dialog v-model="isDialogOpen" title="表格设置" fullscreen :before-close="hideDialog">
       <el-row :gutter="20">
         <el-col :span="12">
           <el-card shadow="hover">

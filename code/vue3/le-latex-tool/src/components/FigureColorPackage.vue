@@ -212,6 +212,7 @@ defineExpose({
       v-model="dialogVisible"
       title="插图和颜色设置"
       width="60%"
+      fullscreen
       :before-close="closeDialog"
     >
       <el-card shadow="hover">

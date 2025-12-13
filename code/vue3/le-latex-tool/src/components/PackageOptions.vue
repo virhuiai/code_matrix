@@ -118,7 +118,8 @@ defineExpose({
     <el-dialog
       v-model="dialogVisible"
       title="为 LaTeX 宏包传递选项参数"
-      width="100%"
+
+      fullscreen
       :before-close="closeDialog"
     
     >

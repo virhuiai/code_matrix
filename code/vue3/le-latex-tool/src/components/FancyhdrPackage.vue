@@ -85,6 +85,7 @@ defineExpose({
     <el-dialog
       v-model="dialogVisible"
       title="Fancyhdr 版式包设置"
+      fullscreen
       :before-close="closeDialog"
     >
       <el-card shadow="hover">

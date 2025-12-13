@@ -92,6 +92,7 @@ defineExpose({
     <el-dialog
       v-model="dialogVisible"
       title="目录格式设置"
+      fullscreen
       :before-close="closeDialog"
     >
       <el-card shadow="hover">

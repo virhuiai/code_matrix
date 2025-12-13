@@ -282,3 +282,17 @@
   margin: 0;
   background-color: transparent;
 }
+
+/* 全屏弹窗样式：Element Plus Dialog 在 fullscreen 模式下应用 */
+.el-dialog.is-fullscreen {
+  width: 100vw;
+  height: 100vh;
+  margin: 0 !important;
+  display: flex;
+  flex-direction: column;
+}
+
+.el-dialog.is-fullscreen .el-dialog__body {
+  flex: 1;
+  overflow: auto;
+}

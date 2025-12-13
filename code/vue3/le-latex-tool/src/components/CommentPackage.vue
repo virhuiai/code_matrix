@@ -70,7 +70,7 @@ defineExpose({
 
 <template>
   <div>
-    <el-dialog v-model="isDialogOpen" title="注释宏包设置" :before-close="hideDialog">
+    <el-dialog v-model="isDialogOpen" title="注释宏包设置" fullscreen :before-close="hideDialog">
       <el-row :gutter="20">
         <el-col :span="12">
           <el-card shadow="hover">

@@ -210,7 +210,8 @@ defineExpose({
     <el-dialog
       v-model="isDialogOpen"
       title="字体设置"
-      width="60%"
+
+      fullscreen
       :before-close="closeDialog"
     >
       <el-card shadow="hover">

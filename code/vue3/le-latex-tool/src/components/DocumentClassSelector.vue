@@ -137,6 +137,7 @@ defineExpose({
     <el-dialog
       v-model="isDialogOpen"
       title="Document Class 文档类"
+      fullscreen
       :before-close="closeDialog"
       
     >

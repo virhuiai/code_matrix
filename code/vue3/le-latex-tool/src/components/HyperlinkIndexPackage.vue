@@ -271,6 +271,7 @@ defineExpose({
     <el-dialog
       v-model="isDialogOpen"
       title="链接和索引设置"
+      fullscreen
       :before-close="closeDialog"
     >
       <el-card shadow="hover">
