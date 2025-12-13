@@ -194,7 +194,7 @@ defineExpose({
 <template>
   <div class="package-options-dialog">
     <!-- 触发弹窗的按钮 -->
-    <el-button type="primary" @click="showDialog" style="width: 100%; margin-top: 10px;">对译环境</el-button>
+    <el-button type="primary" size="small" round @click="showDialog">对译环境</el-button>
     
     <!-- 弹窗 -->
     <el-dialog

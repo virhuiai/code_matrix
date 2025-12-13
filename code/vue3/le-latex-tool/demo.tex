@@ -1,0 +1,313 @@
+\PassOptionsToPackage{AutoFakeBold=true,AutoFakeSlant=true}{xeCJK}
+\PassOptionsToPackage{no-math}{fontspec}
+\PassOptionsToPackage{prologue,dvipsnames}{xcolor}
+
+\documentclass[a4paper,oneside,zihao=-4,space,scheme=chinese,heading=true,hyperref,fntef,fancyhdr,fontset=none]{ctexbook}
+
+\setCJKmainfont[Path=/Volumes/THAWSPACE/CshProject/code_matrix.git/code/LaTex/fontFiles/方正/]{FangZhengShuSong-GBK-1.ttf}
+\setCJKsansfont[Path=/Volumes/THAWSPACE/CshProject/code_matrix.git/code/LaTex/fontFiles/方正/]{FangZhengHeiTi-GBK-1.ttf}
+\setCJKmonofont[Path=/Volumes/THAWSPACE/CshProject/code_matrix.git/code/LaTex/fontFiles/方正/]{FangZhengFangSong-GBK-1.ttf}
+
+%
+%  cd /usr/local/texlive/2022/texmf-dist/fonts/opentype/public/cm-unicode/
+%  cd /Volumes/THAWSPACE/Soft.Ok/texlive/2024/texmf-dist/fonts/opentype/public/cm-unicode/
+%  \setmainfont{ } % 论文中西文部分默认使用的字体。
+% %通常到 Word 2003 为止，这里的默认字体都会是 Times New Roman。Linux 下也有同名字体。
+\setmainfont{cmun}[
+  Extension       = .otf,
+  UprightFont     = *rm,
+  ItalicFont      = *ti,
+  SlantedFont     = *sl,
+  BoldFont        = *bx,
+  BoldItalicFont  = *bi,
+  BoldSlantedFont = *bl,
+]
+%\setsansfont{ } %是西文默认无衬线字体。一般可能出现在大标题等显眼的位置。
+\setsansfont{cmun}[
+  Extension      = .otf,
+  UprightFont    = *ss,
+  ItalicFont     = *si,
+  BoldFont       = *sx,
+  BoldItalicFont = *so,
+]
+%\setmonofont{ }%是西文默认的等宽字体。一般用于排版程序代码。
+%Courier 或者 Courier New 是常见的 Word 选项。Linux 下一般会有 Courier，但很少能看见 Courier New。
+\setmonofont{cmun}[
+  Extension      = .otf,
+  UprightFont    = *btl,% light version
+  ItalicFont     = *bto,%  light version
+  BoldFont       = *tb,
+  BoldItalicFont = *tx,
+]
+% 消除 \t 命令的字体 warning
+\AtBeginDocument{%}
+  \renewcommand*\t[1]{{\edef\restore@font{\the\font}\usefont{OML}{cmm}{m}{it}\accent"7F\restore@font#1}}
+}
+
+% ***************************************************************
+% This LATEX package is a solution for the error
+%                     “no room for a new \write”
+\usepackage{morewrites}
+
+\usepackage{fancybox}
+
+\usepackage{boxedminipage}
+
+\usepackage{tikz}
+
+\usepackage{tcolorbox}
+\tcbuselibrary{raster,listings,theorems,skins,xparse,breakable}
+
+\usepackage{awesomebox}
+
+\usepackage{mdframed}
+
+\usepackage{framed}
+
+\usepackage{changepage}
+
+\usepackage{lettrine}
+%\lettrine[lines=1,lhang=0.1,loversize=0.1] {我}{}
+
+\usepackage{fancyhdr}
+
+% 版式设置
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[EL,OR]{\thepage}
+\fancyhead[OC]{\nouppercase{\sf\rightmark}}
+\fancyhead[EC]{\nouppercase{\sf\leftmark}}
+%%%%%% 版式修改命令用于修改系统的plain版式，使所有章标题页的页眉和页脚都为空白。
+\fancypagestyle{plain}{\renewcommand{\headrulewidth}{0pt}\fancyhf{}}
+%%%%%% 注意，当调用ctexcap中文标题宏包后，不能再调用fancyhdr宏包！
+%%%%%% 如果需要修改版式，应启用ctex宏包的fancyhdr选项，它将自动加载fancyhdr宏包，%
+%%%%%% 并对其中某些命令重新定义，以正确显示中文页眉。
+
+\usepackage[dvipsnames]{xcolor}
+
+\usepackage{cprotect}
+
+\usepackage{spverbatim}
+
+\usepackage{fancyvrb}
+
+\newsavebox{\vTmpOne}
+
+\usepackage{fancyvrb-ex}
+
+\usepackage{xparse}
+
+\usepackage[newfloat,cache=false]{minted}
+
+\usepackage{listings}
+
+\usepackage{accsupp}
+
+\usepackage{tcolorbox}
+
+\tcbuselibrary{listings,skins,breakable,xparse}
+
+\usepackage{parskip}
+
+\usepackage{xspace}
+
+\linespread{1.245}
+
+\usepackage[paperwidth=185mm,paperheight=260mm,text={148mm,220mm},left=21mm,top=25.5mm]{geometry}
+
+% 层次标题格式设置
+\CTEXsetup[name={第~,~章},number={\arabic{chapter}}]{chapter}
+\CTEXsetup[nameformat+={\LARGE},titleformat+={\LARGE}]{chapter}
+\CTEXsetup[beforeskip={-23pt},afterskip={20pt plus 2pt minus 2pt}]{chapter}
+
+% 图表标题格式设置
+\usepackage[labelfont=bf,labelsep=quad]{caption}
+\DeclareCaptionFont{kai}{\kaishu}
+\DeclareCaptionFont{five}{\zihao{5}}
+\captionsetup{textfont=kai,font=five}
+
+\usepackage{titletoc}
+\titlecontents{chapter}[4em]{\addvspace{2.3mm}\bfseries}{%
+                       \contentslabel{4.0em}}{}{\titlerule*[5pt]{$\cdot$}\contentspage}
+\titlecontents{section}[4em]{}{\contentslabel{2.5em}}{}{%
+                       \titlerule*[5pt]{$\cdot$}\contentspage}
+\titlecontents{subsection}[7.2em]{}{\contentslabel{3.3em}}{}{%
+                          \titlerule*[5pt]{$\cdot$}\contentspage}
+
+\usepackage{varioref}
+
+\usepackage[CJKbookmarks,bookmarksnumbered,bookmarksopen,pdftitle={标题标题标题},pdfauthor=virhuiai,colorlinks=true,pdfstartview=FitH,citecolor=blue,linktocpage,linkcolor=blue,urlcolor=blue,hyperindex=true]{hyperref}
+
+\usepackage{url}
+
+\urlstyle{same}
+
+\usepackage{pifont}
+
+\usepackage{mflogo}
+
+\usepackage{texnames}
+
+\usepackage{bbding}
+
+\usepackage{amssymb}
+
+\usepackage{enumerate}
+
+\usepackage{enumitem}
+
+\usepackage[olditem,oldenum]{paralist}
+
+\usepackage{mdwlist}
+
+\usepackage{manfnt}
+
+\usepackage{eurosym}
+
+% 自定义描述环境
+\newenvironment{descNL}[1][2em]{%
+\begin{basedescript}{\desclabelwidth{#1}\desclabelstyle{\nextlinelabel}}}%
+{\end{basedescript}}
+\newenvironment{descML}[1][2em]{%
+\begin{basedescript}{\desclabelwidth{#1}\desclabelstyle{\multilinelabel}}}%
+{\end{basedescript}}
+\newenvironment{descPL}[1][2em]{%
+\begin{basedescript}{\desclabelwidth{#1}\desclabelstyle{\pushlabel}}}{\end{basedescript}}
+\newlength{\basedescriptDesclabelwidth}
+\newenvironment{dl}[1][标签]{%
+\settowidth{\basedescriptDesclabelwidth}{\tt #1}
+\begin{basedescript}{%
+\renewcommand{\makelabel}[1]{\tt ##1}%
+\desclabelwidth{\basedescriptDesclabelwidth}%
+\desclabelstyle{\pushlabel}}}{\end{basedescript}}
+\newcounter{带圈文字}
+\newcommand\带圈文字[1]{
+\protect\setcounter{带圈文字}{171+#1}
+\protect\ding{\value{带圈文字}}}
+
+\usepackage{pdfcolparcolumns}
+
+\usepackage{paracol}
+
+\newlength{\栏间距}
+\setlength{\栏间距}{1em}
+
+\newlength{\左栏宽}
+\newlength{\右栏宽}
+
+\newcommand\栏宽调整[1]{%
+\setlength{\左栏宽}{#1\textwidth}%
+\setlength{\右栏宽}{\textwidth-\栏间距-\左栏宽}%
+}
+
+% \栏宽调整{0.37}
+\setlength{\左栏宽}{0.4\textwidth}
+\setlength{\右栏宽}{0.51\textwidth}
+
+\newcommand\栏体[1]{\colchunk{#1}}
+\newcommand\换栏{\colplacechunks}
+
+\newcommand\栏宽调整二[1]{%
+\columnratio{#1}}%
+
+\newcommand\换栏二{\switchcolumn}
+
+\newenvironment{双栏}%
+{\begin{parcolumns}[rulebetween=false,distance=\栏间距,colwidths={1=\左栏宽,2=\右栏宽}]{2}}%
+{\end{parcolumns}}
+
+\newenvironment{双栏二}%
+{\begin{paracol}{2}}%
+{\end{paracol}}
+
+% 注释宏包设置
+\usepackage{comment}
+%%%%%% \begin{comment}
+%%%%%% 注释内容
+%%%%%% \end{comment}
+
+% grffile package extends the file name processing 
+% of package graphics to support a larger range of file names.
+\usepackage{graphicx,grffile}
+% set default figure placement to htbp
+\makeatletter
+\def\fps@figure{htbp}
+\makeatother
+% 插图路径命令
+%\graphicspath{{}}
+
+% 浮动体宏包
+\usepackage{floatrow}
+
+% 旋转宏包
+\usepackage{rotating}
+
+%\includepdf[pages={3,5}]{..../13-1.pdf}；
+%可使用合并命令\includepdfmerge将多页外部文件自动缩小合并后插入一页之中。
+\usepackage{pdfpages}
+
+%\begin{window}[行数，位置，{绕排对象}，{标题}] 绕排文本
+%\end{window}
+
+%\begin{figwindow}[行数，位置，{绕排对象}，{标题}] 绕排文本
+%\end{figwindow}
+
+%\begin{tabwindow}[行数，位置，{绕排对象}，{标题}] 绕排文本
+%\end{tabwindow}
+
+%只是后两种可以在绕排对象的标题前自动添加标 题标志和分隔符号。
+
+%右侧 imgRight
+%\begin{window}[0,r,{\includegraphics[width=0.5\textwidth]{图}},{}]
+%
+%\end{window}
+\usepackage{picinpar}
+
+\usepackage[dvipsnames]{xcolor}
+%-----------------------------------------------------------定义颜色---------------
+
+\usepackage{pgf-umlcd}
+
+\usepackage{longtable}
+
+\usepackage{booktabs}
+
+\usepackage{tabularx}
+
+\usepackage{tabulary}
+
+\usepackage{ltablex}
+
+\usepackage{colortbl}
+
+\usepackage{multirow}
+
+\usepackage{array}
+
+\usepackage{dcolumn}
+
+\usepackage{arydshln}
+
+\begin{document}
+
+\section{mainfont}
+
+Hello,world!
+
+你好，世界！
+
+\section{sansfont}
+
+{\sf
+Hello,world!
+你好，世界！
+}
+
+\section{monofont}
+
+{\tt
+Hello,world!
+你好，世界！
+}
+\end{document}
+xelatex -shell-escape a.tex

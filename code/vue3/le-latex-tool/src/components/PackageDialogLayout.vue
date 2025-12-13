@@ -25,9 +25,10 @@ defineExpose({ openDialog, closeDialog })
 <template>
   <div class="package-options-dialog">
     <el-button 
-      type="primary" 
-      @click="openDialog" 
-      :style="buttonFullWidth !== false ? 'width: 100%; margin-top: 10px;' : ''"
+      type="primary"
+      size="small"
+      round
+      @click="openDialog"
     >
       {{ buttonLabel }}
     </el-button>
@@ -61,4 +62,3 @@ defineExpose({ openDialog, closeDialog })
 <style scoped>
 /* 样式统一在全局样式文件中维护 */
 </style>
-

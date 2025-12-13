@@ -88,7 +88,7 @@ defineExpose({
 <template>
   <div class="package-options-dialog">
     <!-- 触发弹窗的按钮 -->
-    <el-button type="primary" @click="openDialog" style="width: 100%;margin-top:10px;">英文字体设置</el-button>
+    <el-button type="primary" size="small" round @click="openDialog">英文字体设置</el-button>
     
     <!-- 弹窗 -->
     <el-dialog

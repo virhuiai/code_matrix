@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import { ElContainer, ElHeader, ElAside, ElMain, ElFooter, ElTabs, ElTabPane, ElInput } from 'element-plus'
+import { ElContainer, ElHeader, ElAside, ElMain, ElFooter, ElTabs, ElTabPane, ElInput, ElSpace } from 'element-plus'
 import PackageOptions from './components/PackageOptions.vue'
 import DocumentClassSelector from './components/DocumentClassSelector.vue'
 import FontSettings from './components/FontSettings.vue'
@@ -319,12 +319,13 @@ const combinedLatexCode = computed(() => {
         <el-tabs v-model="activeTab" type="border-card" class="tabs">
           <el-tab-pane label="选项" name="tab1">
             <div class="app__left_tab-content">
-              <!-- 使用新创建的组件 -->
-              <PackageOptions 
-                v-model="packageOptions" 
-                :component-id="componentIds.packageOptions"
-                @code-change="(code) => {latexCodeFromChild = code;}"
-              />
+              <el-space direction="vertical" size="small">
+                <!-- 使用新创建的组件 -->
+                <PackageOptions 
+                  v-model="packageOptions" 
+                  :component-id="componentIds.packageOptions"
+                  @code-change="(code) => {latexCodeFromChild = code;}"
+                />
 
               <!-- 修改DocumentClassSelector组件的使用 -->
               <DocumentClassSelector
@@ -470,8 +471,7 @@ const combinedLatexCode = computed(() => {
                 :component-id="componentIds.documentContent"
                 @code-change="(code: string) => documentContentCode = code"
               />
-
-
+              </el-space>
             </div>
           </el-tab-pane>
           <el-tab-pane label="常见模板" name="tab2"></el-tab-pane>

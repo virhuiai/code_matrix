@@ -80,7 +80,7 @@ defineExpose({
 <template>
   <div class="package-options-dialog">
     <!-- 触发弹窗的按钮 -->
-    <el-button type="primary" @click="openDialog" style="width: 100%; margin-top: 10px;">Fancyhdr 版式包</el-button>
+    <el-button type="primary" size="small" round @click="openDialog">Fancyhdr 版式包</el-button>
     
     <!-- 弹窗 -->
     <el-dialog
