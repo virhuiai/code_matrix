@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, defineEmits, defineProps } from 'vue'
+import PackageDialogLayout from './PackageDialogLayout.vue'
 import { generateCodeFromPackageInfos } from '../utils/generic-packages-utils'
 import { setupCodeEmission } from '../utils/code-emitter'
 
@@ -21,8 +22,6 @@ const emit = defineEmits<{
   (e: 'codeChange', value: string): void
 }>()
 
-// 控制弹窗显示
-const isDialogOpen = ref(false)
 
 // 默认配置值
 const defaultValues = {
@@ -112,87 +111,50 @@ const resetAll = () => {
 
 setupCodeEmission(latexCode, emit, props.componentId, 'GeometryPackage')
 
-// 弹窗控制方法
-const openDialog = () => {
-  isDialogOpen.value = true
-}
-
-const closeDialog = () => {
-  isDialogOpen.value = false
-}
-
-defineExpose({
-  openDialog,
-  closeDialog
-})
 </script>
 
 <template>
-  <div class="package-options-dialog">
-    <!-- 触发弹窗的按钮 -->
-    <el-button type="primary" @click="openDialog">Geometry 版面设置</el-button>
-    
-    <!-- 弹窗 -->
-    <el-dialog
-      v-model="isDialogOpen"
-      title="Geometry 版面设置"
-      :before-close="closeDialog"
-    >
-      <el-card shadow="hover">
-        <div>
-          <div class="package-options-container">
-            <!-- 左栏：选项 -->
-            <div class="package-options-left">
-              <strong>Geometry 版面设置</strong>
-              <p>设置页面尺寸、边距等版面参数</p>
-              
-              <el-checkbox 
-                :model-value="geometryConfig.enabled" 
-                @update:model-value="(val: boolean | string | number) => updateConfig('enabled', !!val)"
-                label="启用 Geometry 版面设置宏包"
-              />
-              
-              <div v-if="geometryConfig.enabled" style="margin-top: 20px;">
-                <el-divider />
-                
-                <div 
-                  v-for="item in formItems"
-                  :key="item.key"
-                  style="margin-bottom: 15px;"
-                >
-                  <el-form-item :label="item.label">
-                    <div style="display: flex; gap: 10px; align-items: center;">
-                      <el-input 
-                        :model-value="geometryConfig[item.key]" 
-                        @input="(val: string) => updateConfig(item.key, val)"
-                        size="small"
-                        style="flex: 1;"
-                      />
-                      <el-button @click="() => handleOptionAction(item.key, 'reset')" size="small">重置</el-button>
-                      <el-button @click="() => handleOptionAction(item.key, 'clear')" size="small">清空</el-button>
-                    </div>
-                  </el-form-item>
-                </div>
-                
-                <div style="margin-top: 20px; text-align: right;">
-                  <el-button @click="resetAll" type="warning">重置所有设置</el-button>
-                </div>
-              </div>
-            </div>
+  <PackageDialogLayout 
+    button-label="Geometry 版面设置"
+    dialog-title="Geometry 版面设置"
+    :code="latexCode"
+  >
+    <template #left>
+      <strong>Geometry 版面设置</strong>
+      <p>设置页面尺寸、边距等版面参数</p>
 
-            <!-- 右栏：代码预览 -->
-            <div class="package-options-right">
-              <div class="code-preview">
-                <pre class="code-preview-content">{{ latexCode }}</pre>
-              </div>
+      <el-checkbox 
+        :model-value="geometryConfig.enabled" 
+        @update:model-value="(val: boolean | string | number) => updateConfig('enabled', !!val)"
+        label="启用 Geometry 版面设置宏包"
+      />
+
+      <div v-if="geometryConfig.enabled" style="margin-top: 20px;">
+        <el-divider />
+
+        <div 
+          v-for="item in formItems"
+          :key="item.key"
+          style="margin-bottom: 15px;"
+        >
+          <el-form-item :label="item.label">
+            <div style="display: flex; gap: 10px; align-items: center;">
+              <el-input 
+                :model-value="geometryConfig[item.key]" 
+                @input="(val: string) => updateConfig(item.key, val)"
+                size="small"
+                style="flex: 1;"
+              />
+              <el-button @click="() => handleOptionAction(item.key, 'reset')" size="small">重置</el-button>
+              <el-button @click="() => handleOptionAction(item.key, 'clear')" size="small">清空</el-button>
             </div>
-          </div>
+          </el-form-item>
         </div>
-      </el-card>
-      
-      <template #footer>
-        
-      </template>
-    </el-dialog>
-  </div>
+
+        <div style="margin-top: 20px; text-align: right;">
+          <el-button @click="resetAll" type="warning">重置所有设置</el-button>
+        </div>
+      </div>
+    </template>
+  </PackageDialogLayout>
 </template>

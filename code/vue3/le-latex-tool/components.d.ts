@@ -42,6 +42,7 @@ declare module 'vue' {
     LettrinePackage: typeof import('./src/components/LettrinePackage.vue')['default']
     ListSymbolPackage: typeof import('./src/components/ListSymbolPackage.vue')['default']
     MoreWritesPackage: typeof import('./src/components/MoreWritesPackage.vue')['default']
+    PackageDialogLayout: typeof import('./src/components/PackageDialogLayout.vue')['default']
     PackageOptions: typeof import('./src/components/PackageOptions.vue')['default']
     ParallelTextPackage: typeof import('./src/components/ParallelTextPackage.vue')['default']
     TableOfContentsPackage: typeof import('./src/components/TableOfContentsPackage.vue')['default']
