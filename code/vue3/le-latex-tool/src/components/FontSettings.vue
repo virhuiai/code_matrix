@@ -205,9 +205,7 @@ defineExpose({
 
 <template>
   <div class="package-options-dialog">
-    <!-- 触发弹窗的按钮 -->
-    <el-button v-if="!props.externalTrigger" type="primary" size="small" round @click="openDialog">中文字体设置</el-button>
-    
+
     <!-- 弹窗 -->
     <el-dialog
       v-model="isDialogOpen"

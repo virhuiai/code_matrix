@@ -132,9 +132,7 @@ defineExpose({
 
 <template>
   <div>
-    <!-- 触发弹窗的按钮 -->
-    <el-button v-if="!props.externalTrigger" type="primary" size="small" round @click="openDialog">Document Class 文档类</el-button>
-    
+
     <!-- 弹窗 -->
     <el-dialog
       v-model="isDialogOpen"

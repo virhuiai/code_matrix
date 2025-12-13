@@ -113,9 +113,7 @@ defineExpose({
 
 <template>
   <div class="package-options-dialog">
-    <!-- 触发弹窗的按钮 -->
-    <el-button v-if="!props.externalTrigger" type="primary" size="small" round @click="openDialog">Package Options 宏包选项</el-button>
-    
+
     <!-- 弹窗 -->
     <el-dialog
       v-model="dialogVisible"

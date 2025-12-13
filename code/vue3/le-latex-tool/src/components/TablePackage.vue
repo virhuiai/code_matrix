@@ -283,7 +283,7 @@ defineExpose({
 
 <template>
   <div>
-    <el-button v-if="!props.externalTrigger" type="primary" size="small" round @click="showDialog">表格设置</el-button>
+
     <el-dialog v-model="isDialogOpen" title="表格设置" :before-close="hideDialog">
       <el-row :gutter="20">
         <el-col :span="12">
