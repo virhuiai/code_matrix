@@ -31,6 +31,7 @@ const props = defineProps<{
     }
   }
   componentId?: number
+  externalTrigger?: boolean
 }>()
 
 const emit = defineEmits<{
@@ -263,7 +264,7 @@ defineExpose({
 <template>
   <div class="package-options-dialog">
     <!-- 触发弹窗的按钮 -->
-    <el-button type="primary" size="small" round @click="showDialog">代码抄录宏包设置</el-button>
+    <el-button v-if="!props.externalTrigger" type="primary" size="small" round @click="showDialog">代码抄录宏包设置</el-button>
     
     <!-- 弹窗 -->
     <el-dialog

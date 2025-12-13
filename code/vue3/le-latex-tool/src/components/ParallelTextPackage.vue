@@ -14,6 +14,7 @@ const props = defineProps<{
     dualColumnEnvTwoEnabled?: boolean
   }
   componentId?: number
+  externalTrigger?: boolean
 }>()
 
 const emit = defineEmits<{
@@ -194,7 +195,7 @@ defineExpose({
 <template>
   <div class="package-options-dialog">
     <!-- 触发弹窗的按钮 -->
-    <el-button type="primary" size="small" round @click="showDialog">对译环境</el-button>
+    <el-button v-if="!props.externalTrigger" type="primary" size="small" round @click="showDialog">对译环境</el-button>
     
     <!-- 弹窗 -->
     <el-dialog

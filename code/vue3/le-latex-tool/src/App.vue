@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import { ElContainer, ElHeader, ElAside, ElMain, ElFooter, ElTabs, ElTabPane, ElInput, ElSpace } from 'element-plus'
+import { ElContainer, ElHeader, ElAside, ElMain, ElFooter, ElTabs, ElTabPane, ElInput, ElSpace, ElButton, ElDivider } from 'element-plus'
 import PackageOptions from './components/PackageOptions.vue'
 import DocumentClassSelector from './components/DocumentClassSelector.vue'
 import FontSettings from './components/FontSettings.vue'
@@ -303,6 +303,37 @@ const combinedLatexCode = computed(() => {
 
   return codes.filter(code => code.trim() !== '').join('\n\n')
 })
+
+// 外部触发：组件引用
+const compRefs = {
+  packageOptions: ref<any>(null),
+  documentClass: ref<any>(null),
+  fontSettings: ref<any>(null),
+  englishFontSettings: ref<any>(null),
+  moreWritesPackage: ref<any>(null),
+  boxPackages: ref<any>(null),
+  lettrinePackage: ref<any>(null),
+  fancyhdrPackage: ref<any>(null),
+  codeListingPackage: ref<any>(null),
+  documentLayoutPackage: ref<any>(null),
+  geometryPackage: ref<any>(null),
+  titleFormatPackage: ref<any>(null),
+  tableOfContentsPackage: ref<any>(null),
+  hyperlinkIndexPackage: ref<any>(null),
+  listSymbolPackage: ref<any>(null),
+  parallelTextPackage: ref<any>(null),
+  commentPackage: ref<any>(null),
+  figureColorPackage: ref<any>(null),
+  tablePackage: ref<any>(null),
+  documentContent: ref<any>(null)
+}
+
+const openPanel = (key: keyof typeof compRefs) => {
+  const inst = compRefs[key].value as any
+  if (!inst) return
+  if (typeof inst.openDialog === 'function') inst.openDialog()
+  else if (typeof inst.showDialog === 'function') inst.showDialog()
+}
 </script>
 
 <template>
@@ -320,11 +351,36 @@ const combinedLatexCode = computed(() => {
           <el-tab-pane label="选项" name="tab1">
             <div class="app__left_tab-content">
               <el-space direction="vertical" size="small">
+                <div>
+                  <el-button size="small" round @click="openPanel('packageOptions')">宏包选项</el-button>
+                  <el-button size="small" round @click="openPanel('documentClass')">文档类</el-button>
+                  <el-button size="small" round @click="openPanel('fontSettings')">中文字体</el-button>
+                  <el-button size="small" round @click="openPanel('englishFontSettings')">英文字体</el-button>
+                  <el-button size="small" round @click="openPanel('moreWritesPackage')">MoreWrites</el-button>
+                  <el-button size="small" round @click="openPanel('boxPackages')">盒子宏包</el-button>
+                  <el-button size="small" round @click="openPanel('lettrinePackage')">首字下沉</el-button>
+                  <el-button size="small" round @click="openPanel('fancyhdrPackage')">版式包</el-button>
+                  <el-button size="small" round @click="openPanel('codeListingPackage')">代码抄录</el-button>
+                  <el-button size="small" round @click="openPanel('documentLayoutPackage')">行距与空格</el-button>
+                  <el-button size="small" round @click="openPanel('geometryPackage')">版面设置</el-button>
+                  <el-button size="small" round @click="openPanel('titleFormatPackage')">标题格式</el-button>
+                  <el-button size="small" round @click="openPanel('tableOfContentsPackage')">目录格式</el-button>
+                  <el-button size="small" round @click="openPanel('hyperlinkIndexPackage')">链接与索引</el-button>
+                  <el-button size="small" round @click="openPanel('listSymbolPackage')">列表与符号</el-button>
+                  <el-button size="small" round @click="openPanel('parallelTextPackage')">对译环境</el-button>
+                  <el-button size="small" round @click="openPanel('commentPackage')">注释设置</el-button>
+                  <el-button size="small" round @click="openPanel('figureColorPackage')">插图与颜色</el-button>
+                  <el-button size="small" round @click="openPanel('tablePackage')">表格设置</el-button>
+                  <el-button size="small" round @click="openPanel('documentContent')">文档内容</el-button>
+                </div>
+                <el-divider />
                 <!-- 使用新创建的组件 -->
                 <PackageOptions 
                   v-model="packageOptions" 
                   :component-id="componentIds.packageOptions"
                   @code-change="(code) => {latexCodeFromChild = code;}"
+                  :external-trigger="true"
+                  :ref="el => compRefs.packageOptions.value = el"
                 />
 
               <!-- 修改DocumentClassSelector组件的使用 -->
@@ -332,6 +388,8 @@ const combinedLatexCode = computed(() => {
                 v-model="documentClass"
                 :component-id="componentIds.documentClass"
                 @code-change="(code) => documentClassCode = code"
+                :external-trigger="true"
+                :ref="el => compRefs.documentClass.value = el"
               />
               
               <!-- 添加FontSettings组件 -->
@@ -339,6 +397,8 @@ const combinedLatexCode = computed(() => {
                 v-model="fontSettings"
                 :component-id="componentIds.fontSettings"
                 @code-change="(code) => fontSettingsCode = code"
+                :external-trigger="true"
+                :ref="el => compRefs.fontSettings.value = el"
               />
 
               <!-- 添加EnglishFontSettings组件 -->
@@ -346,6 +406,8 @@ const combinedLatexCode = computed(() => {
                 v-model="englishFontSettings"
                 :component-id="componentIds.englishFontSettings"
                 @code-change="(code) => englishFontSettingsCode = code"
+                :external-trigger="true"
+                :ref="el => compRefs.englishFontSettings.value = el"
               />
 
               <!-- 添加MoreWritesPackage组件 morewrites -->
@@ -353,6 +415,8 @@ const combinedLatexCode = computed(() => {
                 v-model="moreWritesPackage"
                 :component-id="componentIds.moreWritesPackage"
                 @code-change="(code) => moreWritesPackageCode = code"
+                :external-trigger="true"
+                :ref="el => compRefs.moreWritesPackage.value = el"
               />
 
               <!-- 添加BoxPackages组件 2_2_盒子设置 -->
@@ -360,6 +424,8 @@ const combinedLatexCode = computed(() => {
                 v-model="boxPackages"
                 :component-id="componentIds.boxPackages"
                 @code-change="(code: string) => boxPackagesCode = code"
+                :external-trigger="true"
+                :ref="el => compRefs.boxPackages.value = el"
               />
 
               <!-- 添加LettrinePackage组件 2_3_首行放大 -->
@@ -367,6 +433,8 @@ const combinedLatexCode = computed(() => {
                 v-model="lettrinePackage"
                 :component-id="componentIds.lettrinePackage"
                 @code-change="(code: string) => lettrinePackageCode = code"
+                :external-trigger="true"
+                :ref="el => compRefs.lettrinePackage.value = el"
               />
 
               <!-- 添加FancyhdrPackage组件 版式设置 -->
@@ -374,6 +442,8 @@ const combinedLatexCode = computed(() => {
                 v-model="fancyhdrPackage"
                 :component-id="componentIds.fancyhdrPackage"
                 @code-change="(code: string) => fancyhdrPackageCode = code"
+                :external-trigger="true"
+                :ref="el => compRefs.fancyhdrPackage.value = el"
               />
 
 
@@ -382,6 +452,8 @@ const combinedLatexCode = computed(() => {
                 v-model="codeListingPackage"
                 :component-id="componentIds.codeListingPackage"
                 @code-change="(code) => codeListingPackageCode = code"
+                :external-trigger="true"
+                :ref="el => compRefs.codeListingPackage.value = el"
               />
 
               <!-- 添加DocumentLayoutPackage组件 行距和空格设置-->
@@ -389,6 +461,8 @@ const combinedLatexCode = computed(() => {
                 v-model="documentLayoutPackage"
                 :component-id="componentIds.documentLayoutPackage"
                 @code-change="(code) => documentLayoutPackageCode = code"
+                :external-trigger="true"
+                :ref="el => compRefs.documentLayoutPackage.value = el"
               />
 
               <!-- 添加GeometryPackage组件 版面设置16K -->
@@ -396,6 +470,7 @@ const combinedLatexCode = computed(() => {
                 v-model="geometryPackage"
                 :component-id="componentIds.geometryPackage"
                 @code-change="(code: string) => geometryPackageCode = code"
+                :ref="el => compRefs.geometryPackage.value = el"
               />
 
 
@@ -404,6 +479,8 @@ const combinedLatexCode = computed(() => {
                 v-model="titleFormatPackage"
                 :component-id="componentIds.titleFormatPackage"
                 @code-change="(code: string) => titleFormatPackageCode = code"
+                :external-trigger="true"
+                :ref="el => compRefs.titleFormatPackage.value = el"
               />
 
               <!-- 添加TableOfContentsPackage组件 目录格式设置  8_目录格式设置.tex -->
@@ -411,6 +488,8 @@ const combinedLatexCode = computed(() => {
                 v-model="tableOfContentsPackage"
                 :component-id="componentIds.tableOfContentsPackage"
                 @code-change="(code: string) => tableOfContentsPackageCode = code"
+                :external-trigger="true"
+                :ref="el => compRefs.tableOfContentsPackage.value = el"
               />
 
 
@@ -419,6 +498,8 @@ const combinedLatexCode = computed(() => {
                 v-model="hyperlinkIndexPackage"
                 :component-id="componentIds.hyperlinkIndexPackage"
                 @code-change="(code: string) => hyperlinkIndexPackageCode = code"
+                :external-trigger="true"
+                :ref="el => compRefs.hyperlinkIndexPackage.value = el"
               />
 
 
@@ -427,6 +508,8 @@ const combinedLatexCode = computed(() => {
                 v-model="listSymbolPackage"
                 :component-id="componentIds.listSymbolPackage"
                 @code-change="(code: string) => listSymbolPackageCode = code"
+                :external-trigger="true"
+                :ref="el => compRefs.listSymbolPackage.value = el"
               />
 
 
@@ -435,6 +518,8 @@ const combinedLatexCode = computed(() => {
                 v-model="parallelTextPackage"
                 :component-id="componentIds.parallelTextPackage"
                 @code-change="(code: string) => parallelTextPackageCode = code"
+                :external-trigger="true"
+                :ref="el => compRefs.parallelTextPackage.value = el"
               />
 
 
@@ -443,6 +528,8 @@ const combinedLatexCode = computed(() => {
                 v-model="commentPackage"
                 :component-id="componentIds.commentPackage"
                 @code-change="(code: string) => commentPackageCode = code"
+                :external-trigger="true"
+                :ref="el => compRefs.commentPackage.value = el"
               />
 
 
@@ -451,6 +538,8 @@ const combinedLatexCode = computed(() => {
                 v-model="figureColorPackage"
                 :component-id="componentIds.figureColorPackage"
                 @code-change="(code: string) => figureColorPackageCode = code"
+                :external-trigger="true"
+                :ref="el => compRefs.figureColorPackage.value = el"
               />
 
 
@@ -459,6 +548,8 @@ const combinedLatexCode = computed(() => {
                 v-model="tablePackage"
                 :component-id="componentIds.tablePackage"
                 @code-change="(code: string) => tablePackageCode = code"
+                :external-trigger="true"
+                :ref="el => compRefs.tablePackage.value = el"
               />
 
 
@@ -470,6 +561,8 @@ const combinedLatexCode = computed(() => {
                 v-model="documentContent"
                 :component-id="componentIds.documentContent"
                 @code-change="(code: string) => documentContentCode = code"
+                :external-trigger="true"
+                :ref="el => compRefs.documentContent.value = el"
               />
               </el-space>
             </div>

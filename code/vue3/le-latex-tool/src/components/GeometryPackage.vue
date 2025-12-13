@@ -111,13 +111,21 @@ const resetAll = () => {
 
 setupCodeEmission(latexCode, emit, props.componentId, 'GeometryPackage')
 
+const layoutRef = ref<any>()
+const openDialog = () => layoutRef.value?.openDialog()
+const closeDialog = () => layoutRef.value?.closeDialog()
+
+defineExpose({ openDialog, closeDialog })
+
 </script>
 
 <template>
   <PackageDialogLayout 
+    ref="layoutRef"
     button-label="Geometry 版面设置"
     dialog-title="Geometry 版面设置"
     :code="latexCode"
+    :render-trigger-button="false"
   >
     <template #left>
       <strong>Geometry 版面设置</strong>

@@ -8,6 +8,7 @@ const props = defineProps<{
     enabled: boolean
   }
   componentId?: number
+  externalTrigger?: boolean
 }>()
 
 const emit = defineEmits<{
@@ -69,7 +70,7 @@ defineExpose({
 
 <template>
   <div>
-    <el-button type="primary" @click="showDialog">注释</el-button>
+    <el-button v-if="!props.externalTrigger" type="primary" size="small" round @click="showDialog">注释设置</el-button>
     <el-dialog v-model="isDialogOpen" title="注释宏包设置" :before-close="hideDialog">
       <el-row :gutter="20">
         <el-col :span="12">

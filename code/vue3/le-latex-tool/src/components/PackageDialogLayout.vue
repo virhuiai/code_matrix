@@ -7,6 +7,7 @@ const props = defineProps<{
   buttonFullWidth?: boolean
   dialogWidth?: string | number
   code?: string
+  renderTriggerButton?: boolean
 }>()
 
 const visible = ref(false)
@@ -25,6 +26,7 @@ defineExpose({ openDialog, closeDialog })
 <template>
   <div class="package-options-dialog">
     <el-button 
+      v-if="props.renderTriggerButton !== false"
       type="primary"
       size="small"
       round
