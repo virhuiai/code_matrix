@@ -112,7 +112,7 @@ const handleClick = () => {
  如果想要通过只导入使用的组件来减小打包体积，可以配置自动按需导入：
 
  ```bash
- npm install -D unplugin-vue-components unplugin-auto-import
+ pnpm install -D unplugin-vue-components unplugin-auto-import
  ```
 
  然后修改您的 `vite.config.ts` 文件：
