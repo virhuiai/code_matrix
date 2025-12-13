@@ -3,7 +3,8 @@ import { ref } from 'vue'
 
 const text = ref('')
 function convertSpacesToUnderscore() {
-  text.value = text.value.replaceAll(' ', '_')
+  // 将连续的空白字符（包括空格、制表符、换行符等）替换为一个下划线
+  text.value = text.value.replace(/\s+/g, '_')
 }
 </script>
 
