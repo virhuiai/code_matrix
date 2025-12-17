@@ -8,7 +8,10 @@ const translatedResult = ref('')
 // 生成翻译提示词的函数
 function translateDtx() {
   // 根据用户需求，生成用于翻译的提示词
-  translatedResult.value = `根据 example.txt 中翻译模式的说明，以及${exampleColorDtx}-en翻译成${exampleColorDtx}.dtx的效果，对 ${targetMathcolorDtx}.dtx 文件进行中文翻译。全部翻译到文档结尾：
+  const exampleFileName = exampleColorDtx.value ? exampleColorDtx.value.split('\n')[0].trim() : 'color'
+  const targetFileName = targetMathcolorDtx.value ? targetMathcolorDtx.value.split('\n')[0].trim() : 'mathcolor'
+  
+  translatedResult.value = `根据 example.txt 中翻译模式的说明，以及${exampleFileName}-en翻译成${exampleFileName}.dtx的效果，对 ${targetFileName}.dtx 文件进行中文翻译。全部翻译到文档结尾：
 0.\\begin{macrocode} 和 \\end{macrocode} 环境包围的不需要翻译，两个|包围的一句话也不用翻译，保持
 1.按段翻译
 2.章节翻译时注意：章节标题，英文原文要添加 \\savecounters , 章节标题，中文翻译要添加 \\restorecounters 。
@@ -17,7 +20,7 @@ function translateDtx() {
 4.翻译直到整个文件结束。
 5.同时注意不翻译changes命令。
 
-运行 xelatex -output-directory=/Volumes/RamDisk ./${targetMathcolorDtx}.dtx 验证是否成功`
+运行 xelatex -output-directory=/Volumes/RamDisk ./${targetFileName}.dtx 验证是否成功`
 }
 </script>
 
