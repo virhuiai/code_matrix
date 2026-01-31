@@ -31,11 +31,68 @@ public class PdfBoxDemo {
                 PDFTextStripper stripper = new PDFTextStripper() {
                     @Override
                     protected void writeString(String text, List<TextPosition> textPositions) throws IOException {
+                        // TODO 1: text 输出
+                        System.out.println("=== 文本内容输出 ===");
+                        System.out.println("完整文本: '" + text + "'");
+                        System.out.println("文本长度: " + text.length() + " 字符");
+                        System.out.println("-------------------");
+
                         for (TextPosition textPosition : textPositions) {
                             System.out.println("Text: '" + textPosition.getUnicode() +
                                     "', Font: " + textPosition.getFont().getName() +
                                     ", Size: " + textPosition.getFontSize() +
                                     ", Position: (" + textPosition.getX() + ", " + textPosition.getY() + ")");
+                            
+                            // TODO 2: text 输出 textPosition.getEndX() 和 textPosition.getEndY() getTextMatrix() 并注释说明什么用
+                            /*
+                             * 坐标系统说明：
+                             * - getX(), getY(): 文本开始位置的坐标（左下角）
+                             * - getEndX(), getEndY(): 文本结束位置的坐标（右下角）
+                             * - getTextMatrix(): 返回文本的变换矩阵，包含位置、缩放、旋转等信息
+                             * 
+                             * 坐标用途：
+                             * 1. 精确定位文本在页面中的位置
+                             * 2. 计算文本框的大小和边界
+                             * 3. 分析文本布局和排版信息
+                             * 4. 实现文本高亮、注释等高级功能
+                             */
+                            System.out.println("  → 开始坐标: (" + textPosition.getX() + ", " + textPosition.getY() + ")");
+                            System.out.println("  → 结束坐标: (" + textPosition.getEndX() + ", " + textPosition.getEndY() + ")");
+                            System.out.println("  → 文本矩阵: " + textPosition.getTextMatrix());
+                            
+                            // TODO 3: 使用 getX() getY() getEndX() getEndY() 计算倾斜角度
+                            /*
+                             * 倾斜角度计算原理：
+                             * - 通过起始点(X,Y)和结束点(EndX,EndY)构成的向量
+                             * - 计算该向量与水平轴的夹角
+                             * - 用于检测文本是否倾斜排列
+                             */
+                            double deltaX = textPosition.getEndX() - textPosition.getX();
+                            double deltaY = textPosition.getEndY() - textPosition.getY();
+                            
+                            // 避免除零错误
+                            if (Math.abs(deltaX) > 0.001) {
+                                double slope = deltaY / deltaX;
+                                double angleRadians = Math.atan(slope);
+                                double angleDegrees = Math.toDegrees(angleRadians);
+                                
+                                System.out.println("  → 倾斜角度: " + String.format("%.2f", angleDegrees) + "°");
+                                System.out.println("  → 倾斜弧度: " + String.format("%.4f", angleRadians) + " rad");
+                                
+                                // 判断倾斜方向
+                                if (Math.abs(angleDegrees) < 1.0) {
+                                    System.out.println("  → 文本状态: 基本水平");
+                                } else if (angleDegrees > 0) {
+                                    System.out.println("  → 文本状态: 向上倾斜");
+                                } else {
+                                    System.out.println("  → 文本状态: 向下倾斜");
+                                }
+                            } else {
+                                System.out.println("  → 倾斜角度: 无法计算（垂直文本）");
+                                System.out.println("  → 文本状态: 垂直排列");
+                            }
+                            
+                            System.out.println(); // 空行分隔
                         }
                         super.writeString(text, textPositions);
                     }
