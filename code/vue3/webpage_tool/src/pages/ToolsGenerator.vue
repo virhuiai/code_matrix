@@ -11,7 +11,7 @@ function translateDtx() {
   const exampleFileName = exampleColorDtx.value ? exampleColorDtx.value.split('\n')[0].trim() : 'color'
   const targetFileName = targetMathcolorDtx.value ? targetMathcolorDtx.value.split('\n')[0].trim() : 'mathcolor'
   
-  translatedResult.value = `根据 example.txt 中翻译模式的说明，以及${exampleFileName}-en翻译成${exampleFileName}.dtx的效果，对 ${targetFileName}.dtx 文件进行中文翻译。全部翻译到文档结尾：
+  translatedResult.value = `根据 example.txt 中翻译模式的说明，以及${exampleFileName}.dtx-en翻译成${exampleFileName}.dtx的效果，对 ${targetFileName}.dtx 文件进行中文翻译。全部翻译到文档结尾：
 0.\\begin{macrocode} 和 \\end{macrocode} 环境包围的不需要翻译，两个|包围的一句话也不用翻译，保持
 1.按段翻译
 2.章节翻译时注意：章节标题，英文原文要添加 \\savecounters , 章节标题，中文翻译要添加 \\restorecounters 。

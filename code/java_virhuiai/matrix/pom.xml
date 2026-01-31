@@ -28,6 +28,7 @@
         <module>csh-platform</module>
         <module>csh-time</module>
         <module>csh-compact7z</module>
+        <module>pdfbox_3_0_6_demo</module>
     </modules>
 
     <name>matrix</name>
