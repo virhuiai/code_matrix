@@ -29,7 +29,7 @@
         <module>csh-time</module>
         <module>csh-compact7z</module>
         <module>pdfbox_3_0_6_demo</module>
-<!--        <module>pdfbox_3_0_6_src</module>-->
+        <module>pdfbox_3_0_6_src</module>
     </modules>
 
     <name>matrix</name>

@@ -1,5 +1,6 @@
 package com.example.pdfboxdemo;
 
+import org.apache.pdfbox.contentstream.operator.OperatorName;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.contentstream.operator.Operator;
@@ -243,7 +244,7 @@ public class PdfTableAnalyzer {
             operationSet.add(operation);
             
             switch (operation) {
-                case "m": // 移动到
+                case OperatorName.MOVE_TO: // 移动到m"
                     if (operands.size() >= 2) {
                         COSBase xObj = operands.get(0);
                         COSBase yObj = operands.get(1);
@@ -255,7 +256,7 @@ public class PdfTableAnalyzer {
                     }
                     break;
                     
-                case "l": // 画线到
+                case OperatorName.LINE_TO : // 画线到 "l"
                     if (operands.size() >= 2) {
                         COSBase xObj = operands.get(0);
                         COSBase yObj = operands.get(1);

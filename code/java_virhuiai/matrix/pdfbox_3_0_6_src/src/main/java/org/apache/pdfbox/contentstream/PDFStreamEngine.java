@@ -73,32 +73,46 @@ import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceGray;
  * Processes a PDF content stream and executes certain operations.
  * Provides a callback interface for clients that want to do things with the stream.
  * 
+ * PDF内容流处理引擎核心类
+ * 处理PDF内容流并执行相应操作，为希望对流进行处理的客户端提供回调接口
+ * 
+ * 主要功能：
+ * - 解析和处理PDF内容流操作符
+ * - 管理图形状态栈
+ * - 处理文本渲染
+ * - 处理图形对象（表单、图案、透明度组等）
+ * - 坐标变换和裁剪
+ * 
  * @author Ben Litchfield
  */
 public abstract class PDFStreamEngine
 {
     private static final Log LOG = LogFactory.getLog(PDFStreamEngine.class);
 
+    // 操作符处理器映射表 - 存储所有可用的操作符处理器
     private final Map<String, OperatorProcessor> operators = new HashMap<>();
 
+    // 图形状态栈 - 用于保存和恢复图形状态
     private Deque<PDGraphicsState> graphicsStack = new ArrayDeque<>();
 
+    // 当前资源和页面引用
     private PDResources resources;
     private PDPage currentPage;
     private boolean isProcessingPage;
     private Matrix initialMatrix;
 
-    // used to monitor potentially recursive operations.
+    // 递归操作监控级别 - 用于防止过深的递归调用
     private int level = 0;
 
-    // default font, used if there isn't any font available
+    // 默认字体 - 在没有可用字体时使用
     private PDFont defaultFont;
 
-    // false in certain cases, e.g. type3 charprocs with d1 or uncolored tiling patterns
+    // 颜色操作符处理标志 - 在某些情况下为false（如type3字符过程或无色平铺图案）
     private boolean shouldProcessColorOperators;
 
     /**
      * Creates a new PDFStreamEngine.
+     * 创建新的PDF流引擎实例
      */
     protected PDFStreamEngine()
     {
@@ -108,6 +122,9 @@ public abstract class PDFStreamEngine
      * Adds an operator processor to the engine.
      *
      * @param op operator processor
+     * 
+     * 向引擎添加操作符处理器
+     * 将指定的操作符处理器注册到引擎中，用于处理对应的操作符
      */
     public final void addOperator(OperatorProcessor op)
     {
@@ -116,6 +133,9 @@ public abstract class PDFStreamEngine
 
     /**
      * Initializes the stream engine for the given page.
+     * 
+     * 初始化给定页面的流引擎
+     * 为处理指定页面做准备，包括清空图形状态栈、设置初始状态等
      */
     private void initPage(PDPage page)
     {
@@ -133,6 +153,9 @@ public abstract class PDFStreamEngine
     /**
      * Provide standard 14 Helvetica font as default if there isn't any font available.  
      * @return the default font
+     * 
+     * 提供标准14号Helvetica字体作为默认字体
+     * 当没有可用字体时返回默认字体实例
      */
     private PDFont getDefaultFont()
     {
@@ -148,6 +171,9 @@ public abstract class PDFStreamEngine
      *
      * @param page the page to process
      * @throws IOException if there is an error accessing the stream
+     * 
+     * 初始化并处理流的内容
+     * 对指定页面进行完整的处理流程，包括初始化和流解析
      */
     public void processPage(PDPage page) throws IOException
     {
@@ -165,6 +191,9 @@ public abstract class PDFStreamEngine
      *
      * @param form transparency group (form) XObject
      * @throws IOException if the transparency group cannot be processed
+     * 
+     * 显示内容流中的透明度组
+     * 处理并显示来自内容流的透明度组对象
      */
     public void showTransparencyGroup(PDTransparencyGroup form) throws IOException
     {
@@ -176,6 +205,9 @@ public abstract class PDFStreamEngine
      *
      * @param form form XObject
      * @throws IOException if the form cannot be processed
+     * 
+     * 显示内容流中的表单
+     * 处理并显示来自内容流的表单对象
      */
     public void showForm(PDFormXObject form) throws IOException
     {
@@ -195,6 +227,9 @@ public abstract class PDFStreamEngine
      * 
      * @param group transparency group used for the soft mask
      * @throws IOException if the transparency group cannot be processed
+     * 
+     * 处理软遮罩透明度组流
+     * 处理用于软遮罩的透明度组流，设置相应的图形状态
      */
     protected void processSoftMask(PDTransparencyGroup group) throws IOException
     {
@@ -224,6 +259,9 @@ public abstract class PDFStreamEngine
      * 
      * @param group transparency group to be processed
      * @throws IOException if the transparency group cannot be processed
+     * 
+     * 处理透明度组流
+     * 处理透明度组对象，包括状态保存、矩阵变换、混合模式设置等
      */
     protected void processTransparencyGroup(PDTransparencyGroup group) throws IOException
     {
@@ -239,21 +277,21 @@ public abstract class PDFStreamEngine
         Matrix parentMatrix = initialMatrix;
         PDGraphicsState graphicsState = getGraphicsState();
 
-        // the stream's initial matrix includes the parent CTM, e.g. this allows a scaled form
+        // 流的初始矩阵包含父CTM，这允许缩放的表单
         initialMatrix = graphicsState.getCurrentTransformationMatrix().clone();
 
-        // transform the CTM using the stream's matrix
+        // 使用流的矩阵变换CTM
         graphicsState.getCurrentTransformationMatrix().concatenate(group.getMatrix());
 
-        // Before execution of the transparency group XObject’s content stream, 
-        // the current blend mode in the graphics state shall be initialized to Normal, 
-        // the current stroking and nonstroking alpha constants to 1.0, and the current soft mask to None.
+        // 在执行透明度组XObject的内容流之前，
+        // 图形状态中的当前混合模式应初始化为Normal，
+        // 当前描边和非描边alpha常数为1.0，当前软遮罩为None
         graphicsState.setBlendMode(BlendMode.NORMAL);
         graphicsState.setAlphaConstant(1);
         graphicsState.setNonStrokeAlphaConstant(1);
         graphicsState.setSoftMask(null);
 
-        // clip to bounding box
+        // 裁剪到边界框
         clipToRect(group.getBBox());
 
         try
@@ -275,6 +313,9 @@ public abstract class PDFStreamEngine
      * @param charProc Type 3 character procedure
      * @param textRenderingMatrix the Text Rendering Matrix
      * @throws IOException if there is an error reading or parsing the character content stream.
+     * 
+     * 处理Type 3字符流
+     * 处理Type 3字体的字符过程流，设置相应的文本渲染矩阵
      */
     protected void processType3Stream(PDType3CharProc charProc, Matrix textRenderingMatrix)
             throws IOException
@@ -289,13 +330,13 @@ public abstract class PDFStreamEngine
         Deque<PDGraphicsState> savedStack = saveGraphicsStack();
         PDGraphicsState graphicsState = getGraphicsState();
 
-        // replace the CTM with the TRM
+        // 用TRM替换CTM
         graphicsState.setCurrentTransformationMatrix(textRenderingMatrix);
 
-        // transform the CTM using the stream's matrix (this is the FontMatrix)
+        // 使用流的矩阵变换CTM（这是字体矩阵）
         textRenderingMatrix.concatenate(charProc.getMatrix());
 
-        // note: we don't clip to the BBox as it is often wrong, see PDFBOX-1917
+        // 注意：我们不对BBox进行裁剪，因为它经常是错误的，参见PDFBOX-1917
 
         graphicsState.setTextMatrix(new Matrix());
         graphicsState.setTextLineMatrix(new Matrix());
@@ -317,6 +358,9 @@ public abstract class PDFStreamEngine
      * @param annotation The annotation containing the appearance stream to process.
      * @param appearance The appearance stream to process.
      * @throws IOException If there is an error reading or parsing the appearance content stream.
+     * 
+     * 处理具有指定外观流的给定注释
+     * 处理注释及其外观流，包括坐标变换和裁剪操作
      */
     protected void processAnnotation(PDAnnotation annotation, PDAppearanceStream appearance)
             throws IOException
@@ -324,7 +368,7 @@ public abstract class PDFStreamEngine
         PDRectangle bbox = appearance.getBBox();
         PDRectangle rect = annotation.getRectangle();
 
-        // zero-sized rectangles are not valid
+        // 零尺寸矩形无效
         if (rect != null && rect.getWidth() > 0 && rect.getHeight() > 0 &&
             bbox != null && bbox.getWidth() > 0 && bbox.getHeight() > 0)
         {
@@ -333,30 +377,28 @@ public abstract class PDFStreamEngine
 
             Matrix matrix = appearance.getMatrix();
 
-            // transformed appearance box  fixme: may be an arbitrary shape
+            // 变换后的外观框  fixme: 可能是任意形状
             Rectangle2D transformedBox = bbox.transform(matrix).getBounds2D();
 
-            // compute a matrix which scales and translates the transformed appearance box to align
-            // with the edges of the annotation's rectangle
+            // 计算一个矩阵，该矩阵缩放和平移变换后的外观框以与注释矩形的边缘对齐
             Matrix a = Matrix.getTranslateInstance(rect.getLowerLeftX(), rect.getLowerLeftY());
             a.scale((float)(rect.getWidth() / transformedBox.getWidth()),
                     (float)(rect.getHeight() / transformedBox.getHeight()));
             a.translate((float) -transformedBox.getX(), (float) -transformedBox.getY());
 
-            // Matrix shall be concatenated with A to form a matrix AA that maps from the appearance's
-            // coordinate system to the annotation's rectangle in default user space
+            // 矩阵应与A连接形成矩阵AA，该矩阵从外观的坐标系映射到默认用户空间中注释的矩形
             //
-            // HOWEVER only the opposite order works for rotated pages with 
-            // filled fields / annotations that have a matrix in the appearance stream, see PDFBOX-3083
+            // 然而只有相反的顺序对带有外观流中矩阵的旋转页面上的
+            // 填充字段/注释有效，参见PDFBOX-3083
             Matrix aa = Matrix.concatenate(a, matrix);
 
-            // make matrix AA the CTM
+            // 使矩阵AA成为CTM
             getGraphicsState().setCurrentTransformationMatrix(aa);
 
-            // clip to bounding box
+            // 裁剪到边界框
             clipToRect(bbox);
 
-            // needed for patterns in appearance streams, e.g. PDFBOX-2182
+            // 外观流中图案所需，例如PDFBOX-2182
             initialMatrix = aa.clone();
 
             try
@@ -378,6 +420,9 @@ public abstract class PDFStreamEngine
      * @param color color to use, if this is an uncoloured pattern, otherwise null.
      * @param colorSpace color space to use, if this is an uncoloured pattern, otherwise null.
      * @throws IOException if there is an error reading or parsing the tiling pattern content stream.
+     * 
+     * 处理给定的平铺图案
+     * 处理平铺图案，包括颜色空间设置和坐标变换
      */
     protected final void processTilingPattern(PDTilingPattern tilingPattern, PDColor color,
                                               PDColorSpace colorSpace) throws IOException
@@ -394,6 +439,9 @@ public abstract class PDFStreamEngine
      * @param colorSpace color space to use, if this is an uncoloured pattern, otherwise null.
      * @param patternMatrix the pattern matrix, may be overridden for custom rendering.
      * @throws IOException if there is an error reading or parsing the tiling pattern content stream.
+     * 
+     * 处理给定的平铺图案，允许覆盖图案矩阵以进行自定义渲染
+     * 处理平铺图案，支持自定义图案矩阵变换
      */
     protected final void processTilingPattern(PDTilingPattern tilingPattern, PDColor color,
                                               PDColorSpace colorSpace, Matrix patternMatrix)
@@ -404,10 +452,10 @@ public abstract class PDFStreamEngine
         Matrix parentMatrix = initialMatrix;
         initialMatrix = Matrix.concatenate(initialMatrix, patternMatrix);
 
-        // save the original graphics state
+        // 保存原始图形状态
         Deque<PDGraphicsState> savedStack = saveGraphicsStack();
 
-        // save a clean state (new clipping path, line path, etc.)
+        // 保存干净的状态（新的裁剪路径、线条路径等）
         PDRectangle tilingBBox = tilingPattern.getBBox();
         Rectangle2D bbox = tilingBBox.transform(patternMatrix).getBounds2D();
         PDRectangle rect = new PDRectangle((float)bbox.getX(), (float)bbox.getY(),
@@ -415,7 +463,7 @@ public abstract class PDFStreamEngine
         graphicsStack.push(new PDGraphicsState(rect));
         PDGraphicsState graphicsState = getGraphicsState();
 
-        // non-colored patterns have to be given a color
+        // 无色图案必须给定颜色
         if (colorSpace != null)
         {
             color = new PDColor(color.getComponents(), colorSpace);
@@ -425,10 +473,10 @@ public abstract class PDFStreamEngine
             graphicsState.setStrokingColor(color);
         }
 
-        // transform the CTM using the stream's matrix
+        // 使用流的矩阵变换CTM
         graphicsState.getCurrentTransformationMatrix().concatenate(patternMatrix);
 
-        // clip to bounding box
+        // 裁剪到边界框
         clipToRect(tilingBBox);
 
         try
@@ -448,6 +496,9 @@ public abstract class PDFStreamEngine
      *
      * @param annotation An annotation on the current page.
      * @throws IOException If an error occurred reading the annotation
+     * 
+     * 显示给定的注释
+     * 显示当前页面上的注释对象
      */
     public void showAnnotation(PDAnnotation annotation) throws IOException
     {
@@ -464,6 +515,9 @@ public abstract class PDFStreamEngine
      *
      * @param annotation The current annotation.
      * @return The stream to process.
+     * 
+     * 返回给定注释要处理的外观流
+     * 可用于渲染特定外观，如"悬停"状态
      */
     public PDAppearanceStream getAppearance(PDAnnotation annotation)
     {
@@ -476,6 +530,9 @@ public abstract class PDFStreamEngine
      * @param contentStream the child content stream
      * @param page the page to be used for processing
      * @throws IOException if there is an exception while processing the stream
+     * 
+     * 处理给定页面的子流
+     * 处理页面的子内容流，不能与processPage()同时使用
      */
     protected void processChildStream(PDContentStream contentStream, PDPage page) throws IOException
     {
@@ -494,6 +551,9 @@ public abstract class PDFStreamEngine
      *
      * @param contentStream the content stream
      * @throws IOException if there is an exception while processing the stream
+     * 
+     * 处理内容流
+     * 处理PDF内容流，包括资源管理和矩阵变换
      */
     private void processStream(PDContentStream contentStream) throws IOException
     {
@@ -502,13 +562,13 @@ public abstract class PDFStreamEngine
         Matrix parentMatrix = initialMatrix;
         PDGraphicsState graphicsState = getGraphicsState();
 
-        // transform the CTM using the stream's matrix
+        // 使用流的矩阵变换CTM
         graphicsState.getCurrentTransformationMatrix().concatenate(contentStream.getMatrix());
 
-        // the stream's initial matrix includes the parent CTM, e.g. this allows a scaled form
+        // 流的初始矩阵包含父CTM，例如这允许缩放的表单
         initialMatrix = graphicsState.getCurrentTransformationMatrix().clone();
 
-        // clip to bounding box
+        // 裁剪到边界框
         PDRectangle bbox = contentStream.getBBox();
         clipToRect(bbox);
 
@@ -529,6 +589,9 @@ public abstract class PDFStreamEngine
      *
      * @param contentStream to content stream to parse.
      * @throws IOException if there is an error reading or parsing the content stream.
+     * 
+     * 处理给定内容流的操作符
+     * 解析并处理内容流中的所有操作符
      */
     private void processStreamOperators(PDContentStream contentStream) throws IOException
     {
@@ -574,6 +637,9 @@ public abstract class PDFStreamEngine
 
     /**
      * Pushes the given stream's resources, returning the previous resources.
+     * 
+     * 推入给定流的资源，返回之前的资源
+     * 资源查找：首先查找流资源，然后回退到当前页面
      */
     private PDResources pushResources(PDContentStream contentStream)
     {
@@ -586,14 +652,13 @@ public abstract class PDFStreamEngine
         }
         else if (resources != null)
         {
-            // inherit directly from parent stream, this is not in the PDF spec, but the file from
-            // PDFBOX-1359 does this and works in Acrobat
+            // 直接从父流继承，这不在PDF规范中，但是PDFBOX-1359中的文件这样做并在Acrobat中工作
         }
         else
         {
             resources = currentPage.getResources();
 
-            // resources are required in PDF
+            // PDF中需要资源
             if (resources == null)
             {
                 resources = new PDResources();
@@ -605,6 +670,8 @@ public abstract class PDFStreamEngine
 
     /**
      * Pops the current resources, replacing them with the given resources.
+     * 
+     * 弹出当前资源，用给定资源替换它们
      */
     private void popResources(PDResources parentResources)
     {
@@ -614,6 +681,8 @@ public abstract class PDFStreamEngine
     /**
      * Transforms the given rectangle using the CTM and then intersects it with the current
      * clipping area.
+     * 
+     * 使用CTM变换给定矩形，然后与当前裁剪区域相交
      */
     private void clipToRect(PDRectangle rectangle)
     {
@@ -630,6 +699,9 @@ public abstract class PDFStreamEngine
      * default implementation does nothing.
      *
      * @throws IOException if there was an error processing the text
+     * 
+     * 遇到BT操作符时调用
+     * 此方法用于在子类中重写，默认实现不执行任何操作
      */
     public void beginText() throws IOException
     {
@@ -641,6 +713,9 @@ public abstract class PDFStreamEngine
      * default implementation does nothing.
      *
      * @throws IOException if there was an error processing the text
+     * 
+     * 遇到ET操作符时调用
+     * 此方法用于在子类中重写，默认实现不执行任何操作
      */
     public void endText() throws IOException
     {
@@ -652,6 +727,9 @@ public abstract class PDFStreamEngine
      *
      * @param string the encoded text
      * @throws IOException if there was an error showing the text
+     * 
+     * 当要显示文本字符串时调用
+     * 处理要显示的编码文本字符串
      */
     public void showTextString(byte[] string) throws IOException
     {
@@ -663,6 +741,9 @@ public abstract class PDFStreamEngine
      *
      * @param array array of encoded text strings and adjustments
      * @throws IOException if there was an error showing the text
+     * 
+     * 当要显示带有间距调整的文本字符串时调用
+     * 处理带有间距调整的编码文本数组
      */
     public void showTextStrings(COSArray array) throws IOException
     {
@@ -682,7 +763,7 @@ public abstract class PDFStreamEngine
             {
                 float tj = ((COSNumber)obj).floatValue();
 
-                // calculate the combined displacements
+                // 计算组合位移
                 float tx;
                 float ty;
                 if (isVertical)
@@ -720,10 +801,13 @@ public abstract class PDFStreamEngine
      *
      * @param tx x-translation
      * @param ty y-translation
+     * 
+     * 应用来自TJ操作符的文本位置调整
+     * 可在子类中重写
      */
     protected void applyTextAdjustment(float tx, float ty)
     {
-        // update the text matrix
+        // 更新文本矩阵
         getGraphicsState().getTextMatrix().translate(tx, ty);
     }
 
@@ -733,13 +817,16 @@ public abstract class PDFStreamEngine
      *
      * @param string the encoded text
      * @throws IOException if there is an error processing the string
+     * 
+     * 处理PDF流中的文本
+     * 如果要在处理编码文本时执行操作，应该重写此方法
      */
     protected void showText(byte[] string) throws IOException
     {
         PDGraphicsState state = getGraphicsState();
         PDTextState textState = state.getTextState();
 
-        // get the current font
+        // 获取当前字体
         PDFont font = textState.getFont();
         if (font == null)
         {
@@ -751,7 +838,7 @@ public abstract class PDFStreamEngine
         float horizontalScaling = textState.getHorizontalScaling() / 100f;
         float charSpacing = textState.getCharacterSpacing();
 
-        // put the text state parameters into matrix form
+        // 将文本状态参数放入矩阵形式
         Matrix parameters = new Matrix(
                 fontSize * horizontalScaling, 0, // 0
                 0, fontSize,                     // 0
@@ -759,46 +846,45 @@ public abstract class PDFStreamEngine
         
         Matrix textMatrix = state.getTextMatrix();
 
-        // read the stream until it is empty
+        // 读取流直到为空
         InputStream in = new ByteArrayInputStream(string);
         while (in.available() > 0)
         {
-            // decode a character
+            // 解码字符
             int before = in.available();
             int code = font.readCode(in);
             int codeLength = before - in.available();
 
-            // Word spacing shall be applied to every occurrence of the single-byte character code
-            // 32 in a string when using a simple font or a composite font that defines code 32 as
-            // a single-byte code.
+            // 词间距应应用于字符串中每次出现的单字节字符代码
+            // 32，当使用简单字体或定义代码32为单字节代码的复合字体时
             float wordSpacing = 0;
             if (codeLength == 1 && code == 32)
             {
                 wordSpacing += textState.getWordSpacing();
             }
 
-            // text rendering matrix (text space -> device space)
+            // 文本渲染矩阵（文本空间 -> 设备空间）
             Matrix ctm = state.getCurrentTransformationMatrix();
             Matrix textRenderingMatrix = parameters.multiply(textMatrix).multiply(ctm);
 
-            // get glyph's position vector if this is vertical text
-            // changes to vertical text should be tested with PDFBOX-2294 and PDFBOX-1422
+            // 获取字形的位置向量（如果是垂直文本）
+            // 对垂直文本的更改应该用PDFBOX-2294和PDFBOX-1422进行测试
             if (font.isVertical())
             {
-                // position vector, in text space
+                // 位置向量，在文本空间中
                 Vector v = font.getPositionVector(code);
 
-                // apply the position vector to the horizontal origin to get the vertical origin
+                // 将位置向量应用到水平原点以获得垂直原点
                 textRenderingMatrix.translate(v);
             }
 
-            // get glyph's horizontal and vertical displacements, in text space
+            // 获取字形的水平和垂直位移，在文本空间中
             Vector w = font.getDisplacement(code);
 
-            // process the decoded glyph
+            // 处理解码的字形
             showGlyph(textRenderingMatrix, font, code, w);
 
-            // calculate the combined displacements
+            // 计算组合位移
             float tx;
             float ty;
             if (font.isVertical())
@@ -812,7 +898,7 @@ public abstract class PDFStreamEngine
                 ty = 0;
             }
 
-            // update the text matrix
+            // 更新文本矩阵
             textMatrix.translate(tx, ty);
         }
     }
@@ -826,6 +912,9 @@ public abstract class PDFStreamEngine
      * @param code internal PDF character code for the glyph
      * @param displacement the displacement (i.e. advance) of the glyph in text space
      * @throws IOException if the glyph cannot be processed
+     * 
+     * 处理字形时调用
+     * 此方法旨在在子类中重写，默认实现不执行任何操作
      */
     protected void showGlyph(Matrix textRenderingMatrix, PDFont font, int code, Vector displacement)
             throws IOException
@@ -849,6 +938,9 @@ public abstract class PDFStreamEngine
      * @param code internal PDF character code for the glyph
      * @param displacement the displacement (i.e. advance) of the glyph in text space
      * @throws IOException if the glyph cannot be processed
+     * 
+     * 处理字形时调用
+     * 此方法旨在在子类中重写，默认实现不执行任何操作
      */
     protected void showFontGlyph(Matrix textRenderingMatrix, PDFont font,
             int code, Vector displacement) throws IOException
@@ -865,6 +957,9 @@ public abstract class PDFStreamEngine
      * @param code internal PDF character code for the glyph
      * @param displacement the displacement (i.e. advance) of the glyph in text space
      * @throws IOException if the glyph cannot be processed
+     * 
+     * 处理字形时调用
+     * 此方法旨在在子类中重写，默认实现不执行任何操作
      */
     protected void showType3Glyph(Matrix textRenderingMatrix, PDType3Font font, int code,
             Vector displacement) throws IOException
@@ -881,6 +976,9 @@ public abstract class PDFStreamEngine
      *
      * @param tag indicates the role or significance of the sequence
      * @param properties optional properties
+     * 
+     * 标记内容组开始时调用
+     * 标识序列的角色或重要性
      */
     public void beginMarkedContentSequence(COSName tag, COSDictionary properties)
     {
@@ -889,6 +987,8 @@ public abstract class PDFStreamEngine
 
     /**
      * Called when a marked content group ends
+     * 
+     * 标记内容组结束时调用
      */
     public void endMarkedContentSequence()
     {
@@ -901,6 +1001,9 @@ public abstract class PDFStreamEngine
      * @param operation The operation to perform.
      * @param arguments The list of arguments.
      * @throws IOException If there is an error processing the operation.
+     * 
+     * 用于处理操作
+     * 执行指定的操作及其参数
      */
     public void processOperator(String operation, List<COSBase> arguments) throws IOException
     {
@@ -914,6 +1017,9 @@ public abstract class PDFStreamEngine
      * @param operator The operation to perform.
      * @param operands The list of arguments.
      * @throws IOException If there is an error processing the operation.
+     * 
+     * 用于处理操作
+     * 执行指定的操作符及其操作数
      */
     protected void processOperator(Operator operator, List<COSBase> operands) throws IOException
     {
@@ -943,6 +1049,9 @@ public abstract class PDFStreamEngine
      * @param operands The list of operands.
      * 
      * @throws IOException if there is an error processing the unsupported operator
+     * 
+     * 遇到不支持的操作符时调用
+     * 处理遇到的未知操作符
      */
     protected void unsupportedOperator(Operator operator, List<COSBase> operands) throws IOException
     {
@@ -957,6 +1066,9 @@ public abstract class PDFStreamEngine
      * @param exception the exception which occurred when processing the operator
      * 
      * @throws IOException if there is an error processing the operator exception
+     * 
+     * 操作符抛出异常时调用
+     * 处理操作符处理过程中发生的异常
      */
     protected void operatorException(Operator operator, List<COSBase> operands, IOException exception)
             throws IOException
@@ -973,8 +1085,8 @@ public abstract class PDFStreamEngine
         }
         else if (operator.getName().equals("Do"))
         {
-            // todo: this too forgiving, but PDFBox has always worked this way for DrawObject
-            //       some careful refactoring is needed
+            // todo: 这太宽容了，但PDFBox一直以来都是这样工作的
+            //       需要仔细重构
             LOG.warn(exception.getMessage(), exception);
         }
         else if (exception.getCause() instanceof DataFormatException)
@@ -989,6 +1101,8 @@ public abstract class PDFStreamEngine
 
     /**
      * Pushes the current graphics state to the stack.
+     * 
+     * 将当前图形状态推入栈中
      */
     public void saveGraphicsState()
     {
@@ -997,6 +1111,8 @@ public abstract class PDFStreamEngine
 
     /**
      * Pops the current graphics state from the stack.
+     * 
+     * 从栈中弹出当前图形状态
      */
     public void restoreGraphicsState()
     {
@@ -1007,6 +1123,9 @@ public abstract class PDFStreamEngine
      * Saves the entire graphics stack.
      * 
      * @return the saved graphics state stack.
+     * 
+     * 保存整个图形状态栈
+     * 返回保存的图形状态栈
      */
     protected final Deque<PDGraphicsState> saveGraphicsStack()
     {
@@ -1021,6 +1140,8 @@ public abstract class PDFStreamEngine
      * 
      * @param snapshot the graphics state to be restored
      * 
+     * 恢复整个图形状态栈
+     * 恢复指定的图形状态快照
      */
     protected final void restoreGraphicsStack(Deque<PDGraphicsState> snapshot)
     {
@@ -1029,6 +1150,8 @@ public abstract class PDFStreamEngine
     
     /**
      * @return Returns the size of the graphicsStack.
+     * 
+     * 返回图形状态栈的大小
      */
     public int getGraphicsStackSize()
     {
@@ -1037,6 +1160,8 @@ public abstract class PDFStreamEngine
 
     /**
      * @return Returns the graphicsState.
+     * 
+     * 返回当前图形状态
      */
     public PDGraphicsState getGraphicsState()
     {
@@ -1045,6 +1170,8 @@ public abstract class PDFStreamEngine
 
     /**
      * @return Returns the textLineMatrix.
+     * 
+     * 返回文本行矩阵
      */
     public Matrix getTextLineMatrix()
     {
@@ -1053,6 +1180,8 @@ public abstract class PDFStreamEngine
 
     /**
      * @param value The textLineMatrix to set.
+     * 
+     * 设置文本行矩阵
      */
     public void setTextLineMatrix(Matrix value)
     {
@@ -1061,6 +1190,8 @@ public abstract class PDFStreamEngine
 
     /**
      * @return Returns the textMatrix.
+     * 
+     * 返回文本矩阵
      */
     public Matrix getTextMatrix()
     {
@@ -1069,6 +1200,8 @@ public abstract class PDFStreamEngine
 
     /**
      * @param value The textMatrix to set.
+     * 
+     * 设置文本矩阵
      */
     public void setTextMatrix(Matrix value)
     {
@@ -1078,6 +1211,8 @@ public abstract class PDFStreamEngine
     /**
      * @param array dash array
      * @param phase dash phase
+     * 
+     * 设置线型模式（虚线数组和相位）
      */
     public void setLineDashPattern(COSArray array, int phase)
     {
@@ -1088,6 +1223,9 @@ public abstract class PDFStreamEngine
     /**
      * @return the stream' resources. This is mainly to be used by the {@link OperatorProcessor}
      * classes.
+     * 
+     * 返回流的资源
+     * 主要供OperatorProcessor类使用
      */
     public PDResources getResources()
     {
@@ -1098,6 +1236,8 @@ public abstract class PDFStreamEngine
      * Returns the current page.
      * 
      * @return the current page
+     * 
+     * 返回当前页面
      */
     public PDPage getCurrentPage()
     {
@@ -1108,6 +1248,8 @@ public abstract class PDFStreamEngine
      * Gets the stream's initial matrix.
      * 
      * @return the initial matrix
+     * 
+     * 获取流的初始矩阵
      */
     public Matrix getInitialMatrix()
     {
@@ -1121,6 +1263,9 @@ public abstract class PDFStreamEngine
      * @param y the y-coordinate of the point to be transformed
      * 
      * @return the transformed point
+     * 
+     * 使用CTM变换点
+     * 返回变换后的点坐标
      */
     public Point2D.Float transformedPoint(float x, float y)
     {
@@ -1136,6 +1281,9 @@ public abstract class PDFStreamEngine
      * @param width the width to be transformed
      * 
      * @return the transformed width
+     * 
+     * 使用CTM变换宽度
+     * 返回变换后的宽度值
      */
     protected float transformWidth(float width)
     {
@@ -1150,6 +1298,9 @@ public abstract class PDFStreamEngine
      * an operation should be skipped to avoid a stack overflow.
      *
      * @return the current level.
+     * 
+     * 获取当前级别
+     * 可用于决定递归是否过深，应跳过操作以避免栈溢出
      */
     public int getLevel()
     {
@@ -1158,6 +1309,9 @@ public abstract class PDFStreamEngine
 
     /**
      * Increase the level. Call this before running a potentially recursive operation.
+     * 
+     * 增加级别
+     * 在运行潜在的递归操作之前调用此方法
      */
     public void increaseLevel()
     {
@@ -1168,6 +1322,11 @@ public abstract class PDFStreamEngine
      * Decrease the level. Call this after running a potentially recursive operation. A log message
      * is shown if the level is below 0. This can happen if the level is not decreased after an
      * operation is done, e.g. by using a "finally" block.
+     * 
+     * 减少级别
+     * 在运行潜在的递归操作之后调用此方法
+     * 如果级别低于0会显示日志消息
+     * 如果操作完成后没有减少级别（例如未使用"finally"块）可能发生这种情况
      */
     public void decreaseLevel()
     {
@@ -1184,6 +1343,12 @@ public abstract class PDFStreamEngine
      *
      * @return true if color operators should be processed, false if not, e.g. in type3 charprocs
      * with d1 or in uncolored tiling patterns.
+     * 
+     * 指示是否应处理颜色操作符
+     * 在某些OperatorProcessor类中使用
+     * 
+     * @return 如果应处理颜色操作符则返回true，否则返回false
+     *         例如在带有d1的type3字符过程或无色平铺图案中返回false
      */
     public boolean isShouldProcessColorOperators()
     {
@@ -1195,6 +1360,9 @@ public abstract class PDFStreamEngine
      *
      * @param tag indicates the role or significance of the sequence
      * @param properties optional properties
+     * 
+     * 处理MP和DP操作符
+     * 标识序列的角色或重要性
      */
     public void markedContentPoint(COSName tag, COSDictionary properties)
     {
