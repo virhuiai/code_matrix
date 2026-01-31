@@ -23,9 +23,10 @@
 
 
     <dependencies>
+
         <dependency>
             <groupId>org.apache.pdfbox</groupId>
-            <artifactId>pdfbox</artifactId>
+            <artifactId>src-pdfbox</artifactId>
             <version>3.0.6</version>
         </dependency>
     </dependencies>
