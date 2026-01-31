@@ -30,6 +30,7 @@
         <module>csh-compact7z</module>
         <module>pdfbox_3_0_6_demo</module>
         <module>pdfbox_3_0_6_src</module>
+        <module>pdf_table1_demo</module>
     </modules>
 
     <name>matrix</name>
