@@ -1,0 +1,1 @@
+CMakeLists.txt not found in /Volumes/THAWSPACE/CshProject/code_matrix.git/code/c/demo_nappgui Select CMakeLists.txt
