@@ -1,0 +1,23 @@
+package com.jgoodies.looks.windows;
+
+import com.jgoodies.looks.common.FieldCaret;
+import java.awt.Dimension;
+import javax.swing.JComponent;
+import javax.swing.plaf.ComponentUI;
+import javax.swing.text.Caret;
+
+/* loaded from: metamorphosis-24.02.0.jar:com/jgoodies/looks/windows/WindowsTextFieldUI.class */
+public final class WindowsTextFieldUI extends com.sun.java.swing.plaf.windows.WindowsTextFieldUI {
+    public static ComponentUI createUI(JComponent c) {
+        return new WindowsTextFieldUI();
+    }
+
+    protected Caret createCaret() {
+        return new FieldCaret();
+    }
+
+    public Dimension getPreferredSize(JComponent c) {
+        Dimension dim = super.getPreferredSize(c);
+        return new Dimension(dim.width + 1, dim.height);
+    }
+}
