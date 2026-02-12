@@ -45,16 +45,15 @@ import javax.swing.JComponent;
 import com.jgoodies.looks.Options;
 
 /**
- * An image filter that turns an icon into a grayscale icon. Used by
- * the JGoodies Windows and Plastic L&amp;Fs to create a disabled icon.<p>
+ * 将图标转换为灰度图标的图像过滤器。由
+ * JGoodies Windows和Plastic外观用于创建禁用图标。<p>
  *
- * The high-resolution gray filter can be disabled globally using
- * {@link Options#setHiResGrayFilterEnabled(boolean)}; it is enabled by default.
- * The global setting can be overridden per component by setting
- * the client property key {@link Options#HI_RES_DISABLED_ICON_CLIENT_KEY}
- * to {@code Boolean.FALSE}.<p>
+ * 可以使用{@link Options#setHiResGrayFilterEnabled(boolean)}全局禁用高分辨率灰度过滤器；
+ * 默认情况下它是启用的。
+ * 可以通过将客户端属性键{@link Options#HI_RES_DISABLED_ICON_CLIENT_KEY}
+ * 设置为{@code Boolean.FALSE}来按组件覆盖全局设置。<p>
  *
- * Thanks to Andrej Golovnin for suggesting a simpler filter formula.
+ * 感谢Andrej Golovnin提出了更简单的过滤公式。
  *
  * @author Karsten Lentzsch
  * @version $Revision: 1.13 $
@@ -62,7 +61,7 @@ import com.jgoodies.looks.Options;
 public final class RGBGrayFilter extends RGBImageFilter {
 
     /**
-     * Overrides default constructor; prevents instantiation.
+     * 覆盖默认构造函数；防止实例化。
      */
     private RGBGrayFilter() {
         canFilterIndexColorModel = true;
@@ -70,12 +69,12 @@ public final class RGBGrayFilter extends RGBImageFilter {
 
 
     /**
-     * Returns an icon with a disabled appearance. This method is used
-     * to generate a disabled icon when one has not been specified.
+     * 返回具有禁用外观的图标。当未指定禁用图标时，
+     * 使用此方法生成禁用图标。
      *
-     * @param component the component that will display the icon, may be null.
-     * @param icon the icon to generate disabled icon from.
-     * @return disabled icon, or null if a suitable icon can not be generated.
+     * @param component 将显示图标的组件，可能为null
+     * @param icon 用于生成禁用图标的图标
+     * @return 禁用图标，如果无法生成合适的图标则返回null
      */
     public static Icon getDisabledIcon(JComponent component, Icon icon) {
         if (   (icon == null)
@@ -107,31 +106,30 @@ public final class RGBGrayFilter extends RGBImageFilter {
 
 
     /**
-     * Converts a single input pixel in the default RGB ColorModel to a single
-     * gray pixel.
+     * 将默认RGB颜色模型中的单个输入像素转换为单个灰度像素。
      *
-     * @param x    the horizontal pixel coordinate
-     * @param y    the vertical pixel coordinate
-     * @param rgb  the integer pixel representation in the default RGB color model
-     * @return a gray pixel in the default RGB color model.
+     * @param x 水平像素坐标
+     * @param y 垂直像素坐标
+     * @param rgb 默认RGB颜色模型中的整数像素表示
+     * @return 默认RGB颜色模型中的灰度像素
      *
      * @see ColorModel#getRGBdefault
      * @see #filterRGBPixels
      */
     @Override
     public int filterRGB(int x, int y, int rgb) {
-        // Find the average of red, green, and blue.
+        // 计算红、绿、蓝的平均值
         float avg = (((rgb >> 16) & 0xff) / 255f +
                      ((rgb >>  8) & 0xff) / 255f +
                       (rgb        & 0xff) / 255f) / 3;
-        // Pull out the alpha channel.
+        // 提取alpha通道
         float alpha = (((rgb >> 24) & 0xff) / 255f);
 
-        // Calculate the average.
-        // Sun's formula: Math.min(1.0f, (1f - avg) / (100.0f / 35.0f) + avg);
-        // The following formula uses less operations and hence is faster.
+        // 计算平均值
+        // Sun的公式：Math.min(1.0f, (1f - avg) / (100.0f / 35.0f) + avg);
+        // 以下公式使用较少的操作，因此更快
         avg = Math.min(1.0f, 0.35f + 0.65f * avg);
-        // Convert back into RGB.
+        // 转换回RGB
        return (int) (alpha * 255f) << 24 |
               (int) (avg   * 255f) << 16 |
               (int) (avg   * 255f) << 8  |

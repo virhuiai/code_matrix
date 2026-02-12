@@ -34,25 +34,35 @@ import javax.swing.JTextField;
 import javax.swing.UIManager;
 
 /**
- * A text field designed to be used as combo box editor.
- * It doesn't set a text if the text equals the content;
- * this works around the Java issue #4530952.
+ * 专为用作组合框编辑器而设计的文本字段。
+ * 当文本等于内容时不设置文本；
+ * 这解决了Java问题#4530952。
  *
  * @author Karsten Lentzsch
  * @version $Revision: 1.7 $
  */
 public final class ComboBoxEditorTextField extends JTextField {
 
+    /**
+     * 构造一个新的组合框编辑器文本字段
+     * 
+     * @param isTableCellEditor 是否为表格单元格编辑器
+     */
     public ComboBoxEditorTextField(boolean isTableCellEditor) {
         super("", UIManager.getInt("ComboBox.editorColumns"));
-        // Use special insets for tables, the text field defaults otherwise
+        // 为表格使用特殊内边距，否则使用文本字段默认值
         if (isTableCellEditor) {
             setMargin(UIManager.getInsets("ComboBox.tableEditorInsets"));
         }
         setBorder(UIManager.getBorder("ComboBox.editorBorder"));
     }
 
-    // Workaround for 4530952
+    // 解决Java问题4530952的变通方法
+    /**
+     * 设置文本内容，如果文本等于当前内容则不执行设置操作
+     * 
+     * @param s 要设置的文本
+     */
     @Override
     public void setText(String s) {
         if (getText().equals(s)) {

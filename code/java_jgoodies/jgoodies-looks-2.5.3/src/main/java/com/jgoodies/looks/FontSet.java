@@ -33,8 +33,8 @@ package com.jgoodies.looks;
 import javax.swing.plaf.FontUIResource;
 
 /**
- * Returns the Fonts used by a Look&amp;Feel or theme.
- * These Fonts must implement the UIResource marker interface.
+ * 返回外观和感觉或主题使用的字体集合。
+ * 这些字体必须实现UIResource标记接口。
  *
  * @author  Karsten Lentzsch
  * @version $Revision: 1.9 $
@@ -44,51 +44,50 @@ import javax.swing.plaf.FontUIResource;
 public interface FontSet {
 
     /**
-     * Returns the font used for all dialog components.
+     * 返回用于所有对话框组件的字体。
      *
-     * @return the font used for all dialog components.
+     * @return 用于所有对话框组件的字体
      */
     FontUIResource getControlFont();
 
 
     /**
-     * Returns the font used for the menu.
+     * 返回用于菜单的字体。
      *
-     * @return the font used for the menu.
+     * @return 用于菜单的字体
      */
     FontUIResource getMenuFont();
 
 
     /**
-     * Returns the font used for the title label in TitledBorders.
-     * This font is also used by JGoodies Forms titles,
-     * and titled separators.
+     * 返回用于TitledBorders中标题标签的字体。
+     * 此字体也用于JGoodies Forms标题和带标题的分隔符。
      *
-     * @return the font used for TitledBorder titles.
+     * @return 用于TitledBorder标题的字体
      */
     FontUIResource getTitleFont();
 
 
     /**
-     * Returns the font used for internal frame titles.
+     * 返回用于内部框架标题的字体。
      *
-     * @return the font used for internal frame titles.
+     * @return 用于内部框架标题的字体
      */
     FontUIResource getWindowTitleFont();
 
 
     /**
-     * Returns the font used for tool tips.
+     * 返回用于工具提示的字体。
      *
-     * @return the tool tip font.
+     * @return 工具提示字体
      */
     FontUIResource getSmallFont();
 
 
     /**
-     * Returns the font used for message dialogs.
+     * 返回用于消息对话框的字体。
      *
-     * @return the font used for message dialogs.
+     * @return 用于消息对话框的字体
      */
     FontUIResource getMessageFont();
 

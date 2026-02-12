@@ -35,9 +35,8 @@ import javax.swing.JMenuBar;
 import javax.swing.JToolBar;
 
 /**
- * Describes the header styles for JMenuBar and JToolBar.
- * Header styles are look-independent and can be shadowed by a look-dependent
- * {@code BorderStyle}.
+ * 描述JMenuBar和JToolBar的标题样式。
+ * 标题样式是外观独立的，可以被外观依赖的{@code BorderStyle}所覆盖。
  *
  * @author  Karsten Lentzsch
  * @version $Revision: 1.9 $
@@ -46,23 +45,31 @@ import javax.swing.JToolBar;
  */
 public final class HeaderStyle {
 
+    /** 单侧样式 - 只在一侧绘制装饰 */
     public static final HeaderStyle SINGLE = new HeaderStyle("Single");
+    
+    /** 双侧样式 - 在两侧都绘制装饰 */
     public static final HeaderStyle BOTH   = new HeaderStyle("Both");
 
+    /** 标题样式的名称 */
     private final String name;
 
 
+    /**
+     * 私有构造函数，防止外部实例化
+     * 
+     * @param name 标题样式的名称
+     */
     private HeaderStyle(String name) {
         this.name = name;
     }
 
 
     /**
-     * Looks up the client property for the {@code HeaderStyle}
-     * from the JToolBar.
+     * 从菜单栏中查找客户端属性获取标题样式
      *
-     * @param menuBar   the menu bar to inspect
-     * @return the menu bar's header style
+     * @param menuBar 菜单栏组件
+     * @return 菜单栏的标题样式
      */
     public static HeaderStyle from(JMenuBar menuBar) {
         return from0(menuBar);
@@ -70,11 +77,10 @@ public final class HeaderStyle {
 
 
     /**
-     * Looks up the client property for the {@code HeaderStyle}
-     * from the JToolBar.
+     * 从工具栏中查找客户端属性获取标题样式
      *
-     * @param toolBar   the tool bar to inspect
-     * @return the tool bar's header style
+     * @param toolBar 工具栏组件
+     * @return 工具栏的标题样式
      */
     public static HeaderStyle from(JToolBar toolBar) {
         return from0(toolBar);
@@ -82,11 +88,10 @@ public final class HeaderStyle {
 
 
     /**
-     * Looks up the client property for the {@code HeaderStyle}
-     * from the specified JComponent.
+     * 从指定的JComponent中查找客户端属性获取标题样式
      *
-     * @param c    the component to inspect
-     * @return the header style for the given component
+     * @param c 组件对象
+     * @return 给定组件的标题样式
      */
     private static HeaderStyle from0(JComponent c) {
         Object value = c.getClientProperty(Options.HEADER_STYLE_KEY);
@@ -103,10 +108,11 @@ public final class HeaderStyle {
 
 
     /**
-     * Looks up and answers the {@code HeaderStyle} with the specified name.
+     * 查找并返回具有指定名称的{@code HeaderStyle}
      *
-     * @param name    the name of the HeaderStyle object to lookup
-     * @return the associated HeaderStyle
+     * @param name 要查找的HeaderStyle对象名称
+     * @return 相关联的HeaderStyle
+     * @throws IllegalArgumentException 当名称无效时抛出异常
      */
     private static HeaderStyle valueOf(String name) {
         if (name.equalsIgnoreCase(SINGLE.name)) {
@@ -114,12 +120,17 @@ public final class HeaderStyle {
         } else if (name.equalsIgnoreCase(BOTH.name)) {
             return BOTH;
         } else {
-            throw new IllegalArgumentException("Invalid HeaderStyle name "
+            throw new IllegalArgumentException("无效的HeaderStyle名称: "
                     + name);
         }
     }
 
 
+    /**
+     * 返回标题样式的字符串表示
+     *
+     * @return 标题样式的名称
+     */
     @Override
     public String toString() {
         return name;

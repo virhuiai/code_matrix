@@ -41,22 +41,30 @@ import javax.swing.plaf.ComponentUI;
 import javax.swing.plaf.basic.BasicPopupMenuSeparatorUI;
 
 /**
- * Renders the separator in popup and pull-down menus.
- * Unlike its superclass we use a setting for the insets and
- * it uses a shared UI delegate.
+ * 渲染弹出菜单和下拉菜单中的分隔符。
+ * 与其超类不同，我们使用内边距设置，
+ * 并使用共享的UI委托。
  *
  * @author Karsten Lentzsch
  * @version $Revision: 1.8 $
  */
 public final class ExtBasicPopupMenuSeparatorUI extends BasicPopupMenuSeparatorUI {
 
+	/** 分隔符高度 */
 	private static final int SEPARATOR_HEIGHT = 2;
 
+	/** 内边距 */
 	private Insets insets;
 
-    /** Shared UI object. */
+    /** 共享的UI对象 */
     private static ComponentUI popupMenuSeparatorUI;
 
+	/**
+	 * 创建UI实例
+	 * 
+	 * @param b 组件
+	 * @return 组件UI
+	 */
 	public static ComponentUI createUI(JComponent b) {
         if (popupMenuSeparatorUI == null) {
             popupMenuSeparatorUI = new ExtBasicPopupMenuSeparatorUI();
@@ -65,6 +73,11 @@ public final class ExtBasicPopupMenuSeparatorUI extends BasicPopupMenuSeparatorU
 	}
 
 
+	/**
+	 * 安装默认设置
+	 * 
+	 * @param s 分隔符组件
+	 */
 	@Override
     protected void installDefaults(JSeparator s) {
 		super.installDefaults(s);
@@ -72,6 +85,12 @@ public final class ExtBasicPopupMenuSeparatorUI extends BasicPopupMenuSeparatorU
 	}
 
 
+    /**
+     * 绘制组件
+     * 
+     * @param g 图形上下文
+     * @param c 组件
+     */
     @Override
     public void paint(Graphics g, JComponent c) {
         Dimension s = c.getSize();
@@ -80,11 +99,11 @@ public final class ExtBasicPopupMenuSeparatorUI extends BasicPopupMenuSeparatorU
         int leftInset  = insets.left;
         int rightInset = insets.right;
 
-        // Paint background
+        // 绘制背景
         g.setColor(UIManager.getColor("MenuItem.background"));
         g.fillRect(0, 0, s.width, s.height);
 
-		// Draw side
+		// 绘制边框
 		/*
 		g.setColor(UIManager.getColor("controlHighlight"));
 		g.drawLine(0, 0, 0, s.height -1);
@@ -101,6 +120,12 @@ public final class ExtBasicPopupMenuSeparatorUI extends BasicPopupMenuSeparatorU
     }
 
 
+    /**
+     * 获取首选尺寸
+     * 
+     * @param c 组件
+     * @return 首选尺寸
+     */
     @Override
     public Dimension getPreferredSize(JComponent c) {
     	return new Dimension(0, insets.top + SEPARATOR_HEIGHT + insets.bottom);

@@ -35,8 +35,8 @@ import javax.swing.JMenuBar;
 import javax.swing.JToolBar;
 
 /**
- * Describes the border styles for JMenuBar and JToolBar. Border styles are
- * look-dependent and shadow look-independent {@code HeaderStyle}s.
+ * 描述JMenuBar和JToolBar的边框样式。
+ * 边框样式是外观依赖的，并且会覆盖外观独立的{@code HeaderStyle}。
  *
  * @author Karsten Lentzsch
  * @version $Revision: 1.9 $
@@ -45,52 +45,61 @@ import javax.swing.JToolBar;
  */
 public final class BorderStyle {
 
+    /** 空边框样式 - 不绘制任何边框 */
     public static final BorderStyle EMPTY     = new BorderStyle("Empty");
+    
+    /** 分隔符边框样式 - 绘制简单的分隔线 */
     public static final BorderStyle SEPARATOR = new BorderStyle("Separator");
+    
+    /** 蚀刻边框样式 - 绘制凹陷的边框效果 */
     public static final BorderStyle ETCHED    = new BorderStyle("Etched");
 
+    /** 边框样式的名称 */
     private final String name;
 
 
-    // Instance Creation ******************************************************
+    // 实例创建 ******************************************************
 
+    /**
+     * 私有构造函数，防止外部实例化
+     * 
+     * @param name 边框样式的名称
+     */
     private BorderStyle(String name) {
         this.name = name;
     }
 
 
-    // ************************************************************************
+    // 公共方法 ************************************************************************
 
     /**
-     * Looks up the client property for the header style from the JToolBar.
+     * 从工具栏中查找客户端属性获取边框样式
      *
-     * @param toolBar  the tool bar to inspect
-     * @param clientPropertyKey   the key used to lookup the property
-     * @return the border style used to choose a border in the UI delegate
+     * @param toolBar 工具栏组件
+     * @param clientPropertyKey 用于查找属性的键
+     * @return 用于在UI委托中选择边框的边框样式
      */
     public static BorderStyle from(JToolBar toolBar, String clientPropertyKey) {
         return from0(toolBar, clientPropertyKey);
     }
 
     /**
-     * Looks up the client property for the header style from the JMenuBar.
+     * 从菜单栏中查找客户端属性获取边框样式
      *
-     * @param menuBar  the menu bar to inspect
-     * @param clientPropertyKey   the key used to lookup the property
-     * @return the border style used to choose a border in the UI delegate
+     * @param menuBar 菜单栏组件
+     * @param clientPropertyKey 用于查找属性的键
+     * @return 用于在UI委托中选择边框的边框样式
      */
     public static BorderStyle from(JMenuBar menuBar, String clientPropertyKey) {
         return from0(menuBar, clientPropertyKey);
     }
 
     /**
-     * Looks up the client property for the header style from the specified
-     * JComponent.
+     * 从指定的JComponent中查找客户端属性获取边框样式
      *
-     * @param c    the compoent to inspect
-     * @param clientPropertyKey
-     *            the key used to lookup the property
-     * @return the border style used to choose a border in the UI delegate
+     * @param c 组件对象
+     * @param clientPropertyKey 用于查找属性的键
+     * @return 用于在UI委托中选择边框的边框样式
      */
     private static BorderStyle from0(JComponent c, String clientPropertyKey) {
         Object value = c.getClientProperty(clientPropertyKey);
@@ -105,6 +114,13 @@ public final class BorderStyle {
         return null;
     }
 
+    /**
+     * 根据名称查找对应的BorderStyle枚举值
+     *
+     * @param name 边框样式名称
+     * @return 对应的BorderStyle枚举值
+     * @throws IllegalArgumentException 当名称无效时抛出异常
+     */
     private static BorderStyle valueOf(String name) {
         if (name.equalsIgnoreCase(EMPTY.name)) {
             return EMPTY;
@@ -113,11 +129,16 @@ public final class BorderStyle {
         } else if (name.equalsIgnoreCase(ETCHED.name)) {
             return ETCHED;
         } else {
-            throw new IllegalArgumentException("Invalid BorderStyle name "
+            throw new IllegalArgumentException("无效的BorderStyle名称: "
                     + name);
         }
     }
 
+    /**
+     * 返回边框样式的字符串表示
+     *
+     * @return 边框样式的名称
+     */
     @Override
     public String toString() {
         return name;

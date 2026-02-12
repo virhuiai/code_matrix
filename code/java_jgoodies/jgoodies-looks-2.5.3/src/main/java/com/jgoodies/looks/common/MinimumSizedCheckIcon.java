@@ -40,9 +40,8 @@ import javax.swing.JMenuItem;
 import javax.swing.UIManager;
 
 /**
- * An implementation of the {@code Icon} interface that has a minimum size
- * and active border. The minimum size is read from the {@code UIManager}
- * {@code defaultIconSize} key.
+ * {@code Icon}接口的实现，具有最小尺寸和活动边框。
+ * 最小尺寸从{@code UIManager}的{@code defaultIconSize}键读取。
  *
  * @author  Karsten Lentzsch
  * @version $Revision: 1.9 $
@@ -52,20 +51,42 @@ import javax.swing.UIManager;
 
 public final class MinimumSizedCheckIcon extends MinimumSizedIcon {
 
+	/** 关联的菜单项 */
 	private final JMenuItem menuItem;
 
+	/**
+	 * 构造一个新的最小尺寸检查图标
+	 * 
+	 * @param icon 原始图标
+	 * @param menuItem 关联的菜单项
+	 */
 	public MinimumSizedCheckIcon(Icon icon, JMenuItem menuItem) {
 		super(icon);
 		this.menuItem = menuItem;
 	}
 
 
+	/**
+	 * 绘制图标
+	 * 
+	 * @param c 组件
+	 * @param g 图形上下文
+	 * @param x X坐标
+	 * @param y Y坐标
+	 */
 	@Override
     public void paintIcon(Component c, Graphics g, int x, int y) {
 		paintState(g, x, y);
 		super.paintIcon(c, g, x, y);
 	}
 
+	/**
+	 * 绘制状态
+	 * 
+	 * @param g 图形上下文
+	 * @param x X坐标
+	 * @param y Y坐标
+	 */
 	private void paintState(Graphics g, int x, int y) {
 		ButtonModel model = menuItem.getModel();
 		//if (!model.isEnabled()) return;
@@ -81,14 +102,14 @@ public final class MinimumSizedCheckIcon extends MinimumSizedIcon {
 			Color upColor	 = UIManager.getColor("controlLtHighlight");
 			Color downColor	 = UIManager.getColor("controlDkShadow");
 
-			// Background
+			// 背景
 			g.setColor(background);
 			g.fillRect(0, 0, w, h);
-			// Top and left border
+			// 顶部和左侧边框
 			g.setColor(model.isSelected() ? downColor : upColor);
 			g.drawLine(0, 0, w-2, 0);
 			g.drawLine(0, 0, 0, h-2);
-			// Bottom and right border
+			// 底部和右侧边框
 			g.setColor(model.isSelected() ? upColor: downColor);
 			g.drawLine(0, h-1, w-1, h-1);
 			g.drawLine(w-1, 0, w-1, h-1);

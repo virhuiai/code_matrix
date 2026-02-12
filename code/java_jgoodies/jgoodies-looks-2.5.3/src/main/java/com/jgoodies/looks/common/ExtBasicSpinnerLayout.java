@@ -40,9 +40,8 @@ import javax.swing.UIManager;
 
 
 /**
- * A simple layout manager for the editor and the next/previous buttons.
- * See the BasicSpinnerUI javadoc for more information about exactly how
- * the components are arranged.
+ * 用于编辑器和上一个/下一个按钮的简单布局管理器。
+ * 有关组件确切排列方式的更多信息，请参见BasicSpinnerUI的javadoc。
  *
  * @author  Karsten Lentzsch
  * @version $Revision: 1.7 $
@@ -50,17 +49,28 @@ import javax.swing.UIManager;
 public final class ExtBasicSpinnerLayout implements LayoutManager {
 
     /**
-     * Used by the default LayoutManager class - SpinnerLayout for
-     * missing (null) editor/nextButton/previousButton children.
+     * 供默认LayoutManager类- SpinnerLayout使用，
+     * 用于缺失（null）的editor/nextButton/previousButton子组件。
      */
     private static final Dimension ZERO_SIZE = new Dimension(0, 0);
 
 
+    /** 下一个按钮组件 */
     private Component nextButton     = null;
+    
+    /** 上一个按钮组件 */
     private Component previousButton = null;
+    
+    /** 编辑器组件 */
     private Component editor         = null;
 
 
+    /**
+     * 添加布局组件
+     * 
+     * @param name 组件名称
+     * @param c 组件
+     */
     @Override
 	public void addLayoutComponent(String name, Component c) {
         if ("Next".equals(name)) {
@@ -73,6 +83,11 @@ public final class ExtBasicSpinnerLayout implements LayoutManager {
     }
 
 
+    /**
+     * 移除布局组件
+     * 
+     * @param c 要移除的组件
+     */
     @Override
 	public void removeLayoutComponent(Component c) {
         if (c == nextButton) {
@@ -85,11 +100,23 @@ public final class ExtBasicSpinnerLayout implements LayoutManager {
     }
 
 
+    /**
+     * 获取组件的首选尺寸
+     * 
+     * @param c 组件
+     * @return 组件的首选尺寸
+     */
     private static Dimension preferredSize(Component c) {
         return c == null ? ZERO_SIZE : c.getPreferredSize();
     }
 
 
+    /**
+     * 获取布局的首选尺寸
+     * 
+     * @param parent 父容器
+     * @return 布局的首选尺寸
+     */
     @Override
 	public Dimension preferredLayoutSize(Container parent) {
         Dimension nextD = preferredSize(nextButton);
@@ -105,12 +132,27 @@ public final class ExtBasicSpinnerLayout implements LayoutManager {
     }
 
 
+    /**
+     * 获取布局的最小尺寸
+     * 
+     * @param parent 父容器
+     * @return 布局的最小尺寸
+     */
     @Override
 	public Dimension minimumLayoutSize(Container parent) {
         return preferredLayoutSize(parent);
     }
 
 
+    /**
+     * 设置组件边界
+     * 
+     * @param c 组件
+     * @param x X坐标
+     * @param y Y坐标
+     * @param width 宽度
+     * @param height 高度
+     */
     private static void setBounds(Component c, int x, int y, int width, int height) {
         if (c != null) {
             c.setBounds(x, y, width, height);
@@ -118,6 +160,11 @@ public final class ExtBasicSpinnerLayout implements LayoutManager {
     }
 
 
+    /**
+     * 布局容器
+     * 
+     * @param parent 父容器
+     */
     @Override
 	public void layoutContainer(Container parent) {
         int width = parent.getWidth();
@@ -129,11 +176,10 @@ public final class ExtBasicSpinnerLayout implements LayoutManager {
         int buttonsWidth = Math.max(nextD.width, previousD.width);
         int editorHeight = height - (insets.top + insets.bottom);
 
-        // The arrowButtonInsets value is used instead of the JSpinner's
-        // insets if not null. Defining this to be (0, 0, 0, 0) causes the
-        // buttons to be aligned with the outer edge of the spinner's
-        // border, and leaving it as "null" places the buttons completely
-        // inside the spinner's border.
+        // 如果不为null，则使用arrowButtonInsets值代替JSpinner的
+        // 内边距。将其定义为(0, 0, 0, 0)会使按钮与spinner边框的
+        // 外边缘对齐，而将其保留为"null"则将按钮完全放置在
+        // spinner边框内部。
         Insets buttonInsets = UIManager
                 .getInsets("Spinner.arrowButtonInsets");
         if (buttonInsets == null) {
@@ -141,7 +187,7 @@ public final class ExtBasicSpinnerLayout implements LayoutManager {
         }
 
         /*
-         * Deal with the spinner's componentOrientation property.
+         * 处理spinner的componentOrientation属性。
          */
         int editorX, editorWidth, buttonsX;
         if (parent.getComponentOrientation().isLeftToRight()) {

@@ -39,8 +39,8 @@ import javax.swing.Icon;
 import com.jgoodies.looks.Options;
 
 /**
- * An {@code Icon} with a minimum size that is read from the
- * {@code UIManager} {@code defaultIconSize} key.
+ * 具有最小尺寸的{@code Icon}，最小尺寸从
+ * {@code UIManager}的{@code defaultIconSize}键读取。
  *
  * @author Karsten Lentzsch
  * @version $Revision: 1.9 $
@@ -48,17 +48,34 @@ import com.jgoodies.looks.Options;
 
 public class MinimumSizedIcon implements Icon {
 
+	/** 图标对象 */
 	private final Icon icon;
+	
+	/** 图标宽度 */
 	private final int  width;
+	
+	/** 图标高度 */
 	private final int  height;
+	
+	/** X轴偏移量 */
 	private final int  xOffset;
+	
+	/** Y轴偏移量 */
 	private final int  yOffset;
 
 
+	/**
+	 * 构造一个新的最小尺寸图标，不包含具体图标
+	 */
 	public MinimumSizedIcon() {
 		this(null);
 	}
 
+	/**
+	 * 构造一个新的最小尺寸图标
+	 * 
+	 * @param icon 原始图标
+	 */
 	public MinimumSizedIcon(Icon icon) {
 		Dimension minimumSize = Options.getDefaultIconSize();
 		this.icon      = icon;
@@ -71,12 +88,31 @@ public class MinimumSizedIcon implements Icon {
 	}
 
 
+	/**
+	 * 获取图标的高度
+	 * 
+	 * @return 图标高度
+	 */
 	@Override
 	public int getIconHeight() {  return height;	}
+	
+	/**
+	 * 获取图标的宽度
+	 * 
+	 * @return 图标宽度
+	 */
 	@Override
 	public int getIconWidth()	{  return width;	}
 
 
+	/**
+	 * 绘制图标
+	 * 
+	 * @param c 组件
+	 * @param g 图形上下文
+	 * @param x X坐标
+	 * @param y Y坐标
+	 */
 	@Override
 	public void paintIcon(Component c, Graphics g, int x, int y) {
 		if (icon != null) {

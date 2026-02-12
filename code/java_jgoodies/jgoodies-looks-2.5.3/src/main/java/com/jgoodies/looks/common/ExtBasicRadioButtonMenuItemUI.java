@@ -41,27 +41,51 @@ import javax.swing.plaf.ComponentUI;
 
 
 /**
- * Renders aligned {@code JRadioButtonMenuItem}s.
+ * 渲染对齐的{@code JRadioButtonMenuItem}s。
  *
  * @author  Karsten Lentzsch
  * @version $Revision: 1.9 $
  */
 public class ExtBasicRadioButtonMenuItemUI extends ExtBasicMenuItemUI {
 
+	/**
+	 * 获取属性前缀
+	 * 
+	 * @return 属性前缀字符串
+	 */
 	@Override
     protected String getPropertyPrefix() { return "RadioButtonMenuItem"; }
 
 
+	/**
+	 * 创建UI实例
+	 * 
+	 * @param b 组件
+	 * @return 组件UI
+	 */
 	public static ComponentUI createUI(JComponent b) {
 		return new ExtBasicRadioButtonMenuItemUI();
 	}
 
 
-	// RadioButtonMenuItems and CheckBoxMenuItems will override
+	// RadioButtonMenuItems和CheckBoxMenuItems将覆盖此方法
+	/**
+	 * 判断图标边框是否启用
+	 * 
+	 * @return 总是返回true
+	 */
 	@Override
     protected boolean iconBorderEnabled() { return true; }
 
 
+	/**
+	 * 处理鼠标事件
+	 * 
+	 * @param item 菜单项
+	 * @param e 鼠标事件
+	 * @param path 菜单元素路径
+	 * @param manager 菜单选择管理器
+	 */
 	public void processMouseEvent(JMenuItem item, MouseEvent e,
 								   MenuElement[] path, MenuSelectionManager manager) {
 		Point p = e.getPoint();

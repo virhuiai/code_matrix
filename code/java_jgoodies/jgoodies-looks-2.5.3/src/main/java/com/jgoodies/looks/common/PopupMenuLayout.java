@@ -38,11 +38,10 @@ import javax.swing.plaf.UIResource;
 
 
 /**
- * The JGoodies implementation of a layout manager for Popup menus.
- * In comparison to the JDK's implementation it flushes the values of the client
- * properties {@code maxTextWidth} and {@code maxAccWidth} in
- * the method {@link #invalidateLayout(Container)} and not in the method
- * {@link #preferredLayoutSize(Container)}.
+ * JGoodies弹出菜单的布局管理器实现。
+ * 与JDK实现相比，它在方法{@link #invalidateLayout(Container)}中而不是在方法
+ * {@link #preferredLayoutSize(Container)}中刷新客户端属性
+ * {@code maxTextWidth}和{@code maxAccWidth}的值。
  *
  * @author Karsten Lentzsch
  * @version $Revision: 1.8 $
@@ -51,11 +50,10 @@ public final class PopupMenuLayout extends BoxLayout implements UIResource {
 
 
     /**
-     * Creates a layout manager that will lay out components along
-     * the given axis.
+     * 创建一个沿给定轴布置组件的布局管理器。
      *
-     * @param target  the container that needs to be laid out
-     * @param axis    the axis to lay out components along
+     * @param target 需要布置的容器
+     * @param axis 沿其布置组件的轴
      */
     public PopupMenuLayout(Container target, int axis) {
         super(target, axis);
@@ -63,13 +61,13 @@ public final class PopupMenuLayout extends BoxLayout implements UIResource {
 
 
     /**
-     * Indicates that a child has changed its layout related information,
-     * and thus any cached calculations should be flushed.
+     * 表示子组件已更改其布局相关信息，
+     * 因此应刷新任何缓存的计算结果。
      * <p>
-     * In case the target is an instance of JPopupMenu it flushes the values of
-     * the client properties {@code maxTextWidth} and {@code maxAccWidth}.
+     * 如果目标是JPopupMenu的实例，则刷新客户端属性
+     * {@code maxTextWidth}和{@code maxAccWidth}的值。
      *
-     * @param target  the affected container
+     * @param target 受影响的容器
      */
     @Override
     public synchronized void invalidateLayout(Container target) {

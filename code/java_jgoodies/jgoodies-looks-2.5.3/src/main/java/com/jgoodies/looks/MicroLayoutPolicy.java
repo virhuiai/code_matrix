@@ -34,7 +34,8 @@ import javax.swing.UIDefaults;
 
 
 /**
- * Looks up and returns a MicroLayout.
+ * 查找并返回微布局的接口。
+ * 定义了如何获取组件的内边距、外边距和间距设置。
  *
  * @author  Karsten Lentzsch
  * @version $Revision: 1.6 $
@@ -47,21 +48,17 @@ import javax.swing.UIDefaults;
 public interface MicroLayoutPolicy {
 
     /**
-     * Looks up and returns insets, margins, and gaps that will be used
-     * by a Look&amp;Feel to set the component insets, margins and gaps.<p>
+     * 查找并返回内边距、外边距和间距，这些将被外观和感觉用来设置组件的内边距、外边距和间距。<p>
      *
-     * This method is invoked during the L&amp;F component initialization.
-     * And the invoker hands over the UIDefaults object used to define
-     * the component settings. Hence, the UIDefaults object may be used
-     * to look up values as initialized by a super Look&amp;Feel.
-     * For example the JGoodies Windows L&amp;F could use the
-     * defaults set by the super L&amp;F, the Sun Windows L&amp;F.
+     * 此方法在外观组件初始化期间被调用。
+     * 调用者会传递用于定义组件设置的UIDefaults对象。
+     * 因此，UIDefaults对象可以用来查找由父外观初始化的值。
+     * 例如，JGoodies Windows外观可以使用由父外观（Sun Windows外观）设置的默认值。
      *
-     * @param lafName the name of the Look&amp;Feel that requests the fonts
-     * @param table   the UIDefaults table that can be used
-     *     to look up fonts of a super L&amp;F
+     * @param lafName 请求字体的外观和感觉名称
+     * @param table 可以用来查找父外观字体的UIDefaults表
      *
-     * @return a micro layout used as default for the components.
+     * @return 用作组件默认设置的微布局
      */
     MicroLayout getMicroLayout(String lafName, UIDefaults table);
 

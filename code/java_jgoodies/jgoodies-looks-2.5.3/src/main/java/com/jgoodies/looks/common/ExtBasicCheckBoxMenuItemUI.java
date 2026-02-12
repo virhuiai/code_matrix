@@ -35,17 +35,28 @@ import javax.swing.plaf.ComponentUI;
 
 
 /**
- * Renders aligned JCheckBoxMenuItems.
+ * 渲染对齐的JCheckBoxMenuItems。
  *
  * @author  Karsten Lentzsch
  * @version $Revision: 1.8 $
  */
 public final class ExtBasicCheckBoxMenuItemUI extends ExtBasicRadioButtonMenuItemUI {
 
+    /**
+     * 获取属性前缀
+     * 
+     * @return 属性前缀字符串
+     */
     @Override
     protected String getPropertyPrefix() { return "CheckBoxMenuItem"; }
 
 
+    /**
+     * 创建UI实例
+     * 
+     * @param b 组件
+     * @return 组件UI
+     */
     public static ComponentUI createUI(JComponent b) {
         return new ExtBasicCheckBoxMenuItemUI();
     }

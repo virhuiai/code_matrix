@@ -34,7 +34,8 @@ import javax.swing.UIDefaults;
 
 
 /**
- * Looks up and returns a FontSet.
+ * 查找并返回字体集的接口。
+ * 定义了如何获取一组字体用于外观和感觉设置。
  *
  * @author  Karsten Lentzsch
  * @version $Revision: 1.6 $
@@ -47,21 +48,17 @@ import javax.swing.UIDefaults;
 public interface FontPolicy {
 
     /**
-     * Looks up and returns a set of fonts that will be used
-     * by a Look&amp;Feel to set the default fonts for its components.<p>
+     * 查找并返回一组字体，这些字体将被外观和感觉用来为其组件设置默认字体。<p>
      *
-     * This method is invoked during the L&amp;F component initialization.
-     * And the invoker hands over the UIDefaults object used to define
-     * the component settings. Hence, the UIDefaults object may be used
-     * to look up a font as initialized by a super Look&amp;Feel.
-     * For example the JGoodies Windows L&amp;F could use the
-     * defaults set by the super L&amp;F, the Sun Windows L&amp;F.
+     * 此方法在外观组件初始化期间被调用。
+     * 调用者会传递用于定义组件设置的UIDefaults对象。
+     * 因此，UIDefaults对象可以用来查找由父外观初始化的字体。
+     * 例如，JGoodies Windows外观可以使用由父外观（Sun Windows外观）设置的默认值。
      *
-     * @param lafName the name of the Look&amp;Feel that requests the fonts
-     * @param table   the UIDefaults table that can be used
-     *     to look up fonts of a super L&amp;F
+     * @param lafName 请求字体的外观和感觉名称
+     * @param table 可以用来查找父外观字体的UIDefaults表
      *
-     * @return a set of fonts used as default for the component.
+     * @return 用作组件默认字体的一组字体
      */
     FontSet getFontSet(String lafName, UIDefaults table);
 
