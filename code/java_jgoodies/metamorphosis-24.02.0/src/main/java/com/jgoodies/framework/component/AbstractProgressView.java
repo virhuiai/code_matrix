@@ -37,60 +37,60 @@ public abstract class AbstractProgressView {
 
     private void onTaskPropertyChange(PropertyChangeEvent evt) {
         String propertyName = evt.getPropertyName();
-        boolean z = -1;
+        int z = -1;  // 修改为 int 类型而不是 boolean
         switch (propertyName.hashCode()) {
             case -1897185151:
                 if (propertyName.equals(TaskMonitor.PROPERTY_STARTED)) {
-                    z = false;
+                    z = 0;  // 修改为整数常量
                     break;
                 }
                 break;
             case -1001078227:
                 if (propertyName.equals(Task.PROPERTY_PROGRESS)) {
-                    z = 3;
+                    z = 3;  // 保持原值
                     break;
                 }
                 break;
             case 5180302:
                 if (propertyName.equals(Task.PROPERTY_PROGRESS_INDETERMINATE)) {
-                    z = 4;
+                    z = 4;  // 保持原值
                     break;
                 }
                 break;
             case 954925063:
                 if (propertyName.equals(Task.PROPERTY_MESSAGE)) {
-                    z = 2;
+                    z = 2;  // 保持原值
                     break;
                 }
                 break;
             case 1427023312:
                 if (propertyName.equals(TaskMonitor.PROPERTY_BACKGROUND_DONE)) {
-                    z = true;
+                    z = 1;  // 修改为 1 而不是 true
                     break;
                 }
                 break;
         }
         switch (z) {
-            case AnimatedLabel.CENTER /* 0 */:
+            case 0:  // 替换 AnimatedLabel.CENTER
                 Task<?, ?> task = (Task) evt.getSource();
                 progressIndeterminate(task.isProgressIndeterminate());
                 progressMessage(task.getTitle());
                 progressVisible(true);
                 return;
-            case true:
+            case 1:  // 替换 true
                 progressVisible(false);
                 progressValue(0);
                 return;
-            case AnimatedLabel.LEFT /* 2 */:
+            case 2:  // 替换原来的 AnimatedLabel.LEFT
                 String text = (String) evt.getNewValue();
                 progressMessage(text);
                 return;
-            case true:
+            case 3:  // 替换原来的 true
                 progressVisible(true);
                 progressIndeterminate(false);
                 progressValue(((Integer) evt.getNewValue()).intValue());
                 return;
-            case AnimatedLabel.RIGHT /* 4 */:
+            case 4:  // 替换 AnimatedLabel.RIGHT
                 progressIndeterminate(((Boolean) evt.getNewValue()).booleanValue());
                 return;
             default:

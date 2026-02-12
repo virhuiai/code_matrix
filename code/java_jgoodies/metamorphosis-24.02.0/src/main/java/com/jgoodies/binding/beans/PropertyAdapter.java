@@ -34,14 +34,15 @@ public final class PropertyAdapter<B> extends AbstractValueModel {
     }
 
     public PropertyAdapter(B bean, String propertyName, boolean observeChanges) {
-        this(bean, propertyName, (String) null, (String) null, observeChanges);
+        this((Object) bean, propertyName, (String) null, (String) null, observeChanges);
     }
 
     public PropertyAdapter(B bean, String propertyName, String getterName, String setterName) {
         this((Object) bean, propertyName, getterName, setterName, false);
     }
 
-    public PropertyAdapter(B bean, String propertyName, String getterName, String setterName, boolean observeChanges) {
+    @SuppressWarnings("unchecked")
+    public PropertyAdapter(Object bean, String propertyName, String getterName, String setterName, boolean observeChanges) {
         this((ValueModel) new ValueHolder(bean, true), propertyName, getterName, setterName, observeChanges);
     }
 

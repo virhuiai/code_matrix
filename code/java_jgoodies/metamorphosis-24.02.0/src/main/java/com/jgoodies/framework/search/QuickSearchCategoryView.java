@@ -7,10 +7,10 @@ import com.jgoodies.common.internal.Messages;
 import com.jgoodies.layout.builder.FormBuilder;
 import com.jgoodies.layout.factories.Paddings;
 import com.jgoodies.layout.layout.FormLayout;
-import com.jgoodies.quicksearch.ActionActivatable;
 import com.jgoodies.quicksearch.Activatable;
 import com.jgoodies.quicksearch.QuickSearchManager;
 import com.jgoodies.quicksearch.QuickSearchProcessEvent;
+import javax.swing.Icon;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -26,7 +26,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import javax.swing.Action;
-import javax.swing.Icon;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -155,7 +154,7 @@ public final class QuickSearchCategoryView {
     }
 
     private JComponent buildContent() {
-        FormBuilder builder = new FormBuilder().columns("3dlu, right:65dlu, 3dlu, p, 2dlu, 3epx, 100dlu, 3dlu", new Object[0]).rows("", new Object[0]).background(this.resources.getColor("QuickSearch.resultArea.background")).panel(new JPanel((LayoutManager) null));
+        FormBuilder builder = new FormBuilder().columns("3dlu, right:65dlu, 3dlu, p, 2dlu, 3epx, 100dlu, 3dlu", new Object[0]).rows("", new Object[0]).background(this.resources.getColor("QuickSearch.resultArea.background")).panel(new JPanel());
         builder.getPanel().setFocusable(false);
         int row = 0;
         if (noResultFound()) {
@@ -174,7 +173,7 @@ public final class QuickSearchCategoryView {
             }
             builder.appendRows("p", new Object[0]);
         }
-        FormLayout layout = builder.getPanel().getLayout();
+        FormLayout layout = (FormLayout) builder.getPanel().getLayout(); // 明确转换为 FormLayout
         if (layout.getRowCount() == 0) {
             return builder.build();
         }
@@ -278,7 +277,7 @@ public final class QuickSearchCategoryView {
     }
 
     /* JADX INFO: Access modifiers changed from: private */
-    public static int compareRank(Activatable o1, Activatable o2) {
+    private static int compareRank(Activatable o1, Activatable o2) {
         if (o1 == o2) {
             return 0;
         }
@@ -308,7 +307,7 @@ public final class QuickSearchCategoryView {
         }
 
         ResultRow(Action action) {
-            this(true, null, new ActionActivatable("unused", action, -1));
+            this(true, null, new ActionActivatable("unused", action, -1)); // 确保导入了 ActionActivatable
         }
 
         Icon getIcon() {

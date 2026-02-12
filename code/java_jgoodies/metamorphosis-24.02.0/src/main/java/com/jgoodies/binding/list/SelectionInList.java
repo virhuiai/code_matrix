@@ -78,6 +78,7 @@ public final class SelectionInList<E> extends IndirectListModel<E> implements Va
         this(listHolder, selectionHolder, new ValueHolder(Integer.valueOf(NO_SELECTION_INDEX)));
     }
 
+    // 移除了重复的构造函数定义
     public SelectionInList(ValueModel listHolder, ValueModel selectionHolder, ValueModel selectionIndexHolder) {
         super(listHolder);
         this.clearSelectionOnListUpdates = true;
@@ -185,7 +186,9 @@ public final class SelectionInList<E> extends IndirectListModel<E> implements Va
     /* JADX WARN: Multi-variable type inference failed */
     @Override // com.jgoodies.binding.value.ValueModel
     public void setValue(Object obj) {
-        setSelection(obj);
+        @SuppressWarnings("unchecked")
+        E typedObj = (E) obj;
+        setSelection(typedObj);
     }
 
     @Override // com.jgoodies.binding.value.ValueModel

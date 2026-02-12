@@ -354,23 +354,23 @@ public abstract class Task<T, V> extends SwingWorker<T, V> {
     private static void onStateChanged(PropertyChangeEvent evt) {
         Task<?, ?> task = (Task) evt.getSource();
         String propertyName = evt.getPropertyName();
-        boolean z = -1;
+        int z = -1;  // 改为 int 类型而不是 boolean
         switch (propertyName.hashCode()) {
             case -1001078227:
                 if (propertyName.equals(PROPERTY_PROGRESS)) {
-                    z = true;
+                    z = 1;  // 使用整数值
                     break;
                 }
                 break;
             case 109757585:
                 if (propertyName.equals("state")) {
-                    z = false;
+                    z = 0;  // 使用整数值
                     break;
                 }
                 break;
         }
         switch (z) {
-            case AnimatedLabel.CENTER /* 0 */:
+            case 0:  // 替换 AnimatedLabel.CENTER
                 StateValue state = (StateValue) evt.getNewValue();
                 switch (AnonymousClass1.$SwitchMap$javax$swing$SwingWorker$StateValue[state.ordinal()]) {
                     case 1:
@@ -386,7 +386,7 @@ public abstract class Task<T, V> extends SwingWorker<T, V> {
                     default:
                         return;
                 }
-            case true:
+            case 1:  // 替换 true
                 synchronized (task) {
                     ((Task) task).progressIndeterminate = false;
                 }

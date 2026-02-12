@@ -35,7 +35,7 @@ public class PlasticInternalFrameUI extends BasicInternalFrameUI {
 
     public void installUI(JComponent c) {
         this.frame = (JInternalFrame) c;
-        this.paletteListener = new PaletteListener();
+        this.paletteListener = new PaletteListener(this); // 传递 this 参数
         this.contentPaneListener = new ContentPaneListener();
         c.addPropertyChangeListener(this.paletteListener);
         c.addPropertyChangeListener(this.contentPaneListener);
@@ -81,7 +81,7 @@ public class PlasticInternalFrameUI extends BasicInternalFrameUI {
     }
 
     /* JADX INFO: Access modifiers changed from: private */
-    public static void stripContentBorder(Object c) {
+    private static void stripContentBorder(Object c) {
         if (c instanceof JComponent) {
             JComponent contentComp = (JComponent) c;
             Border contentBorder = contentComp.getBorder();
@@ -97,7 +97,13 @@ public class PlasticInternalFrameUI extends BasicInternalFrameUI {
     }
 
     public void setPalette(boolean isPalette) {
-        String key = isPalette ? "InternalFrame.paletteBorder" : "InternalFrame.border";
+        String key;
+        boolean hasPalette = isPalette;
+        if (isPalette) {
+            key = "InternalFrame.paletteBorder";
+        } else {
+            key = "InternalFrame.border";
+        }
         LookAndFeel.installBorder(this.frame, key);
         this.titlePane.setPalette(isPalette);
     }

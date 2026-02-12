@@ -65,16 +65,14 @@ public final class FormLayout implements LayoutManager2, Serializable {
         this(colSpecs, new RowSpec[0]);
     }
 
-    /* JADX WARN: Type inference failed for: r1v6, types: [int[], int[][]] */
-    /* JADX WARN: Type inference failed for: r1v8, types: [int[], int[][]] */
     public FormLayout(ColumnSpec[] colSpecs, RowSpec[] rowSpecs) {
         this.honorsVisibility = true;
         Preconditions.checkNotNull(colSpecs, Messages.MUST_NOT_BE_NULL, "column specifications");
         Preconditions.checkNotNull(rowSpecs, Messages.MUST_NOT_BE_NULL, "row specifications");
         this.colSpecs = new ArrayList(Arrays.asList(colSpecs));
         this.rowSpecs = new ArrayList(Arrays.asList(rowSpecs));
-        this.colGroupIndices = new int[0];
-        this.rowGroupIndices = new int[0];
+        this.colGroupIndices = new int[0][];
+        this.rowGroupIndices = new int[0][];
         int initialCapacity = (colSpecs.length * rowSpecs.length) / 4;
         this.constraintMap = new HashMap(initialCapacity);
         this.componentSizeCache = new ComponentSizeCache(initialCapacity);
@@ -256,19 +254,16 @@ public final class FormLayout implements LayoutManager2, Serializable {
         this.colGroupIndices = deepClone(groupOfIndices);
     }
 
-    /* JADX WARN: Multi-variable type inference failed */
-    /* JADX WARN: Type inference failed for: r1v4, types: [int[], int[][]] */
     public void setColumnGroup(int... indices) {
         Preconditions.checkNotNull(indices, Messages.MUST_NOT_BE_NULL, "column group indices");
         Preconditions.checkArgument(indices.length >= 2, "You must specify at least two indices.");
-        setColumnGroups(new int[]{indices});
+        setColumnGroups(new int[][]{indices});
     }
 
-    /* JADX WARN: Multi-variable type inference failed */
     public void addGroupedColumn(int columnIndex) {
         int[][] newColGroups = getColumnGroups();
         if (newColGroups.length == 0) {
-            newColGroups = new int[]{new int[]{columnIndex}};
+            newColGroups = new int[][]{new int[]{columnIndex}};
         } else {
             int lastGroupIndex = newColGroups.length - 1;
             int[] lastGroup = newColGroups[lastGroupIndex];
@@ -310,19 +305,16 @@ public final class FormLayout implements LayoutManager2, Serializable {
         this.rowGroupIndices = deepClone(groupOfIndices);
     }
 
-    /* JADX WARN: Multi-variable type inference failed */
-    /* JADX WARN: Type inference failed for: r1v4, types: [int[], int[][]] */
     public void setRowGroup(int... indices) {
         Preconditions.checkNotNull(indices, Messages.MUST_NOT_BE_NULL, "row group indices");
         Preconditions.checkArgument(indices.length >= 2, "You must specify at least two indices.");
-        setRowGroups(new int[]{indices});
+        setRowGroups(new int[][]{indices});
     }
 
-    /* JADX WARN: Multi-variable type inference failed */
     public void addGroupedRow(int rowIndex) {
         int[][] newRowGroups = getRowGroups();
         if (newRowGroups.length == 0) {
-            newRowGroups = new int[]{new int[]{rowIndex}};
+            newRowGroups = new int[][]{new int[]{rowIndex}};
         } else {
             int lastGroupIndex = newRowGroups.length - 1;
             int[] lastGroup = newRowGroups[lastGroupIndex];
@@ -796,9 +788,8 @@ public final class FormLayout implements LayoutManager2, Serializable {
         }
     }
 
-    /* JADX WARN: Type inference failed for: r0v2, types: [int[], int[][]] */
     private static int[][] deepClone(int[][] array) {
-        ?? r0 = new int[array.length];
+        int[][] r0 = new int[array.length][];
         for (int i = 0; i < r0.length; i++) {
             r0[i] = (int[]) array[i].clone();
         }

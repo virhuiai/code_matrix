@@ -255,17 +255,17 @@ public class BasicCommandLinkUI extends BasicButtonUI {
 
         public void propertyChange(PropertyChangeEvent evt) {
             String propertyName = evt.getPropertyName();
-            boolean z = -1;
+            int z = -1;
             switch (propertyName.hashCode()) {
                 case -1724546052:
                     if (propertyName.equals("description")) {
-                        z = true;
+                        z = 1;
                         break;
                     }
                     break;
                 case -173276743:
                     if (propertyName.equals("iconVisible")) {
-                        z = false;
+                        z = 0;
                         break;
                     }
                     break;
@@ -283,15 +283,15 @@ public class BasicCommandLinkUI extends BasicButtonUI {
                     break;
             }
             switch (z) {
-                case AnimatedLabel.CENTER /* 0 */:
-                case true:
-                case AnimatedLabel.LEFT /* 2 */:
+                case 0:
+                case 1:
+                case 2:
                     BasicCommandLinkUI.this.uninstallComponents();
                     BasicCommandLinkUI.this.installComponents();
                     this.link.revalidate();
                     this.link.repaint();
                     return;
-                case true:
+                case 3:
                     BasicCommandLinkUI.this.iconLabel.setIcon(this.link.isIconVisible() ? this.link.getIcon() : null);
                     return;
                 default:

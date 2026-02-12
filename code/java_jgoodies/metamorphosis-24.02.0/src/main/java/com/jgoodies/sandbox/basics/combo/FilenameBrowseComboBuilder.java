@@ -5,7 +5,7 @@ import com.jgoodies.common.internal.Messages;
 import com.jgoodies.components.internal.TextFieldIcons;
 import com.jgoodies.dialogs.core.CommandValue;
 import com.jgoodies.dialogs.core.CoreDialogResources;
-import com.jgoodies.dialogs.core.util.JSDLUtils;
+import com.jgoodies.common.internal.JSDLUtils;
 import com.jgoodies.sandbox.completion.FilenameCompletionProcessor;
 import com.jgoodies.search.CompletionManager;
 import java.awt.Dialog;

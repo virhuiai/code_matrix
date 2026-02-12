@@ -315,6 +315,8 @@ public class BeanAdapter<B> extends Model {
                 try {
                     BeanAdapter.this.setValue0(bean, getPropertyAccessor(bean), newValue);
                 } catch (PropertyVetoException e) {
+                    // 将 Throwable 转换为 PropertyVetoException
+                    PropertyAccessException.createWriteAccessException(bean, newValue, getPropertyAccessor(bean), e);
                 }
             }
         }

@@ -47,7 +47,7 @@ public class JGDefaultTableCellRenderer<V> implements TableCellRenderer {
                 context.setText("", new Object[0]);
             } else {
                 context.setIcon(null);
-                context.setText(value.toString(), new Object[0]);
+                context.setText(value != null ? value.toString() : "", new Object[0]);
             }
         };
     }
@@ -55,8 +55,10 @@ public class JGDefaultTableCellRenderer<V> implements TableCellRenderer {
     /* JADX WARN: Multi-variable type inference failed */
     public final Component getTableCellRendererComponent(JTable table, Object obj, boolean isSelected, boolean hasFocus, int row, int column) {
         this.delegate.getTableCellRendererComponent(table, (Object) null, isSelected, hasFocus, row, column);
-        if (obj != 0) {
-            setValue(obj);
+        if (obj != null) {
+            @SuppressWarnings("unchecked")
+            V value = (V) obj;
+            setValue(value);
         }
         return this.delegate;
     }

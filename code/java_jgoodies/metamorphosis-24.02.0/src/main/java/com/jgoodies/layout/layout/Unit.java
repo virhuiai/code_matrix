@@ -25,7 +25,7 @@ public enum Unit {
         if (name.isEmpty()) {
             return Sizes.getDefaultUnit();
         }
-        boolean z = -1;
+        int z = -1;
         switch (name.hashCode()) {
             case 3178:
                 if (name.equals("cm")) {
@@ -59,31 +59,31 @@ public enum Unit {
                 break;
             case 99565:
                 if (name.equals("dlu")) {
-                    z = false;
+                    z = 0;
                     break;
                 }
                 break;
             case 100653:
                 if (name.equals("epx")) {
-                    z = true;
+                    z = 1;
                     break;
                 }
                 break;
         }
         switch (z) {
-            case AnimatedLabel.CENTER /* 0 */:
+            case 0:
                 return DIALOG_UNITS;
-            case true:
+            case 1:
                 return EFFECTIVE_PIXEL;
-            case AnimatedLabel.LEFT /* 2 */:
+            case 2:
                 return PIXEL;
-            case true:
+            case 3:
                 return POINT;
-            case AnimatedLabel.RIGHT /* 4 */:
+            case 4:
                 return INCH;
-            case true:
+            case 5:
                 return MILLIMETER;
-            case true:
+            case 6:
                 return CENTIMETER;
             default:
                 throw new IllegalArgumentException("Invalid unit name '" + name + "'. Must be one of: px, epx, dlu, pt, mm, cm, in");

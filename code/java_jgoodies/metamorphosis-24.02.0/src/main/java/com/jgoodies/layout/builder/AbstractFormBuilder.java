@@ -6,7 +6,6 @@ import com.jgoodies.common.internal.BuilderSupport;
 import com.jgoodies.common.internal.Messages;
 import com.jgoodies.common.swing.focus.FocusTraversalUtils;
 import com.jgoodies.layout.FormsSetup;
-import com.jgoodies.layout.builder.AbstractFormBuilder;
 import com.jgoodies.layout.debug.FormDebugPanel;
 import com.jgoodies.layout.factories.CC;
 import com.jgoodies.layout.factories.ComponentFactory;
@@ -79,173 +78,200 @@ public class AbstractFormBuilder<B extends AbstractFormBuilder<B>> {
         return getPanel();
     }
 
+    @SuppressWarnings("unchecked")
     public B layoutMap(LayoutMap layoutMap) {
         this.support.checkNotCalledTwice("layoutMap");
         this.layoutMap = layoutMap;
-        return this;
+        return (B) this;
     }
 
+    @SuppressWarnings("unchecked")
     public B columns(String encodedColumnSpecs, Object... args) {
         this.support.checkNotCalledTwice("columns");
         this.columnSpecs = ColumnSpec.decodeSpecs(Strings.get(encodedColumnSpecs, args), getLayoutMap());
-        return this;
+        return (B) this;
     }
 
+    @SuppressWarnings("unchecked")
     public B columns(ColumnSpec... columnSpecs) {
         this.support.checkNotCalledTwice("columns");
         this.columnSpecs = (ColumnSpec[]) Preconditions.checkNotNull(columnSpecs, Messages.MUST_NOT_BE_NULL, "column specifications");
-        return this;
+        return (B) this;
     }
 
+    @SuppressWarnings("unchecked")
     public B appendColumns(String encodedColumnSpecs, Object... args) {
         ColumnSpec[] newColumnSpecs = ColumnSpec.decodeSpecs(Strings.get(encodedColumnSpecs, args), getLayoutMap());
         for (ColumnSpec columnSpec : newColumnSpecs) {
             getLayout().appendColumn(columnSpec);
         }
-        return this;
+        return (B) this;
     }
 
+    @SuppressWarnings("unchecked")
     public B rows(String encodedRowSpecs, Object... args) {
         this.support.checkNotCalledTwice("rows");
         this.rowSpecs = RowSpec.decodeSpecs(Strings.get(encodedRowSpecs, args), getLayoutMap());
-        return this;
+        return (B) this;
     }
 
+    @SuppressWarnings("unchecked")
     public B rows(RowSpec... rowSpecs) {
         this.support.checkNotCalledTwice("rows");
         this.rowSpecs = (RowSpec[]) Preconditions.checkNotNull(rowSpecs, Messages.MUST_NOT_BE_NULL, "row specifications");
-        return this;
+        return (B) this;
     }
 
+    @SuppressWarnings("unchecked")
     public B appendRows(String encodedRowSpecs, Object... args) {
         RowSpec[] newRowSpecs = RowSpec.decodeSpecs(Strings.get(encodedRowSpecs, args), getLayoutMap());
         for (RowSpec rowSpec : newRowSpecs) {
             getLayout().appendRow(rowSpec);
         }
-        return this;
+        return (B) this;
     }
 
+    @SuppressWarnings("unchecked")
     public B columnGroup(int... columnIndices) {
         this.support.checkNotCalledTwice("columnGroup or #columnGroups");
         getLayout().setColumnGroup(columnIndices);
-        return this;
+        return (B) this;
     }
 
+    @SuppressWarnings("unchecked")
     public B columnGroups(int[]... multipleColumnGroups) {
         this.support.checkNotCalledTwice("columnGroup or #columnGroups");
         getLayout().setColumnGroups(multipleColumnGroups);
-        return this;
+        return (B) this;
     }
 
+    @SuppressWarnings("unchecked")
     public B rowGroup(int... rowIndices) {
         this.support.checkNotCalledTwice("rowGroup or #rowGroups");
         getLayout().setRowGroup(rowIndices);
-        return this;
+        return (B) this;
     }
 
+    @SuppressWarnings("unchecked")
     public B rowGroups(int[]... multipleRowGroups) {
         this.support.checkNotCalledTwice("rowGroup or #rowGroups");
         getLayout().setRowGroups(multipleRowGroups);
-        return this;
+        return (B) this;
     }
 
+    @SuppressWarnings("unchecked")
     public B honorsVisibility(boolean b) {
         this.support.checkNotCalledTwice("honorsVisibility");
         getLayout().setHonorsVisibility(b);
-        return this;
+        return (B) this;
     }
 
+    @SuppressWarnings("unchecked")
     public B honorsVisibility(JComponent c, boolean b) {
         getLayout().setHonorsVisibility(c, Boolean.valueOf(b));
-        return this;
+        return (B) this;
     }
 
+    @SuppressWarnings("unchecked")
     public B layout(FormLayout layout) {
         this.support.checkNotCalledTwice("layout");
         this.layout = (FormLayout) Preconditions.checkNotNull(layout, Messages.MUST_NOT_BE_NULL, "layout");
-        return this;
+        return (B) this;
     }
 
+    @SuppressWarnings("unchecked")
     public B panel(JPanel panel) {
         this.support.checkNotCalledTwice("panel");
         this.panel = (JPanel) Preconditions.checkNotNull(panel, Messages.MUST_NOT_BE_NULL, "panel");
         this.panel.setLayout(getLayout());
-        return this;
+        return (B) this;
     }
 
+    @SuppressWarnings("unchecked")
     public B debug(boolean b) {
         this.support.checkNotCalledTwice("debug");
         this.debug = b;
-        return this;
+        return (B) this;
     }
 
+    @SuppressWarnings("unchecked")
     public B name(String panelName) {
         this.support.checkNotCalledTwice("name");
         getPanel().setName(panelName);
-        return this;
+        return (B) this;
     }
 
+    @SuppressWarnings("unchecked")
     public B background(Color background) {
         this.support.checkNotCalledTwice("background");
         getPanel().setBackground(background);
         getPanel().setOpaque(background != null);
-        return this;
+        return (B) this;
     }
 
+    @SuppressWarnings("unchecked")
     public B border(Border border) {
         this.support.checkNotCalledTwice("border or #padding");
         getPanel().setBorder(border);
-        return this;
+        return (B) this;
     }
 
+    @SuppressWarnings("unchecked")
     public B padding(Paddings.Padding padding) {
         return border(padding);
     }
 
+    @SuppressWarnings("unchecked")
     public B padding(String paddingSpec, Object... args) {
         return padding(Paddings.createPadding(paddingSpec, args));
     }
 
+    @SuppressWarnings("unchecked")
     public B opaque(boolean b) {
         this.support.checkNotCalledTwice("opaque");
         getPanel().setOpaque(b);
-        return this;
+        return (B) this;
     }
 
+    @SuppressWarnings("unchecked")
     public B initialComponent(JComponent initialComponent) {
         this.support.checkNotCalledTwice("initialComponent");
         checkValidFocusTraversalSetup();
         this.initialComponent = initialComponent;
         setupFocusTraversalPolicyAndProvider();
-        return this;
+        return (B) this;
     }
 
+    @SuppressWarnings("unchecked")
     public B focusTraversalType(FocusTraversalType focusTraversalType) {
         this.support.checkNotCalledTwice("focusTraversalType or #focusTraversalPolicy");
         Preconditions.checkNotNull(focusTraversalType, Messages.MUST_NOT_BE_NULL, "focus traversal type");
         checkValidFocusTraversalSetup();
         this.focusTraversalType = focusTraversalType;
         setupFocusTraversalPolicyAndProvider();
-        return this;
+        return (B) this;
     }
 
+    @SuppressWarnings("unchecked")
     public B focusTraversalPolicy(FocusTraversalPolicy policy) {
         this.support.checkNotCalledTwice("focusTraversalType or #focusTraversalPolicy");
         Preconditions.checkNotNull(policy, Messages.MUST_NOT_BE_NULL, "focus traversal policy");
         checkValidFocusTraversalSetup();
         this.focusTraversalPolicy = policy;
         setupFocusTraversalPolicyAndProvider();
-        return this;
+        return (B) this;
     }
 
+    @SuppressWarnings("unchecked")
     public B focusGroup(AbstractButton... buttons) {
         FocusTraversalUtils.group(buttons);
-        return this;
+        return (B) this;
     }
 
+    @SuppressWarnings("unchecked")
     public B focusGroup(List<AbstractButton> buttons) {
         FocusTraversalUtils.group((List<? extends AbstractButton>) buttons);
-        return this;
+        return (B) this;
     }
 
     public FormLayout getLayout() {
@@ -266,42 +292,49 @@ public class AbstractFormBuilder<B extends AbstractFormBuilder<B>> {
         return this.panel;
     }
 
+    @SuppressWarnings("unchecked")
     public B factory(ComponentFactory factory) {
         this.support.checkNotCalledTwice("factory");
         this.factory = factory;
-        return this;
+        return (B) this;
     }
 
+    @SuppressWarnings("unchecked")
     public B labelForFeatureEnabled(boolean b) {
         this.support.checkNotCalledTwice("labelForFeatureEnabled");
         this.labelForFeatureEnabled = b;
-        return this;
+        return (B) this;
     }
 
+    @SuppressWarnings("unchecked")
     public B offset(int offsetX, int offsetY) {
         this.offsetX = offsetX;
         this.offsetY = offsetY;
-        return this;
+        return (B) this;
     }
 
+    @SuppressWarnings("unchecked")
     public B translate(int dX, int dY) {
         this.offsetX += dX;
         this.offsetY += dY;
-        return this;
+        return (B) this;
     }
 
+    @SuppressWarnings("unchecked")
     public B defaultLabelType(LabelType newValue) {
         this.defaultLabelType = newValue;
-        return this;
+        return (B) this;
     }
 
+    @SuppressWarnings("unchecked")
     public B readOnlyLabels() {
         return defaultLabelType(LabelType.READ_ONLY);
     }
 
+    @SuppressWarnings("unchecked")
     public B doWith(Consumer<B> consumer) {
-        consumer.accept(this);
-        return this;
+        consumer.accept((B) this);
+        return (B) this;
     }
 
     public ComponentAdder<B> add(Component c) {
@@ -374,7 +407,7 @@ public class AbstractFormBuilder<B extends AbstractFormBuilder<B>> {
 
     public ComponentAdder<B> add(boolean expression, Component c) {
         if (!expression || c == null) {
-            return new NoOpComponentAdder(this);
+            return new NoOpComponentAdder((B) this);
         }
         if ((c instanceof JTable) || (c instanceof JList) || (c instanceof JTree)) {
             return addScrolled(expression, c);
@@ -384,62 +417,62 @@ public class AbstractFormBuilder<B extends AbstractFormBuilder<B>> {
 
     public ComponentAdder<B> addRaw(boolean expression, Component c) {
         if (!expression || c == null) {
-            return new NoOpComponentAdder(this);
+            return new NoOpComponentAdder((B) this);
         }
         return addImpl(c);
     }
 
     public ComponentAdder<B> addScrolled(boolean expression, Component c) {
         if (!expression || c == null) {
-            return new NoOpComponentAdder(this);
+            return new NoOpComponentAdder((B) this);
         }
         return addImpl(new JScrollPane(c));
     }
 
     public ComponentAdder<B> addBar(boolean expression, JButton... buttons) {
         if (!expression || buttons == null) {
-            return new NoOpComponentAdder(this);
+            return new NoOpComponentAdder((B) this);
         }
         return addImpl(Forms.buttonBar(buttons));
     }
 
     public ComponentAdder<B> addBar(boolean expression, JCheckBox... checkBoxes) {
         if (!expression) {
-            return new NoOpComponentAdder(this);
+            return new NoOpComponentAdder((B) this);
         }
         return addImpl(Forms.checkBoxBar(checkBoxes));
     }
 
     public ComponentAdder<B> addBar(boolean expression, JRadioButton... radioButtons) {
         if (!expression) {
-            return new NoOpComponentAdder(this);
+            return new NoOpComponentAdder((B) this);
         }
         return addImpl(Forms.radioButtonBar(radioButtons));
     }
 
     public ComponentAdder<B> addStack(boolean expression, JButton... buttons) {
         if (!expression || buttons == null) {
-            return new NoOpComponentAdder(this);
+            return new NoOpComponentAdder((B) this);
         }
         return addImpl(Forms.buttonStack(buttons));
     }
 
     public ComponentAdder<B> addStack(boolean expression, JCheckBox... checkBoxes) {
         if (!expression) {
-            return new NoOpComponentAdder(this);
+            return new NoOpComponentAdder((B) this);
         }
         return addImpl(Forms.checkBoxStack(checkBoxes));
     }
 
     public ComponentAdder<B> addStack(boolean expression, JRadioButton... radioButtons) {
         if (!expression || radioButtons == null) {
-            return new NoOpComponentAdder(this);
+            return new NoOpComponentAdder((B) this);
         }
         return addImpl(Forms.radioButtonStack(radioButtons));
     }
 
     public RendererAdder<B> add(boolean expression, Consumer<B> renderer) {
-        return new RendererAdder<>(this, expression, renderer);
+        return new RendererAdder<>((B) this, expression, renderer);
     }
 
     public ComponentAdder<B> add(boolean expression, String markedLabelText, Object... args) {
@@ -470,7 +503,7 @@ public class AbstractFormBuilder<B extends AbstractFormBuilder<B>> {
 
     public ComponentAdder<B> add(boolean expression, Icon image) {
         if (!expression || image == null) {
-            return new NoOpComponentAdder(this);
+            return new NoOpComponentAdder((B) this);
         }
         return addImpl(new JLabel(image));
     }
@@ -493,7 +526,7 @@ public class AbstractFormBuilder<B extends AbstractFormBuilder<B>> {
         if (getPanel().getLayout() == null) {
             this.panel.setLayout(getLayout());
         }
-        return new ComponentAdder<>(this, c);
+        return new ComponentAdder<>((B) this, c);
     }
 
     void addImpl(Component component, CellConstraints rawConstraints) {

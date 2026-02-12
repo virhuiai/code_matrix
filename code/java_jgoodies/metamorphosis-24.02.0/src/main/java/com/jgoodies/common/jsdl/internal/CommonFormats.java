@@ -121,10 +121,10 @@ public class CommonFormats {
     }
 
     public static String formatFromTo(Object from, Object to, Object... furtherLocations) {
-        StringBuilder builder = new StringBuilder().append(from).append(" ‒ ").append(to);
+        StringBuilder builder = new StringBuilder().append(from.toString()).append(" ‒ ").append(to.toString());
         if (furtherLocations != null) {
             for (Object location : furtherLocations) {
-                builder.append(" ‒ ").append(location);
+                builder.append(" ‒ ").append(location.toString());
             }
         }
         return builder.toString();

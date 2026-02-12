@@ -76,7 +76,7 @@ public class ListViewModel<E> extends ActionBean {
     }
 
     public final void setItems(E... items) {
-        setItems(items == null ? Collections.EMPTY_LIST : Arrays.asList(items));
+        setItems(items == null ? Collections.emptyList() : Arrays.asList(items));
     }
 
     public final void setItems(List<E> items) {
@@ -84,7 +84,7 @@ public class ListViewModel<E> extends ActionBean {
     }
 
     public final E get(int i) {
-        return (E) this.items.get(i);
+        return this.items.get(i);
     }
 
     public final int size() {
@@ -112,7 +112,7 @@ public class ListViewModel<E> extends ActionBean {
     }
 
     public final E remove(int i) {
-        return (E) this.items.remove(i);
+        return this.items.remove(i);
     }
 
     public final boolean removeAll(Collection<?> c) {
@@ -120,7 +120,7 @@ public class ListViewModel<E> extends ActionBean {
     }
 
     public final E setItem(int i, E e) {
-        return (E) this.items.set(i, e);
+        return this.items.set(i, e);
     }
 
     public final void clear() {
@@ -397,7 +397,7 @@ public class ListViewModel<E> extends ActionBean {
     }
 
     protected final E displayedGet(int i) {
-        return (E) displayedList().get(i);
+        return displayedList().get(i);
     }
 
     protected final int displayedSize() {

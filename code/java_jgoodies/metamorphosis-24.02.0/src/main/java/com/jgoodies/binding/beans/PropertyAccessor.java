@@ -58,7 +58,14 @@ public final class PropertyAccessor {
         } catch (IllegalAccessException e) {
             throw PropertyAccessException.createReadAccessException(bean, this, e);
         } catch (InvocationTargetException e2) {
-            throw PropertyAccessException.createReadAccessException(bean, this, e2.getCause());
+            Throwable cause = e2.getCause();
+            if (cause instanceof RuntimeException) {
+                throw (RuntimeException) cause;
+            } else if (cause instanceof Error) {
+                throw (Error) cause;
+            } else {
+                throw PropertyAccessException.createReadAccessException(bean, this, cause);
+            }
         }
     }
 
@@ -72,11 +79,16 @@ public final class PropertyAccessor {
         } catch (IllegalAccessException | IllegalArgumentException e) {
             throw PropertyAccessException.createWriteAccessException(bean, newValue, this, e);
         } catch (InvocationTargetException e2) {
-            PropertyVetoException cause = e2.getCause();
+            Throwable cause = e2.getCause();
             if (cause instanceof PropertyVetoException) {
-                throw cause;
+                throw (PropertyVetoException) cause;
+            } else if (cause instanceof RuntimeException) {
+                throw (RuntimeException) cause;
+            } else if (cause instanceof Error) {
+                throw (Error) cause;
+            } else {
+                throw PropertyAccessException.createWriteAccessException(bean, newValue, this, cause);
             }
-            throw PropertyAccessException.createWriteAccessException(bean, newValue, this, (Throwable) cause);
         }
     }
 

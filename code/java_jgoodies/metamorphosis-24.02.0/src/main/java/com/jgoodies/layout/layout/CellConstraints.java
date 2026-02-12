@@ -433,7 +433,7 @@ public final class CellConstraints implements Cloneable, Serializable {
 
         static Alignment valueOf(String nameOrAbbreviation) {
             String str = nameOrAbbreviation.toLowerCase(Locale.ENGLISH);
-            boolean z = -1;
+            int z = -1;
             switch (str.hashCode()) {
                 case -1383228885:
                     if (str.equals("bottom")) {
@@ -461,7 +461,7 @@ public final class CellConstraints implements Cloneable, Serializable {
                     break;
                 case Suggest.DEFAULT_CAPACITY /* 100 */:
                     if (str.equals("d")) {
-                        z = false;
+                        z = 0;
                         break;
                     }
                     break;
@@ -515,32 +515,32 @@ public final class CellConstraints implements Cloneable, Serializable {
                     break;
                 case 1544803905:
                     if (str.equals("default")) {
-                        z = VERTICAL;
+                        z = 1;
                         break;
                     }
                     break;
             }
             switch (z) {
-                case false:
-                case VERTICAL /* 1 */:
+                case 0:
+                case 1:
                     return CellConstraints.DEFAULT;
-                case true:
-                case true:
+                case 2:
+                case 3:
                     return CellConstraints.FILL;
-                case AnimatedLabel.RIGHT /* 4 */:
-                case true:
+                case 4:
+                case 5:
                     return CellConstraints.CENTER;
-                case true:
-                case true:
+                case 6:
+                case 7:
                     return CellConstraints.LEFT;
-                case AnimatedLabel.DEFAULT_FONT_EXTRA_SIZE /* 8 */:
-                case true:
+                case 8:
+                case 9:
                     return CellConstraints.RIGHT;
-                case true:
-                case true:
+                case 10:
+                case 11:
                     return CellConstraints.TOP;
-                case true:
-                case true:
+                case 12:
+                case 13:
                     return CellConstraints.BOTTOM;
                 default:
                     throw new IllegalArgumentException("Invalid alignment " + nameOrAbbreviation + ". Must be one of: left, center, right, top, bottom, fill, default, l, c, r, t, b, f, d.");
