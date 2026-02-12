@@ -1,7 +1,6 @@
 package com.example.pdfboxdemo;
 
 import com.virhuiai.pdfbox_3_0_6_utils.PrepareUtil;
-import com.example.pdfboxdemo.PdfTableAnalyzer.Table;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.text.PDFTextStripper;
@@ -15,8 +14,8 @@ public class PdfBoxDemo {
         PrepareUtil.document("/Volumes/RamDisk/test.pdf", document->{
             try {
                 // 执行表格分析
-                List<PdfTableAnalyzer.Table> tables = PdfTableAnalyzer.analyzeTables(document);
-                PdfTableAnalyzer.printTableAnalysis(tables);
+                List<PdfTableAnalyzerO.Table> tables = PdfTableAnalyzerO.analyzeTables(document);
+                PdfTableAnalyzerO.printTableAnalysis(tables);
                 
                 // 同时执行原有的文本分析功能
                 // demonstrateOriginalFeatures(document);
