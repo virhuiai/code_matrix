@@ -28,35 +28,38 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.jgoodies.looks.windows;
+package com.jgoodies.looks.common;
 
-import java.awt.Color;
-import java.awt.Font;
-
-import javax.swing.JComponent;
-import javax.swing.JMenuItem;
+import javax.swing.*;
 import javax.swing.plaf.ComponentUI;
-
-import com.jgoodies.looks.common.ExtBasicMenuItemUI;
-import com.jgoodies.looks.common.MenuItemRenderer;
+import javax.swing.plaf.basic.BasicMenuItemUI;
+import java.awt.*;
 
 /**
- * The JGoodies Windows look&amp;feel implementation of {@code MenuItemUI}.<p>
+ * Extended BasicMenuItemUI that provides common functionality
+ * for menu item UI implementations.
  *
- * It differs from the superclass in that it uses a Windows specific
- * menu item renderer that checks if mnemonics shall be shown or hidden
- * and may paint disabled text with a shadow.
- *
- * @author  Karsten Lentzsch
- * @version $Revision: 1.8 $
+ * @author Karsten Lentzsch
  */
-public final class WindowsMenuItemUI extends ExtBasicMenuItemUI {
-
-
-    public static ComponentUI createUI(JComponent b) {
-        return new WindowsMenuItemUI();
+public class ExtBasicMenuItemUI extends BasicMenuItemUI {
+    
+    /**
+     * Creates a new instance of ExtBasicMenuItemUI.
+     */
+    public ExtBasicMenuItemUI() {
+        super();
     }
-
+    
+    /**
+     * Factory method to create a new UI delegate.
+     *
+     * @param c the component to create the UI for
+     * @return the UI delegate
+     */
+    public static ComponentUI createUI(JComponent c) {
+        return new ExtBasicMenuItemUI();
+    }
+    
     /**
      * Indicates whether the icon border should be enabled.
      *
@@ -65,25 +68,35 @@ public final class WindowsMenuItemUI extends ExtBasicMenuItemUI {
     protected boolean iconBorderEnabled() {
         return true;
     }
-
-
-    protected MenuItemRenderer createRenderer(
-            JMenuItem menuItem,
-            boolean iconBorderEnabled,
-            Font    acceleratorFont,
-            Color   selectionForeground,
-            Color   disabledForeground,
-            Color   acceleratorForeground,
-            Color   acceleratorSelectionForeground) {
-        return new WindowsMenuItemRenderer(
-                menuItem,
-                iconBorderEnabled(),
-                acceleratorFont,
-                selectionForeground,
-                disabledForeground,
-                acceleratorForeground,
-                acceleratorSelectionForeground);
+    
+    /**
+     * Paints the menu item.
+     *
+     * @param g the graphics context
+     * @param c the component to paint
+     */
+    @Override
+    public void paint(Graphics g, JComponent c) {
+        super.paint(g, c);
     }
-
-
+    
+    /**
+     * Installs the UI defaults.
+     *
+     * @param menuItem the menu item
+     */
+    @Override
+    protected void installDefaults() {
+        super.installDefaults();
+    }
+    
+    /**
+     * Uninstalls the UI defaults.
+     *
+     * @param menuItem the menu item
+     */
+    @Override
+    protected void uninstallDefaults() {
+        super.uninstallDefaults();
+    }
 }
