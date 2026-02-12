@@ -40,9 +40,8 @@ import javax.swing.JComponent;
 import javax.swing.border.AbstractBorder;
 
 /**
- * A border with a drop shadow intended to be used as the outer border
- * of popups. Can paint the screen background if used with heavy-weight
- * popup windows.
+ * 带有投影效果的边框，旨在用作弹出窗口的外边框。
+ * 如果与重量级弹出窗口一起使用，可以绘制屏幕背景。
  *
  * @author Karsten Lentzsch
  * @version $Revision: 1.9 $
@@ -53,26 +52,28 @@ import javax.swing.border.AbstractBorder;
 final class ShadowPopupBorder extends AbstractBorder {
 
     /**
-     * The drop shadow needs 5 pixels at the bottom and the right hand side.
+     * 投影效果在底部和右侧需要5个像素。
      */
     private static final int SHADOW_SIZE = 5;
 
 	/**
-	 * The singleton instance used to draw all borders.
+	 * 用于绘制所有边框的单例实例。
 	 */
 	private static ShadowPopupBorder instance = new ShadowPopupBorder();
 
 	/**
-	 * The drop shadow is created from a PNG image with 8 bit alpha channel.
+	 * 投影效果是从具有8位alpha通道的PNG图像创建的。
 	 */
 	private static Image shadow
 		= new ImageIcon(ShadowPopupBorder.class.getResource("shadow.png")).getImage();
 
 
-    // Instance Creation *****************************************************
+    // 实例创建 *****************************************************
 
 	/**
-	 * Returns the singleton instance used to draw all borders.
+	 * 返回用于绘制所有边框的单例实例。
+	 * 
+	 * @return ShadowPopupBorder单例实例
 	 */
 	public static ShadowPopupBorder getInstance() {
 		return instance;
@@ -80,12 +81,18 @@ final class ShadowPopupBorder extends AbstractBorder {
 
 
 	/**
-	 * Paints the border for the specified component with the specified
-     * position and size.
+	 * 为指定组件绘制边框，具有指定的位置和大小。
+	 * 
+	 * @param c 组件
+	 * @param g 图形上下文
+	 * @param x X坐标
+	 * @param y Y坐标
+	 * @param width 宽度
+	 * @param height 高度
 	 */
 	@Override
     public void paintBorder(Component c, Graphics g, int x, int y, int width, int height) {
-		// fake drop shadow effect in case of heavy weight popups
+		// 在重量级弹出窗口的情况下伪造投影效果
         JComponent popup = (JComponent) c;
         Image hShadowBg = (Image) popup.getClientProperty(ShadowPopupFactory.PROP_HORIZONTAL_BACKGROUND);
         if (hShadowBg != null) {
@@ -96,7 +103,7 @@ final class ShadowPopupBorder extends AbstractBorder {
             g.drawImage(vShadowBg, x + width - 5, y, c);
         }
 
-		// draw drop shadow
+		// 绘制投影效果
 		g.drawImage(shadow, x +  5, y + height - 5, x + 10, y + height, 0, 6, 5, 11, null, c);
 		g.drawImage(shadow, x + 10, y + height - 5, x + width - 5, y + height, 5, 6, 6, 11, null, c);
 		g.drawImage(shadow, x + width - 5, y + 5, x + width, y + 10, 6, 0, 11, 5, null, c);
@@ -106,7 +113,10 @@ final class ShadowPopupBorder extends AbstractBorder {
 
 
 	/**
-	 * Returns the insets of the border.
+	 * 返回边框的内边距。
+	 * 
+	 * @param c 组件
+	 * @return 边框内边距
 	 */
 	@Override
     public Insets getBorderInsets(Component c) {
@@ -115,10 +125,11 @@ final class ShadowPopupBorder extends AbstractBorder {
 
 
     /**
-     * Reinitializes the insets parameter with this Border's current Insets.
-     * @param c the component for which this border insets value applies
-     * @param insets the object to be reinitialized
-     * @return the {@code insets} object
+     * 用此边框的当前内边距重新初始化内边距参数。
+     * 
+     * @param c 应用此边框内边距值的组件
+     * @param insets 要重新初始化的对象
+     * @return {@code insets}对象
      */
     @Override
     public Insets getBorderInsets(Component c, Insets insets) {
